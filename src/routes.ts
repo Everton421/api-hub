@@ -16,6 +16,7 @@ import { EnvioCodigoValidador } from "./controllers/recuperarConta/EnvioCodigoVa
 import { Alterar_senha } from "./controllers/recuperarConta/alterarSenha";
 import { CategoriaController } from "./controllers/categorias/categoriaController";
 import { MarcasController } from "./controllers/marcas/marcasController";
+import { fotosController } from "./controllers/fotos/fotosController";
 
   const crypt = require('crypt');
   const router = Router();
@@ -41,6 +42,7 @@ import { MarcasController } from "./controllers/marcas/marcasController";
  
  router.get(`${versao}/offline/produtos`,   checkToken,  new ProdutoController().buscaGeral )
  router.post(`${versao}/produtos`,          checkToken, new ProdutoController().cadastrar)
+ router.get(`${versao}/offline/fotos`,   checkToken,  new fotosController().buscaGeral )
 
  router.get(`${versao}/offline/clientes`,   checkToken,  new ClienteController().buscaGeral )
  router.post(`${versao}/clientes`,          checkToken, new ClienteController().cadastrar)
