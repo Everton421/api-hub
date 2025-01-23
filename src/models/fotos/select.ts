@@ -21,4 +21,16 @@ export class Select_fotos{
        })
     }
 
+    async buscaPorProduto(codigoProduto:number){
+        return new Promise( async (resolve, reject) =>{
+            let sql = ` select * from fotos_produtos where produto = ${codigoProduto}`;
+            await conn.query( sql  ,(err, result )=>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(result);
+                }
+            })
+        })
+    }
 }
