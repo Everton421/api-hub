@@ -15,6 +15,7 @@ class UpdateOrcamento {
                 total_produtos      =  ${orcamento.total_produtos} ,
                 total_servicos      =  ${orcamento.total_servicos} ,
                 tipo_os             =  ${orcamento.tipo_os},
+                tipo                =  ${orcamento.tipo},
                 quantidade_parcelas =  ${orcamento.quantidade_parcelas} ,
                 contato             = '${orcamento.contato}',
                 veiculo             =  ${orcamento.veiculo},
@@ -23,6 +24,7 @@ class UpdateOrcamento {
                 data_cadastro       = '${orcamento.data_cadastro}',
                 data_recadastro     = '${orcamento.data_recadastro}',
                 enviado             = 'S',
+                observacoes         =  '${orcamento.observacoes}',
                 situacao            = '${orcamento.situacao}'
                 where codigo = ${codigo}
             `;
@@ -56,7 +58,7 @@ class UpdateOrcamento {
     }
     async deleteServicosPedido(empresa, codigo) {
         return new Promise((resolve, reject) => {
-            let sql2 = ` delete from ${empresa}.ser_orca
+            let sql2 = ` delete from ${empresa}.servicos_pedido
                                     where pedido = ${codigo}
                                 `;
             databaseConfig_1.conn.query(sql2, (err, result) => {
@@ -118,7 +120,7 @@ class UpdateOrcamento {
     }
     async buscaParcelasDoOrcamento(empresa, codigo) {
         return new Promise((resolve, reject) => {
-            const sql = ` select *  from ${empresa}.parcelas where pedido = ? `;
+            const sql = ` select *,  DATE_FORMAT(vencimento, '%Y-%m-%d') AS vencimento   from ${empresa}.parcelas where pedido = ? `;
             databaseConfig_1.conn.query(sql, [codigo], async (err, result) => {
                 if (err) {
                     console.log(err);
@@ -143,6 +145,21 @@ class UpdateOrcamento {
             const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
             const ano = dataAtual.getFullYear();
             return `${ano}-${mes}-${dia}`;
+        }
+        function formatarData(data) {
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            return `${ano}-${mes}-${dia}`;
+        }
+        function formatarDataHora(data) {
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            const hora = String(data.getHours()).padStart(2, '0');
+            const minuto = String(data.getMinutes()).padStart(2, '0');
+            const segundo = String(data.getSeconds()).padStart(2, '0');
+            return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundo}`;
         }
         const dataAtual = obterDataAtual();
         const servicos = orcamento.servicos;

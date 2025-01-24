@@ -10,7 +10,7 @@ export class Insert_Categorias{
                                                       ( ? , ? , ? , ? ); `;
             const values = [ categoria.id , categoria.data_cadastro, categoria.data_recadastro, categoria.descricao]
 
-            await conn.query( sql , values,(err, result )=>{
+            await conn.query( sql , values,(err:any, result:any )=>{
                 if(err){
                     reject(err);
                     console.log(err)

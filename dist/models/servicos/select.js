@@ -5,7 +5,10 @@ const databaseConfig_1 = require("../../database/databaseConfig");
 class Select_servicos {
     async buscaPorCodigo(empresa, codigo) {
         return new Promise(async (resolve, reject) => {
-            let sql = ` select * from ${empresa}.servicos where codigo = ? `;
+            let sql = ` select *,
+          DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+        from ${empresa}.servicos where codigo = ? `;
             await databaseConfig_1.conn.query(sql, [codigo], (err, result) => {
                 if (err)
                     reject(err);
@@ -18,7 +21,10 @@ class Select_servicos {
             codigo = 0;
         if (!descricao)
             descricao = '';
-        const sql = `SELECT * FROM ${empresa}.servicos
+        const sql = `SELECT *,
+       DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+      DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+    FROM ${empresa}.servicos
     WHERE  codigo like ? OR aplicacao = ?    `;
         return new Promise(async (resolve, reject) => {
             await databaseConfig_1.conn.query(sql, [codigo, descricao], (err, result) => {
@@ -33,7 +39,10 @@ class Select_servicos {
     }
     async buscaGeral(empresa) {
         return new Promise(async (resolve, reject) => {
-            let sql = ` select * from ${empresa}.servicos  `;
+            let sql = ` select *,
+      DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+    from ${empresa}.servicos  `;
             await databaseConfig_1.conn.query(sql, (err, result) => {
                 if (err)
                     reject(err);

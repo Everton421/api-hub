@@ -8,10 +8,10 @@ class UsuariosApi {
             let sql = `
                         INSERT INTO ${databaseConfig_1.db_api}.usuarios
                         (
-                            nome, email, cnpj, senha
-                        ) values( ?, ?, ?, ? )
+                            nome, email, cnpj, senha, responsavel
+                        ) values( ?, ?, ?, ? , ? )
                     `;
-            await databaseConfig_1.conn.query(sql, [usuario.usuario, usuario.email, usuario.cnpj, usuario.senha], (err, result) => {
+            await databaseConfig_1.conn.query(sql, [usuario.usuario, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel], (err, result) => {
                 if (err)
                     reject(err);
                 else
@@ -35,9 +35,25 @@ class UsuariosApi {
     async selectPorEmail(email) {
         return new Promise(async (resolve, reject) => {
             let sql = `
-                select * from ${databaseConfig_1.db_api}.usuarios where email = ?
+                select * from ${databaseConfig_1.db_api}.usuarios where email ='${email}'
             `;
-            await databaseConfig_1.conn.query(sql, [email], (err, result) => {
+            await databaseConfig_1.conn.query(sql, (err, result) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+                else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+    async selectPorEmailCodigoValidador(email, codigoRecuperador) {
+        return new Promise(async (resolve, reject) => {
+            let sql = `
+                select * from ${databaseConfig_1.db_api}.usuarios where email = ? and cod_recuperador = ? 
+            `;
+            await databaseConfig_1.conn.query(sql, [email, codigoRecuperador], (err, result) => {
                 if (err)
                     reject(err);
                 else
@@ -51,6 +67,37 @@ class UsuariosApi {
                 select * from ${databaseConfig_1.db_api}.usuarios where email = ? and senha = ? 
             `;
             await databaseConfig_1.conn.query(sql, [email, senha], (err, result) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(result);
+            });
+        });
+    }
+    async updateCodigoValidador(codigo, data, email) {
+        return new Promise(async (resolve, reject) => {
+            let sql = `
+                  update ${databaseConfig_1.db_api}.usuarios
+                    set cod_recuperador= '${codigo}',
+                        data_expiracao='${data}'
+                  where email = '${email}'   
+            `;
+            await databaseConfig_1.conn.query(sql, (err, result) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(result);
+            });
+        });
+    }
+    async updateSenha(senha, email) {
+        return new Promise(async (resolve, reject) => {
+            let sql = `
+                  update ${databaseConfig_1.db_api}.usuarios
+                    set senha = '${senha}' 
+                  where email = '${email}'   
+            `;
+            await databaseConfig_1.conn.query(sql, (err, result) => {
                 if (err)
                     reject(err);
                 else

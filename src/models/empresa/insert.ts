@@ -18,7 +18,7 @@ export class Insert_empresa{
 
                     let dados = [ id,  responsavel, cnpj ,nome_empresa, email_empresa,telefone_empresa ]
                  
-                    await conn.query( sql,dados ,(error, resultado)=>{
+                    await conn.query( sql,dados ,(error:any, resultado:any)=>{
                        if(error){
                                reject(" erro ao cadastrar empresa  "+ error);
                        }else{

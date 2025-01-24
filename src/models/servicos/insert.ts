@@ -31,7 +31,7 @@ export class InsertServico{
                             `;
 
                 let dados = [  valor, aplicacao, tipo_serv, data_cadastro, data_recadastro]
-                            await conn.query(sql,   (err, result )=>{
+                            await conn.query(sql,   (err:any, result:any )=>{
                                 if(err){
                                      console.log(err)
                                      reject(err);

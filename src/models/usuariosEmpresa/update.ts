@@ -11,7 +11,7 @@ export class Update_UsuarioEmpresa{
                   where email = '${email}'   
             `;
 
-            await conn.query(sql,  (err, result )=>{ 
+            await conn.query(sql,  (err:any, result:any )=>{ 
                 if(err){ 
                     console.log(err)
                     reject(err);

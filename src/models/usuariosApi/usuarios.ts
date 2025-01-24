@@ -14,7 +14,7 @@ export class UsuariosApi{
                         ) values( ?, ?, ?, ? , ? )
                     `;
 
-                    await conn.query(sql, [usuario.usuario, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel],(err, result )=>{ 
+                    await conn.query(sql, [usuario.usuario, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel],(err:any, result:any )=>{ 
                         if(err) reject(err);
                         else resolve(result);
                     })
@@ -29,7 +29,7 @@ export class UsuariosApi{
                     select * from ${db_api}.usuarios where nome = ?
                 `;
 
-                await conn.query(sql, [ nome ],(err, result )=>{ 
+                await conn.query(sql, [ nome ],(err:any, result:any )=>{ 
                     if(err) reject(err);
                     else 
                         resolve(result);
@@ -45,7 +45,7 @@ export class UsuariosApi{
                 select * from ${db_api}.usuarios where email ='${email}'
             `;
 
-            await conn.query(sql,  (err, result )=>{ 
+            await conn.query(sql,  (err:any, result:any )=>{ 
                 if(err){
                     console.log(err); 
                     reject(err);
@@ -63,7 +63,7 @@ export class UsuariosApi{
                 select * from ${db_api}.usuarios where email = ? and cod_recuperador = ? 
             `;
 
-            await conn.query(sql, [ email, codigoRecuperador  ],(err, result )=>{ 
+            await conn.query(sql, [ email, codigoRecuperador  ],(err:any, result:any )=>{ 
                 if(err) reject(err);
                 else 
                     resolve(result);
@@ -78,7 +78,7 @@ export class UsuariosApi{
                 select * from ${db_api}.usuarios where email = ? and senha = ? 
             `;
 
-            await conn.query(sql, [ email, senha  ],(err, result )=>{ 
+            await conn.query(sql, [ email, senha  ],(err:any, result:any )=>{ 
                 if(err) reject(err);
                 else 
                     resolve(result);
@@ -97,7 +97,7 @@ export class UsuariosApi{
                   where email = '${email}'   
             `;
 
-            await conn.query(sql,  (err, result )=>{ 
+            await conn.query(sql,  (err:any, result:any )=>{ 
                 if(err) reject(err);
                 else 
                     resolve(result);
@@ -115,7 +115,7 @@ export class UsuariosApi{
                   where email = '${email}'   
             `;
 
-            await conn.query(sql,  (err, result )=>{ 
+            await conn.query(sql,  (err:any, result:any )=>{ 
                 if(err) reject(err);
                 else 
                     resolve(result);

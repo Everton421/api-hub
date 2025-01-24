@@ -11,7 +11,7 @@ export class Select_fotos{
                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
             FROM ${empresa}.fotos_produtos   `
 
-           await conn.query( sql  ,(err, result )=>{
+           await conn.query( sql  ,(err:any, result:any )=>{
                if(err){
                    reject(err);
                }else{
@@ -24,7 +24,7 @@ export class Select_fotos{
     async buscaPorProduto(codigoProduto:number){
         return new Promise( async (resolve, reject) =>{
             let sql = ` select * from fotos_produtos where produto = ${codigoProduto}`;
-            await conn.query( sql  ,(err, result )=>{
+            await conn.query( sql  ,(err:any, result:any )=>{
                 if(err){
                     reject(err);
                 }else{

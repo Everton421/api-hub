@@ -29,7 +29,7 @@ export class UpdateOrcamento{
                 situacao            = '${orcamento.situacao}'
                 where codigo = ${codigo}
             `
-            conn.query(sql, (err, result) => {
+            conn.query(sql, (err:any, result:any) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -46,7 +46,7 @@ export class UpdateOrcamento{
             let sql2 = ` delete from ${empresa}.produtos_pedido
                                     where pedido = ${codigo}
                                 `
-            conn.query(sql2, (err, result) => {
+            conn.query(sql2, (err:any, result:any) => {
                 if (err) {
                     console.log(err);
                 } else {
@@ -65,7 +65,7 @@ export class UpdateOrcamento{
             let sql2 = ` delete from ${empresa}.servicos_pedido
                                     where pedido = ${codigo}
                                 `
-            conn.query(sql2, (err, result) => {
+            conn.query(sql2, (err:any, result:any) => {
                 if (err) {
                     console.log(err);
                 } else {
@@ -84,7 +84,7 @@ export class UpdateOrcamento{
             let sql2 = ` delete from ${empresa}.parcelas
                                     where pedido = ${codigo}
                                 `
-            conn.query(sql2, (err, result) => {
+            conn.query(sql2, (err:any, result:any) => {
                 if (err) {
                     console.log(err);
                 } else {
@@ -100,7 +100,7 @@ export class UpdateOrcamento{
     async   buscaProdutosDoOrcamento(empresa:any, codigo: number) {
         return new Promise((resolve, reject) => {
             const sql = ` select *  from ${empresa}.produtos_pedido where pedido = ? `
-            conn.query(sql, [codigo], async (err, result) => {
+            conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -113,7 +113,7 @@ export class UpdateOrcamento{
     async   buscaServicosDoOrcamento( empresa:any,codigo: number) {
         return new Promise((resolve, reject) => {
             const sql = ` select *  from ${empresa}.servicos_pedido where pedido = ? `
-            conn.query(sql, [codigo], async (err, result) => {
+            conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -126,7 +126,7 @@ export class UpdateOrcamento{
     async   buscaParcelasDoOrcamento(empresa:any,codigo: number) {
         return new Promise((resolve, reject) => {
             const sql = ` select *,  DATE_FORMAT(vencimento, '%Y-%m-%d') AS vencimento   from ${empresa}.parcelas where pedido = ? `
-            conn.query(sql, [codigo], async (err, result) => {
+            conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
                     console.log(err);
                     reject(err);

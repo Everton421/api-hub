@@ -19,96 +19,123 @@ class CreateEmpresa {
         let email_empresa = request.body.email_empresa;
         let nome_empresa = request.body.nome_empresa;
         let telefone_empresa = request.body.telefone_empresa;
-        let objUser = { usuario, email, cnpj, senha };
+        let responsavel = "S";
+        let objUser = { usuario, email, cnpj, senha, responsavel };
         if (!cnpj) {
-            return response.json({ msg: "nao informado o cnpj da empresa " });
+            return response.json({
+                erro: true,
+                msg: "nao informado o cnpj da empresa ",
+            });
+        }
+        // Regex para remover caracteres não numéricos
+        cnpj = cnpj.replace(/\D/g, ''); // Remove qualquer caractere que não seja número
+        if (cnpj.length < 11 || cnpj.length > 14) {
+            return response.json({ erro: true, msg: "CPF/CNPJ inválido." });
         }
         else {
-            dbName = `\`${cnpj}\``;
+            if (cnpj.length === 12 || cnpj.length === 13) {
+                return response.json({ erro: true, msg: "CPF/CNPJ inválido." });
+            }
         }
+        dbName = `\`${cnpj}\``; // Usando o CNPJ formatado como nome do banco
         if (!usuario)
             return response.json({ msg: "nao informado o usuario da empresa " });
         if (!senha)
-            return response.json({ msg: `nao foi informado a senha para o usuario ${usuario} da empresa ` });
+            return response.json({
+                msg: `nao foi informado a senha para o usuario ${usuario} da empresa `,
+            });
         let validUserApi = await objUsuariosApi.selectPorEmail(objUser.email);
         if (validUserApi.length > 0)
-            return response.status(400).json({ msg: ` Já existe usuario cadastro com este email ${objUser.email}` });
+            return response
+                .status(200)
+                .json({
+                msg: ` Já existe usuario cadastro com este email ${objUser.email}`,
+            });
         const sqlTables = [
             `CREATE TABLE IF NOT EXISTS ${dbName}.produtos (
-        codigo INTEGER PRIMARY KEY NOT NULL,
-        id int(10) unsigned NOT NULL DEFAULT 0,
-        estoque REAL DEFAULT 0,
-        preco REAL DEFAULT 0,
-        grupo INTEGER DEFAULT 0,
-        origem TEXT,   
-        descricao TEXT NOT NULL,
-        num_fabricante TEXT,
-        num_original TEXT,
-        sku TEXT,
-        marca INTEGER DEFAULT 0,
-        ativo TEXT DEFAULT 'S',
-        class_fiscal TEXT,
-        cst TEXT DEFAULT '00',
-        data_recadastro  datetime DEFAULT NULL,
-        data_cadastro date NOT NULL DEFAULT '0000-00-00',
-        observacoes1 BLOB,
-        observacoes2 BLOB,
-        observacoes3 BLOB,
-        tipo TEXT
+     codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
+   id  int(10) unsigned NOT NULL DEFAULT 0,
+   estoque  double DEFAULT 0,
+   preco  double DEFAULT 0,
+   grupo  int(11) DEFAULT 0,
+   origem  char(1) NOT NULL DEFAULT '0',
+   descricao  varchar(255) NOT NULL DEFAULT '',
+   num_fabricante  varchar(255) NOT NULL DEFAULT '',
+   num_original  varchar(255) DEFAULT NULL DEFAULT '',
+   sku  varchar(255) NOT NULL DEFAULT '',
+   marca  int(11) DEFAULT 0,
+   ativo  char(1) NOT NULL DEFAULT 'S',
+   class_fiscal  varchar(255) NOT NULL DEFAULT '',
+   cst  char(3) DEFAULT '00',
+   data_recadastro  datetime DEFAULT NULL,
+   data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+   observacoes1  blob DEFAULT NULL,
+   observacoes2  blob DEFAULT NULL,
+   observacoes3  blob DEFAULT NULL,
+   tipo  int(10) NOT NULL DEFAULT 0,
+  PRIMARY KEY ( codigo )
+ 
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.servicos (
-        codigo INTEGER PRIMARY KEY NOT NULL,
+           codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
         valor REAL DEFAULT 0,
         aplicacao TEXT NOT NULL,
-        tipo_serv INTEGER DEFAULT 0
+        tipo_serv INTEGER DEFAULT 0,
+        data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+        data_recadastro  datetime DEFAULT NULL,
+         PRIMARY KEY ( codigo)
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.clientes (
-        codigo INTEGER PRIMARY KEY NOT NULL,
-        id int(10) unsigned NOT NULL DEFAULT 0,
-        celular TEXT,
-        nome TEXT NOT NULL,
-        cep TEXT NOT NULL DEFAULT '00000-000',
-        endereco TEXT,
-        ie TEXT,
-        numero TEXT,
-        cnpj TEXT,
-        ativo varchar(10) DEFAULT 'S',
-        cidade TEXT,
-        data_cadastro date NOT NULL DEFAULT '0000-00-00', 
-        data_recadastro  datetime DEFAULT NULL,
-        vendedor INTEGER NOT NULL DEFAULT 0,
-        bairro varchar(255) ,
-        estado  char(2) 
+     codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
+    id  varchar(255) NOT NULL DEFAULT '0',
+    celular  varchar(255) DEFAULT NULL,
+    nome  varchar(255) NOT NULL DEFAULT '',
+    cep  varchar(255) NOT NULL DEFAULT '00000-000',
+    endereco  varchar(255) DEFAULT NULL,
+    ie  varchar(255) DEFAULT '',
+    numero  varchar(255) DEFAULT '',
+    cnpj  varchar(255) DEFAULT '',
+    ativo  char(1) NOT NULL DEFAULT 'S',
+    cidade  varchar(255) DEFAULT NULL,
+    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+    data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+    vendedor  int(11) NOT NULL DEFAULT 0,
+    bairro  varchar(255) DEFAULT NULL,
+    estado  char(2) DEFAULT NULL,
+    PRIMARY KEY ( codigo )
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.forma_pagamento (
-        codigo INTEGER PRIMARY KEY NOT NULL,
+        codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
         id int(10) unsigned NOT NULL DEFAULT 0,
         descricao TEXT NOT NULL, 
         desc_maximo INTEGER DEFAULT 0,  
         parcelas INTEGER DEFAULT 0,  
         intervalo INTEGER DEFAULT 0,  
-        recebimento INTEGER DEFAULT 0  
+        recebimento INTEGER DEFAULT 0,
+    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+         data_recadastro  datetime DEFAULT NULL,
+          PRIMARY KEY (codigo)
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.pedidos (
         codigo bigint(20)  unsigned NOT NULL DEFAULT 0,
-        id int(10) unsigned NOT NULL DEFAULT 0,
-        vendedor INTEGER NOT NULL DEFAULT 0,   
-        situacao TEXT NOT NULL DEFAULT 'EA',
-        contato TEXT,
-        descontos REAL DEFAULT 0.00,
-        forma_pagamento INTEGER DEFAULT 0,
-        observacoes BLOB,
-        quantidade_parcelas INTEGER DEFAULT 0,
-        total_geral REAL DEFAULT 0.00,
-        total_produtos REAL DEFAULT 0.00,
-        total_servicos REAL DEFAULT 0.00,
-        cliente INTEGER NOT NULL DEFAULT 0,
-        veiculo INTEGER NOT NULL DEFAULT 0,
-        data_cadastro date NOT NULL DEFAULT '0000-00-00',
-        data_recadastro  datetime DEFAULT NULL,
-        tipo_os INTEGER DEFAULT 0, 
-        enviado TEXT NOT NULL DEFAULT 'N',
-        tipo INTEGER NOT NULL DEFAULT 1,  
+         id  int(10) unsigned NOT NULL DEFAULT 0,
+         vendedor  int(11) NOT NULL DEFAULT 0,
+         situacao  char(2) NOT NULL DEFAULT 'EA',
+         contato  varchar(255) DEFAULT NULL,
+         descontos  double DEFAULT 0,
+         forma_pagamento  int(11) DEFAULT 0,
+         observacoes  blob DEFAULT NULL,
+         quantidade_parcelas  int(11) DEFAULT 0,
+         total_geral  double DEFAULT 0,
+         total_produtos  double DEFAULT 0,
+         total_servicos  double DEFAULT 0,
+         cliente  int(11) NOT NULL DEFAULT 0,
+         veiculo  int(11) NOT NULL DEFAULT 0,
+         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+         data_recadastro  datetime DEFAULT NULL,
+         tipo_os  int(11) DEFAULT 0,
+         enviado  enum('N','S') NOT NULL DEFAULT 'S',
+         tipo  int(11) NOT NULL DEFAULT 1, 
         PRIMARY KEY (codigo),
         KEY id (id) USING BTREE
     );`,
@@ -141,15 +168,18 @@ class CreateEmpresa {
         senha TEXT NOT NULL,
         email varchar(255),
         cnpj varchar(255),
-        responsavel varchar(255) DEFAULT 'S',
+        responsavel varchar(255) DEFAULT 'N',
         PRIMARY KEY (codigo) USING BTREE 
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.tipos_os (
-        codigo INTEGER PRIMARY KEY NOT NULL,
-        descricao TEXT NOT NULL 
+                codigo  int(11) NOT NULL,
+        descricao TEXT NOT NULL,
+    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+         data_recadastro  datetime DEFAULT NULL,
+          PRIMARY KEY ( codigo )
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.veiculos (
-        codigo INTEGER PRIMARY KEY NOT NULL,
+         codigo  int(11) NOT NULL,
         id int(10) unsigned NOT NULL DEFAULT 0,
         cliente INTEGER NOT NULL DEFAULT 0,
         placa TEXT NOT NULL,
@@ -157,7 +187,10 @@ class CreateEmpresa {
         modelo INTEGER NOT NULL DEFAULT 0,
         ano TEXT NOT NULL,
         cor INTEGER NOT NULL DEFAULT 0,
-        combustivel TEXT NOT NULL 
+        combustivel TEXT NOT NULL,
+    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+        data_recadastro  datetime DEFAULT NULL,
+          PRIMARY KEY ( codigo )
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.api_config (
         codigo INTEGER PRIMARY KEY NOT NULL,
@@ -165,15 +198,34 @@ class CreateEmpresa {
         porta INTEGER NOT NULL DEFAULT 3000,
         token TEXT NOT NULL 
     );`,
-            ` CREATE TABLE ${dbName}.fotos_produtos(
+            `CREATE TABLE IF NOT EXISTS ${dbName}.fotos_produtos(
       produto int(10) unsigned NOT NULL DEFAULT 0,
       sequencia  int(10) unsigned NOT NULL DEFAULT 0,
       descricao  varchar(50) DEFAULT NULL,
-      descricao  varchar(50) DEFAULT NULL,
        link  text NOT NULL,
       foto  longblob DEFAULT NULL,
+    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+       data_recadastro  datetime DEFAULT NULL,
          PRIMARY KEY ( produto , sequencia )
-      ); `
+      );`,
+            ` CREATE TABLE  ${dbName}.categorias  (
+         codigo  int(11) NOT NULL AUTO_INCREMENT,
+         id  int(10) unsigned NOT NULL DEFAULT 0,
+         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+         data_recadastro  datetime DEFAULT NULL,
+         descricao  varchar(255) NOT NULL DEFAULT '',
+        PRIMARY KEY ( codigo )
+      ) ;
+      `,
+            ` CREATE TABLE  ${dbName}.marcas  (
+        codigo  int(11) NOT NULL AUTO_INCREMENT,
+        id  int(10) unsigned NOT NULL DEFAULT 0,
+        data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+        data_recadastro  datetime DEFAULT NULL,
+        descricao  varchar(255) NOT NULL DEFAULT '',
+       PRIMARY KEY ( codigo )
+     ) ;
+     `
         ];
         let sql = ` create database if not exists  ${dbName}  ;  `;
         let valid = await obj.consulta_empresas(cnpj);
@@ -187,7 +239,10 @@ class CreateEmpresa {
                     // else console.log(`tabela registrada com sucesso!`)
                 });
             });
-            return response.status(400).json({ erro: ` a empresa com o cnpj ${cnpj} ja foi cadastrada!` });
+            return response.status(200).json({
+                erro: true,
+                msg: ` a empresa com o cnpj ${cnpj} ja foi cadastrada!`,
+            });
         }
         else {
             await databaseConfig_1.conn.query(sql, async (err, result) => {
@@ -207,11 +262,11 @@ class CreateEmpresa {
                     let codigoEmpresa;
                     if (userRegister.insertId > 0) {
                         let objEmpresa = {
-                            "responsavel": userRegister.insertId,
-                            "cnpj": cnpj,
-                            "nome_empresa": nome_empresa,
-                            "email_empresa": email_empresa,
-                            "telefone_empresa": telefone_empresa
+                            responsavel: userRegister.insertId,
+                            cnpj: cnpj,
+                            nome_empresa: nome_empresa,
+                            email_empresa: email_empresa,
+                            telefone_empresa: telefone_empresa,
                         };
                         codigoEmpresa = await insert_empresa.registrar_empresa(objEmpresa);
                     }
@@ -219,19 +274,27 @@ class CreateEmpresa {
                         codigoUsuario = await objInertUserEmpresa.insert_usuario(dbName, objUser);
                         //return  response.status(200).json({  empresa:`Empresa ${cnpj } registrada com sucesso ! `, usuario:` Usuario ${objUser.usuario} registrado com sucesso!`});
                         return response.status(200).json({
-                            "codigo_usuario": codigoUsuario.insertId,
-                            "usuario": usuario,
-                            "senha": senha,
-                            "cnpj": cnpj,
-                            "nome_empresa": nome_empresa, "email_empresa": email_empresa,
-                            "email_usuario": email,
-                            "codigo_empresa": codigoEmpresa.insertId
+                            ok: true,
+                            msg: "Empresa registrada com sucesso!",
+                            codigo_usuario: codigoUsuario.insertId,
+                            usuario: usuario,
+                            senha: senha,
+                            cnpj: cnpj,
+                            nome_empresa: nome_empresa,
+                            email_empresa: email_empresa,
+                            email_usuario: email,
+                            codigo_empresa: codigoEmpresa.insertId,
                         });
                     }
                     else {
                         let resultDeleteEmpresa = await obj.delete_empresa(dbName);
                         if (resultDeleteEmpresa.affectedRows > 0) {
-                            return response.status(400).json({ msg: ` ocorreu um erro ao registrar a empresa ${cnpj}` });
+                            return response
+                                .status(200)
+                                .json({
+                                erro: true,
+                                msg: ` ocorreu um erro ao registrar a empresa ${cnpj}`,
+                            });
                         }
                     }
                 }
@@ -242,8 +305,9 @@ class CreateEmpresa {
         let obj = new CreateEmpresa();
         let cnpj = request.body.cnpj;
         let valid = await obj.consulta_empresas(cnpj);
+        let formatCnpj = `'${cnpj}'`;
         if (valid === true) {
-            let dados = await obj.consulta_dados_empresa(cnpj);
+            let dados = await obj.consulta_dados_empresa(formatCnpj);
             let nome_empresa;
             let telefone_empresa;
             let email_empresa;
@@ -259,17 +323,26 @@ class CreateEmpresa {
                 responsavel = dados[0].responsavel;
             }
             console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
-            return response.status(200).json({ "cadastrada": true, "msg": `Já existe uma empresa cadastrada com este cnpj !`,
-                "cnpj": cnpj_empresa,
-                "email_empresa": email_empresa,
-                "telefone_empresa": telefone_empresa,
-                "nome": nome_empresa,
-                "codigo": codigo,
-                "responsavel": responsavel
+            return response
+                .status(200)
+                .json({
+                cadastrada: true,
+                msg: `Já existe uma empresa cadastrada com este cnpj !`,
+                cnpj: cnpj_empresa,
+                email_empresa: email_empresa,
+                telefone_empresa: telefone_empresa,
+                nome: nome_empresa,
+                codigo: codigo,
+                responsavel: responsavel,
             });
         }
         else {
-            return response.status(200).json({ "cadastrada": false, "msg": `Não encontramos empresa cadastrada com este cnpj!` });
+            return response
+                .status(200)
+                .json({
+                cadastrada: false,
+                msg: `Não encontramos empresa cadastrada com este cnpj!`,
+            });
         }
     }
     async consulta_empresas(empresa) {
@@ -285,6 +358,7 @@ class CreateEmpresa {
         });
     }
     async consulta_dados_empresa(empresa) {
+        console.log(`select * from ${databaseConfig_1.db_api}.empresas where cnpj = ${empresa}`);
         return new Promise(async (resolve, reject) => {
             await databaseConfig_1.conn.query(`select * from ${databaseConfig_1.db_api}.empresas where cnpj = ${empresa}`, (err, result) => {
                 if (err)

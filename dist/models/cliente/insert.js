@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Insert_clientes = void 0;
 const databaseConfig_1 = require("../../database/databaseConfig");
 class Insert_clientes {
-    async buscaGeral(empresa, cliente) {
+    async cadastrar(empresa, cliente) {
         return new Promise(async (resolve, reject) => {
             let sql = `  
          INSERT INTO 
          ${empresa}.clientes
-              ( codigo , 
+              (   
                 celular, 
                 nome ,
                 cep ,
@@ -21,12 +21,12 @@ class Insert_clientes {
                 data_recadastro ,
                 vendedor,
                 bairro,
-                estado,
+                estado 
                ) values
                 (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
+                  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
             `;
-            const dados = [cliente.codigo, cliente.celular, cliente.nome, cliente.cep, cliente.endereco, cliente.ie, cliente.numero,
+            const dados = [cliente.celular, cliente.nome, cliente.cep, cliente.endereco, cliente.ie, cliente.numero,
                 cliente.cnpj, cliente.cidade, cliente.data_cadastro, cliente.data_recadastro, cliente.vendedor, cliente.bairro, cliente.estado];
             await databaseConfig_1.conn.query(sql, dados, (err, result) => {
                 if (err)

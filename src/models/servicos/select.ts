@@ -10,7 +10,7 @@ export class Select_servicos{
           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
         from ${empresa}.servicos where codigo = ? `
-            await conn.query(sql, [ codigo], (err, result  )=>{
+            await conn.query(sql, [ codigo], (err:any, result:any  )=>{
                 if (err)  reject(err); 
                   resolve(result)
             })
@@ -29,7 +29,7 @@ async buscaPorCodigoDescricao(empresa:any, codigo:number, descricao:string){
     FROM ${empresa}.servicos
     WHERE  codigo like ? OR aplicacao = ?    `;
     return new Promise ( async (resolve,reject)=>{
-        await conn.query( sql,[ codigo, descricao ], (err, result)=>{
+        await conn.query( sql,[ codigo, descricao ], (err:any, result:any)=>{
             if(err){ 
                   reject(err)
             }else{
@@ -46,7 +46,7 @@ async   buscaGeral(empresa:any )   {
       DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
     from ${empresa}.servicos  `
-        await conn.query(sql,  (err, result  )=>{
+        await conn.query(sql,  (err:any, result:any )=>{
             if (err)  reject(err); 
               resolve(result)
         })

@@ -64,7 +64,7 @@ export class InsertProdutos{
                             `;
 
                 let dados = [   estoque , preco ,  grupo , origem ,  descricao ,  num_fabricante ,   num_original , sku ,  marca ,  class_fiscal , data_cadastro , data_recadastro ,  tipo, observacoes1, observacoes2, observacoes3 ]
-                            await conn.query(sql,   (err, result )=>{
+                            await conn.query(sql,   (err:any, result:any )=>{
                                 if(err){
                                      console.log(err)
                                      reject(err);

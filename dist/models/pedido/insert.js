@@ -32,6 +32,8 @@ class CreateOrcamento {
                 vendedor = 1;
             if (!tipo_os)
                 tipo_os = 0;
+            if (!tipo)
+                tipo = 1;
             if (!veiculo)
                 veiculo = 0;
             if (!data_cadastro)
@@ -60,10 +62,10 @@ class CreateOrcamento {
                 quantidade_parcelas = 0;
             let sql = `INSERT INTO 
       ${empresa}.pedidos 
-      ( codigo ,  id ,  vendedor , situacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado )
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  
+      ( codigo ,  id ,  vendedor , situacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )  
         `;
-            databaseConfig_1.conn.query(sql, [codigo, id, vendedor, contato, situacao, descontos, forma_pagamento, quantidade_parcelas, total_geral, total_produtos, total_servicos, cliente.codigo, veiculo, data_cadastro, data_recadastro, tipo_os, enviado], async (err, result) => {
+            databaseConfig_1.conn.query(sql, [codigo, id, vendedor, situacao, contato, descontos, forma_pagamento, quantidade_parcelas, total_geral, total_produtos, total_servicos, cliente.codigo, veiculo, data_cadastro, data_recadastro, tipo_os, enviado, tipo, observacoes], async (err, result) => {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -79,7 +81,7 @@ class CreateOrcamento {
                             console.log(e);
                         }
                     }
-                    if (parcelas.length > 0 && status == true) {
+                    if (parcelas.length > 0) {
                         try {
                             await this.cadastraParcelasDoPeidido(parcelas, empresa, codigo);
                             status == true;
@@ -88,7 +90,7 @@ class CreateOrcamento {
                             console.log(e);
                         }
                     }
-                    if (servicos.length > 0 && status == true) {
+                    if (servicos.length > 0) {
                         try {
                             await this.cadastraServicosDoPedido(servicos, codigo, empresa);
                             status == true;
@@ -134,11 +136,11 @@ class CreateOrcamento {
         });
     }
     async cadastraParcelasDoPeidido(parcelas, empresa, codigoPedido) {
+        let obj = new CreateOrcamento();
         parcelas.forEach(async (p) => {
-            let { pedido, parcela, valor } = p;
-            let vencimento = this.converterData(p.vencimento);
-            let sql = `  INSERT INTO ${empresa}.parcelas ( pedido ,  parcela ,  valor ) VALUES ( ?  , ?,  ? )`;
-            let dados = [codigoPedido, parcela, valor];
+            let { pedido, parcela, valor, vencimento } = p;
+            let sql = `  INSERT INTO ${empresa}.parcelas ( pedido ,  parcela ,  valor, vencimento ) VALUES ( ?  , ?,  ?, ?  )`;
+            let dados = [codigoPedido, parcela, valor, vencimento];
             await databaseConfig_1.conn.query(sql, dados, (err, resultParcelas) => {
                 if (err) {
                     console.log("erro ao inserir parcelas !" + err);

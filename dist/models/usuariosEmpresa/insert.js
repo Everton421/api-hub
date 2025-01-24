@@ -9,12 +9,13 @@ class Insert_UsuarioEmpresa {
             nome,
             email,
             cnpj,
-            senha 
+            senha,
+            responsavel
         )VALUES
-         ( ?, ?, ?, ? )
+         ( ?, ?, ?, ?, ? )
         `;
         return new Promise(async (resolve, reject) => {
-            await databaseConfig_1.conn.query(sql, [usuario.usuario, usuario.email, usuario.cnpj, usuario.senha], (err, result) => {
+            await databaseConfig_1.conn.query(sql, [usuario.usuario, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel], (err, result) => {
                 if (err) {
                     reject(err);
                 }

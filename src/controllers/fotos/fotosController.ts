@@ -28,7 +28,7 @@ export class fotosController{
              }
     }
 
-
+/*
     async cadastrar_deletarFotos(req:Request ,res: Response){
         let empresa:any   = req.headers.cnpj 
 
@@ -47,7 +47,7 @@ export class fotosController{
                let dados  = req.body.fotos 
                let codigo_produto = req.body.codigo
                  try{
-                      let validItems = await select.buscaPorProduto(codigo_produto)
+                      let validItems:any = await select.buscaPorProduto(codigo_produto)
                       if(validItems.length > 0 ){
                       
                         await deletar.delete(codigo_produto);
@@ -59,6 +59,6 @@ export class fotosController{
                  }catch(e){ }
                
             }
-
+*/
 
 }

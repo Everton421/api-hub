@@ -10,7 +10,7 @@ export class Select_veiculos{
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
             from ${dbName}.veiculos;
                 `
-                await conn.query(sql, ( err, result )=>{
+                await conn.query(sql, ( err:any, result:any )=>{
                     if(err){
                         reject(err);
                     }else{

@@ -14,7 +14,7 @@ export class Select_Marcas{
              FROM ${empresa}.marcas 
                WHERE descricao = '${descricao}' `
  
-            await conn.query( sql  ,(err, result )=>{
+            await conn.query( sql  ,(err:any, result :any)=>{
                 if(err){
                     reject(err);
                 }else{
@@ -34,7 +34,7 @@ export class Select_Marcas{
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
              FROM ${empresa}.marcas   `
  
-            await conn.query( sql  ,(err, result )=>{
+            await conn.query( sql  ,(err:any, result:any )=>{
                 if(err){
                     reject(err);
                 }else{

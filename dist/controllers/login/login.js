@@ -16,9 +16,21 @@ class Login {
         }
         ;
         let { email, senha } = req.body;
+        let validUserEmail = await selectUserApi.selectPorEmail(email);
+        if (validUserEmail.length > 0) {
+            let validPassword = validUserEmail[0].senha;
+            if (validPassword !== senha) {
+                return res.status(200).json({ msg: ` senha incorreta!` });
+            }
+        }
+        else {
+            return res.status(200).json({ msg: `usuario nao encontrado!` });
+        }
         let validUserApi = await selectUserApi.selectPorEmailSenha(email, senha);
         if (validUserApi.length > 0) {
-            let empresa = `\`${validUserApi[0].cnpj}\``;
+            //     let empresa = `\`${validUserApi[0].cnpj }\``;
+            let empresa = validUserApi[0].cnpj.replace(/\D/g, '');
+            empresa = `\`${empresa}\``;
             let arrUser = await selectUserEmpresa.buscaPorEmailSenha(empresa, email, senha);
             if (arrUser.length > 0) {
                 let useLogin = arrUser[0];
@@ -31,9 +43,6 @@ class Login {
                     nome: useLogin.nome
                 });
             }
-        }
-        else {
-            return res.status(200).json({ msg: `usuario nao encontrado!` });
         }
         return res.status(200).json(req.body);
     }

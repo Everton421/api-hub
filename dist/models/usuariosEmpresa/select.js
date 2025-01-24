@@ -5,7 +5,7 @@ const databaseConfig_1 = require("../../database/databaseConfig");
 class Select_UsuarioEmpresa {
     async buscaGeral(empresa) {
         return new Promise(async (resolve, reject) => {
-            let sql = ` select * form ${empresa}.usuarios;`;
+            let sql = ` select * from ${empresa}.usuarios;`;
             await databaseConfig_1.conn.query(sql, (err, result) => {
                 if (err) {
                     reject(err);
@@ -18,7 +18,7 @@ class Select_UsuarioEmpresa {
     }
     async buscaPorEmail(empresa, email) {
         return new Promise(async (resolve, reject) => {
-            let sql = ` select * form ${empresa}.usuarios where email = ? ;`;
+            let sql = ` select * from ${empresa}.usuarios where email = ? ;`;
             await databaseConfig_1.conn.query(sql, [email], (err, result) => {
                 if (err) {
                     reject(err);
@@ -31,7 +31,7 @@ class Select_UsuarioEmpresa {
     }
     async buscaPorCodigo(empresa, codigo) {
         return new Promise(async (resolve, reject) => {
-            let sql = ` select * form ${empresa}.usuarios where codigo = ? ;`;
+            let sql = ` select * from ${empresa}.usuarios where codigo = ? ;`;
             await databaseConfig_1.conn.query(sql, [codigo], (err, result) => {
                 if (err) {
                     reject(err);
