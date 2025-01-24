@@ -21,9 +21,12 @@ export class Select_fotos{
        })
     }
 
-    async buscaPorProduto(codigoProduto:number){
+    async buscaPorProduto(empresa:string,codigoProduto:number){
         return new Promise( async (resolve, reject) =>{
-            let sql = ` select * from fotos_produtos where produto = ${codigoProduto}`;
+            let sql = ` select *,
+                           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+               DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+            from ${empresa}.fotos_produtos where produto = ${codigoProduto}`;
             await conn.query( sql  ,(err:any, result:any )=>{
                 if(err){
                     reject(err);

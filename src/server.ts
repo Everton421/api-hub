@@ -45,11 +45,13 @@ import { conn } from './database/databaseConfig';
                 })
 
                 const PORT_API = process.env.PORT_API;
+                app.listen(3000,()=> console.log('app rodando porta https 3000'))
 
-           https.createServer({
-         cert: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.crt'),
-         key: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.key'),
-         ca: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.crt') // Certificado da autoridade certificadora, se necessário
 
-     }, app).listen(3000,()=> console.log('app rodando porta https 3000'))
+//           https.createServer({
+//         cert: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.crt'),
+//         key: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.key'),
+//         ca: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.crt') // Certificado da autoridade certificadora, se necessário
+//
+//     }, app).listen(3000,()=> console.log('app rodando porta https 3000'))
 

@@ -42,7 +42,11 @@ import { fotosController } from "./controllers/fotos/fotosController";
  
  router.get(`${versao}/offline/produtos`,   checkToken,  new ProdutoController().buscaGeral )
  router.post(`${versao}/produtos`,          checkToken, new ProdutoController().cadastrar)
+
+
  router.get(`${versao}/offline/fotos`,   checkToken,  new fotosController().buscaGeral )
+ router.post(`${versao}/offline/fotos`,   checkToken,  new fotosController().cadastrar_deletarFotos )
+
 
  router.get(`${versao}/offline/clientes`,   checkToken,  new ClienteController().buscaGeral )
  router.post(`${versao}/clientes`,          checkToken, new ClienteController().cadastrar)

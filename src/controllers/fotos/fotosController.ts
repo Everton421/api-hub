@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Select_fotos } from "../../models/fotos/select";
 import { Delete_fotos } from "../../models/fotos/delete";
+import { Insert_fotos } from "../../models/fotos/insert";
 
 export class fotosController{
 
@@ -28,12 +29,13 @@ export class fotosController{
              }
     }
 
-/*
+ 
     async cadastrar_deletarFotos(req:Request ,res: Response){
         let empresa:any   = req.headers.cnpj 
 
         const select = new Select_fotos();
         const deletar  = new Delete_fotos();
+        const insert = new Insert_fotos();
 
             if(!req.headers.cnpj ){
                   return res.status(200).json({erro:"É necessario informar a empresa "});   
@@ -41,24 +43,28 @@ export class fotosController{
                let headerCnpj:any  = empresa.replace(/\D/g, '');
                let  dbName = `\`${headerCnpj}\``;
 
+
                if(!req.body.fotos) return res.status(200).json({erro: "é necessario informar as fotos do produto"});
                if(!req.body.codigo) return res.status(200).json({erro: "é necessario informar o codigo do produto"});
 
                let dados  = req.body.fotos 
                let codigo_produto = req.body.codigo
+
                  try{
-                      let validItems:any = await select.buscaPorProduto(codigo_produto)
-                      if(validItems.length > 0 ){
-                      
-                        await deletar.delete(codigo_produto);
-                        
-                        await 
+                    let validItems:any = await select.buscaPorProduto(dbName,codigo_produto)
+                    if(validItems.length > 0 ){
+                        await deletar.delete(dbName,codigo_produto);
+                    
+                        for(let i of dados ){
+                            await insert.cadastrar(dbName,i )
                         }
-
-
-                 }catch(e){ }
+                      }
+                      res.status(200).json({ erro:false, msg: 'fotos alteradas com sucesso'})
+                 }catch(e){ 
+                    res.status(200).json({ erro:true, msg: 'erro ao registrar as fotos do produto', codigo_produto})
+                 }
                
             }
-*/
+ 
 
 }
