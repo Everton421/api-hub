@@ -21,7 +21,9 @@ export class CreateOrcamento {
 
       const dataAtual = this.obterDataAtual();
 
-      let codigo_pedido;
+    let obj = new CreateOrcamento();
+      
+    let codigo_pedido;
       let {
           codigo,
           forma_pagamento,
@@ -92,10 +94,16 @@ export class CreateOrcamento {
 
                  
                   let status = null;
-
+                  if(servicos.length > 0 ){
+                    try{
+                        await obj.cadastraServicosDoPedido(servicos, codigo, empresa);
+                        status == true   
+                    
+                      }catch(e){console.log(e)}
+                       }
                      if (produtos.length > 0) {
                      try{
-                         await this.cadastraProdutosDoPedido(produtos,empresa, codigo, );
+                         await obj.cadastraProdutosDoPedido(produtos,empresa, codigo, );
                          status = true
                       }catch(e){ console.log(e)} 
                      }
@@ -103,21 +111,13 @@ export class CreateOrcamento {
             
                      if(parcelas.length > 0  ){
                           try{
-                           await this.cadastraParcelasDoPeidido( parcelas, empresa, codigo );
+                           await obj.cadastraParcelasDoPeidido( parcelas, empresa, codigo );
                            status == true   
                         }catch(e) {
                               console.log(e)
                           }    
                      }
-                     if(servicos.length > 0 ){
-                          try{
-                              await this.cadastraServicosDoPedido(servicos, codigo, empresa);
-                              status == true   
-                          
-                            }catch(e){console.log(e)}
-                     }
-                     
-                      
+                    
 
                       resolve({ codigo:codigo, status:status} ) ;
                   }
@@ -172,6 +172,7 @@ export class CreateOrcamento {
 
   async cadastraParcelasDoPeidido(parcelas:any,empresa:any, codigoPedido:any){
     let obj  = new CreateOrcamento();
+    return new Promise( async (resolve, reject )=>{
     parcelas.forEach( async (p: any) => {
         
     let {
@@ -192,6 +193,7 @@ export class CreateOrcamento {
               }
           )
       })
+    })
 
   }
  
@@ -223,6 +225,7 @@ export class CreateOrcamento {
                 let dados = [ codigoPedido ,  codigo ,  desconto ,  quantidade ,  valor ,  total  ]
               await conn.query( sql,dados ,(error:any, resultado:any)=>{
                    if(error){
+                    console.log(" erro ao inserir servico do orcamento "+ error)
                            reject(" erro ao inserir servico do orcamento "+ error);
                    }else{
                     resolve(resultado)

@@ -193,7 +193,23 @@ export class UpdateOrcamento{
             } catch (err) {
                 console.log(err);
             }
+            const validaServicos:any = await objUpdate.buscaServicosDoOrcamento( empresa,codigoOrcamento )
+              
+            if( validaServicos.length > 0 ){
+             
+              try {
+                  await  objUpdate.deleteServicosPedido( empresa,codigoOrcamento )
+              } catch (e) {
+                  console.log(e);
+              }
 
+              if (servicos.length > 0) {
+
+                  try {
+                      await objInsert.cadastraServicosDoPedido(   servicos,codigoOrcamento, empresa )
+                  } catch (e) { console.log(` erro ao inserir os servicos`, e) }
+
+              }
             if (statusAtualizacao) {
                 const validaProdutos:any = await objUpdate.buscaProdutosDoOrcamento( empresa,codigoOrcamento )
                 if( validaProdutos.length > 0 ){
@@ -215,23 +231,7 @@ export class UpdateOrcamento{
                 }
 
 
-              const validaServicos:any = await objUpdate.buscaServicosDoOrcamento( empresa,codigoOrcamento )
-              
-              if( validaServicos.length > 0 ){
-               
-                try {
-                    await  objUpdate.deleteServicosPedido( empresa,codigoOrcamento )
-                } catch (e) {
-                    console.log(e);
-                }
-
-                if (servicos.length > 0) {
-
-                    try {
-                        await objInsert.cadastraServicosDoPedido(   servicos,codigoOrcamento, empresa )
-                    } catch (e) { console.log(` erro ao inserir os servicos`, e) }
-
-                }
+           
             }
 
               const validaParcelas:any = await objUpdate.buscaParcelasDoOrcamento(empresa, codigoOrcamento )
