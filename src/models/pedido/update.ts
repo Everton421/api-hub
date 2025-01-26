@@ -33,7 +33,6 @@ export class UpdateOrcamento{
                 if (err) {
                     reject(err);
                 } else {
-                    // console.log(result);
                     resolve(result.affectedRows);
                 }
             })
@@ -48,11 +47,9 @@ export class UpdateOrcamento{
                                 `
             conn.query(sql2, (err:any, result:any) => {
                 if (err) {
-                    console.log(err);
+                    reject(err);
                 } else {
-                    console.log(result);
                     resolve(result);
-                    // statusAtualizacao = result.serverStatus ;
                 }
             })
         })
@@ -67,11 +64,9 @@ export class UpdateOrcamento{
                                 `
             conn.query(sql2, (err:any, result:any) => {
                 if (err) {
-                    console.log(err);
+                    reject(err);
                 } else {
-                    console.log( " servico deletado com sucesso ",result);
                     resolve(result);
-                    // statusAtualizacao = result.serverStatus ;
                 }
             })
         })
@@ -86,11 +81,9 @@ export class UpdateOrcamento{
                                 `
             conn.query(sql2, (err:any, result:any) => {
                 if (err) {
-                    console.log(err);
+                   reject(err);
                 } else {
-                    console.log( " parcela deletada com sucesso ",result);
                     resolve(result);
-                    // statusAtualizacao = result.serverStatus ;
                 }
             })
         })
@@ -102,7 +95,6 @@ export class UpdateOrcamento{
             const sql = ` select *  from ${empresa}.produtos_pedido where pedido = ? `
             conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
-                    console.log(err);
                     reject(err);
                 } else {
                     resolve(result);
@@ -115,7 +107,6 @@ export class UpdateOrcamento{
             const sql = ` select *  from ${empresa}.servicos_pedido where pedido = ? `
             conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
-                    console.log(err);
                     reject(err);
                 } else {
                     resolve(result);
@@ -128,7 +119,6 @@ export class UpdateOrcamento{
             const sql = ` select *,  DATE_FORMAT(vencimento, '%Y-%m-%d') AS vencimento   from ${empresa}.parcelas where pedido = ? `
             conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
-                    console.log(err);
                     reject(err);
                 } else {
                     resolve(result);
@@ -139,7 +129,8 @@ export class UpdateOrcamento{
 
    
     async update(empresa:any,orcamento:any, codigoOrcamento:number ) {
-      
+      return new Promise ( async (resolve, reject )=>{
+ 
       
         let objUpdate = new UpdateOrcamento();
         let objInsert = new CreateOrcamento();
@@ -183,7 +174,6 @@ export class UpdateOrcamento{
         const parcelas = orcamento.parcelas;
         const produtos = orcamento.produtos;
 
-        let aux: any;
         let statusAtualizacao: any;
         let statusDeletePro_orca: any;
         let statusDeletePar_orca: any;
@@ -191,7 +181,8 @@ export class UpdateOrcamento{
             try {
                 statusAtualizacao = await objUpdate.updateTabelaPedido(empresa,orcamento,codigoOrcamento );
             } catch (err) {
-                console.log(err);
+                reject(err)
+                return;
             }
             const validaServicos:any = await objUpdate.buscaServicosDoOrcamento( empresa,codigoOrcamento )
               
@@ -200,14 +191,18 @@ export class UpdateOrcamento{
               try {
                   await  objUpdate.deleteServicosPedido( empresa,codigoOrcamento )
               } catch (e) {
-                  console.log(e);
+                 reject(e);
+                  return;
               }
 
               if (servicos.length > 0) {
 
                   try {
                       await objInsert.cadastraServicosDoPedido(   servicos,codigoOrcamento, empresa )
-                  } catch (e) { console.log(` erro ao inserir os servicos`, e) }
+                  } catch (e) { 
+                      reject(e);
+                       return;
+                  }
 
               }
             if (statusAtualizacao) {
@@ -216,7 +211,8 @@ export class UpdateOrcamento{
                     try {
                         statusDeletePro_orca = await objUpdate.deleteProdutosPedido(empresa,codigoOrcamento);
                     } catch (err) {
-                        console.log(err);
+                        reject(err)
+                         return;
                     }
                     
                     if (produtos.length > 0) {
@@ -224,43 +220,42 @@ export class UpdateOrcamento{
                             try {
                                 await objInsert.cadastraProdutosDoPedido(produtos,empresa,codigoOrcamento);
                             } catch (err) {
-                                console.log(err)
+                                 reject(err)
+                                  return;
                             }
                         }
                     }
                 }
-
-
            
             }
 
               const validaParcelas:any = await objUpdate.buscaParcelasDoOrcamento(empresa, codigoOrcamento )
 
                 if( validaParcelas.length > 0 ){
-                        if(statusAtualizacao ){
+                      //  if(statusAtualizacao ){
                             try{
                                 statusDeletePar_orca = await objUpdate.deleteParcelasPedido(empresa,codigoOrcamento);
                                 }catch(err){
-                                    console.log(err);
-                                    return response.status(500).json({"msg":err});
+                                    reject(err)
+                                    return;
                                 }   
-                            } 
+                       //     } 
 
-                        if(statusDeletePar_orca){
+                        //if(statusDeletePar_orca){
                         try{
-                            await objInsert.cadastraParcelasDoPeidido (parcelas,empresa, codigoOrcamento );
+                            await objInsert.cadastraParcelasDoPedido (parcelas,empresa, codigoOrcamento );
                         }catch(err){
-                            console.log(err)
-                            return response.status(500).json({"msg":err});
+                             reject(err)
+                              return;
                         }
+                  //  } 
                     } 
-                    } 
-                        return codigoOrcamento;
-
-        } else {
-            console.log('nao foi encontrado orcamento com este codigo')
+                    resolve(codigoOrcamento)
+        }else {
+            
+            resolve(codigoOrcamento)
         }
-
+    })
 
     }
 

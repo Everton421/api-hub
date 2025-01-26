@@ -9,7 +9,10 @@ export  function checkToken(req:Request, res:Response, next:NextFunction){
     }
   
     const secret = process.env.SECRET;
-  
+ 
+
+
+
     if(token === secret){
       next();
     }else{

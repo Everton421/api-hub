@@ -17,7 +17,7 @@ export class CreateOrcamento {
 
 
   async create ( empresa:any, orcamento:any) {
-      return new Promise((resolve, reject)=>{
+      return new Promise( async(resolve, reject)=>{
 
       const dataAtual = this.obterDataAtual();
 
@@ -83,7 +83,7 @@ export class CreateOrcamento {
       ( codigo ,  id ,  vendedor , situacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )  
         `
-        conn.query(
+        await conn.query(
           sql,
           [codigo ,  id ,  vendedor ,  situacao, contato,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente.codigo,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes ],
           async    (err: any, result: any) => {
@@ -111,7 +111,7 @@ export class CreateOrcamento {
             
                      if(parcelas.length > 0  ){
                           try{
-                           await obj.cadastraParcelasDoPeidido( parcelas, empresa, codigo );
+                           await obj.cadastraParcelasDoPedido( parcelas, empresa, codigo );
                            status == true   
                         }catch(e) {
                               console.log(e)
@@ -170,7 +170,7 @@ export class CreateOrcamento {
   }
  
 
-  async cadastraParcelasDoPeidido(parcelas:any,empresa:any, codigoPedido:any){
+  async cadastraParcelasDoPedido(parcelas:any,empresa:any, codigoPedido:any){
     let obj  = new CreateOrcamento();
     return new Promise( async (resolve, reject )=>{
     parcelas.forEach( async (p: any) => {
@@ -186,9 +186,10 @@ export class CreateOrcamento {
           await   conn.query( sql,  dados , (err: any, resultParcelas:any) => {
                   if (err) {
                       console.log("erro ao inserir parcelas !" + err)
-                      //  return response.status(500).json({ err: "erro ao as parcelas" });
+                      
                   } else {
                       console.log('  Parcela inserida com sucesso '    )
+                      resolve(codigoPedido)
                   }
               }
           )
