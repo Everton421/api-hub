@@ -187,17 +187,16 @@ export class CreateEmpresa {
         PRIMARY KEY (codigo) USING BTREE 
     );`,
       `CREATE TABLE IF NOT EXISTS ${dbName}.tipos_os (
-                codigo  int(11) NOT NULL,
-   id  int(10) unsigned NOT NULL DEFAULT 0,
-
-        descricao TEXT NOT NULL,
-    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+          codigo  int(11) NOT NULL AUTO_INCREMENT,
+          id  int(10) unsigned NOT NULL DEFAULT 0,
+          descricao TEXT NOT NULL,
+         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
          data_recadastro  datetime DEFAULT NULL,
-          PRIMARY KEY ( codigo )
+         PRIMARY KEY ( codigo )
     );`,
 
       `CREATE TABLE IF NOT EXISTS ${dbName}.veiculos (
-         codigo  int(11) NOT NULL,
+         codigo  int(11) NOT NULL AUTO_INCREMENT,
         id int(10) unsigned NOT NULL DEFAULT 0,
         cliente INTEGER NOT NULL DEFAULT 0,
         placa TEXT NOT NULL,
