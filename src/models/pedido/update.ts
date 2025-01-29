@@ -40,12 +40,12 @@ export class UpdateOrcamento{
     }
 
     async   deleteProdutosPedido( empresa:any, codigo: number) {
-        return new Promise((resolve, reject) => {
+        return new Promise( async(resolve, reject) => {
 
             let sql2 = ` delete from ${empresa}.produtos_pedido
                                     where pedido = ${codigo}
                                 `
-            conn.query(sql2, (err:any, result:any) => {
+           await conn.query(sql2, (err:any, result:any) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -57,12 +57,12 @@ export class UpdateOrcamento{
     }
 
     async   deleteServicosPedido(empresa:any ,codigo: number) {
-        return new Promise((resolve, reject) => {
+        return new Promise( async(resolve, reject) => {
 
             let sql2 = ` delete from ${empresa}.servicos_pedido
                                     where pedido = ${codigo}
                                 `
-            conn.query(sql2, (err:any, result:any) => {
+        await    conn.query(sql2, (err:any, result:any) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -74,12 +74,12 @@ export class UpdateOrcamento{
     }
 
     async   deleteParcelasPedido(empresa:any,codigo: number) {
-        return new Promise((resolve, reject) => {
+        return new Promise( async(resolve, reject) => {
 
             let sql2 = ` delete from ${empresa}.parcelas
                                     where pedido = ${codigo}
                                 `
-            conn.query(sql2, (err:any, result:any) => {
+          await  conn.query(sql2, (err:any, result:any) => {
                 if (err) {
                    reject(err);
                 } else {
@@ -103,9 +103,9 @@ export class UpdateOrcamento{
         })
     }
     async   buscaServicosDoOrcamento( empresa:any,codigo: number) {
-        return new Promise((resolve, reject) => {
+        return new Promise( async (resolve, reject) => {
             const sql = ` select *  from ${empresa}.servicos_pedido where pedido = ? `
-            conn.query(sql, [codigo], async (err:any, result:any) => {
+         await   conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -115,9 +115,9 @@ export class UpdateOrcamento{
         })
     }
     async   buscaParcelasDoOrcamento(empresa:any,codigo: number) {
-        return new Promise((resolve, reject) => {
+        return new Promise( async (resolve, reject) => {
             const sql = ` select *,  DATE_FORMAT(vencimento, '%Y-%m-%d') AS vencimento   from ${empresa}.parcelas where pedido = ? `
-            conn.query(sql, [codigo], async (err:any, result:any) => {
+         await   conn.query(sql, [codigo], async (err:any, result:any) => {
                 if (err) {
                     reject(err);
                 } else {

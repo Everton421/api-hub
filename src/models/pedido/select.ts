@@ -6,7 +6,7 @@ export class SelectOrcamento{
         return new Promise(async (resolve, reject) => {
             const code =  codigo 
             const sql = ` select * from ${empresa}.pedidos where codigo =  ?  `;
-            conn.query(sql, [ code ],(err:any, result:any) => {
+           await conn.query(sql, [ code ],(err:any, result:any) => {
                 if (err) {
                     console.log(err)
                     reject(err)
