@@ -1,4 +1,5 @@
 import { conn } from "../../database/databaseConfig";
+import { InsertitensPedido } from "./insertItens";
 
 export class CreateOrcamento {
 
@@ -21,9 +22,9 @@ export class CreateOrcamento {
 
       const dataAtual = this.obterDataAtual();
 
-    let obj = new CreateOrcamento();
-      
-    let codigo_pedido;
+     let insertitensPedido = new InsertitensPedido();
+    
+      let codigo_pedido;
       let {
           codigo,
           forma_pagamento,
@@ -92,33 +93,29 @@ export class CreateOrcamento {
                    reject(err)
               } else {
 
-                 
                   let status = null;
                   if(servicos.length > 0 ){
                     try{
-                        await obj.cadastraServicosDoPedido(servicos, codigo, empresa);
+                        await insertitensPedido.cadastraServicosDoPedido(servicos, codigo, empresa);
                         status == true   
                     
                       }catch(e){console.log(e)}
                        }
                      if (produtos.length > 0) {
                      try{
-                         await obj.cadastraProdutosDoPedido(produtos,empresa, codigo, );
+                         await insertitensPedido.cadastraProdutosDoPedido(produtos,empresa, codigo, );
                          status = true
                       }catch(e){ console.log(e)} 
                      }
-
             
                      if(parcelas.length > 0  ){
                           try{
-                           await obj.cadastraParcelasDoPedido( parcelas, empresa, codigo );
+                           await insertitensPedido.cadastraParcelasDoPedido( parcelas, empresa, codigo );
                            status == true   
                         }catch(e) {
                               console.log(e)
                           }    
                      }
-                    
-
                       resolve({ codigo:codigo, status:status} ) ;
                   }
               }
@@ -128,120 +125,6 @@ export class CreateOrcamento {
 
   }
 
-  async cadastraProdutosDoPedido(produtos:any ,empresa:any, codigoPedido:any ){
-      return new Promise( async (resolve, reject )=>{
 
-          let i=1;
-          for(let p of produtos){
-              let {
-                  codigo,
-                  preco,
-                  quantidade,
-                  desconto,
-                  total,
-              } = p
-
-               if( !preco) preco = 0;
-               if( !quantidade) quantidade = 0;
-               if( !desconto) desconto = 0;
-             
-               if( !total) total = 0;
-          
- 
-           
-
-           const sql =  ` INSERT INTO ${empresa}.produtos_pedido ( pedido ,  codigo ,  desconto ,  quantidade ,  preco ,  total ) VALUES (? , ?, ?, ?, ?, ?) `;
-              let dados = [ codigoPedido, codigo, desconto, quantidade, preco, total ]
-            await conn.query( sql,dados ,(error:any, resultado:any)=>{
-                 if(error){
-                         reject(" erro ao inserir produto do orcamento "+ error);
-                 }else{
-                  resolve(resultado)
-                     console.log(`produto  inserido com sucesso`);
-                 }
-              })
-
-              if(i === produtos.length){
-                  return;
-              }
-              i++;
-          }
-      })
-  }
- 
-
-  async cadastraParcelasDoPedido(parcelas:any,empresa:any, codigoPedido:any){
-    let obj  = new CreateOrcamento();
-    return new Promise( async (resolve, reject )=>{
-    parcelas.forEach( async (p: any) => {
-        
-    let {
-        pedido ,  parcela ,  valor ,vencimento  
-    } = p     
-        
-        let sql = `  INSERT INTO ${empresa}.parcelas ( pedido ,  parcela ,  valor, vencimento ) VALUES ( ?  , ?,  ?, ?  )`;
-        let dados = [ codigoPedido ,  parcela ,  valor ,vencimento ]
-
-
-          await   conn.query( sql,  dados , (err: any, resultParcelas:any) => {
-                  if (err) {
-                      console.log("erro ao inserir parcelas !" + err)
-                      
-                  } else {
-                      console.log('  Parcela inserida com sucesso '    )
-                      resolve(codigoPedido)
-                  }
-              }
-          )
-      })
-    })
-
-  }
- 
-
-
-    async cadastraServicosDoPedido( servicos:any, codigoPedido:any, empresa:any ){
-        return new Promise( async (resolve, reject )=>{
-
-     
-          if (servicos.length > 0) {
-            let i=1;
-            for(let s of servicos){
-                let {
-                    codigo,
-                    preco,
-                    quantidade,
-                    desconto,
-                    total,
-                    valor,
-                } = s
-  
-                 if( !preco) preco = 0;
-                 if( !quantidade) quantidade = 0;
-                 if( !desconto) desconto = 0;
-                 if( !total) total = 0;
-   
-              const sql =  ` INSERT INTO    ${empresa}.servicos_pedido  ( pedido ,  codigo ,  desconto ,  quantidade ,  valor ,  total ) VALUES ( ?, ?, ?, ?, ?, ?)   `;
-
-                let dados = [ codigoPedido ,  codigo ,  desconto ,  quantidade ,  valor ,  total  ]
-              await conn.query( sql,dados ,(error:any, resultado:any)=>{
-                   if(error){
-                    console.log(" erro ao inserir servico do orcamento "+ error)
-                           reject(" erro ao inserir servico do orcamento "+ error);
-                   }else{
-                    resolve(resultado)
-                       console.log(`servico  inserido com sucesso`);
-                   }
-                })
-  
-                if(i === servicos.length){
-                    return;
-                }
-                i++;
-          
-          } }
-        })
-}
- 
 
 }

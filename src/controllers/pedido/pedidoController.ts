@@ -4,7 +4,7 @@ import { SelectOrcamento } from "../../models/pedido/select";
 import { UpdateOrcamento } from "../../models/pedido/update";
 import { Select_clientes } from "../../models/cliente/select";
 
-
+import { SelectItensPedido } from "../../models/pedido/selectItens";
 export class pedidoController{
 
 
@@ -47,22 +47,22 @@ export class pedidoController{
                             
                                 const validPedido:any = await selectPedido.validaExistencia( empresa, p.codigo);
                             
-                            
                                 if(validPedido.length > 0){
                                     const pedidoEncontrado = validPedido[0];
                                      const data_recad = obj.formatarData(new Date(pedidoEncontrado.data_recadastro), true)
-
-                                        if ( p.data_recadastro > data_recad){
+                                        if ( p.data_recadastro > data_recad ){
+                                            console.log(`atualizando pedido ${p.codigo} ${p.data_recadastro} > ${data_recad} `)
                                             await updatePedido.update(empresa, p, p.codigo)
                                             status = 'atualizado';
                                         } else{
                                             status = ` O pedido ${p.codigo} se encontra atualizado`;
+                                            console.log( status)
+
                                         }
                                 }else{
                                     await insertPedido.create(empresa, p);
                                     status = 'inserido';
                                 }
-                                console.log(p)
                          
                                 return { codigo: p.codigo, status };
                                
@@ -92,8 +92,8 @@ export class pedidoController{
     let data = req.query.data
 
     let selectOrcamento = new SelectOrcamento();
-    let updateOrcamento = new UpdateOrcamento();
     let select_clientes = new Select_clientes();
+    const selectItensPedido = new SelectItensPedido();
 
     try{
 
@@ -114,15 +114,15 @@ export class pedidoController{
                 }catch(e){ console.log(`erro ao buscar os produtos do pedido ${i.codigo}`)}
 
                 try{
-                   produtos = await updateOrcamento.buscaProdutosDoOrcamento(empresa, i.codigo);
+                   produtos = await selectItensPedido.buscaProdutosDoOrcamento(empresa, i.codigo);
                 }catch(e){ console.log(`erro ao buscar os produtos do pedido ${i.codigo}`)}
                 
                 try{
-                   servicos = await updateOrcamento.buscaServicosDoOrcamento(empresa, i.codigo);
+                   servicos = await selectItensPedido.buscaServicosDoOrcamento(empresa, i.codigo);
                 }catch(e){ console.log(`erro ao buscar os servicos do pedido ${i.codigo}`)}
                 
                 try{
-                  parcelas = await updateOrcamento.buscaParcelasDoOrcamento(empresa, i.codigo);
+                  parcelas = await selectItensPedido.buscaParcelasDoOrcamento(empresa, i.codigo);
                 }catch(e){ console.log(`erro ao buscar as parcelas do pedido ${i.codigo}`)}
             
                     return {
