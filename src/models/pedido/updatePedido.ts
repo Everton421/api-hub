@@ -1,11 +1,12 @@
 import { Request, Response, request, response } from "express";
 import { conn  } from "../../database/databaseConfig";
-import { CreateOrcamento } from "./insert";
+ 
 import { DeleteItensPedido } from "./deleteItems";
 import { SelectItensPedido } from "./selectItens";
+import { InsertitensPedido } from "./insertItens";
 
 
-export class UpdateOrcamento{
+export class UpdatePedido{
     
     
     async  updateTabelaPedido( empresa:any ,orcamento:any, codigo:number ) {
@@ -46,11 +47,11 @@ export class UpdateOrcamento{
       return new Promise ( async (resolve, reject )=>{
  
       
-        let objUpdate = new UpdateOrcamento();
-        let objInsert = new CreateOrcamento();
+        let objUpdate = new UpdatePedido();
+     
         let deleteItensPedido = new DeleteItensPedido();
         let selectItensPedido = new SelectItensPedido();
-
+        let insertitensPedido = new InsertitensPedido();
 
         const servicos = orcamento.servicos;
         const parcelas = orcamento.parcelas;
@@ -84,9 +85,8 @@ export class UpdateOrcamento{
                     }
 
               if (servicos.length > 0) {
-
                   try {
-                      await objInsert.cadastraServicosDoPedido(   servicos,codigoOrcamento, empresa )
+                      await insertitensPedido.cadastraServicosDoPedido(   servicos,codigoOrcamento, empresa )
                   } catch (err) { 
                     console.log(err)
                       reject(err);
@@ -112,7 +112,7 @@ export class UpdateOrcamento{
                     
                     if (produtos.length > 0) {
                             try {
-                                await objInsert.cadastraProdutosDoPedido(produtos,empresa,codigoOrcamento);
+                                await insertitensPedido.cadastraProdutosDoPedido(produtos,empresa,codigoOrcamento);
                             } catch (err) {
                         console.log(err)
                                  reject(err)
@@ -136,7 +136,7 @@ export class UpdateOrcamento{
                     } 
 
                         try{
-                            await objInsert.cadastraParcelasDoPedido (parcelas,empresa, codigoOrcamento );
+                            await insertitensPedido.cadastraParcelasDoPedido (parcelas,empresa, codigoOrcamento );
                         }catch(err){
                         console.log(err)
                              reject(err)

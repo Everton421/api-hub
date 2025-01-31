@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { CreateOrcamento } from "../../models/pedido/insert";
-import { SelectOrcamento } from "../../models/pedido/select";
-import { UpdateOrcamento } from "../../models/pedido/update";
+import { SelectPedido } from "../../models/pedido/selectPedido";
+import { UpdatePedido } from "../../models/pedido/updatePedido";
+import { InsertPedido } from "../../models/pedido/insertPedido";
 import { Select_clientes } from "../../models/cliente/select";
 
 import { SelectItensPedido } from "../../models/pedido/selectItens";
@@ -27,9 +27,9 @@ export class pedidoController{
 
         let obj = new pedidoController();
 
-        const insertPedido = new CreateOrcamento();
-        const selectPedido = new SelectOrcamento();
-        const updatePedido = new UpdateOrcamento();
+        const insertPedido = new InsertPedido();
+        const selectPedido = new SelectPedido();
+        const updatePedido = new UpdatePedido();
 
         if(!req.headers.cnpj) return res.status(400).json({erro:"É necessario informar o codigo da empresa "});
         let headerCnpj:string = String(req.headers.cnpj);
@@ -91,7 +91,7 @@ export class pedidoController{
     let vendedor = Number(req.query.vendedor);
     let data = req.query.data
 
-    let selectOrcamento = new SelectOrcamento();
+    let selectOrcamento = new SelectPedido();
     let select_clientes = new Select_clientes();
     const selectItensPedido = new SelectItensPedido();
 

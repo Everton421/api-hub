@@ -1,7 +1,7 @@
 import { conn } from "../../database/databaseConfig";
 import { InsertitensPedido } from "./insertItens";
 
-export class CreateOrcamento {
+export class InsertPedido {
 
 
     converterData(data: string): string {

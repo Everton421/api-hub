@@ -1,7 +1,7 @@
 import { conn } from "../../database/databaseConfig"
 
-export class SelectOrcamento{
-
+export class SelectPedido{
+    
     async validaExistencia(empresa:any,codigo:number   ){
         return new Promise(async (resolve, reject) => {
             const code =  codigo 
@@ -24,7 +24,7 @@ export class SelectOrcamento{
     async buscaPordata(empresa:any ,queryData:any, vendedor:number){
 
 
-        let objSelect = new  SelectOrcamento();
+        let objSelect = new  SelectPedido();
         let param_data:any;
          if (!queryData) {
             param_data = objSelect.obterDataAtualSemHoras();
