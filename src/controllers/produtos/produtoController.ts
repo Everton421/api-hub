@@ -160,7 +160,7 @@ async buscaProdutoNext(req:Request,res:Response){
   const queryParam = `%${parametro}%`;
 
   try{
-    produtos =   await   select.buscaPorCodigoOuDescricao(dbName, queryParam  )
+    produtos =   await   select.buscaPorCodigoOuDescricaoLimit(dbName, queryParam  )
      if (produtos.length === 0) {
        return res.status(200).json({ erro: "Nenhum produto encontrado." });
      }
