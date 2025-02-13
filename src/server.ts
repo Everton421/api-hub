@@ -25,7 +25,7 @@ import { conn } from './database/databaseConfig';
             app.use(cors( corsOptions));
 
                 //process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-        app.use(`${versao}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+        //app.use(`${versao}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 
         app.use(express.json());
         app.use(router)
