@@ -40,6 +40,7 @@ router.get(`${exports.versao}/teste`, cheqtoken_1.checkToken, (req, res) => {
 router.get(`${exports.versao}/offline/produtos`, cheqtoken_1.checkToken, new produtoController_1.ProdutoController().buscaGeral);
 router.post(`${exports.versao}/produtos`, cheqtoken_1.checkToken, new produtoController_1.ProdutoController().cadastrar);
 router.get(`${exports.versao}/offline/fotos`, cheqtoken_1.checkToken, new fotosController_1.fotosController().buscaGeral);
+router.post(`${exports.versao}/offline/fotos`, cheqtoken_1.checkToken, new fotosController_1.fotosController().cadastrar_deletarFotos);
 router.get(`${exports.versao}/offline/clientes`, cheqtoken_1.checkToken, new clienteController_1.ClienteController().buscaGeral);
 router.post(`${exports.versao}/clientes`, cheqtoken_1.checkToken, new clienteController_1.ClienteController().cadastrar);
 router.get(`${exports.versao}/offline/servicos`, cheqtoken_1.checkToken, new servicosController_1.ServicosController().buscaGeral);

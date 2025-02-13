@@ -17,7 +17,7 @@ import { conn } from './database/databaseConfig';
             const corsOptions = {
                 origin: '*', // Permitir todas as origens. Para maior segurança, considere especificar as origens permitidas.
                 methods: 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
-                allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Accept', 'Accept-Version', 'Content-Length', 'Content-MD5', 'Content-Type', 'Date', 'X-Api-Version', 'Authorization'],
+                allowedHeaders: '*',
                 credentials: true, // Permitir credenciais
             };
 
@@ -45,11 +45,11 @@ import { conn } from './database/databaseConfig';
                 })
 
                 const PORT_API = process.env.PORT_API;
-                app.listen(PORT_API,()=> console.log('app rodando porta ',PORT_API))
-  //    https.createServer({
-  //       cert: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.crt'),
-  //       key: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.key'),
-  //       ca: fs.readFileSync('/etc/apache2/ssl/server.intersig.com.br/code.crt') // Certificado da autoridade certificadora, se necessário
-//
-  //   }, app).listen(3000,()=> console.log('app rodando porta https 3000'))
+  //              app.listen(PORT_API,()=> console.log('app rodando porta ',PORT_API))
+      https.createServer({
+         cert: fs.readFileSync('/etc/letsencrypt/live/intersig.com.br-0003/fullchain.pem', 'utf8'),
+         key: fs.readFileSync('/etc/letsencrypt/live/intersig.com.br-0003/privkey.pem', 'utf8'),
+        // ca: fs.readFileSync('/etc/letsencrypt/live/intersig.com.br-0003/chain.pem', 'utf8') // Certificado da autoridade certificadora, se necessário
+
+     }, app).listen(3000,()=> console.log('app rodando porta https 3000'))
 

@@ -78,6 +78,7 @@ class CreateEmpresa {
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.servicos (
            codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
+   id  int(10) unsigned NOT NULL DEFAULT 0,
         valor REAL DEFAULT 0,
         aplicacao TEXT NOT NULL,
         tipo_serv INTEGER DEFAULT 0,
@@ -172,14 +173,15 @@ class CreateEmpresa {
         PRIMARY KEY (codigo) USING BTREE 
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.tipos_os (
-                codigo  int(11) NOT NULL,
-        descricao TEXT NOT NULL,
-    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+          codigo  int(11) NOT NULL AUTO_INCREMENT,
+          id  int(10) unsigned NOT NULL DEFAULT 0,
+          descricao TEXT NOT NULL,
+         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
          data_recadastro  datetime DEFAULT NULL,
-          PRIMARY KEY ( codigo )
+         PRIMARY KEY ( codigo )
     );`,
             `CREATE TABLE IF NOT EXISTS ${dbName}.veiculos (
-         codigo  int(11) NOT NULL,
+         codigo  int(11) NOT NULL AUTO_INCREMENT,
         id int(10) unsigned NOT NULL DEFAULT 0,
         cliente INTEGER NOT NULL DEFAULT 0,
         placa TEXT NOT NULL,

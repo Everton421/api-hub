@@ -23,3 +23,8 @@ exports.conn = mysql_1.default.createPool({
     port: port,
     password: dbpassword,
 });
+console.log(hostname);
+console.log(portdb);
+console.log(dbpassword);
+console.log(exports.db_api);
+console.log(username);

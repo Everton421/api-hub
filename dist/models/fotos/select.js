@@ -19,9 +19,12 @@ class Select_fotos {
             });
         });
     }
-    async buscaPorProduto(codigoProduto) {
+    async buscaPorProduto(empresa, codigoProduto) {
         return new Promise(async (resolve, reject) => {
-            let sql = ` select * from fotos_produtos where produto = ${codigoProduto}`;
+            let sql = ` select *,
+                           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+               DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+            from ${empresa}.fotos_produtos where produto = ${codigoProduto}`;
             await databaseConfig_1.conn.query(sql, (err, result) => {
                 if (err) {
                     reject(err);

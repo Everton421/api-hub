@@ -23,4 +23,9 @@ import mysql from 'mysql';
             port: port,
             password: dbpassword,
         })
- 
+	
+console.log(hostname)
+console.log(portdb)
+console.log(dbpassword)
+console.log(db_api)
+console.log(username)
