@@ -17,6 +17,7 @@ import { Alterar_senha } from "./controllers/recuperarConta/alterarSenha";
 import { CategoriaController } from "./controllers/categorias/categoriaController";
 import { MarcasController } from "./controllers/marcas/marcasController";
 import { fotosController } from "./controllers/fotos/fotosController";
+import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextController";
 
   const crypt = require('crypt');
   const router = Router();
@@ -87,7 +88,12 @@ router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().busca
 
 //////////// rotas next
  router.get(`${versao}/next/produtos/:produto`,  checkToken,  new ProdutoController().buscaProdutoNext)
-    
+ router.get(`${versao}/next/clientes/:cliente`,  checkToken,  new ClienteController().buscaClientesNext)
+ router.get(`${versao}/next/servicos/:servico`,  checkToken,  new ServicosController().buscaServicosNext)
+
+ router.get(`${versao}/next/pedidoSimples/`,  checkToken,  new pedidoNextController().buscaPedidosSimplesPorData)
+ router.get(`${versao}/next/pedidoCompletoPorCodigo/`,  checkToken,  new pedidoNextController().buscaPedidosCompleto)
+  
 
 
  

@@ -1,5 +1,15 @@
 import { conn } from "../../database/databaseConfig";
 
+type service = {
+     codigo : number,
+     id: number,
+     valor : number,
+     aplicacao : string,
+     tipo_serv : number,
+     data_cadastro :string,
+     data_recadastro : string
+}
+
 
 export class Select_servicos{
 
@@ -17,19 +27,18 @@ export class Select_servicos{
          })
     }
 
-async buscaPorCodigoDescricao(empresa:any, codigo:number, descricao:string){
-
-    if(!codigo) codigo = 0; 
-    if(!descricao) descricao = '';
-     
+async buscaPorCodigoDescricao(empresa:any, param:string){
+ 
+     let parametro = `%${param}%`
 
     const sql = `SELECT *,
        DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
       DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
     FROM ${empresa}.servicos
-    WHERE  codigo like ? OR aplicacao = ?    `;
-    return new Promise ( async (resolve,reject)=>{
-        await conn.query( sql,[ codigo, descricao ], (err:any, result:any)=>{
+    WHERE  codigo like ? OR aplicacao like ?  limit  20  `;
+
+    return new Promise <service[]>( async (resolve,reject)=>{
+        await conn.query( sql,[  parametro , parametro], (err:any, result:any)=>{
             if(err){ 
                   reject(err)
             }else{
@@ -41,7 +50,7 @@ async buscaPorCodigoDescricao(empresa:any, codigo:number, descricao:string){
 
 
 async   buscaGeral(empresa:any )   {
-    return new Promise   ( async ( resolve , reject ) =>{
+    return new Promise <service[]>  ( async ( resolve , reject ) =>{
     let sql = ` select *,
       DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 

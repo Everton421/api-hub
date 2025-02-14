@@ -1,6 +1,15 @@
 import { Request, Response } from "express";
 import { Select_servicos } from "../../models/servicos/select";
 import { InsertServico } from "../../models/servicos/insert";
+type service = {
+  codigo : number,
+  id: number,
+  valor : number,
+  aplicacao : string,
+  tipo_serv : number,
+  data_cadastro :string,
+  data_recadastro : string
+}
 
 export class ServicosController{
 
@@ -103,4 +112,30 @@ export class ServicosController{
    
   }
 
+async buscaServicosNext(req:Request,res:Response){
+
+  if(!req.headers.cnpj ){
+    return res.status(200).json({erro:"É necessario informar a empresa "});   
+ } 
+ let headerCnpj:any =   req.headers.cnpj ;
+ let empresa  = headerCnpj.replace(/\D/g, '');
+
+ let  dbName = `\`${empresa}\``;
+
+  let select = new Select_servicos();
+  let servico:service[] = [] ;
+
+  const parametro = req.params.servico;
+ 
+  try{
+    servico =   await   select.buscaPorCodigoDescricao(dbName, parametro  )
+     if (servico.length === 0) {
+       return res.status(200).json({ erro: "Nenhum servico encontrado." });
+     }
+     return res.status(200).json(servico);
+}catch(e){ 
+      console.error(e);
+    return res.status(200).json({ erro: "Erro ao buscar servicos." });
+}
+}
 }

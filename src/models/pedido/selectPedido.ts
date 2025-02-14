@@ -5,7 +5,11 @@ export class SelectPedido{
     async validaExistencia(empresa:any,codigo:number   ){
         return new Promise(async (resolve, reject) => {
             const code =  codigo 
-            const sql = ` select * from ${empresa}.pedidos where codigo =  ?  `;
+            const sql = ` select *,
+            DATE_FORMAT( data_cadastro, '%Y-%m-%d') AS data_cadastro,
+             DATE_FORMAT( data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+            CONVERT(observacoes USING utf8) as observacoes 
+             from ${empresa}.pedidos where codigo =  ?  `;
            await conn.query(sql, [ code ],(err:any, result:any) => {
                 if (err) {
                     console.log(err)
@@ -36,9 +40,14 @@ export class SelectPedido{
          }
         return new Promise( async ( resolve, reject )=>{
 
-            const sql = `select *, CONVERT(observacoes USING utf8) as observacoes from ${empresa}.pedidos as co
-                where   co.data_recadastro >= '${param_data}' and co.vendedor = ${vendedor}
+            const sql = `select *, 
+             DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
+             DATE_FORMAT(co.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+            CONVERT(observacoes USING utf8) as observacoes 
+            from ${empresa}.pedidos as co
+                where   co.data_recadastro >= '${param_data}' and co.vendedor = ${vendedor} 
             `;
+            console.log(sql)
             await conn.query(sql,   async (err:any, result:any) => {
                 if (err) {
                     console.log(err);

@@ -36,7 +36,7 @@ async buscaPorCodigoDescricao(empresa:any, codigo:number, descricao:string){
                   CONVERT(observacoes3 USING utf8) as observacoes3
 
             FROM ${empresa}.produtos 
-            WHERE  codigo like ? OR descricao = ?    `;
+            WHERE  codigo like ? OR descricao = ?  limit  20  `;
     return new Promise<Produto[]>( async (resolve,reject)=>{
         await conn.query( sql,[ codigo, descricao ], (err:any, result:any)=>{
             if(err){ 
