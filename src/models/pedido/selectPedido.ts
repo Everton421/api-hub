@@ -40,11 +40,12 @@ export class SelectPedido{
          }
         return new Promise( async ( resolve, reject )=>{
 
-            const sql = `select *, 
+            const sql = `select *, c.nome  nome_cliente,
              DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
              DATE_FORMAT(co.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(observacoes USING utf8) as observacoes 
             from ${empresa}.pedidos as co
+            join ${empresa}.clientes c on c.codigo = co.cliente
                 where   co.data_recadastro >= '${param_data}' and co.vendedor = ${vendedor} 
             `;
             console.log(sql)
