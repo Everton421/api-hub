@@ -40,7 +40,7 @@ export class SelectPedido{
          }
         return new Promise( async ( resolve, reject )=>{
 
-            const sql = `select *, c.nome  ,
+            const sql = `select co.*, c.nome  ,
              DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
              DATE_FORMAT(co.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(observacoes USING utf8) as observacoes 
