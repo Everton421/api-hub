@@ -77,7 +77,7 @@ async   buscaPorCodigoOuDescricaoOuCnpj(empresa:any, param:string  )   {
     let sql = ` SELECT  *,
     DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
       DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-  FROM ${empresa}.clientes   where nome like ? or codigo like ? or cnpj like ? `
+  FROM ${empresa}.clientes   where nome like ? or codigo like ? or cnpj like ? limit 50`
       await conn.query(sql,  [parametro, parametro, parametro ] ,(err:any, result:any )=>{
           if (err)  reject(err); 
             resolve(result)
