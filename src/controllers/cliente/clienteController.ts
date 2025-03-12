@@ -201,7 +201,33 @@ export class ClienteController{
             return res.status(200).json({ erro: "Erro ao buscar clientes." });
         }
         }
+        async buscaClienteNextPorCodigo(req:Request,res:Response){
         
+            if(!req.headers.cnpj ){
+              return res.status(200).json({erro:"É necessario informar a empresa "});   
+           } 
+           let headerCnpj:any =   req.headers.cnpj ;
+           let empresa  = headerCnpj.replace(/\D/g, '');
+          
+           let  dbName = `\`${empresa}\``;
+          
+            let select = new Select_clientes();
+            let cliente;
+          
+            const parametro = req.params.codigo;
+            const queryParam = Number(parametro);
+          
+            try{
+              cliente =   await   select.buscaPorcodigo(dbName, queryParam  )
+               if (cliente.length === 0) {
+                 return res.status(200).json({ erro: "Nenhum cliente encontrado." });
+               }
+               return res.status(200).json(cliente);
+          }catch(e){ 
+                console.error(e);
+              return res.status(200).json({ erro: "Erro ao buscar clientes." });
+          }
+          }
 
 }
 

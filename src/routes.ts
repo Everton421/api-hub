@@ -93,7 +93,9 @@ router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().busca
 
  router.get(`${versao}/next/pedidoSimples/`,  checkToken,  new pedidoNextController().buscaPedidosSimplesPorData)
  router.get(`${versao}/next/pedidoCompletoPorCodigo/`,  checkToken,  new pedidoNextController().buscaPedidosCompleto)
-  
+ 
+ router.get(`${versao}/next/cliente/:codigo`,  checkToken,  new ClienteController().buscaClienteNextPorCodigo)
+
 
 
  
