@@ -184,6 +184,7 @@ async buscaProdutoNextPorCodigo(req:Request,res:Response){
   let select = new Select_produtos();
   let produtos;
 
+
   const parametro = Number(req.params.codigo);
 
   try{
