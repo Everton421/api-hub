@@ -37,7 +37,7 @@ export class Select_clientes{
 
     async   buscaPorcodigo(empresa:any, codigo:number )   {
         return new Promise <Cliente[]> ( async ( resolve , reject ) =>{
-        let sql = ` SELECT  codigo, nome, cnpj, celular ,
+        let sql = ` SELECT   *,
           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
         FROM ${empresa}.clientes WHERE codigo = ?  `
