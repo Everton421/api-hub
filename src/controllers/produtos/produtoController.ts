@@ -213,7 +213,7 @@ async update(req:Request,res:Response){
    let select = new Select_produtos();
    let insert = new InsertProdutos();
   let update = new UpdateProdutos();
-
+ console.log(req.body)
    
  function  obterDataAtual() {
   const dataAtual = new Date();

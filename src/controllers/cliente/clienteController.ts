@@ -243,7 +243,6 @@ export class ClienteController{
             } 
             let headerCnpj:any  = empresa.replace(/\D/g, '');
             let  dbName = `\`${headerCnpj}\``;
-            console.log(req.body)
                     let vCnpj = req.body.cnpj;
                     let postCliente:Cliente = req.body; 
                     let cnpjFormat;
@@ -258,16 +257,14 @@ export class ClienteController{
                     if (!postCliente.cnpj)            return res.status(200).json({erro:true, msg:" é necessario informar o cnpj/cpf do cliente"});            
                     if (!postCliente.cidade)          postCliente.cidade = "";
                 
-                    if (!postCliente.data_cadastro || postCliente.data_cadastro ===  "0000-00-00") {
+                    if (!postCliente.data_cadastro  ) {
                         postCliente.data_cadastro = obj.obterDataAtual();
-                    }else{
-                        postCliente.data_cadastro = obj.formatarData(postCliente.data_cadastro);
-                    }
+                    } 
                 
                     if (!postCliente.data_recadastro || postCliente.data_recadastro === "0000-00-00 00:00:00" ){ 
                             postCliente.data_recadastro = obj.obterDataHoraAtual()
                         } else{
-                            postCliente.data_recadastro = obj.formatarDataEhora(postCliente.data_recadastro ) 
+                                postCliente.data_recadastro = obj.obterDataHoraAtual();
                         };
                 
                     if (!postCliente.vendedor)        postCliente.vendedor = 0;
