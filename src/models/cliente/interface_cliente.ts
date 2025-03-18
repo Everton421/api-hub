@@ -14,4 +14,5 @@ export interface Cliente {
   vendedor:number,
   estado:string,
   bairro:string
+  ativo:string
 }

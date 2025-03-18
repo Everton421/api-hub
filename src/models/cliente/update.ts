@@ -12,6 +12,7 @@ export class Update_clientes{
                  
                 celular = '${cliente.celular}', 
                 nome = '${cliente.nome}' ,
+                ativo = '${cliente.ativo}' ,
                 cep = '${cliente.cep}' ,
                 endereco = '${cliente.endereco}' ,
                 ie = '${cliente.ie}' ,

@@ -256,7 +256,7 @@ export class ClienteController{
                     if (!postCliente.numero)          postCliente.numero = "";
                     if (!postCliente.cnpj)            return res.status(200).json({erro:true, msg:" é necessario informar o cnpj/cpf do cliente"});            
                     if (!postCliente.cidade)          postCliente.cidade = "";
-                
+                    if(!postCliente.ativo)            postCliente.ativo = "S";
                     if (!postCliente.data_cadastro  ) {
                         postCliente.data_cadastro = obj.obterDataAtual();
                     } 
@@ -303,6 +303,7 @@ export class ClienteController{
                                     return res.status(200).json(
                                         { 
                                             codigo : postCliente.codigo,
+                                            ativo: postCliente.ativo,
                                             id : postCliente.id,
                                             celular : postCliente.celular,
                                             nome : postCliente.nome,
@@ -314,6 +315,7 @@ export class ClienteController{
                                             cidade : postCliente.cidade,
                                             data_cadastro:postCliente.data_cadastro,
                                             data_recadastro:postCliente.data_recadastro
+
                                         });        
     
                                 }catch(err){
