@@ -6,19 +6,32 @@ import { Update_clientes } from "../../models/cliente/update";
 
 export class ClienteController{
 
-    formatarDataEhora(data: string): string | null {
+    formatarDataEhora1(data: string): string | null {
         const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
         if (!regex.test(data)) {
             return null;
           }
          return data;
          }
+
+         formatarDataHora(data:any) {
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+
+            const hora = data.getHours();
+            const minuto = data.getMinutes();
+            const segundos = data.getSeconds();
+            return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
+        }
+
            formatarData(data:any) {
             const dia = String(data.getDate()).padStart(2, '0');
             const mes = String(data.getMonth() + 1).padStart(2, '0');
             const ano = data.getFullYear();
             return `${ano}-${mes}-${dia}`;
         }
+
          obterDataAtual() {
             const dataAtual = new Date();
             const dia = String(dataAtual.getDate()).padStart(2, '0');
@@ -111,7 +124,7 @@ export class ClienteController{
                 if (!postCliente.data_recadastro || postCliente.data_recadastro === "0000-00-00 00:00:00" ){ 
                         postCliente.data_recadastro = obj.obterDataHoraAtual()
                     } else{
-                        postCliente.data_recadastro = obj.formatarDataEhora(postCliente.data_recadastro ) 
+                        postCliente.data_recadastro = obj.formatarDataHora(postCliente.data_recadastro ) 
                     };
             
                 if (!postCliente.vendedor)        postCliente.vendedor = 0;
