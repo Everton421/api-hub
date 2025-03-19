@@ -14,16 +14,31 @@ export class ClienteController{
          return data;
          }
 
-         formatarDataHora(data:any) {
+         formatarDataHora(data: any): string {
+            if (!(data instanceof Date)) {
+              try {
+                data = new Date(data); // Tenta converter para Date
+              } catch (error) {
+                console.error("Data inválida:", data, error);
+                return "Data inválida"; // Ou outra string de erro
+              }
+          
+              if (isNaN(data.getTime())) {
+                console.error("Data inválida após tentativa de conversão:", data);
+                return "Data inválida"; // Ou outra string de erro
+              }
+            }
+          
             const dia = String(data.getDate()).padStart(2, '0');
             const mes = String(data.getMonth() + 1).padStart(2, '0');
             const ano = data.getFullYear();
-
-            const hora = data.getHours();
-            const minuto = data.getMinutes();
-            const segundos = data.getSeconds();
+          
+            const hora = String(data.getHours()).padStart(2, '0'); // Garante dois dígitos
+            const minuto = String(data.getMinutes()).padStart(2, '0'); // Garante dois dígitos
+            const segundos = String(data.getSeconds()).padStart(2, '0'); // Garante dois dígitos
+          
             return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
-        }
+          }
 
            formatarData(data:any) {
             const dia = String(data.getDate()).padStart(2, '0');
