@@ -6,6 +6,7 @@ export class UpdateProdutos{
 
        return new Promise( async ( resolve, reject)=>{
             let {
+                codigo,
                 ativo,
                 class_fiscal,
                 cst,
@@ -43,6 +44,7 @@ export class UpdateProdutos{
                                    observacoes1 = '${observacoes1}',
                                    observacoes2 = '${observacoes2}',
                                    observacoes3 = '${observacoes3}'  
+                                   where codigo = ${codigo}
                             `;
 
                             await conn.query(sql,   (err:any, result:any )=>{
