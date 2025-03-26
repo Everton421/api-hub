@@ -73,6 +73,7 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
 
  router.post(`${versao}/login`, checkToken,  new Login().login)
  router.post(`${versao}/registrar_usuario`,checkToken, new UsuariosController().cadastrar)
+ router.get(`${versao}/usuarios`,checkToken, new UsuariosController().busca) 
 /////
  router.post(`${versao}/pedidos`, checkToken, new pedidoController().insert)
 ////

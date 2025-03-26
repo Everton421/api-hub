@@ -66,4 +66,36 @@ export class UsuariosController{
                         }
 
     }
+
+
+
+    async busca(req:Request ,res:Response){
+        let selectUserEmpresa   = new Select_UsuarioEmpresa();
+        let headerCnpj:any =   String(req.headers.cnpj) ;
+
+        let cnpjF:any = req.headers.cnpj;
+        let empresa  = headerCnpj.replace(/\D/g, '');
+        let cnpj  = `\`${empresa}\``;
+
+        if(!req.headers.cnpj ){
+            return res.status(200).json({erro:"É necessario informar a empresa "});   
+         } 
+           
+    
+         let  dbName = `\`${headerCnpj}\``;
+     
+         try{
+
+            let resultado:any = await selectUserEmpresa.buscaGeral(dbName)
+            if( resultado.length > 0 ){
+                return res.status(200).json(resultado)
+            }else{
+                return res.status(404).json({ erro: "Nenhum usuario encontrado." });
+            }
+
+     }catch(e){
+        console.log("ocorreu um erro ao consultar os usuarios", e)
+        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar os usuarios"})
+     }
+    }
 }
