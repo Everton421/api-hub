@@ -24,6 +24,11 @@ export class pedidoNextController{
      let dataFinal = String(req.query.dataFinal);
       let paramVendedor:number = Number(req.query.vendedor);
 
+      let filter:string | null  = ''
+      if(    req.query.filter   ){
+        filter =  String(req.query.filter)
+      }
+
 
       if(!req.query.dataInicial)  return res.status(200).json({erro:`é necessario informar a data inicial`});
       if(!req.query.dataFinal)  return res.status(200).json({erro:`é necessario informar a data final`});
@@ -44,7 +49,7 @@ export class pedidoNextController{
     
     let pedidos:any[] =[]
         try{ 
-              let data:any = await select.buscaPorDataInicialFinal(empresa, dataInicial, dataFinal, paramVendedor)
+              let data:any = await select.buscaPorDataInicialFinal(empresa, dataInicial, dataFinal,filter, paramVendedor)
                 pedidos = data
         
             }catch(e){ 
