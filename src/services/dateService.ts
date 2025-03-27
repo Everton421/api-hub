@@ -67,4 +67,20 @@ export class DateService {
             return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
         }
 
+
+          isValidDateFormat(dateString: string): boolean {
+            if (!dateString) return false; // Evita erros com strings vazias/nulas
+            const regex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!regex.test(dateString)) return false;
+        
+            const date = new Date(dateString);
+            const timestamp = date.getTime();
+        
+            if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
+                return false;
+            }
+        
+            return date.toISOString().slice(0, 10) === dateString;
+        }
+        
 }

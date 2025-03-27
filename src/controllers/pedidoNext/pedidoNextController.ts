@@ -2,27 +2,49 @@ import { Request, Response } from "express";
 import { SelectPedido } from "../../models/pedido/selectPedido";
 import { Select_clientes } from "../../models/cliente/select";
 import { SelectItensPedido } from "../../models/pedido/selectItens";
+import { DateService } from "../../services/dateService";
 
 export class pedidoNextController{
 
 
+
     async buscaPedidosSimplesPorData( req:Request, res:Response ){ 
-        if(!req.query.data)  return res.status(200).json({erro:`é necessario informar uma data`});
+        
+      let dateService = new DateService();
+
+
+      let headerCnpj:string = String(req.headers.cnpj);
+      let empresa = headerCnpj.replace(/\D/g, '');
+      empresa= `\`${empresa}\``;
+
+    const select = new SelectPedido();
+
+     let paramData = req.query.data
+     let dataInicial = String(req.query.dataInicial); 
+     let dataFinal = String(req.query.dataFinal);
+      let paramVendedor:number = Number(req.query.vendedor);
+
+
+      if(!req.query.dataInicial)  return res.status(200).json({erro:`é necessario informar a data inicial`});
+      if(!req.query.dataFinal)  return res.status(200).json({erro:`é necessario informar a data final`});
+
+      if (!dateService.isValidDateFormat(dataInicial)) {
+        return res.status(200).json({ erro: `Data inicial inválida. Formato esperado: yyyy-mm-dd` });
+    }
+
+    if (!dateService.isValidDateFormat(dataFinal)) {
+        return res.status(200).json({ erro: `Data final inválida. Formato esperado: yyyy-mm-dd` });
+    }
+
+
+
         if(!req.query.vendedor)  return res.status(200).json({erro:`é necessario informar o vendedor`});
         if(!req.headers.cnpj) return  res.status(200).json({erro:"É necessario informar o codigo da empresa "})
     
-        let headerCnpj:string = String(req.headers.cnpj);
-        let empresa = headerCnpj.replace(/\D/g, '');
-        empresa= `\`${empresa}\``;
-
-      const select = new SelectPedido();
-  
-       let paramData = req.query.data
-        let paramVendedor:number = Number(req.query.vendedor)
-
+    
     let pedidos:any[] =[]
         try{ 
-              let data:any = await select.buscaPordata(empresa, paramData, paramVendedor)
+              let data:any = await select.buscaPorDataInicialFinal(empresa, dataInicial, dataFinal, paramVendedor)
                 pedidos = data
         
             }catch(e){ 
