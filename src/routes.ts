@@ -105,6 +105,8 @@ router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().busca
 
  router.get(`${versao}/next/fotos/:codigo`,  checkToken,  new fotosController().buscafotosNext)
  
+ router.get(`${versao}/next/veiculos/:cliente`,         checkToken,  new VeiculoController().buscaPorCliente )
+
 
   
  
