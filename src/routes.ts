@@ -107,7 +107,7 @@ router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().busca
  
  router.get(`${versao}/next/veiculos/:cliente`,         checkToken,  new VeiculoController().buscaPorCliente )
 
- router.get(`${versao}/next/servicos/:codigo`,  checkToken,  new ServicosController().buscaPorCodigo)
+ router.get(`${versao}/next/servicos`,  checkToken,  new ServicosController().buscaPorCodigo)
 
   
  

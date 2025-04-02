@@ -49,12 +49,12 @@ export class ServicosController{
   async buscaPorCodigo(req:Request,res:Response){
     let empresa   = req.headers.cnpj 
     let select = new Select_servicos();
-    let codigo = Number(req.params.codigo);
+    let codigo = Number(req.query.codigo);
  
       if(!empresa){
          return res.json(400).json({erro:"É necessario informar a empresa "});   
       } 
-      if(!req.params.codigo){
+      if(!req.query.codigo){
         return res.json(400).json({erro:"É necessario informar a empresa "});   
       }
 
@@ -70,7 +70,7 @@ export class ServicosController{
              servicos =   await   select.buscaPorCodigo(dbName, codigo )
                  
        if (servicos.length === 0) {
-         return res.status(404).json({ erro: "Nenhum servico encontrado." });
+         return res.status(200).json({ msg: "Nenhum servico encontrado." });
        }
        return res.status(200).json(servicos);
  
