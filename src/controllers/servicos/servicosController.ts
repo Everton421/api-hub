@@ -43,6 +43,42 @@ export class ServicosController{
               console.error(e);
             return res.status(500).json({ erro: "Erro ao buscar servico." });
         }
+ 
+      }
+
+  async buscaPorCodigo(req:Request,res:Response){
+    let empresa   = req.headers.cnpj 
+    let select = new Select_servicos();
+    let codigo = Number(req.params.codigo);
+ 
+      if(!empresa){
+         return res.json(400).json({erro:"É necessario informar a empresa "});   
+      } 
+      if(!req.params.codigo){
+        return res.json(400).json({erro:"É necessario informar a empresa "});   
+      }
+
+      let headerCnpj:any =   String(req.headers.cnpj) ;
+        empresa  = headerCnpj.replace(/\D/g, '');
+ 
+      let  dbName = `\`${empresa}\``;
+      
+ 
+       let servicos:any
+ 
+         try{
+             servicos =   await   select.buscaPorCodigo(dbName, codigo )
+                 
+       if (servicos.length === 0) {
+         return res.status(404).json({ erro: "Nenhum servico encontrado." });
+       }
+       return res.status(200).json(servicos);
+ 
+         }catch(e){ 
+               console.error(e);
+             return res.status(500).json({ erro: "Erro ao buscar servico." });
+         }
+ 
   }
 
 
@@ -138,4 +174,7 @@ async buscaServicosNext(req:Request,res:Response){
     return res.status(200).json({ erro: "Erro ao buscar servicos." });
 }
 }
+
+
+
 }
