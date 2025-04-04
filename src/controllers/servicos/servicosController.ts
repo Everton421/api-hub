@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Select_servicos } from "../../models/servicos/select";
 import { InsertServico } from "../../models/servicos/insert";
+import { updateServico } from "../../models/servicos/update";
 type service = {
   codigo : number,
   id: number,
@@ -173,6 +174,77 @@ async buscaServicosNext(req:Request,res:Response){
       console.error(e);
     return res.status(200).json({ erro: "Erro ao buscar servicos." });
 }
+}
+
+
+async update(req:Request,res:Response){
+  let empresa   = req.headers.cnpj 
+  if(!empresa){
+    return res.json(400).json({erro:"É necessario informar a empresa "});   
+ } 
+ let  dbName = `\`${empresa}\``;
+
+   let update = new updateServico();
+   
+ function  obterDataAtual() {
+  const dataAtual = new Date();
+  const dia = String(dataAtual.getDate()).padStart(2, '0');
+  const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+  const ano = dataAtual.getFullYear();
+  return `${ano}-${mes}-${dia}`;
+}
+
+ function  obterDataHoraAtual() {
+    const dataAtual = new Date();
+    const dia = String(dataAtual.getDate()).padStart(2, '0');
+    const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+    const ano = dataAtual.getFullYear();
+    const hora = dataAtual.getHours();
+    const minuto = dataAtual.getMinutes();
+    const segundos = dataAtual.getSeconds();
+    return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
+}
+console.log(req.body)
+
+
+        if(!req.body.tipo_serv)    req.body.tipo_serv = 0 
+        if(!req.body.id )  req.body.id = 0; 
+        if(!req.body.valor)    req.body.valor = 0 
+        if(!req.body.codigo)         return res.status(200).json({ erro:true, msg: "É necessario informar o codigo para atualizar o servico!"});
+
+        if(!req.body.aplicacao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para atualizar o servico!"});
+       if (!req.body.data_cadastro) req.body.data_cadastro = obterDataAtual(); 
+       if(!req.body.data_recadastro) req.body.data_recadastro = obterDataHoraAtual();
+
+        let servico = {
+       "codigo": req.body.codigo,
+       "id": req.body.id,   
+      "valor" :req.body.valor,
+      "aplicacao" :req.body.aplicacao,
+      "tipo_serv" :req.body.tipo_serv,
+      "data_cadastro" :req.body.data_cadastro,
+      "data_recadastro" :req.body.data_recadastro,
+        }
+
+     try{
+          let resultinsertId:any = await update.update(dbName, servico);
+            return res.status(200).json(
+              {
+               "codigo": req.body.codigo,
+              "id": req.body.id,   
+              "valor"                : req.body.valor,
+              "aplicacao"            : req.body.aplicacao,
+              "tipo_serv"            : req.body.tipo_serv,
+              "data_cadastro"        : req.body.data_cadastro,
+              "data_recadastro"      : req.body.data_recadastro,
+                    
+            })
+        }catch(e){
+          return res.status(200).json({ erro:true, msg: `Ocorreu um erro ao atualizar o servico!`});
+
+         }
+
+ 
 }
 
 
