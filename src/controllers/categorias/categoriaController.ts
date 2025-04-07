@@ -86,17 +86,17 @@ export class CategoriaController{
 
          let  dbName = `\`${headerCnpj}\``;
          
-         try{
-
-                let resultado:any = await select.busca_por_descricao( dbName,descricao );
+          try{
  
-                    return res.status(200).json(resultado)
-         
-         }catch(e){
-            console.log("ocorreu um erro ao consultar as categorias", e)
-        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as categorias"})
+                 let resultado:any = await select.findByDescription( dbName,descricao );
+  
+                     return res.status(200).json(resultado)
+          
+          }catch(e){
+             console.log("ocorreu um erro ao consultar as categorias", e)
+         return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as categorias"})
+          }
 
-         }
      }
 
 async cadastrar(req:Request,res:Response){
