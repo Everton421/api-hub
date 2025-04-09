@@ -3,7 +3,6 @@ import { conn } from "../../database/databaseConfig"
 
 export class Select_Categorias{
 
-
     async busca_por_descricao(empresa:string, descricao:string ){
 
         return new Promise( async (resolve, reject)=>{
@@ -23,8 +22,7 @@ export class Select_Categorias{
             })
         })
     }
-
-    async findByDescription(empresa:string, descricao:string ){
+    async findByDescription(empresa:string, descricao:string, limit:number ){
 
         return new Promise( async (resolve, reject)=>{
 
@@ -32,10 +30,12 @@ export class Select_Categorias{
                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
             FROM ${empresa}.categorias 
-              WHERE descricao like '%${descricao}%' OR codigo like '%${descricao}%' `
+              WHERE descricao like ?  OR codigo like ?
+              limit   ?
+              `
+            const params = [`%${descricao}%`,`%${descricao}%`, limit ]
 
-
-           await conn.query( sql  ,(err:any, result:any )=>{
+           await conn.query( sql  , params,(err:any, result:any )=>{
                if(err){
                    reject(err);
                }else{
@@ -45,16 +45,16 @@ export class Select_Categorias{
        })
     }
 
-    async busca_geral(empresa:string ){
+    async busca_geral(empresa:string , limit:number){
 
         return new Promise( async (resolve, reject)=>{
 
              let sql = ` SELECT *,
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.categorias `
+             FROM ${empresa}.categorias  limit ?`
  
-            await conn.query( sql  ,(err:any, result:any )=>{
+            await conn.query( sql ,limit ,(err:any, result:any )=>{
                 if(err){
                     reject(err);
                 }else{
@@ -64,4 +64,46 @@ export class Select_Categorias{
         })
     }
 
+    async buscaPorCodigo(empresa:string , codigo:number, limit:number){
+
+        return new Promise( async (resolve, reject)=>{
+
+             let sql = ` SELECT *,
+                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+             FROM ${empresa}.categorias
+            where codigo = ? limit ?
+             `
+            const params = [ codigo, limit ];
+            await conn.query( sql, params  ,(err:any, result:any )=>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(result);
+                }
+            })
+        })
+    }
+
+    async buscaPorId(empresa:string , id:number, limit:number ){
+
+        return new Promise( async (resolve, reject)=>{
+
+             let sql = ` SELECT *,
+                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+             FROM ${empresa}.categorias
+            where id = ? 
+            limit   ? 
+             `
+            const params = [id, limit ]
+            await conn.query( sql, params  ,(err:any, result:any )=>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(result);
+                }
+            })
+        })
+    }
 }

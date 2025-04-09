@@ -52,10 +52,10 @@ export class CategoriaController{
          let headerCnpj:any  = empresa.replace(/\D/g, '');
     
          let  dbName = `\`${headerCnpj}\``;
-         
+         let limit = 1000
          try{
 
-                let resultado:any = await select.busca_geral(dbName);
+                let resultado:any = await select.busca_geral(dbName, limit);
                 if( resultado.length > 0 ){
                     return res.status(200).json(resultado)
                 }else{
@@ -78,17 +78,103 @@ export class CategoriaController{
         let insert = new Insert_Categorias();
 
         if(!req.headers.cnpj ){
-            return res.status(200).json({erro:true, msg:"É necessario informar a empresa "});   
+            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
          } 
          
           let headerCnpj:any  = empresa.replace(/\D/g, '');
-         let descricao = req.params.descricao
+          let  dbName = `\`${headerCnpj}\``;
+
+         let descricao   = String(req.query.descricao) 
+         let codigo:number = Number(req.query.codigo);
+         let id:number = Number(req.query.id);
+         let limit:number = Number(req.query.limit);
+            
+         if( !req.query.limit ){
+            limit = 20
+         }
+
+         if(req.query.descricao){
+            try{
+                    let resultado:any = await select.findByDescription( dbName,descricao, limit  );
+                        return res.status(200).json(resultado)
+            }catch(e){
+                console.log("ocorreu um erro ao consultar as categorias", e)
+            return res.status(400).json({erro:true, msg:"ocorreu um erro ao consultar as categorias"})
+            }
+         }
+
+         if(req.query.codigo  ){
+            if( !isNaN(codigo) ){
+                try{
+                        let resultado:any = await select.buscaPorCodigo( dbName,codigo, limit  );
+                        return res.status(200).json(resultado)
+                }catch(e){
+                        console.log("ocorreu um erro ao consultar as categorias", e)
+                     return res.status(200).json({erro:true, msg:`ocorreu um erro ao consultar as categorias usando o codigo ${codigo}`})
+                }
+            }else{
+                return res.status(400).json({erro:true, msg:"O valor correspondente ao codigo é invalido "})
+            }
+             
+         } 
+
+         if(req.query.id ){
+            if( !isNaN(id)){
+                try{
+                    let resultado:any = await select.buscaPorId( dbName,id, limit  );
+                        return res.status(200).json(resultado)
+                }catch(e){
+                    console.log("ocorreu um erro ao consultar as categorias", e)
+                return res.status(400).json({erro:true, msg:`ocorreu um erro ao consultar as categoria usando o id: ${id}`})
+                }
+            }else{
+                return res.status(400).json({erro:true, msg:"O valor correspondente ao id é invalido "})
+            }
+       }
+
+       if( !codigo || ! id || !descricao){
+                   try{
+                    let resultado:any = await select.busca_geral( dbName, limit   );
+                        return res.status(200).json(resultado)
+                }catch(e){
+                    console.log("ocorreu um erro ao consultar as categorias", e)
+                  return res.status(400).json({erro:true, msg:`ocorreu um erro ao consultar as categoria usando o id: ${id}`})
+                }
+
+       }
+                
+
+         
+
+     }
+
+
+     async buscaPorCodigo(req:Request,res:Response){
+        let empresa:any   = req.headers.cnpj 
+ 
+        let select = new Select_Categorias();
+        let insert = new Insert_Categorias();
+
+        if(!req.headers.cnpj ){
+            return res.status(200).json({erro:true, msg:"É necessario informar a empresa "});   
+         } 
+         
+
+         if(!req.params.codigo ){
+            return res.status(200).json({erro:true, msg:"É necessario informar o codigo da categoria "});   
+         } 
+
+          let headerCnpj:any  = empresa.replace(/\D/g, '');
+         let codigo = Number(req.params.codigo)
 
          let  dbName = `\`${headerCnpj}\``;
-         
+            let limit = Number(req.query.limit)
+            if(!req.query.limit){
+                limit = 1
+            }
           try{
  
-                 let resultado:any = await select.findByDescription( dbName,descricao );
+                 let resultado:any = await select.buscaPorCodigo( dbName,codigo , limit );
   
                      return res.status(200).json(resultado)
           

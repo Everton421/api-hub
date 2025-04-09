@@ -111,6 +111,7 @@ router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().busca
  
  router.put(`${versao}/next/servicos`,   checkToken,  new ServicosController().update )
 
-  router.get(`${versao}/next/categorias/:descricao` , checkToken, new CategoriaController().buscaPorDescricao)
+  router.get(`${versao}/next/categorias` , checkToken, new CategoriaController().buscaPorDescricao)
+ // router.get(`${versao}/next/categorias` , checkToken, new CategoriaController().buscaPorCodigo)
  
     export {router} 
