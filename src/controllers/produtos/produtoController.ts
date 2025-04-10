@@ -56,11 +56,13 @@ async cadastrar(req:Request,res:Response){
         if(!req.body.preco)    req.body.preco = 0 
         if(!req.body.estoque)    req.body.estoque = 0 
 
-        if(!req.body.grupo)             return res.status(200).json({ erro:true, msg: "É necessario informar o grupo para registrar o produto!"});
         if(!req.body.descricao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
         if(!req.body.num_fabricante)   req.body.num_fabricante =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
         if(!req.body.num_original)     req.body.num_original =''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
         
+        if(!req.body.grupo && !req.body.grupo.codigo ) req.body.grupo.codigo = 0; 
+        if(!req.body.marca && !req.body.marca.codigo ) req.body.marca.codigo = 0; 
+
         if(!req.body.origem) req.body.origem = 0;     
         if(!req.body.sku)              req.body.sku =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o sku  para registrar o produto!"});
         if (!req.body.ativo)   req.body.ativo = 'S'     // return res.status(200).json({ erro:true, msg: "É necessario informar o status do produto !"});
@@ -79,13 +81,13 @@ async cadastrar(req:Request,res:Response){
           "id"              : req.body.id,
           "estoque"         : req.body.estoque,
           "preco"           : req.body.preco,
-          "grupo"           : req.body.grupo,
+          "grupo"           : req.body.grupo.codigo,
           "origem"          : req.body.origem,
           "descricao"       : req.body.descricao,
           "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
           "num_original"    : req.body.num_original,   //referencia 
           "sku"             : req.body.sku,
-          "marca"           : req.body.marca,
+          "marca"           : req.body.marca.codigo,
           "ativo"           : req.body.ativo,
           "class_fiscal"    : req.body.class_fiscal,
           "cst"             : req.body.cst,
@@ -265,7 +267,7 @@ async update(req:Request,res:Response){
         if(!req.body.preco)    req.body.preco = 0 
         if(!req.body.estoque)    req.body.estoque = 0 
 
-        if(!req.body.grupo)             return res.status(200).json({ erro:true, msg: "É necessario informar o grupo para registrar o produto!"});
+        if(!req.body.grupo.codigo)             return res.status(200).json({ erro:true, msg: "É necessario informar o grupo para registrar o produto!"});
         if(!req.body.descricao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
         if(!req.body.num_fabricante)   req.body.num_fabricante =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
         if(!req.body.num_original)     req.body.num_original =''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
@@ -288,13 +290,13 @@ async update(req:Request,res:Response){
           "id"              : req.body.id,
           "estoque"         : req.body.estoque,
           "preco"           : req.body.preco,
-          "grupo"           : req.body.grupo,
+          "grupo"           : req.body.grupo.codigo,
           "origem"          : req.body.origem,
           "descricao"       : req.body.descricao,
           "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
           "num_original"    : req.body.num_original,   //referencia 
           "sku"             : req.body.sku,
-          "marca"           : req.body.marca,
+          "marca"           : req.body.marca.codigo,
           "ativo"           : req.body.ativo,
           "class_fiscal"    : req.body.class_fiscal,
           "cst"             : req.body.cst,
