@@ -197,7 +197,7 @@ async buscaProdutoNextPorCodigo(req:Request,res:Response){
             produtoBanco = responseProdutos[0];
 
               if(produtoBanco.marca > 0 ){
-                  responseMarca = await selectMarca.busca_por_codigo(dbName, produtoBanco.marca);
+                  responseMarca = await selectMarca.busca_por_codigo(dbName, produtoBanco.marca, 1);
                }
               if(responseMarca.length > 0 ){
                   marca   = responseMarca[0]; 
