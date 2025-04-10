@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
 import { Select_produtos } from "../../models/produtos/select";
-import { Produto } from "../../models/produtos/interface_produto";
+import { ProdutoBanco, ProdutoCompleto } from "../../types/produto/produto";
 import { InsertProdutos } from "../../models/produtos/insert";
 import { conn } from "../../database/databaseConfig";
 import { UpdateProdutos } from "../../models/produtos/update";
+import { Select_Marcas } from "../../models/marcas/select";
+import { Select_Categorias } from "../../models/categorias/select";
+import { marca } from "../../types/marcaProduto/marca";
+import { categoria } from "../../types/categoriaProduto/categoria";
+import { DateService } from "../../services/dateService";
+ 
 
 export class ProdutoController{
  
@@ -17,7 +23,7 @@ export class ProdutoController{
      let empresa  = headerCnpj.replace(/\D/g, '');
 
      let  dbName = `\`${empresa}\``;
-      let produtos:Produto[]
+      let produtos:ProdutoBanco[]
           try{
               produtos =   await   select.buscaGeral(dbName  )
                if (produtos.length === 0) {
@@ -38,31 +44,12 @@ async cadastrar(req:Request,res:Response){
     return res.json(400).json({erro:"É necessario informar a empresa "});   
  } 
  let  dbName = `\`${empresa}\``;
- let produtos:Produto[]
+ let produtos:ProdutoBanco[]
 
    let select = new Select_produtos();
    let insert = new InsertProdutos();
- 
+  let dateService = new DateService();
 
-   
- function  obterDataAtual() {
-  const dataAtual = new Date();
-  const dia = String(dataAtual.getDate()).padStart(2, '0');
-  const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-  const ano = dataAtual.getFullYear();
-  return `${ano}-${mes}-${dia}`;
-}
-
- function  obterDataHoraAtual() {
-    const dataAtual = new Date();
-    const dia = String(dataAtual.getDate()).padStart(2, '0');
-    const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-    const ano = dataAtual.getFullYear();
-    const hora = dataAtual.getHours();
-    const minuto = dataAtual.getMinutes();
-    const segundos = dataAtual.getSeconds();
-    return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
-}
 
         if(!req.body.id)    req.body.id = 0 
         if(!req.body.preco)    req.body.preco = 0 
@@ -79,8 +66,8 @@ async cadastrar(req:Request,res:Response){
         if (!req.body.class_fiscal) req.body.class_fiscal= '0000.00.00'    //return res.status(200).json({ erro:true, msg: "É necessario informar o ncm  para registrar o produto!"});
         if (!req.body.cst) req.body.cst='00'   //return res.status(200).json({ erro:true, msg: "É necessario informar  cst para registrar o produto!"});
         if(!req.body.tipo) req.body.tipo = 0
-        if(!req.body.data_cadastro ) req.body.data_cadastro = obterDataAtual(); 
-        if(!req.body.data_recadastro ) req.body.data_recadastro = obterDataHoraAtual();
+        if(!req.body.data_cadastro ) req.body.data_cadastro = dateService.obterDataAtual(); 
+        if(!req.body.data_recadastro ) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
         if(!req.body.observacoes1) req.body.observacoes1 =  ""
         if(!req.body.observacoes2) req.body.observacoes2 = "" 
@@ -181,19 +168,50 @@ async buscaProdutoNextPorCodigo(req:Request,res:Response){
  let empresa  = headerCnpj.replace(/\D/g, '');
 
  let  dbName = `\`${empresa}\``;
-
   let select = new Select_produtos();
-  let produtos;
+  let selectMarca = new Select_Marcas();
+  let selectCategoria = new Select_Categorias();
 
 
+  let responseProdutos;
+  
+  let produto:ProdutoCompleto  ;
+  let produtoBanco:ProdutoBanco
   const parametro = Number(req.params.codigo);
-
+  let marca:marca | {} = {}
+  let categoria:categoria | {} = {};
+  
   try{
-    produtos =   await   select.buscaPorCodigo(dbName, parametro  )
-     if (produtos.length === 0) {
-       return res.status(200).json({ erro: "Nenhum produto encontrado." });
-     }
-     return res.status(200).json(produtos);
+    responseProdutos =   await   select.buscaPorCodigo(dbName, parametro  )
+
+      let  responseMarca:marca[] = [];
+      let responseCategoria:categoria[] = []
+
+         if (responseProdutos.length === 0) {
+              return res.status(400).json({ msg: "Nenhum produto encontrado." });
+         }else{
+            produtoBanco = responseProdutos[0];
+
+              if(produtoBanco.marca > 0 ){
+                  responseMarca = await selectMarca.busca_por_codigo(dbName, produtoBanco.marca);
+               }
+              if(responseMarca.length > 0 ){
+                  marca   = responseMarca[0]; 
+                }
+                
+                if( produtoBanco.grupo > 0 ){ 
+                  responseCategoria = await selectCategoria.buscaPorCodigo(dbName, produtoBanco.grupo, 1);
+                }
+                if(responseCategoria.length > 0 ){
+                    categoria = responseCategoria[0];
+                }
+        }
+
+        produto =  produtoBanco;
+        produto.marca = marca;
+        produto.grupo = categoria
+
+     return res.status(200).json([produto]);
 }catch(e){ 
       console.error(e);
     return res.status(200).json({ erro: "Erro ao buscar produtos." });
@@ -208,7 +226,7 @@ async update(req:Request,res:Response){
     return res.json(400).json({erro:"É necessario informar a empresa "});   
  } 
  let  dbName = `\`${empresa}\``;
- let produtos:Produto[]
+ let produtos:ProdutoBanco[]
 
    let select = new Select_produtos();
    let insert = new InsertProdutos();

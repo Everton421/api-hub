@@ -1,10 +1,10 @@
 import { conn } from "../../database/databaseConfig"
-import { Produto } from "./interface_produto"
+import { ProdutoBanco } from "../../types/produto/produto"
 
 export class Select_produtos{
 
     async   buscaPorCodigo(empresa:any, codigo:number)   {
-        return new Promise <Produto[]> ( async ( resolve , reject ) =>{
+        return new Promise <ProdutoBanco[]> ( async ( resolve , reject ) =>{
  
         let sql = `
          select 
@@ -15,7 +15,7 @@ export class Select_produtos{
              CONVERT(observacoes2 USING utf8) as observacoes2,
              CONVERT(observacoes3 USING utf8) as observacoes3
         from ${empresa}.produtos where codigo = ? `
-            await conn.query(sql, [    codigo], (err:any, result:Produto[] )=>{
+            await conn.query(sql, [    codigo], (err:any, result:ProdutoBanco[] )=>{
                 if (err)  reject(err); 
                   resolve(result)
             })
@@ -37,7 +37,7 @@ async buscaPorCodigoDescricao(empresa:any, codigo:number, descricao:string){
 
             FROM ${empresa}.produtos 
             WHERE  codigo like ? OR descricao = ?  limit  20  `;
-    return new Promise<Produto[]>( async (resolve,reject)=>{
+    return new Promise<ProdutoBanco[]>( async (resolve,reject)=>{
         await conn.query( sql,[ codigo, descricao ], (err:any, result:any)=>{
             if(err){ 
                   reject(err)
@@ -59,7 +59,7 @@ async buscaPorCodigoOuDescricao(empresa:any, parametro:string){
 
             FROM ${empresa}.produtos 
             WHERE  codigo like ? OR descricao = ?    `;
-    return new Promise<Produto[]>( async (resolve,reject)=>{
+    return new Promise<ProdutoBanco[]>( async (resolve,reject)=>{
         await conn.query( sql,[  parametro , parametro], (err:any, result:any)=>{
             if(err){ 
                   reject(err)
@@ -81,7 +81,7 @@ async buscaPorCodigoOuDescricaoLimit(empresa:any, parametro:string){
 
             FROM ${empresa}.produtos 
             WHERE  codigo like ? OR descricao like ?   limit 15 `;
-    return new Promise<Produto[]>( async (resolve,reject)=>{
+    return new Promise<ProdutoBanco[]>( async (resolve,reject)=>{
         await conn.query( sql,[  parametro , parametro], (err:any, result:any)=>{
             if(err){ 
                   reject(err)
@@ -93,7 +93,7 @@ async buscaPorCodigoOuDescricaoLimit(empresa:any, parametro:string){
 }
 
 async   buscaGeral(empresa:any )   {
-    return new Promise <Produto[]> ( async ( resolve , reject ) =>{
+    return new Promise <ProdutoBanco[]> ( async ( resolve , reject ) =>{
         let sql = ` select 
         *,
         DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -102,7 +102,7 @@ async   buscaGeral(empresa:any )   {
              CONVERT(observacoes2 USING utf8) as observacoes2,
              CONVERT(observacoes3 USING utf8) as observacoes3
         from ${empresa}.produtos  `
-        await conn.query(sql,  (err:any, result:Produto[] )=>{
+        await conn.query(sql,  (err:any, result:ProdutoBanco[] )=>{
             if (err)  reject(err); 
               resolve(result)
         })

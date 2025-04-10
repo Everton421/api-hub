@@ -1,4 +1,5 @@
 import { conn } from "../../database/databaseConfig"
+import { categoria } from "../../types/categoriaProduto/categoria";
 
 
 export class Select_Categorias{
@@ -64,7 +65,7 @@ export class Select_Categorias{
         })
     }
 
-    async buscaPorCodigo(empresa:string , codigo:number, limit:number){
+    async buscaPorCodigo(empresa:string , codigo:number, limit:number): Promise<categoria[]>{
 
         return new Promise( async (resolve, reject)=>{
 
