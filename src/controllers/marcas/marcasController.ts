@@ -53,10 +53,16 @@ export class MarcasController{
          let headerCnpj:any  = empresa.replace(/\D/g, '');
     
          let  dbName = `\`${headerCnpj}\``;
-     
+         
+         let limit:number = 20;
+
+         if(req.query.limit){
+          limit  = Number(req.query.limit)
+        }
+
          try{
 
-            let resultado:any = await select.busca_geral(dbName);
+            let resultado:any = await select.busca_geral(dbName, limit );
             if( resultado.length > 0 ){
                 return res.status(200).json(resultado)
             }else{
@@ -71,7 +77,75 @@ export class MarcasController{
          
     
     }
+
     async buscaPorDescricao(req:Request,res:Response){
+        let empresa:any   = req.headers.cnpj 
+ 
+        let select = new Select_Marcas();
+        let insert = new Insert_Marcas();
+
+        if(!req.headers.cnpj ){
+            return res.status(200).json({erro:true, msg:"É necessario informar a empresa "});   
+         } 
+         
+          let headerCnpj:any  = empresa.replace(/\D/g, '');
+         let  dbName = `\`${headerCnpj}\``;
+         let descricao   = String(req.query.descricao) 
+         let codigo:number = Number(req.query.codigo);
+         let id:number = Number(req.query.id);
+
+         let limit:number = 20;
+            
+         if(  req.query.limit ){
+            limit = 20
+         }
+
+         if(req.query.descricao){
+            try{
+                    let resultado:any = await select.busca_por_descricao( dbName,descricao , limit);
+                        return res.status(200).json(resultado)
+            }catch(e){
+                console.log("ocorreu um erro ao consultar as marcas", e)
+            return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
+            }
+        }
+
+        if(req.query.codigo){
+            try{
+                let resultado:any = await select.busca_por_codigo( dbName,codigo , limit);
+                    return res.status(200).json(resultado)
+        }catch(e){
+            console.log("ocorreu um erro ao consultar as marcas", e)
+        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
+        }
+       }
+
+       if(req.query.id){
+        try{
+            let resultado:any = await select.buscaPorId( dbName,id , limit);
+                return res.status(200).json(resultado)
+        }catch(e){
+            console.log("ocorreu um erro ao consultar as marcas", e)
+        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
+        }
+     }
+     
+     if( !codigo || ! id || !descricao){
+        try{
+            let resultado:any = await select.busca_geral( dbName, limit);
+                return res.status(200).json(resultado)
+        }catch(e){
+            console.log("ocorreu um erro ao consultar as marcas", e)
+        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
+        }
+        
+     }
+
+     }
+
+
+
+     async buscaPorCodigo(req:Request,res:Response){
         let empresa:any   = req.headers.cnpj 
  
         let select = new Select_Marcas();
@@ -86,9 +160,16 @@ export class MarcasController{
 
          let  dbName = `\`${headerCnpj}\``;
          
+         
+         let limit:number = 20;
+            
+         if(  req.query.limit ){
+            limit = 20
+         }
+
          try{
 
-                let resultado:any = await select.busca_por_descricao( dbName,descricao );
+                let resultado:any = await select.busca_por_descricao( dbName,descricao , limit);
    
                     return res.status(200).json(resultado)
          
@@ -98,6 +179,7 @@ export class MarcasController{
 
          }
      }
+
 
 async cadastrar(req:Request,res:Response){
     let obj = new MarcasController();
@@ -115,7 +197,9 @@ async cadastrar(req:Request,res:Response){
             if(!postMarca.data_cadastro ) postMarca.data_cadastro = obj.obterDataAtual();
             if(!postMarca.data_recadastro ) postMarca.data_recadastro = obj.obterDataHoraAtual();
  
-              let validMarca:any = await select.busca_por_descricao( empresa, postMarca.descricao )
+                let limit = 1;
+                
+              let validMarca:any = await select.busca_por_descricao( empresa, postMarca.descricao, limit  )
     
         if( validMarca.length > 0  )  return  res.status(200).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
            
@@ -136,7 +220,7 @@ async cadastrar(req:Request,res:Response){
                              return res.status(200).json({erro:"ocorreu um erro ao tentar registrar a marca"})
                      }
 
-        }
+  }
 	
         
 

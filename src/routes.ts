@@ -113,6 +113,8 @@ router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().busca
 
  router.get(`${versao}/next/categorias` , checkToken, new CategoriaController().buscaPorDescricao)
 
+ router.get(`${versao}/next/marcas` , checkToken, new MarcasController().buscaPorDescricao)
+
 
 
 

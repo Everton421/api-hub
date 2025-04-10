@@ -144,8 +144,6 @@ export class CategoriaController{
        }
                 
 
-         
-
      }
 
 
