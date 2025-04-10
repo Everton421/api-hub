@@ -9,6 +9,7 @@ import { Select_Categorias } from "../../models/categorias/select";
 import { marca } from "../../types/marcaProduto/marca";
 import { categoria } from "../../types/categoriaProduto/categoria";
 import { DateService } from "../../services/dateService";
+import { Select_fotos } from "../../models/fotos/select";
  
 
 export class ProdutoController{
@@ -171,21 +172,24 @@ async buscaProdutoNextPorCodigo(req:Request,res:Response){
   let select = new Select_produtos();
   let selectMarca = new Select_Marcas();
   let selectCategoria = new Select_Categorias();
+  let selectFotos = new Select_fotos();
 
 
   let responseProdutos;
-  
+
   let produto:ProdutoCompleto  ;
   let produtoBanco:ProdutoBanco
   const parametro = Number(req.params.codigo);
   let marca:marca | {} = {}
   let categoria:categoria | {} = {};
+
   
   try{
     responseProdutos =   await   select.buscaPorCodigo(dbName, parametro  )
 
       let  responseMarca:marca[] = [];
       let responseCategoria:categoria[] = []
+      let responseFotos:IFoto[] = []
 
          if (responseProdutos.length === 0) {
               return res.status(400).json({ msg: "Nenhum produto encontrado." });
@@ -205,11 +209,14 @@ async buscaProdutoNextPorCodigo(req:Request,res:Response){
                 if(responseCategoria.length > 0 ){
                     categoria = responseCategoria[0];
                 }
-        }
+
+                  responseFotos = await selectFotos.buscaPorProduto(dbName,parametro );
+              }
 
         produto =  produtoBanco;
         produto.marca = marca;
-        produto.grupo = categoria
+        produto.grupo = categoria;
+        produto.fotos = responseFotos;
 
      return res.status(200).json([produto]);
 }catch(e){ 

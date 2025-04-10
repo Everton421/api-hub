@@ -22,8 +22,8 @@ export type ProdutoBanco =
         observacoes2:string, 
         observacoes3:string, 
         tipo:number 
-        
-} 
+          fotos: any     
+}       
 export type ProdutoCompleto =
  {
         codigo:number, 
@@ -35,7 +35,8 @@ export type ProdutoCompleto =
         num_fabricante:string, 
         num_original:string, 
         sku:string, 
-        marca: marca | {}, 
+        marca: marca | {},
+        fotos: IFoto[] | [], 
         ativo:string, 
         class_fiscal:string, 
         cst:string, 
