@@ -1,45 +1,13 @@
 import { Request, Response } from "express";
-import { Select_clientes } from "../../models/cliente/select";
-import { Insert_clientes } from "../../models/cliente/insert";
-import { Cliente } from "../../models/cliente/interface_cliente";  
-import { Select_Categorias } from "../../models/categorias/select";
-import { Insert_Categorias } from "../../models/categorias/insert";
 import { Select_Marcas } from "../../models/marcas/select";
 import { Insert_Marcas } from "../../models/marcas/insert";
+import { DateService } from "../../services/dateService";
+import { UpdateMarca } from "../../models/marcas/update";
+import { marca } from "../../types/marcaProduto/marca";
 
 export class MarcasController{
 
-    formatarDataEhora(data: string): string | null {
-        const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-        if (!regex.test(data)) {
-            return null;
-          }
-         return data;
-         }
-           formatarData(data:any) {
-            const dia = String(data.getDate()).padStart(2, '0');
-            const mes = String(data.getMonth() + 1).padStart(2, '0');
-            const ano = data.getFullYear();
-            return `${ano}-${mes}-${dia}`;
-        }
-         obterDataAtual() {
-            const dataAtual = new Date();
-            const dia = String(dataAtual.getDate()).padStart(2, '0');
-            const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-            const ano = dataAtual.getFullYear();
-            return `${ano}-${mes}-${dia}`;
-        }
-           obterDataHoraAtual() {
-            const dataAtual = new Date();
-            const dia = String(dataAtual.getDate()).padStart(2, '0');
-            const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-            const ano = dataAtual.getFullYear();
-            const hora = dataAtual.getHours();
-            const minuto = dataAtual.getMinutes();
-            const segundos = dataAtual.getSeconds();
-            return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
-        }
-
+ 
  
     async buscaGeral( req:Request,res:Response  ){
         let empresa:any   = req.headers.cnpj 
@@ -185,6 +153,8 @@ async cadastrar(req:Request,res:Response){
     let obj = new MarcasController();
     let cnpj:any   = req.headers.cnpj 
  
+    const dateService = new DateService();
+
     let select = new Select_Marcas();
     let insert = new Insert_Marcas();
  
@@ -194,11 +164,11 @@ async cadastrar(req:Request,res:Response){
           
             if(!postMarca.id)  postMarca.id =  "0";
             if(!postMarca.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
-            if(!postMarca.data_cadastro ) postMarca.data_cadastro = obj.obterDataAtual();
-            if(!postMarca.data_recadastro ) postMarca.data_recadastro = obj.obterDataHoraAtual();
+            if(!postMarca.data_cadastro ) postMarca.data_cadastro = dateService.obterDataAtual();
+            if(!postMarca.data_recadastro ) postMarca.data_recadastro = dateService.obterDataHoraAtual();
  
                 let limit = 1;
-                
+
               let validMarca:any = await select.busca_por_descricao( empresa, postMarca.descricao, limit  )
     
         if( validMarca.length > 0  )  return  res.status(200).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
@@ -222,7 +192,55 @@ async cadastrar(req:Request,res:Response){
 
   }
 	
-        
+          async atualizar(req:Request,res:Response){
+                 let cnpj:any   = req.headers.cnpj 
+              
+                 let select = new Select_Marcas();
+                  let dateService = new DateService();
+                 let update = new UpdateMarca();
+             
+                         let postMarca:any = req.body; 
+                        
+                          let  empresa = `\`${cnpj}\``;
+                      
+                          if(!postMarca.codigo)  return res.status(400).json( { erro:true, msg:`E necessario informar o codigo da marca!`}) 
+                          
+                          if(!postMarca.id)  postMarca.id =  "0";
+                          if(!postMarca.descricao)  return res.status(400).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
+                          if(!postMarca.data_cadastro ) postMarca.data_cadastro = dateService.obterDataAtual();
+                          if(!postMarca.data_recadastro ) postMarca.data_recadastro = dateService.obterDataHoraAtual();
+              
+                          let resultMarca:marca[] = []
+
+                             if( postMarca.codigo > 0 ){
+                                resultMarca = await select.busca_por_codigo( empresa,postMarca.codigo, 1);
+                             }
+         
+                             if(resultMarca.length > 0 ){
+                                     let responseMarca:any;
+                                     try{    
+                                         responseMarca = await update.update(empresa, postMarca)
+                                 
+                                         if( responseMarca.affectedRows > 0    ){
+                                             console.log(responseMarca)
+                                             return res.status(200).json({ 
+                                                 "codigo":postMarca.codigo,
+                                                 "descricao":postMarca.descricao,
+                                                 "data_cadastro":postMarca.data_cadastro,
+                                                 "data_recadastro":postMarca.data_recadastro,
+                                                 })
+                                         }
+                                     }catch(e){
+                                             console.log(e);
+                                             return res.status(400).json({erro:"ocorreu um erro ao tentar registrar a marca"})
+                                     }
+                             }else{
+                         return res.status(400).json( { erro:true, msg:`Não foi encontrada marca com o codigo ${postMarca.codigo}  `}) 
+         
+                             }
+                        
+             
+                    }
 
 }
 
