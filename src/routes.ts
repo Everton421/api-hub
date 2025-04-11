@@ -41,25 +41,61 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
     })
 
  
- router.get(`${versao}/offline/produtos`,   checkToken,  new ProdutoController().buscaGeral )
- router.post(`${versao}/produtos`,          checkToken, new ProdutoController().cadastrar)
+ router.get(`${versao}/offline/produtos`,   checkToken,  new ProdutoController().buscaGeral )//ok
+ router.post(`${versao}/produto`,          checkToken, new ProdutoController().cadastrar)//ok
+ //router.get(`${versao}/next/produtos/:produto`,  checkToken,  new ProdutoController().buscaProdutoNext)
+ router.get(`${versao}/produtos`,  checkToken,  new ProdutoController().buscaProdutos)//ok
+ router.get(`${versao}/produto/:codigo`,  checkToken,  new ProdutoController().buscaProdutoNextPorCodigo)//ok
+ router.put(`${versao}/produto`,  checkToken,  new ProdutoController().update)//ok
+
+
+ router.get(`${versao}/offline/clientes`,   checkToken,  new ClienteController().buscaGeral )//ok
+ router.post(`${versao}/cliente`,           checkToken, new ClienteController().cadastrar)//ok
+ router.get(`${versao}/clientes`,           checkToken, new ClienteController().buscaClientes)//ok
+ router.put(`${versao}/cliente`,            checkToken,  new ClienteController().atualizar)//ok
+
+ //router.get(`${versao}/next/clientes/:cliente`,  checkToken,  new ClienteController().buscaClientesNext)
+
+ //router.get(`${versao}/categorias` , checkToken, new CategoriaController().buscaPorDescricao)
+ router.get(`${versao}/categorias` , checkToken, new CategoriaController().buscaCategorias)//ok
+
+ router.get(`${versao}/offline/categorias`,   new CategoriaController().buscaGeral )//ok
+ //router.get(`${versao}/offline/categorias/:descricao`,   new CategoriaController().buscaPorDescricao )
+ router.post(`${versao}/categoria`,   new CategoriaController().cadastrar )//ok
+ router.put(`${versao}/categoria` , checkToken, new CategoriaController().atualizar)//ok
+
+ router.post(`${versao}/marca`,   new MarcasController().cadastrar )//ok
+ router.put(`${versao}/marca` , checkToken, new MarcasController().atualizar)//ok
+ router.get(`${versao}/offline/marcas`,   new MarcasController().buscaGeral )
+ router.get(`${versao}/marcas`,   new MarcasController().buscaMarcas )//ok
+
+ router.get(`${versao}/servicos`,   checkToken,  new ServicosController().buscaServicos )//ok
+ router.get(`${versao}/next/servicos`,  checkToken,  new ServicosController().buscaPorCodigo) 
+ router.put(`${versao}/next/servicos`,   checkToken,  new ServicosController().update )
+ router.get(`${versao}/offline/servicos`,         checkToken,  new ServicosController().buscaGeral )
+ router.get(`${versao}/next/servicos/:servico`,  checkToken,  new ServicosController().buscaServicosNext)
+
+ 
+ router.post(`${versao}/servicos`,  checkToken,  new ServicosController().cadastrar)
+
+
+ //router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().buscaPorDescricao )
+
 
 
  router.get(`${versao}/offline/fotos`,   checkToken,  new fotosController().buscaGeral )
  router.post(`${versao}/offline/fotos`,   checkToken,  new fotosController().cadastrar_deletarFotos )
 
-
- router.get(`${versao}/offline/clientes`,   checkToken,  new ClienteController().buscaGeral )
- router.post(`${versao}/clientes`,          checkToken, new ClienteController().cadastrar)
-
- router.get(`${versao}/offline/servicos`,         checkToken,  new ServicosController().buscaGeral )
- router.post(`${versao}/servicos`,  checkToken,  new ServicosController().cadastrar)
-
  router.get(`${versao}/offline/formas_pagamento`, checkToken,  new FormasController().buscaGeral )
- router.post(`${versao}/formas_pagamento`,checkToken, new FormasController().cadastrar)
-
  router.get(`${versao}/offline/tipo_os`,          checkToken,  new TipoOsController().buscaGeral )
  router.get(`${versao}/offline/veiculos`,         checkToken,  new VeiculoController().busca )
+ 
+
+
+
+
+ router.post(`${versao}/formas_pagamento`,checkToken, new FormasController().cadastrar)
+
 
  router.get(`${versao}/pedidos`,  checkToken,  new pedidoController().select)
 
@@ -77,47 +113,30 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
 /////
  router.post(`${versao}/pedidos`, checkToken, new pedidoController().insert)
 ////
-router.post(`${versao}/offline/categorias`,   new CategoriaController().cadastrar )
-router.get(`${versao}/offline/categorias`,   new CategoriaController().buscaGeral )
-router.get(`${versao}/offline/categorias/:descricao`,   new CategoriaController().buscaPorDescricao )
+
 
 ////
 
-router.post(`${versao}/offline/marcas`,   new MarcasController().cadastrar )
-router.get(`${versao}/offline/marcas`,   new MarcasController().buscaGeral )
-router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().buscaPorDescricao )
 
 //////////// rotas next
- router.get(`${versao}/next/produtos/:produto`,  checkToken,  new ProdutoController().buscaProdutoNext)
- router.get(`${versao}/next/clientes/:cliente`,  checkToken,  new ClienteController().buscaClientesNext)
- router.get(`${versao}/next/servicos/:servico`,  checkToken,  new ServicosController().buscaServicosNext)
+ 
 
  router.get(`${versao}/next/pedidoSimples/`,  checkToken,  new pedidoNextController().buscaPedidosSimplesPorData)
  router.get(`${versao}/next/pedidoCompletoPorCodigo/`,  checkToken,  new pedidoNextController().buscaPedidosCompleto)
  
  router.get(`${versao}/next/cliente/:codigo`,  checkToken,  new ClienteController().buscaClienteNextPorCodigo)
- router.put(`${versao}/next/cliente`,  checkToken,  new ClienteController().atualizar)
 
 
- router.get(`${versao}/next/produto/:codigo`,  checkToken,  new ProdutoController().buscaProdutoNextPorCodigo)
- router.put(`${versao}/next/produto`,  checkToken,  new ProdutoController().update)
+
 
 
  router.get(`${versao}/next/fotos/:codigo`,  checkToken,  new fotosController().buscafotosNext)
  
  router.get(`${versao}/next/veiculos/:cliente`,         checkToken,  new VeiculoController().buscaPorCliente )
 
- router.get(`${versao}/next/servicos`,  checkToken,  new ServicosController().buscaPorCodigo)
+
+
  
- router.put(`${versao}/next/servicos`,   checkToken,  new ServicosController().update )
-
- router.get(`${versao}/next/categorias` , checkToken, new CategoriaController().buscaPorDescricao)
-
- router.get(`${versao}/next/marcas` , checkToken, new MarcasController().buscaPorDescricao)
-
- router.put(`${versao}/next/categorias` , checkToken, new CategoriaController().atualizar)
-
- router.put(`${versao}/next/marcas` , checkToken, new MarcasController().atualizar)
 
 
 

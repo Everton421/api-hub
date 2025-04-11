@@ -1,6 +1,14 @@
 import { conn } from "../../database/databaseConfig"
 import { ProdutoBanco } from "../../types/produto/produto"
 
+
+type queryProd = {
+    codigo:number;
+    marca:number;
+    grupo:number;
+    descricao:string;
+}
+
 export class Select_produtos{
 
     async   buscaPorCodigo(empresa:any, codigo:number)   {
@@ -119,5 +127,90 @@ async   buscaUltimoCodigoInserido(empresa:any )   {
         })
      })
 }
+
+
+
+ async novaBusca(empresa: string, query:any): Promise<ProdutoBanco[]> {
+
+        let {
+            codigo,
+            marca,
+            grupo,
+            descricao,
+            limit  
+        } = query;
+
+        let baseSql = `
+            SELECT
+                *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+        DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro, 
+            CONVERT(observacoes1 USING utf8) as observacoes1,
+            CONVERT(observacoes2 USING utf8) as observacoes2,
+            CONVERT(observacoes3 USING utf8) as observacoes3
+            FROM  ${empresa}.produtos
+        `;  
+
+        const conditions: string[] = [];
+        const params: any[] = [];
+
+        if(!limit || isNaN(limit)){
+            limit = 20;
+        }
+
+        if (codigo) {
+            conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
+            params.push(codigo);          // Adiciona o valor ao array de parâmetros
+        }
+        if (marca) {
+            conditions.push("marca = ?");
+            params.push(Number(marca));
+        }
+        if (grupo) {
+            conditions.push("grupo = ?");
+            params.push(Number(grupo));
+        }
+        if (descricao) {
+            conditions.push("descricao LIKE ?");
+            params.push(`%${descricao}%`);  
+        }
+        let whereClause = "";
+        
+        if (conditions.length > 0) {
+            whereClause = " WHERE " + conditions.join(" AND ");
+        }
+
+        //conditions.join(" LIMIT ?");
+      let limitQuery = " LIMIT ? "
+
+        params.push( Number(limit));  
+
+        const finalSql = baseSql + whereClause + limitQuery;
+
+        // console.log("SQL Executado:", finalSql);  
+        // console.log("Parâmetros:", params);       
+
+        try {
+       
+             return new Promise <ProdutoBanco[]> ( async ( resolve , reject ) =>{
+                await conn.query(finalSql, params,(err:any, result:ProdutoBanco[] )=>{
+                    if (err){
+                        reject(err);
+                    }else{
+                        resolve(result)
+
+                    } 
+                })
+
+             })
+
+
+        } catch (err) {
+            console.error("Erro ao executar a query:", err);
+            // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
+            throw new Error("Falha ao buscar produtos no banco de dados.");
+            // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
+        }
+    }
 
 }

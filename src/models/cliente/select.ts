@@ -6,8 +6,6 @@ export class Select_clientes{
 
     async   buscaGeral(empresa:any, vendedor:any )   {
         return new Promise <Cliente[]> ( async ( resolve , reject ) =>{
-  
-
        let sql = ` select *,
              DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
@@ -84,5 +82,85 @@ async   buscaPorCodigoOuDescricaoOuCnpj(empresa:any, param:string  )   {
       })
    })
 }
+
+
+
+async novaBusca(empresa:any, query:any ){
+
+let { nome, cnpj, codigo, limit } = query 
+
+    let baseSql = ` select *,
+              DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+              DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+              from ${empresa}.clientes  
+              `;
+
+
+              const conditions: string[] = [];
+              const params: any[] = [];
+      
+        if(!limit || isNaN(limit) ){
+                limit = 20;
+            }
+
+
+            if (codigo) {
+              conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
+              params.push(Number(codigo));          // Adiciona o valor ao array de parâmetros
+          }
+
+          if (cnpj) {
+            conditions.push("cnpj = ?"); // Placeholder (?) para o parâmetro
+            params.push(cnpj );          // Adiciona o valor ao array de parâmetros
+         }
+
+          if (nome) {
+            conditions.push("nome LIKE ?");
+            params.push(`%${nome}%`);  
+        }
+
+      let whereClause = "";
+
+        if (conditions.length > 0) {
+          whereClause = " WHERE " + conditions.join(" AND ");
+      }
+
+
+      let limitQuery = " LIMIT ? "
+
+       
+
+       params.push( Number(limit));  
+      
+      const finalSql = baseSql + whereClause + limitQuery;
+
+
+       // console.log('sql ',finalSql);
+       // console.log('params ',params);
+
+          console.log(query)
+      try{
+        return new Promise <any[]> ( async ( resolve , reject ) =>{
+        await conn.query(finalSql, params,(err:any, result: any[] )=>{
+          if (err){
+              reject(err);
+          }else{
+              resolve(result)
+            } 
+          })
+      })
+
+      }catch(e){
+        console.error("Erro ao executar a query:", e);
+        // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
+        throw new Error("Falha ao buscar produtos no banco de dados.");
+        // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
+      }
+
+  }
+
+
+
+
 
 }

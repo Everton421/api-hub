@@ -19,7 +19,7 @@
         "/offline/produtos":{
             "get":{
             "summary": "busca produtos",
-             "description":"rota responsavel por buscar todos os dados dos produtos, onde é feito os procedimentos de cadastro no aplicativo.",
+             "description":"rota responsavel por buscar todos os dados dos produtos.",
              "tags":["produtos"],
              "requestBody":{
                     "content":{
@@ -56,7 +56,509 @@
                }
             }
         } ,
-        "/offline/clientes/?vendedor={codigo_vendedor}":{
+       
+          "/produtos": {
+            "get": {
+              "summary": "Obtém produtos.",
+              "description": " Obtém produtos.",
+              "tags": ["produtos"],
+              "parameters":[
+                {
+                    "name":"codigo",
+                    "in":"query",
+                    "description":"codigo do produto",
+                    "required":false, 
+                    "type": "integer"
+                } 
+              ,
+              {
+                "name": "limit",
+                "in": "query",
+                "description": "Número máximo de itens a retornar",
+                "required": false,
+                "type": "integer",  
+                "format": "int32",  
+                "default": 20       
+              },
+              {
+                "name": "marca",
+                "in": "query",
+                "description": "Código da Marca",
+                "required": false,
+                "type": "integer",  
+                "format": "int32"   
+              },
+              {
+                "name": "Grupo",
+                "in": "query",
+                "description": "Código da categoria ",
+                "required": false,
+                "type": "integer",  
+                "format": "int32"   
+              },
+              {
+                "name": "Descrição",
+                "in": "query",
+                "description": "Descrição do produto",
+                "required": false,
+                "type": "string",  
+                "format": "int32"   
+              } 
+             ],
+              "requestBody": {
+                "required": true,  
+                "content": {
+                  "application/json": {
+                  
+                    
+                  }
+                }
+              },
+              "responses": {
+                "200": {  
+                  "description": " ",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "produtos": {  
+                          "value": {
+                            "codigo": 242618,
+                            "id": 1,
+                            "estoque": 1,
+                            "preco": 222,
+                            "grupo": 1,
+                            "origem": "0",
+                            "descricao": "AMORTECEDOR TRASEIRO teste ",
+                            "num_fabricante": "L-12476.",
+                            "num_original": "1C45 18080 AA",
+                            "sku": "L-12476.",
+                            "marca": 908,
+                            "ativo": "S",
+                            "class_fiscal": "20687",
+                            "cst": "00",
+                            "data_recadastro": "2025-04-10 17:02:28",
+                            "data_cadastro": "0000-00-00",
+                            "observacoes1": "",
+                            "observacoes2": "",
+                            "observacoes3": "",
+                            "tipo": 0
+                  }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao buscar produtos.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "Erro ao buscar produtos."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+          },
+      "/produto/{codigo-produto}": {
+            "get": {
+              "summary": "Obtém produto pelo Código",
+              "description": " Obtém um produto com todos os dados.",
+              "tags": ["produtos"],
+              "requestBody": {
+                "required": true,  
+                "content": {
+                  "application/json": {
+                  }
+                }
+              },
+              "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "Produto": {  
+                          "summary": "Exemplo de resposta de produto obtido",  
+                          "value": [
+                            {
+                                "codigo": 242618,
+                                "id": 1,
+                                "estoque": 1,
+                                "preco": 222,
+                                "grupo": {
+                                    "codigo": 1,
+                                    "id": 1,
+                                    "data_cadastro": "1899-12-30",
+                                    "data_recadastro": "2024-08-26 16:31:16",
+                                    "descricao": "OUTROS 3"
+                                },
+                                "origem": "0",
+                                "descricao": "AMORTECEDOR TRASEIRO teste ",
+                                "num_fabricante": "L-12476.",
+                                "num_original": "1C45 18080 AA",
+                                "sku": "L-12476.",
+                                "marca": {
+                                    "codigo": 908,
+                                    "id": 0,
+                                    "data_cadastro": "2025-04-10",
+                                    "data_recadastro": "2025-04-10 17:01:40",
+                                    "descricao": "marca teste1"
+                                },
+                                "ativo": "S",
+                                "class_fiscal": "20687",
+                                "cst": "00",
+                                "data_recadastro": "2025-04-10 17:02:28",
+                                "data_cadastro": "0000-00-00",
+                                "observacoes1": "",
+                                "observacoes2": "",
+                                "observacoes3": "",
+                                "tipo": 0,
+                                "fotos": [
+                                    {
+                                        "produto": 242618,
+                                        "sequencia": 1,
+                                        "descricao": "ft",
+                                        "link": "https://i.ibb.co/H7grssp/RYZEN-5.png",
+                                        "foto": "ZnQw",
+                                        "data_cadastro": "0000-00-00",
+                                        "data_recadastro": "0000-00-00 00:00:00"
+                                    },
+                                    {
+                                        "produto": 242618,
+                                        "sequencia": 2,
+                                        "descricao": "ft",
+                                        "link": "https://i.ibb.co/Brqvtvj/Screenshot-6.png",
+                                        "foto": "IA==",
+                                        "data_cadastro": "0000-00-00",
+                                        "data_recadastro": "0000-00-00 00:00:00"
+                                    },
+                                    {
+                                        "produto": 242618,
+                                        "sequencia": 3,
+                                        "descricao": "ft",
+                                        "link": "https://i.ibb.co/hFyNBk2/Screenshot-5.png",
+                                        "foto": "IA==",
+                                        "data_cadastro": "0000-00-00",
+                                        "data_recadastro": "0000-00-00 00:00:00"
+                                    }
+                                ]
+                            }
+                        ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "Produto não encontrado.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "Nenhum produto encontrado."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+          },
+          "/produto put ": {
+            "put": {
+              "summary": "Atualizar produto",
+              "description": "Rota responsável por Atualizar um produto.",
+              "tags": ["produtos"],
+              "requestBody": {
+                "required": true,  
+                "content": {
+                  "application/json": {
+                  
+                    "examples": {
+                      "produto": {
+                        "summary": "Exemplo de produto para cadastro",  
+                        "value":{
+                            "codigo": 2,
+                            "id": 2,
+                            "estoque": 0,
+                            "preco": 289.28,
+                            "grupo": {"codigo": 2 },
+                            "origem": "0",
+                            "descricao": "KIT ROLAMENTO CUBO TRASEIRO",
+                            "num_fabricante": "7316573929277",
+                            "num_original": "ALR399365L",
+                            "sku": "",
+                            "marca": {"codigo":148 },
+                            "ativo": "S",
+                            "class_fiscal": "8482.10.90",
+                            "cst": "00",
+                            "data_recadastro": "2025-01-28 10:15:59",
+                            "data_cadastro": "0000-00-00",
+                            "observacoes1": "",
+                            "observacoes2": "",
+                            "observacoes3": "",
+                            "tipo": 8
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {  
+                  "description": "Produto atualizado com sucesso. Retorna o objeto do produto atualizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "produtoCriado": {  
+                          "summary": "Exemplo de resposta de produto atualizado",  
+                          "value":{
+                            "codigo": 2,
+                            "id": 2,
+                            "estoque": 0,
+                            "preco": 289.28,
+                            "grupo": {
+                                "codigo": 2
+                            },
+                            "origem": "0",
+                            "descricao": "KIT ROLAMENTO CUBO TRASEIRO",
+                            "num_fabricante": "7316573929277",
+                            "num_original": "ALR399365L",
+                            "sku": "",
+                            "marca": {
+                                "codigo": 148
+                            },
+                            "ativo": "S",
+                            "class_fiscal": "8482.10.90",
+                            "cst": "00",
+                            "data_recadastro": "2025-01-28 10:15:59",
+                            "data_cadastro": "0000-00-00",
+                            "observacoes1": "",
+                            "observacoes2": "",
+                            "observacoes3": "",
+                            "tipo": 8
+                        }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao registrar o produto.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "Ocorreu um erro ao atualizar o produto!"
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+          },
+          "/produto post": {
+            "post": {
+              "summary": "Cadastrar produtos",
+              "description": "Rota responsável por cadastrar produto.",
+              "tags": ["produtos"],
+              "requestBody": {
+                "required": true,  
+                "content": {
+                  "application/json": {
+                  
+                    "examples": {
+                      "produto": {
+                        "summary": "Exemplo de produto para cadastro",  
+                        "value": {
+                          "id": 1,
+                          "estoque": 1,
+                          "preco": 222,
+                          "grupo": {
+                              "codigo": 1
+                          },
+                          "origem": "0",
+                          "descricao": " teste1 ",
+                          "num_fabricante": "L-12476.",
+                          "num_original": "1C45 18080 AA",
+                          "sku": "L-12476.",
+                          "marca": {
+                              "codigo": 0
+                          },
+                          "ativo": "S",
+                          "class_fiscal": "20687",
+                          "cst": "00",
+                          "data_recadastro": "2025-04-10 17:02:28",
+                          "data_cadastro": "0000-00-00",
+                          "observacoes1": "",
+                          "observacoes2": "",
+                          "observacoes3": "",
+                          "tipo": 0
+                      }
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {  
+                  "description": "Produto cadastrado com sucesso. Retorna o objeto do produto criado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "produtoCriado": {  
+                          "summary": "Exemplo de resposta de produto criado",  
+                          "value":{
+                              "codigo": 239501,
+                              "id": 1,
+                              "estoque": 1,
+                              "preco": 222,
+                              "grupo": {
+                                  "codigo": 1
+                              },
+                              "origem": "0",
+                              "descricao": " teste1 ",
+                              "num_fabricante": "L-12476.",
+                              "num_original": "1C45 18080 AA",
+                              "sku": "L-12476.",
+                              "marca": {
+                                  "codigo": 0
+                              },
+                              "ativo": "S",
+                              "class_fiscal": "20687",
+                              "cst": "00",
+                              "data_recadastro": "2025-04-10 17:02:28",
+                              "data_cadastro": "0000-00-00",
+                              "observacoes1": "",
+                              "observacoes2": "",
+                              "observacoes3": "",
+                              "tipo": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao registrar o produto.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "Erro ao tentar registrar o produto!"
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+          },
+          "/offline/clientes/?vendedor={codigo_vendedor}":{
             "get":{
             "summary": "busca clientes",
              "description":"rota responsavel por buscar todos os dados dos clientes por vendedor, onde é feito os procedimentos de cadastro no aplicativo.",
@@ -95,6 +597,904 @@
                         }
                     }
                }
+            }
+        } ,
+  
+        "/clientes":{
+            "get":{
+            "summary": "Obtém cliente",
+             "description":"Obtém cliente",
+             "tags":["clientes"],
+             "parameters":[
+                {
+                    "name":"codigo",
+                    "in":"query",
+                    "description":"codigo do cliente",
+                    "required":false, 
+                    "type": "integer"
+                } 
+              ,
+              {
+                "name": "limit",
+                "in": "query",
+                "description": "Número máximo de itens a retornar",
+                "required": false,
+                "type": "integer",  
+                "format": "int32",  
+                "default": 20       
+              },
+              {
+                "name": "cnpj",
+                "in": "query",
+                "description": "cnpj/cpf do cliente",
+                "required": false,
+                "type": "integer",  
+                "format": "int32"   
+              },
+           
+              {
+                "name": "nome",
+                "in": "query",
+                "description": "Nome do Cliente",
+                "required": false,
+                "type": "string",  
+                "format": "int32"   
+              } 
+             ],
+             "requestBody":{
+                    "content":{
+                        "application/json":{
+                           
+                        }
+                    }
+               },
+               "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "cliente": {  
+                          "summary": "Exemplo de resposta de cliente criado",  
+                          "value": {
+                            "codigo": 257,
+                            "id": "257",
+                            "celular": "",
+                            "nome": "JOAO MATIAS DE OLIVEIRA",
+                            "cep": "00000-000",
+                            "endereco": "RUA TIRADENTES",
+                            "ie": "472914",
+                            "numero": "464",
+                            "cnpj": "000.000.000-00",
+                            "ativo": "S",
+                            "cidade": "MUNHOZ DE MELO",
+                            "data_cadastro": "0000-00-00",
+                            "data_recadastro": "2020-10-07 10:32:58",
+                            "vendedor": 0,
+                            "bairro": "CENTRO",
+                            "estado": "PR"
+                        }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                     "erro":true,
+                  "description": "erro ao buscar o Cliente.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "Erro ao buscar o Cliente!"
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        } ,  
+         "/cliente":{
+            "post":{
+            "summary": "Cadastra cliente",
+             "description":"Cadastra cliente",
+             "tags":["clientes"],
+         
+             "requestBody":{
+                    "content":{
+                        "application/json":{
+                            "examples":{
+                                "cliente":{
+                                    "value":[
+                                        {
+                                            "cep": "86750-000",
+                                            "cidade": "IGUARACU",
+                                            "estado": "PR",
+                                            "bairro": "2",
+                                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
+                                            "celular": "(44) 99972-2801",
+                                            "cnpj": "000.000.000-00",
+                                            "nome": "CESAR EDUARDO IVANTES",
+                                            "ativo": "S",
+                                            "data_cadastro": "2025-03-19",
+                                            "data_recadastro": "2025-03-19 8:40:34",
+                                            "id": 0
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+               },
+               "responses": {
+                "200": {  
+                  "description": "Cliente cadastrado com sucesso. Retorna o objeto do cliente criado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "produtoCriado": {  
+                          "summary": "Exemplo de resposta de cliente criado",  
+                          "value":{
+                            "codigo": 2513,
+                            "id": "0",
+                            "celular": "(44) 99972-2801",
+                            "nome": "CESAR EDUARDO IVANTES",
+                            "cep": "86750-000",
+                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
+                            "ie": "",
+                            "numero": "",
+                            "cnpj": "000.000.000-50",
+                            "cidade": "IGUARACU",
+                            "data_cadastro": "2025-03-18",
+                            "data_recadastro": "2025-03-19 08:40:34"
+                        }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao registrar o Cliente.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "Erro ao tentar registrar o Cliente!"
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        } ,
+        "/cliente put":{
+            "put":{
+            "summary": "Atualizar cliente",
+             "description":"Atualizar cliente",
+             "tags":["clientes"],
+         
+             "requestBody":{
+                    "content":{
+                        "application/json":{
+                            "examples":{
+                                "cliente":{
+                                    "value":[
+                                        {
+                                            "cep": "86750-000",
+                                            "cidade": "IGUARACU",
+                                            "estado": "PR",
+                                            "bairro": "2",
+                                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
+                                            "celular": "(44) 99972-2801",
+                                            "cnpj": "000.000.000-00",
+                                            "nome": "CESAR EDUARDO IVANTES",
+                                            "ativo": "S",
+                                            "data_cadastro": "2025-03-19",
+                                            "data_recadastro": "2025-03-19 8:40:34",
+                                            "id": 0
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+               },
+               "responses": {
+                "200": {  
+                  "description": "Cliente Atualizado com sucesso. Retorna o objeto do cliente Atualizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "produtoCriado": {  
+                          "summary": "Exemplo de resposta de cliente Atualizado",  
+                          "value":{
+                            "codigo": 2513,
+                            "id": "0",
+                            "celular": "(44) 99972-2801",
+                            "nome": "CESAR EDUARDO IVANTES",
+                            "cep": "86750-000",
+                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
+                            "ie": "",
+                            "numero": "",
+                            "cnpj": "000.000.000-50",
+                            "cidade": "IGUARACU",
+                            "data_cadastro": "2025-03-18",
+                            "data_recadastro": "2025-03-19 08:40:34"
+                        }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao Atualizar o Cliente.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "Erro ao tentar Atualizar o Cliente!"
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        } ,
+        "/categorias ":{
+            "get":{
+            "summary": "Obtém Categorias",
+             "description":"Obtém Categorias",
+             "tags":["categorias"],
+             "parameters":[
+                {
+                    "name":"codigo",
+                    "in":"query",
+                    "description":"codigo da categoria.",
+                    "required":false, 
+                    "type": "integer"
+                } 
+              ,
+              {
+                "name": "limit",
+                "in": "query",
+                "description": "Número máximo de itens a retornar",
+                "required": false,
+                "type": "integer",  
+                "format": "int32",  
+                "default": 20       
+              },
+              {
+                "name": "descricao",
+                "in": "query",
+                "description": "Descrição da categoria.",
+                "required": false,
+                "type": "integer",  
+                "format": "int32"   
+              } 
+           
+             ],
+         
+             "requestBody":{
+                    "content":{
+                        "application/json":{
+                         
+                        }
+                    }
+               },
+               "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "Categorias": {  
+                          "value":[
+                            {
+                                "codigo": 1,
+                                "id": 1,
+                                "data_cadastro": "1899-12-30",
+                                "data_recadastro": "2024-08-26 16:31:16",
+                                "descricao": "OUTROS 3"
+                            }
+                        ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao consultar as categorias.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "erro ao consultar as categorias."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        } ,
+        "/offline/categorias":{
+            "get":{
+            "summary": "Obtém Categorias",
+             "description":"obtem todas as Categorias.",
+             "tags":["categorias"],
+             "requestBody":{
+                    "content":{
+                        "application/json":{
+                            "examples":{
+                                "categorias":{
+                                    "value":[
+                                        {
+                                            "codigo": 1,
+                                            "id": 1,
+                                            "data_cadastro": "1899-12-30",
+                                            "data_recadastro": "2024-08-26 16:31:16",
+                                            "descricao": "OUTROS 3"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+               }
+            }
+        },
+        "/categoria ":{
+            "post":{
+            "summary": "Cadastra Categoria",
+             "description":"Cadastra Categoria",
+             "tags":["categorias"],
+             "requestBody":{
+                "content":{
+                    "application/json":{
+                        "examples":{
+                            "cliente":{
+                                "value": 
+                                    {
+                                        "id": 1,
+                                        "data_cadastro": "0000-00-00",
+                                        "data_recadastro": "2023-12-07 16:38:37",
+                                        "descricao": "teste1"
+                                    }
+                            }
+                        }
+                    }
+                }
+           },
+            
+               "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "Categorias": {  
+                          "value": 
+                            {
+                                "codigo": 54,
+                                "descricao": "teste1",
+                                "data_cadastro": "0000-00-00",
+                                "data_recadastro": "2023-12-07 16:38:37"
+                            }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao cadastrar categoria.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "erro ao cadastrar categoria."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        } , 
+        "/categoria put":{
+            "put":{
+            "summary": "Atualiza Categoria",
+             "description":"Atualiza Categoria",
+             "tags":["categorias"],
+             "requestBody":{
+                "content":{
+                    "application/json":{
+                        "examples":{
+                            "categoria":{
+                                "value": 
+                                    {
+                                        "codigo": 54,
+                                        "id": 1,
+                                        "data_cadastro": "0000-00-00",
+                                        "data_recadastro": "2023-12-07 16:38:37",
+                                        "descricao": "teste1"
+                                    }
+                            }
+                        }
+                    }
+                }
+           },
+            
+               "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "Categoria": {  
+                          "value": 
+                            {
+                                "codigo": 54,
+                                "descricao": "teste1",
+                                "data_cadastro": "0000-00-00",
+                                "data_recadastro": "2023-12-07 16:38:37"
+                            }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao atualizar categoria.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "erro ao atualizar categoria."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        },
+         "/offline/marcas":{
+            "get":{
+            "summary": "Obtém todas marcas",
+             "description":"obtem todas as marcas.",
+             "tags":["marcas"],
+             "requestBody":{
+                    "content":{
+                        "application/json":{
+                            "examples":{
+                                "marcas":{
+                                    "value":[
+                                        {
+                                            "codigo": 1,
+                                            "id": 1,
+                                            "data_cadastro": "1899-12-30",
+                                            "data_recadastro": "2024-08-26 16:31:16",
+                                            "descricao": "OUTROS 3"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+               }
+            }
+        },
+        "/marcas ":{
+            "get":{
+            "summary": "Obtém marcas",
+             "description":"Obtém marcas",
+             "tags":["marcas"],
+             "parameters":[
+                {
+                    "name":"codigo",
+                    "in":"query",
+                    "description":"codigo da marca.",
+                    "required":false, 
+                    "type": "integer"
+                } 
+              ,
+              {
+                "name": "limit",
+                "in": "query",
+                "description": "Número máximo de itens a retornar",
+                "required": false,
+                "type": "integer",  
+                "format": "int32",  
+                "default": 20       
+              },
+              {
+                "name": "descricao",
+                "in": "query",
+                "description": "Descrição da marca.",
+                "required": false,
+                "type": "integer",  
+                "format": "int32"   
+              } 
+           
+             ],
+         
+             "requestBody":{
+                    "content":{
+                        "application/json":{
+                         
+                        }
+                    }
+               },
+               "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "Categorias": {  
+                          "value":[
+                            {
+                                "codigo": 1,
+                                "id": 1,
+                                "data_cadastro": "1899-12-30",
+                                "data_recadastro": "2024-08-26 16:31:16",
+                                "descricao": "OUTROS 3"
+                            }
+                        ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao consultar as marcas.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "erro ao consultar as marcas."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        } ,
+        "/marca ":{
+            "post":{
+            "summary": "Cadastra marca",
+             "description":"Cadastra marca",
+             "tags":["marcas"],
+             "requestBody":{
+                "content":{
+                    "application/json":{
+                        "examples":{
+                            "marca":{
+                                "value": 
+                                {
+                                    "id": 5,
+                                    "data_cadastro": "1899-12-30",
+                                    "data_recadastro": "2024-08-26 16:31:16",
+                                    "descricao": "teste1"
+                                }
+                            }
+                        }
+                    }
+                }
+           },
+            
+               "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "marca": {  
+                          "value": 
+                          {
+                            "codigo": 772,
+                            "descricao": "teste1",
+                            "data_cadastro": "1899-12-30",
+                            "data_recadastro": "2024-08-26 16:31:16"
+                        }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao cadastrar marca.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "erro ao cadastrar marca."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
+            }
+        } ,
+        "/marca put":{
+            "put":{
+            "summary": "Atualizar marca",
+             "description":"Atualizar marca",
+             "tags":["marcas"],
+             "requestBody":{
+                "content":{
+                    "application/json":{
+                        "examples":{
+                            "marca":{
+                                "value": 
+                                {
+                                    "codigo": 772,
+                                    "id": 5,
+                                    "data_cadastro": "1899-12-30",
+                                    "data_recadastro": "2024-08-26 16:31:16",
+                                    "descricao": "teste1"
+                                }
+                            }
+                        }
+                    }
+                }
+           },
+            
+               "responses": {
+                "200": {  
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "marca": {  
+                          "value": 
+                          {
+                            "codigo": 772,
+                            "descricao": "teste1",
+                            "data_cadastro": "1899-12-30",
+                            "data_recadastro": "2024-08-26 16:31:16"
+                        }
+                        }
+                      }
+                    }
+                  }
+                },
+                "400":{
+                  "description": "erro ao Atualizar marca.",
+
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "erro": true,
+                                "msg": "erro ao Atualizar marca."
+                            }
+                         }
+                       }
+                     }
+                  }
+                },
+                "401":{
+                    "description": "não autorizado.",
+                    "content": {
+                      "application/json": {
+                        "schema": {  
+                        },
+                        "examples": {
+                          "erro":{
+                              "value":{
+                                  "msg": "Acesso negado, token não informado! "
+                              }
+                          }
+                        }
+                      }
+                  }
+  
+                  } 
+              }
             }
         } ,
         "/offline/veiculos":{
@@ -374,14 +1774,9 @@
                }
             }
         } 
-        
-
-
    
     } 
  
- 
-
 
        
 }

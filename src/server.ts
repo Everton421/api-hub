@@ -24,8 +24,17 @@ import { conn } from './database/databaseConfig';
 
             app.use(cors( corsOptions));
 
-                //process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-        //app.use(`${versao}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+                 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+            
+                    const optionsSwagger = { 
+                        swaggerOptions: {
+                            // ---> Adicione esta linha <---
+                            docExpansion: 'none'
+                            // ---> Fim da linha adicionada <---
+                          }
+                    }
+
+                 app.use(`${versao}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocs, optionsSwagger))
 
         app.use(express.json());
         app.use(router)

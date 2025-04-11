@@ -175,7 +175,31 @@ async buscaServicosNext(req:Request,res:Response){
     return res.status(200).json({ erro: "Erro ao buscar servicos." });
 }
 }
+ async buscaServicos(req:Request,res:Response){
+        let empresa:any   = req.headers.cnpj 
+ 
+        let select = new Select_servicos();
 
+        if(!req.headers.cnpj ){
+            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+         } 
+         
+          let headerCnpj:any  = empresa.replace(/\D/g, '');
+          let  dbName = `\`${headerCnpj}\``;
+    
+         let categorias;
+        
+         try{
+            if( req.query   ){
+                categorias =   await   select.novaBusca(dbName, req.query)
+           }
+             return res.status(200).json(categorias);
+        }catch(e){ 
+              console.error(e);
+            return res.status(400).json({ erro:true, msg: "Erro ao buscar marcas." });
+        }
+    }
+    
 
 async update(req:Request,res:Response){
   let empresa   = req.headers.cnpj 

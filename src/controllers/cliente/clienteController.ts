@@ -14,38 +14,31 @@ export class ClienteController{
     async buscaGeral( req:Request,res:Response  ){
         let empresa:any   = req.headers.cnpj 
 
-        if(!req.headers.cnpj ){
-            return res.status(200).json({erro:"É necessario informar a empresa "});   
-         } 
            
          let headerCnpj:any  = empresa.replace(/\D/g, '');
-    
          let  dbName = `\`${headerCnpj}\``;
-    
         
         const queryVendedor = req.query.vendedor;
-
         let vendedor = req.query
         if(!empresa){
-            return res.json(400).json({erro:"É necessario informar a empresa "});   
+            return res.json(400).json({erro:true, msg:"É necessario informar a empresa "});   
          } 
          if(!queryVendedor){
-            return res.json(400).json({erro:"É necessario informar a o vendedor  "});   
+            return res.json(400).json({erro:true, msg: "É necessario informar a o vendedor  "});   
          } 
-         
      
         let select = new Select_clientes();
         try{
             let clientes = await select.buscaGeral(dbName, queryVendedor);
 
             if (clientes.length === 0) {
-                return res.status(404).json({ erro: "Nenhum cliente encontrado." });
+                return res.status(400).json({ erro: true, msg: "Nenhum cliente encontrado." });
               }
               return res.status(200).json(clientes);
 
         }catch(e ) { 
             console.error(e)
-            return res.status(500).json({ erro: "Erro ao buscar clientes." });
+            return res.status(400).json({ erro: "Erro ao buscar clientes." });
         }
     }
 
@@ -58,7 +51,7 @@ export class ClienteController{
         let dateService = new DateService();
 
         if(!req.headers.cnpj ){
-            return res.status(200).json({erro:true,msg:"É necessario informar a empresa "});   
+            return res.status(400).json({erro:true,msg:"É necessario informar a empresa "});   
         } 
         let headerCnpj:any  = empresa.replace(/\D/g, '');
         let  dbName = `\`${headerCnpj}\``;
@@ -74,7 +67,7 @@ export class ClienteController{
                 if (!postCliente.endereco)        postCliente.endereco = "";
                 if (!postCliente.ie)              postCliente.ie = "";
                 if (!postCliente.numero)          postCliente.numero = "";
-                if (!postCliente.cnpj)            return res.status(200).json({erro:true, msg:" é necessario informar o cnpj/cpf do cliente"});            
+                if (!postCliente.cnpj)            return res.status(400).json({erro:true, msg:" é necessario informar o cnpj/cpf do cliente"});            
                 if (!postCliente.cidade)          postCliente.cidade = "";
             
                 if (!postCliente.data_cadastro || postCliente.data_cadastro ===  "0000-00-00") {
@@ -101,7 +94,7 @@ export class ClienteController{
                 vCnpj = removerCaracteres(vCnpj)
 
             if(vCnpj.length < 11 || vCnpj.length > 14 ||   vCnpj.length === 12 || vCnpj.length === 13 ) {
-                return res.status(200).json({erro:true, msg:"cnpj/cpf invalido  "});   
+                return res.status(400).json({erro:true, msg:"cnpj/cpf invalido  "});   
             }
 
             if( vCnpj.length === 14 ){
@@ -114,7 +107,7 @@ export class ClienteController{
                 let validCnpj = await select.buscaPorCnpj(dbName,cnpjFormat);
 
                 if( validCnpj.length > 0 ){
-                        return res.status(200).json({erro:true, msg:"já existe cliente cadastrado com este cnpj/cpf"});        
+                        return res.status(400).json({erro:true, msg:"já existe cliente cadastrado com este cnpj/cpf"});        
                 }else{
                     postCliente.cnpj = cnpjFormat; 
 
@@ -141,13 +134,40 @@ export class ClienteController{
 
                             }catch(err){
                                     console.log(`erro ao inserir o cliente`,err);
-                        return res.status(200).json({erro:true, msg:"erro ao inserir o cliente"});        
+                        return res.status(400).json({erro:true, msg:"erro ao inserir o cliente"});        
 
                             }   
                 }
-      }
+     }
 
 
+     async buscaClientes(req:Request,res:Response){
+
+        if(!req.headers.cnpj ){
+            return res.status(200).json({erro:"É necessario informar a empresa "});   
+         } 
+         let headerCnpj:any =   req.headers.cnpj ;
+         let empresa  = headerCnpj.replace(/\D/g, '');
+        
+         let  dbName = `\`${empresa}\``;
+        
+          let select = new Select_clientes();
+          let cliente;
+
+
+
+          try{
+    
+            if( req.query   ){
+                    cliente =   await   select.novaBusca(dbName, req.query)
+           }
+             return res.status(200).json(cliente);
+        }catch(e){ 
+              console.error(e);
+            return res.status(400).json({ erro:true, msg: "Erro ao buscar clientes." });
+        }
+     
+    }
 
         
         async buscaClientesNext(req:Request,res:Response){
@@ -177,6 +197,10 @@ export class ClienteController{
             return res.status(200).json({ erro: "Erro ao buscar clientes." });
         }
         }
+
+
+
+
         async buscaClienteNextPorCodigo(req:Request,res:Response){
         
             if(!req.headers.cnpj ){
@@ -215,14 +239,14 @@ export class ClienteController{
 
     
             if(!req.headers.cnpj ){
-                return res.status(200).json({erro:true,msg:"É necessario informar a empresa "});   
+                return res.status(400).json({erro:true,msg:"É necessario informar a empresa "});   
             } 
             let headerCnpj:any  = empresa.replace(/\D/g, '');
             let  dbName = `\`${headerCnpj}\``;
                     let vCnpj = req.body.cnpj;
                     let postCliente:Cliente = req.body; 
                     let cnpjFormat;
-                    if(!postCliente.codigo ) return res.status(200).json({erro:true, msg:" é necessario informar o codigo do cliente"});  
+                    if(!postCliente.codigo ) return res.status(400).json({erro:true, msg:" é necessario informar o codigo do cliente"});  
                     if(!postCliente.id)               postCliente.id =  "0";
                     if (!postCliente.celular)         postCliente.celular = "(00) 0000-0000";
                     if (!postCliente.nome)            postCliente.nome = "teste";
@@ -230,7 +254,7 @@ export class ClienteController{
                     if (!postCliente.endereco)        postCliente.endereco = "";
                     if (!postCliente.ie)              postCliente.ie = "";
                     if (!postCliente.numero)          postCliente.numero = "";
-                    if (!postCliente.cnpj)            return res.status(200).json({erro:true, msg:" é necessario informar o cnpj/cpf do cliente"});            
+                    if (!postCliente.cnpj)            return res.status(400).json({erro:true, msg:" é necessario informar o cnpj/cpf do cliente"});            
                     if (!postCliente.cidade)          postCliente.cidade = "";
                     if(!postCliente.ativo)            postCliente.ativo = "S";
                     if (!postCliente.data_cadastro  ) {
@@ -296,7 +320,7 @@ export class ClienteController{
     
                                 }catch(err){
                                         console.log(`erro ao inserir o cliente`,err);
-                            return res.status(200).json({erro:true, msg:"erro ao inserir o cliente"});        
+                            return res.status(400).json({erro:true, msg:"erro ao inserir o cliente"});        
     
                                 }   
                     }

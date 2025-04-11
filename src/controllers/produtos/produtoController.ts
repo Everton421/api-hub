@@ -18,7 +18,12 @@ export class ProdutoController{
   async buscaGeral(req:Request,res:Response){
     let select = new Select_produtos();
      if(!req.headers.cnpj ){
-        return res.status(200).json({erro:"É necessario informar a empresa "});   
+        return res.status(400).json(
+           {
+            erro: true,
+            msg:"É necessario informar a empresa "
+          } 
+          );   
      } 
      let headerCnpj:any =   req.headers.cnpj ;
      let empresa  = headerCnpj.replace(/\D/g, '');
@@ -28,9 +33,13 @@ export class ProdutoController{
           try{
               produtos =   await   select.buscaGeral(dbName  )
                if (produtos.length === 0) {
-                 return res.status(404).json({ erro: "Nenhum produto encontrado." });
-               }
+                 return res.status(404).json({
+                    erro: true,
+                   msg: "Nenhum produto encontrado." });
+               }else{
                return res.status(200).json(produtos);
+                
+               }
           }catch(e){ 
                 console.error(e);
               return res.status(500).json({ erro: "Erro ao buscar produtos." });
@@ -56,12 +65,12 @@ async cadastrar(req:Request,res:Response){
         if(!req.body.preco)    req.body.preco = 0 
         if(!req.body.estoque)    req.body.estoque = 0 
 
-        if(!req.body.descricao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
+        if(!req.body.descricao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
         if(!req.body.num_fabricante)   req.body.num_fabricante =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
         if(!req.body.num_original)     req.body.num_original =''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
         
-        if(!req.body.grupo && !req.body.grupo.codigo ) req.body.grupo.codigo = 0; 
-        if(!req.body.marca && !req.body.marca.codigo ) req.body.marca.codigo = 0; 
+        if(!req.body.grupo || !req.body.grupo.codigo ) req.body.grupo =  { "codigo":0} ; 
+        if(!req.body.marca || !req.body.marca.codigo ) req.body.marca  = { "codigo":0}; 
 
         if(!req.body.origem) req.body.origem = 0;     
         if(!req.body.sku)              req.body.sku =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o sku  para registrar o produto!"});
@@ -127,7 +136,7 @@ async cadastrar(req:Request,res:Response){
            
             
         }catch(e){
-          return res.status(200).json({ erro:true, msg: `Ocorreu um erro ao cadastrar o produto!`});
+          return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao cadastrar o produto!`});
 
          }
 
@@ -161,6 +170,38 @@ async buscaProdutoNext(req:Request,res:Response){
     return res.status(200).json({ erro: "Erro ao buscar produtos." });
 }
 }
+
+
+async buscaProdutos(req:Request,res:Response){
+  if(!req.headers.cnpj ){
+    return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+ } 
+ let headerCnpj:any =   req.headers.cnpj ;
+ let empresa  = headerCnpj.replace(/\D/g, '');
+
+ let  dbName = `\`${empresa}\``;
+
+  let select = new Select_produtos();
+
+ 
+    let responseProdutos;
+
+  try{
+  
+    if( req.query   ){
+      let aux   = req.query 
+      responseProdutos =   await   select.novaBusca(dbName,  aux );
+        return res.status(200).json( responseProdutos );
+
+    }
+  }catch(e){ 
+    console.error(e);
+    return res.status(400).json({ erro: true, msg: "Erro ao buscar produtos." });
+  }
+
+
+}
+
 
 async buscaProdutoNextPorCodigo(req:Request,res:Response){
 
@@ -261,14 +302,18 @@ async update(req:Request,res:Response){
     return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
 }
 
-        if(!req.body.codigo)      return res.status(200).json({ erro:true, msg: "É necessario informar o codigo para atualizar o produto!"});
+        if(!req.body.codigo)      return res.status(400).json({ erro:true, msg: "É necessario informar o codigo para atualizar o produto!"});
 
         if(!req.body.id)    req.body.id = 0 
         if(!req.body.preco)    req.body.preco = 0 
         if(!req.body.estoque)    req.body.estoque = 0 
 
-        if(!req.body.grupo.codigo)             return res.status(200).json({ erro:true, msg: "É necessario informar o grupo para registrar o produto!"});
-        if(!req.body.descricao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
+        if(!req.body.grupo )   return res.status(400).json({ erro:true, msg: "É necessario informar o grupo para registrar o produto!"});
+         if(!req.body.grupo.codigo )   return res.status(400).json({ erro:true, msg: "É necessario informar o codigo do grupo para registrar o produto!"});
+
+         if(!req.body.marca)             return res.status(400).json({ erro:true, msg: "É necessario informar a marca para registrar o produto!"});
+         if(!req.body.marca.codigo)             return res.status(400).json({ erro:true, msg: "É necessario informar o codigo da marca para registrar o produto!"});
+        if(!req.body.descricao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
         if(!req.body.num_fabricante)   req.body.num_fabricante =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
         if(!req.body.num_original)     req.body.num_original =''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
         
@@ -334,11 +379,9 @@ async update(req:Request,res:Response){
               "observacoes3"    : req.body.observacoes3,
               "tipo"            : req.body.tipo 
             })
-           
             
         }catch(e){
-          return res.status(200).json({ erro:true, msg: `Ocorreu um erro ao atualizar o produto!`});
-
+          return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao atualizar o produto!`});
          }
 
  

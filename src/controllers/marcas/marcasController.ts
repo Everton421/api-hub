@@ -148,51 +148,77 @@ export class MarcasController{
          }
      }
 
-
-async cadastrar(req:Request,res:Response){
-    let obj = new MarcasController();
-    let cnpj:any   = req.headers.cnpj 
+  async buscaMarcas(req:Request,res:Response){
+        let empresa:any   = req.headers.cnpj 
  
-    const dateService = new DateService();
+        let select = new Select_Marcas();
+        let insert = new Insert_Marcas();
 
-    let select = new Select_Marcas();
-    let insert = new Insert_Marcas();
- 
-            let postMarca:any = req.body; 
-           
-             let  empresa = `\`${cnpj}\``;
-          
-            if(!postMarca.id)  postMarca.id =  "0";
-            if(!postMarca.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
-            if(!postMarca.data_cadastro ) postMarca.data_cadastro = dateService.obterDataAtual();
-            if(!postMarca.data_recadastro ) postMarca.data_recadastro = dateService.obterDataHoraAtual();
- 
-                let limit = 1;
-
-              let validMarca:any = await select.busca_por_descricao( empresa, postMarca.descricao, limit  )
+        if(!req.headers.cnpj ){
+            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+         } 
+         
+          let headerCnpj:any  = empresa.replace(/\D/g, '');
+          let  dbName = `\`${headerCnpj}\``;
     
-        if( validMarca.length > 0  )  return  res.status(200).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
-           
-             let responseMarca:any;
-                     try{    
-                           responseMarca = await insert.cadastrar(empresa, postMarca)
-                    
-                         if( responseMarca.insertId > 0 ){
-                             return res.status(200).json({ 
-                                  "codigo":responseMarca.insertId,
-                                  "descricao":postMarca.descricao,
-                                  "data_cadastro":postMarca.data_cadastro,
-                                  "data_recadastro":postMarca.data_recadastro,
-                                 })
-                         }
-                     }catch(e){
-                             console.log(e);
-                             return res.status(200).json({erro:"ocorreu um erro ao tentar registrar a marca"})
-                     }
+         let categorias;
+        
+         try{
+            if( req.query   ){
+                categorias =   await   select.novaBusca(dbName, req.query)
+           }
+             return res.status(200).json(categorias);
+        }catch(e){ 
+              console.error(e);
+            return res.status(400).json({ erro:true, msg: "Erro ao buscar marcas." });
+        }
+    }
+    
 
-  }
-	
-          async atualizar(req:Request,res:Response){
+    async cadastrar(req:Request,res:Response){
+        let obj = new MarcasController();
+        let cnpj:any   = req.headers.cnpj 
+    
+        const dateService = new DateService();
+
+        let select = new Select_Marcas();
+        let insert = new Insert_Marcas();
+    
+                let postMarca:any = req.body; 
+            
+                let  empresa = `\`${cnpj}\``;
+            
+                if(!postMarca.id)  postMarca.id =  "0";
+                if(!postMarca.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
+                if(!postMarca.data_cadastro ) postMarca.data_cadastro = dateService.obterDataAtual();
+                if(!postMarca.data_recadastro ) postMarca.data_recadastro = dateService.obterDataHoraAtual();
+    
+                    let limit = 1;
+
+                let validMarca:any = await select.busca_por_descricao( empresa, postMarca.descricao, limit  )
+        
+            if( validMarca.length > 0  )  return  res.status(200).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
+            
+                let responseMarca:any;
+                        try{    
+                            responseMarca = await insert.cadastrar(empresa, postMarca)
+                        
+                            if( responseMarca.insertId > 0 ){
+                                return res.status(200).json({ 
+                                    "codigo":responseMarca.insertId,
+                                    "descricao":postMarca.descricao,
+                                    "data_cadastro":postMarca.data_cadastro,
+                                    "data_recadastro":postMarca.data_recadastro,
+                                    })
+                            }
+                        }catch(e){
+                                console.log(e);
+                                return res.status(200).json({erro:"ocorreu um erro ao tentar registrar a marca"})
+                        }
+
+    }
+        
+   async atualizar(req:Request,res:Response){
                  let cnpj:any   = req.headers.cnpj 
               
                  let select = new Select_Marcas();
@@ -240,7 +266,7 @@ async cadastrar(req:Request,res:Response){
                              }
                         
              
-                    }
+        }
 
 }
 

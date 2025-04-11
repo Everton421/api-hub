@@ -43,7 +43,34 @@ export class CategoriaController{
        
     
     }
+
+    async buscaCategorias(req:Request,res:Response){
+        let empresa:any   = req.headers.cnpj 
+ 
+        let select = new Select_Categorias();
+        let insert = new Insert_Categorias();
+
+        if(!req.headers.cnpj ){
+            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+         } 
+         
+          let headerCnpj:any  = empresa.replace(/\D/g, '');
+          let  dbName = `\`${headerCnpj}\``;
     
+         let categorias;
+        
+         try{
+            if( req.query   ){
+                categorias =   await   select.novaBusca(dbName, req.query)
+           }
+             return res.status(200).json(categorias);
+        }catch(e){ 
+              console.error(e);
+            return res.status(400).json({ erro:true, msg: "Erro ao buscar categorias." });
+        }
+    }
+    
+
     async buscaPorDescricao(req:Request,res:Response){
         let empresa:any   = req.headers.cnpj 
  
@@ -168,13 +195,13 @@ export class CategoriaController{
              let  empresa = `\`${cnpj}\``;
           
             if(!postCategoria.id)  postCategoria.id =  "0";
-            if(!postCategoria.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da categoria!`}) 
+            if(!postCategoria.descricao)  return res.status(400).json( { erro:true, msg:`E necessario informar a descricao da categoria!`}) 
             if(!postCategoria.data_cadastro ) postCategoria.data_cadastro = dateService.obterDataAtual();
             if(!postCategoria.data_recadastro ) postCategoria.data_recadastro = dateService.obterDataHoraAtual();
  
               let validCategor:any = await select.busca_por_descricao( empresa, postCategoria.descricao )
     
-        if( validCategor.length > 0  )  return  res.status(200).json({ erro:true, msg:`A categoria ${postCategoria.descricao} ja foi cadastrada!`})
+        if( validCategor.length > 0  )  return  res.status(400).json({ erro:true, msg:`A categoria ${postCategoria.descricao} ja foi cadastrada!`})
            
              let responseCategoria:any;
                      try{    
@@ -190,7 +217,7 @@ export class CategoriaController{
                          }
                      }catch(e){
                              console.log(e);
-                             return res.status(200).json({erro:"ocorreu um erro ao tentar registrar a categoria"})
+                             return res.status(400).json({erro:"ocorreu um erro ao tentar registrar a categoria"})
                      }
 
        }
