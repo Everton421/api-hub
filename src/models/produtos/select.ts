@@ -137,7 +137,8 @@ async   buscaUltimoCodigoInserido(empresa:any )   {
             marca,
             grupo,
             descricao,
-            limit  
+            limit ,
+            ativo
         } = query;
 
         let baseSql = `
@@ -166,6 +167,12 @@ async   buscaUltimoCodigoInserido(empresa:any )   {
             conditions.push("marca = ?");
             params.push(Number(marca));
         }
+
+        if (ativo) {
+            conditions.push("ativo = ?");
+            params.push(ativo);
+        }
+
         if (grupo) {
             conditions.push("grupo = ?");
             params.push(Number(grupo));
