@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Select_servicos } from "../../models/servicos/select";
 import { InsertServico } from "../../models/servicos/insert";
 import { updateServico } from "../../models/servicos/update";
+import { DateService } from "../../services/dateService";
 type service = {
   codigo : number,
   id: number,
@@ -56,7 +57,7 @@ export class ServicosController{
          return res.json(400).json({erro:"É necessario informar a empresa "});   
       } 
       if(!req.query.codigo){
-        return res.json(400).json({erro:"É necessario informar a empresa "});   
+        return res.json(400).json({erro:"É necessario informar o codigo do servico "});   
       }
 
       let headerCnpj:any =   String(req.headers.cnpj) ;
@@ -92,34 +93,15 @@ export class ServicosController{
    let  dbName = `\`${empresa}\``;
   
      let insert = new InsertServico();
-     
-   function  obterDataAtual() {
-    const dataAtual = new Date();
-    const dia = String(dataAtual.getDate()).padStart(2, '0');
-    const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-    const ano = dataAtual.getFullYear();
-    return `${ano}-${mes}-${dia}`;
-  }
-  
-   function  obterDataHoraAtual() {
-      const dataAtual = new Date();
-      const dia = String(dataAtual.getDate()).padStart(2, '0');
-      const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-      const ano = dataAtual.getFullYear();
-      const hora = dataAtual.getHours();
-      const minuto = dataAtual.getMinutes();
-      const segundos = dataAtual.getSeconds();
-      return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
-  }
-  console.log(req.body)
+     let dateService = new DateService();
   
  
           if(!req.body.tipo_serv)    req.body.tipo_serv = 0 
           if(!req.body.valor)    req.body.valor = 0 
 
           if(!req.body.aplicacao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para registrar o servico!"});
-         if (!req.body.data_cadastro) req.body.data_cadastro = obterDataAtual(); 
-         if(!req.body.data_recadastro) req.body.data_recadastro = obterDataHoraAtual();
+         if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
+         if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
           let servico = {
         "valor" :req.body.valor,
@@ -145,14 +127,15 @@ export class ServicosController{
             return res.status(200).json({ erro:true, msg: `Ocorreu um erro ao cadastrar o servico!`});
   
            }
- 
    
   }
+
+
 
 async buscaServicosNext(req:Request,res:Response){
 
   if(!req.headers.cnpj ){
-    return res.status(200).json({erro:"É necessario informar a empresa "});   
+    return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
  } 
  let headerCnpj:any =   req.headers.cnpj ;
  let empresa  = headerCnpj.replace(/\D/g, '');
@@ -167,12 +150,12 @@ async buscaServicosNext(req:Request,res:Response){
   try{
     servico =   await   select.buscaPorCodigoDescricao(dbName, parametro  )
      if (servico.length === 0) {
-       return res.status(200).json({ erro: "Nenhum servico encontrado." });
+       return res.status(400).json({ erro:true, msg: "Nenhum servico encontrado." });
      }
      return res.status(200).json(servico);
 }catch(e){ 
       console.error(e);
-    return res.status(200).json({ erro: "Erro ao buscar servicos." });
+    return res.status(400).json({ erro:true, msg: "Erro ao buscar servicos." });
 }
 }
  async buscaServicos(req:Request,res:Response){
@@ -187,16 +170,16 @@ async buscaServicosNext(req:Request,res:Response){
           let headerCnpj:any  = empresa.replace(/\D/g, '');
           let  dbName = `\`${headerCnpj}\``;
     
-         let categorias;
+         let servicos;
         
          try{
             if( req.query   ){
-                categorias =   await   select.novaBusca(dbName, req.query)
+                servicos =   await   select.novaBusca(dbName, req.query)
            }
-             return res.status(200).json(categorias);
+             return res.status(200).json(servicos);
         }catch(e){ 
               console.error(e);
-            return res.status(400).json({ erro:true, msg: "Erro ao buscar marcas." });
+            return res.status(400).json({ erro:true, msg: "Erro ao buscar os serviços." });
         }
     }
     
@@ -209,26 +192,8 @@ async update(req:Request,res:Response){
  let  dbName = `\`${empresa}\``;
 
    let update = new updateServico();
-   
- function  obterDataAtual() {
-  const dataAtual = new Date();
-  const dia = String(dataAtual.getDate()).padStart(2, '0');
-  const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-  const ano = dataAtual.getFullYear();
-  return `${ano}-${mes}-${dia}`;
-}
+   let dateService = new DateService();
 
- function  obterDataHoraAtual() {
-    const dataAtual = new Date();
-    const dia = String(dataAtual.getDate()).padStart(2, '0');
-    const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-    const ano = dataAtual.getFullYear();
-    const hora = dataAtual.getHours();
-    const minuto = dataAtual.getMinutes();
-    const segundos = dataAtual.getSeconds();
-    return `${ano}-${mes}-${dia} ${hora}:${minuto}:${segundos}`;
-}
-console.log(req.body)
 
 
         if(!req.body.tipo_serv)    req.body.tipo_serv = 0 
@@ -237,8 +202,8 @@ console.log(req.body)
         if(!req.body.codigo)         return res.status(200).json({ erro:true, msg: "É necessario informar o codigo para atualizar o servico!"});
 
         if(!req.body.aplicacao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para atualizar o servico!"});
-       if (!req.body.data_cadastro) req.body.data_cadastro = obterDataAtual(); 
-       if(!req.body.data_recadastro) req.body.data_recadastro = obterDataHoraAtual();
+       if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
+       if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
         let servico = {
        "codigo": req.body.codigo,

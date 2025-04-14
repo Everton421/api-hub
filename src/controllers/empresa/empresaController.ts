@@ -36,10 +36,10 @@ export class CreateEmpresa {
   cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
 
   if ( cnpj.length < 11 || cnpj.length > 14 ) {
-    return response.json({ erro: true, msg: "CPF/CNPJ inválido."  });
+    return response.status(400).json({ erro: true, msg: "CPF/CNPJ inválido."  });
   }else{
     if(cnpj.length === 12 || cnpj.length === 13 ){
-    return response.json({ erro: true, msg: "CPF/CNPJ inválido."  });
+    return response.status(400).json({ erro: true, msg: "CPF/CNPJ inválido."  });
     }
   }
 
@@ -48,9 +48,10 @@ export class CreateEmpresa {
 
 
     if (!usuario)
-      return response.json({ msg: "nao informado o usuario da empresa " });
+      return response.status(400).json({ erro:true, msg: "nao informado o usuario da empresa " });
     if (!senha)
-      return response.json({
+      return response.status(400).json({
+        erro:true,
         msg: `nao foi informado a senha para o usuario ${usuario} da empresa `,
       });
 
@@ -59,8 +60,9 @@ export class CreateEmpresa {
     );
     if (validUserApi.length > 0)
       return response
-        .status(200)
+        .status(400)
         .json({
+          erro:true,
           msg: ` Já existe usuario cadastro com este email ${objUser.email}`,
         });
 
@@ -199,13 +201,13 @@ export class CreateEmpresa {
          codigo  int(11) NOT NULL AUTO_INCREMENT,
         id int(10) unsigned NOT NULL DEFAULT 0,
         cliente INTEGER NOT NULL DEFAULT 0,
-        placa TEXT NOT NULL,
-        marca INTEGER NOT NULL DEFAULT 0,
-        modelo INTEGER NOT NULL DEFAULT 0,
-        ano TEXT NOT NULL,
-        cor INTEGER NOT NULL DEFAULT 0,
-        combustivel TEXT NOT NULL,
-    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+        placa varchar(255) NOT NULL DEFAULT '',
+        marca varchar(255) NOT NULL DEFAULT '',
+        modelo varchar(255) NOT NULL DEFAULT '',
+        ano varchar(255) NOT NULL DEFAULT '',
+        cor varchar(255) NOT NULL DEFAULT '',
+        combustivel varchar(255) NOT NULL DEFAULT '',
+        data_cadastro  date NOT NULL DEFAULT '0000-00-00',
         data_recadastro  datetime DEFAULT NULL,
           PRIMARY KEY ( codigo )
     );`,
@@ -261,7 +263,7 @@ export class CreateEmpresa {
         });
       });
 
-      return response.status(200).json({
+      return response.status(400).json({
         erro: true,
         msg: ` a empresa com o cnpj ${cnpj} ja foi cadastrada!`,
       });
@@ -298,9 +300,14 @@ export class CreateEmpresa {
               objUser
             );
             //return  response.status(200).json({  empresa:`Empresa ${cnpj } registrada com sucesso ! `, usuario:` Usuario ${objUser.usuario} registrado com sucesso!`});
-            return response.status(200).json({
+            return response.status(200).json(
+           {
+            "status":{
               ok: true,
               msg: "Empresa registrada com sucesso!",
+              
+            },
+             "data":{
               codigo_usuario: codigoUsuario.insertId,
               usuario: usuario,
               senha: senha,
@@ -309,12 +316,15 @@ export class CreateEmpresa {
               email_empresa: email_empresa,
               email_usuario: email,
               codigo_empresa: codigoEmpresa.insertId,
-            });
+            }
+          }
+
+          );
           } else {
             let resultDeleteEmpresa: any = await obj.delete_empresa(dbName);
             if (resultDeleteEmpresa.affectedRows > 0) {
               return response
-                .status(200)
+                .status(400)
                 .json({
                   erro: true,
                   msg: ` ocorreu um erro ao registrar a empresa ${cnpj}`,
@@ -329,6 +339,7 @@ export class CreateEmpresa {
   async validaExistencia(request: Request, response: Response) {
     let obj = new CreateEmpresa();
     let cnpj: string = request.body.cnpj;
+    cnpj = cnpj.replace(/\D/g, '');  
 
     let valid = await obj.consulta_empresas(cnpj);
 
@@ -355,22 +366,31 @@ export class CreateEmpresa {
       console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
       return response
         .status(200)
-        .json({
-          cadastrada: true,
-          msg: `Já existe uma empresa cadastrada com este cnpj !`,
-          cnpj: cnpj_empresa,
+        .json(
+          {
+          status:{
+            cadastrada: true,
+           msg: `Já existe uma empresa cadastrada com este cnpj !`,
+           },
+          data:{
+            cnpj: cnpj_empresa,
           email_empresa: email_empresa,
           telefone_empresa: telefone_empresa,
           nome: nome_empresa,
           codigo: codigo,
           responsavel: responsavel,
-        });
+          } 
+        }
+      );
     } else {
       return response
-        .status(200)
+        .status(400)
         .json({
+          status:{
           cadastrada: false,
           msg: `Não encontramos empresa cadastrada com este cnpj!`,
+        },
+        data:{}
         });
     }
   }

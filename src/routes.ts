@@ -70,31 +70,40 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
  router.get(`${versao}/marcas`,   new MarcasController().buscaMarcas )//ok
 
  router.get(`${versao}/servicos`,   checkToken,  new ServicosController().buscaServicos )//ok
- router.get(`${versao}/next/servicos`,  checkToken,  new ServicosController().buscaPorCodigo) 
- router.put(`${versao}/next/servicos`,   checkToken,  new ServicosController().update )
- router.get(`${versao}/offline/servicos`,         checkToken,  new ServicosController().buscaGeral )
- router.get(`${versao}/next/servicos/:servico`,  checkToken,  new ServicosController().buscaServicosNext)
+ //router.get(`${versao}/next/servicos`,  checkToken,  new ServicosController().buscaPorCodigo) 
+ router.put(`${versao}/servico`,   checkToken,  new ServicosController().update )//ok
+ router.get(`${versao}/offline/servicos`,         checkToken,  new ServicosController().buscaGeral ) //ok
+ router.get(`${versao}/servicos/:servico`,  checkToken,  new ServicosController().buscaServicosNext)//ok
+ router.post(`${versao}/servico`,  checkToken,  new ServicosController().cadastrar)//ok
+
+ router.post(`${versao}/empresa`,   checkToken, new CreateEmpresa().create)//ok
+ router.post(`${versao}/empresa/validacao`, checkToken,  new CreateEmpresa().validaExistencia)//ok
+ 
+
+
+ router.get(`${versao}/offline/veiculos`,         checkToken,  new VeiculoController().busca )//ok
+ router.put(`${versao}/veiculo`, checkToken, new VeiculoController().update);//ok
+ router.post(`${versao}/veiculo`, checkToken, new VeiculoController().insert);//ok
+ router.get(`${versao}/veiculos`,         checkToken,  new VeiculoController().buscaVeiculos )//ok
+ 
+
+ router.post(`${versao}/formas_pagamento`,checkToken, new FormasController().cadastrar) //ok
+ router.get(`${versao}/offline/formas_pagamento`, checkToken,  new FormasController().buscaGeral )//ok
+ router.put(`${versao}/formas_pagamento`, checkToken,  new FormasController().atualizar )//ok
+ router.get(`${versao}/formas_pagamento`, checkToken,  new FormasController().buscaFormaPagamento )//ok
 
  
- router.post(`${versao}/servicos`,  checkToken,  new ServicosController().cadastrar)
-
-
- //router.get(`${versao}/offline/marcas/:descricao`,   new MarcasController().buscaPorDescricao )
-
-
-
  router.get(`${versao}/offline/fotos`,   checkToken,  new fotosController().buscaGeral )
  router.post(`${versao}/offline/fotos`,   checkToken,  new fotosController().cadastrar_deletarFotos )
 
- router.get(`${versao}/offline/formas_pagamento`, checkToken,  new FormasController().buscaGeral )
- router.get(`${versao}/offline/tipo_os`,          checkToken,  new TipoOsController().buscaGeral )
- router.get(`${versao}/offline/veiculos`,         checkToken,  new VeiculoController().busca )
- 
+
+ router.get(`${versao}/offline/tipo_os`, checkToken,  new TipoOsController().buscaGeral )
+ router.get(`${versao}/tipo_os`, checkToken,  new TipoOsController().buscaTiposDeOs )
+ router.post(`${versao}/tipo_os`, checkToken,  new TipoOsController().cadastrar )
+ router.put(`${versao}/tipo_os`, checkToken,  new TipoOsController().atualizar )
 
 
 
-
- router.post(`${versao}/formas_pagamento`,checkToken, new FormasController().cadastrar)
 
 
  router.get(`${versao}/pedidos`,  checkToken,  new pedidoController().select)
@@ -103,8 +112,6 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
   router.post(`${versao}/enviar_codigo`,  checkToken, new EnvioCodigoValidador().main);
   router.post(`${versao}/alterar_senha`,  checkToken, new Alterar_senha().main);
 
- router.post(`${versao}/empresa`,   checkToken, new CreateEmpresa().create)
- router.post(`${versao}/empresa/validacao`, checkToken,  new CreateEmpresa().validaExistencia)
 //
 
  router.post(`${versao}/login`, checkToken,  new Login().login)

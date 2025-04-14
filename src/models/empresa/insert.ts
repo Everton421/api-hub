@@ -11,7 +11,7 @@ export class Insert_empresa{
                         telefone_empresa,
                         id
                     } = obj;
-
+                    cnpj = cnpj.replace(/\D/g, '');  
                     if(!id) id = 0;
       
                  const sql =  ` INSERT INTO ${db_api}.empresas (  id, responsavel, cnpj , nome, email, telefone ) VALUES ( ?, ?, ?, ?, ?, ?) `;

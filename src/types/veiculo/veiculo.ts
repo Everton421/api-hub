@@ -1,0 +1,15 @@
+
+export type VeiculoBanco =
+ {
+    codigo:number,
+    id: number,
+    cliente: number,
+    placa: string,
+    marca: string,
+    modelo: string,
+    ano: string,
+    cor: string,
+    combustivel: string,
+    data_cadastro: string,
+    data_recadastro: string
+ }

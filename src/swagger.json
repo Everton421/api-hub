@@ -1496,7 +1496,554 @@
                   } 
               }
             }
+        } , 
+        "/servicos ":{
+          "get":{
+          "summary": "Obtém os Serviços",
+           "description":"Obtém os Serviços",
+           "tags":["servicos"],
+           "parameters":[
+              {
+                  "name":"codigo",
+                  "in":"query",
+                  "description":"codigo do serviço.",
+                  "required":false, 
+                  "type": "integer"
+              } ,
+              {
+                "name":"id",
+                "in":"query",
+                "description":"id do serviço.",
+                "required":false, 
+                "type": "integer"
+            } ,
+            {
+              "name":"tipo",
+              "in":"query",
+              "description":"codigo do tipo de serviço.",
+              "required":false, 
+              "type": "integer"
+          } ,
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "Número máximo de itens a retornar",
+              "required": false,
+              "type": "integer",  
+              "format": "int32",  
+              "default": 20       
+            },
+            {
+              "name": "aplicacao",
+              "in": "query",
+              "description": "aplicacao/Descrição do serviço.",
+              "required": false,
+              "type": "string",  
+              "format": "int32"   
+            } 
+         
+           ],
+       
+           "requestBody":{
+                  "content":{
+                      "application/json":{
+                       
+                      }
+                  }
+             },
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "Serviços": {  
+                        "value":[
+                          {
+                              "codigo": 1,
+                              "id": 1,
+                              "data_cadastro": "1899-12-30",
+                              "data_recadastro": "2024-08-26 16:31:16",
+                              "descricao": "OUTROS 3"
+                          }
+                      ]
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao consultar os Serviços.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao consultar os Serviços."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        } , 
+        "/servico/:{codigo-servico} ":{
+        "get":{
+        "summary": "Obtém um Serviço consultando pelo codigo",
+         "description":"Obtém um Serviço consultando pelo codigo",
+         "tags":["servicos"],
+ 
+         "requestBody":{
+                "content":{
+                    "application/json":{
+                     
+                    }
+                }
+           },
+           "responses": {
+            "200": {  
+              "content": {
+                "application/json": {
+                  "schema": {  
+                  },
+                  "examples": {
+                    "Serviços": {  
+                      "value": [
+                        {
+                          "codigo": 8544,
+                          "id": 8544,
+                          "valor": 90,
+                          "aplicacao": "SUBSTITUIR BRACO PITMAN",
+                          "tipo_serv": 3,
+                          "data_cadastro": "2023-01-16",
+                          "data_recadastro": "0000-00-00 00:00:00"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "400":{
+              "description": "erro ao consultar os Serviços.",
+
+              "content": {
+                "application/json": {
+                  "schema": {  
+                  },
+                  "examples": {
+                    "erro":{
+                        "value":{
+                            "erro": true,
+                            "msg": "erro ao consultar os Serviços."
+                        }
+                     }
+                   }
+                 }
+              }
+            },
+            "401":{
+                "description": "não autorizado.",
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "msg": "Acesso negado, token não informado! "
+                          }
+                      }
+                    }
+                  }
+              }
+
+              } 
+          }
+        }
+        } , 
+        "/offline/servicos":{
+          "get":{
+          "summary": "busca servicos",
+           "description":"rota responsavel por buscar todos os dados dos servicos, onde é feito os procedimentos de cadastro no aplicativo.",
+           "tags":["servicos"],
+           "requestBody":{
+                  "content":{
+                      "application/json":{
+                          "examples":{
+                              "servicos":{
+                                  "value":[
+                                       {
+                                         "codigo": 2,
+                                          "tipo_serv": 3,
+                                          "valor": 40,
+                                          "aplicacao": "SUBSTITUIR CANO SAIDA ESCAPE"
+                                       }
+                                  ]
+                              }
+                          }
+                      }
+                  }
+             }
+          }
+         } ,
+         "/servico put":{
+          "put":{
+          "summary": "Atualizar Serviço",
+           "description":"Atualizar Serviço",
+           "tags":["servicos"],
+           "requestBody":{
+              "content":{
+                  "application/json":{
+                      "examples":{
+                          "marca":{
+                              "value": 
+                              {
+                                "codigo": 8542,
+                                "id": 8542,
+                                "valor": 50,
+                                "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1" ,
+                                "tipo_serv": 3,
+                                "data_cadastro": "2023-01-16",
+                                "data_recadastro": "0000-00-00 00:00:00"
+                              }
+                          }
+                      }
+                  }
+              }
+         },
+          
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "marca": {  
+                        "value": 
+                        {
+                          "codigo": 8542,
+                          "id": 8542,
+                          "valor": 50,
+                          "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1",
+                          "tipo_serv": 3,
+                          "data_cadastro": "2023-01-16",
+                          "data_recadastro": "0000-00-00 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao Atualizar Serviço.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao Atualizar Serviço."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
         } ,
+        "/servico ":{
+          "post":{
+          "summary": "Cadastrar Serviço",
+           "description":"Cadastrar Serviço",
+           "tags":["servicos"],
+           "requestBody":{
+              "content":{
+                  "application/json":{
+                      "examples":{
+                          "marca":{
+                              "value": 
+                              {
+                                "id": 8542,
+                                "valor": 50,
+                                "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1" ,
+                                "tipo_serv": 3,
+                                "data_cadastro": "2023-01-16",
+                                "data_recadastro": "0000-00-00 00:00:00"
+                              }
+                          }
+                      }
+                  }
+              }
+         },
+          
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "marca": {  
+                        "value": 
+                        {
+                          "codigo": 8542,
+                          "id": 8542,
+                          "valor": 50,
+                          "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1",
+                          "tipo_serv": 3,
+                          "data_cadastro": "2023-01-16",
+                          "data_recadastro": "0000-00-00 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao Cadastrar Serviço.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao Cadastrar Serviço."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        } ,
+        
+        "/veiculos ":{
+          "get":{
+          "summary": "Obtém os veiculos",
+           "description":"Obtém os veiculos",
+           "tags":["veiculos"],
+           "parameters":[
+            {
+                "name":"codigo",
+                "in":"query",
+                "description":"codigo do veiculo.",
+                "required":false, 
+                "type": "integer"
+            } ,
+            {
+              "name":"id",
+              "in":"query",
+              "description":"id do veiculo.",
+              "required":false, 
+              "type": "integer"
+          } ,
+          {
+            "name":"cliente",
+            "in":"query",
+            "description":"codigo do cliente vinculado ao veiculo.",
+            "required":false, 
+            "type": "integer"
+         } ,
+          {
+            "name": "placa",
+            "in": "query",
+            "description": "placa do veiculo.",
+            "required": false,
+            "type": "string",  
+            "format": "int32"   
+          },
+          {
+            "name": "marca",
+            "in": "query",
+            "description": "placa do veiculo.",
+            "required": false,
+            "type": "string",  
+            "format": "int32"   
+          } ,
+          {
+            "name": "modelo",
+            "in": "query",
+            "description": "modelo do veiculo.",
+            "required": false,
+            "type": "string",  
+            "format": "int32"   
+          } ,
+          {
+            "name": "ano",
+            "in": "query",
+            "description": "ano do veiculo.",
+            "required": false,
+            "type": "string",  
+            "format": "int32"   
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Número máximo de itens a retornar",
+            "required": false,
+            "type": "integer",  
+            "format": "int32",  
+            "default": 20       
+          } 
+       
+         ],
+           "requestBody":{
+              "content":{
+                  "application/json":{
+                      "examples":{
+                          "veiculo":{
+                              "value": 
+                            [  {
+                                "id": 2,
+                                "cliente": 1,
+                                "placa": "12513",
+                                "marca": "teste",
+                                "modelo": "teste",
+                                "ano": "1233",
+                                "combustivel": "",
+                                "data_cadastro": "0000-00-00",
+                                "data_recadastro": "0000-00-00"
+                              }
+                            ]
+                          }
+                      }
+                  }
+              }
+         },
+          
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "veiculo": {  
+                        "value": 
+                        {
+                          "codigo": 2,
+                          "id": 2,
+                          "cliente": 1,
+                          "placa": "12513",
+                          "marca": "teste",
+                          "modelo": "teste",
+                          "ano": "1233",
+                          "combustivel": "",
+                          "data_cadastro": "0000-00-00",
+                          "data_recadastro": "0000-00-00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao buscar veiculo.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao buscar veiculo."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        } , 
+
         "/offline/veiculos":{
             "get":{
             "summary": "busca veiculos",
@@ -1526,31 +2073,323 @@
                }
             }
         },
-        "/offline/servicos":{
-            "get":{
-            "summary": "busca servicos",
-             "description":"rota responsavel por buscar todos os dados dos servicos, onde é feito os procedimentos de cadastro no aplicativo.",
-             "tags":["servicos"],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "servicos":{
-                                    "value":[
-                                         {
-                                           "codigo": 2,
-                                            "tipo_serv": 3,
-                                            "valor": 40,
-                                            "aplicacao": "SUBSTITUIR CANO SAIDA ESCAPE"
-                                         }
-                                    ]
-                                }
+        "/veiculo ":{
+          "post":{
+          "summary": "Cadastrar veiculo",
+           "description":"Cadastrar veiculo",
+           "tags":["veiculos"],
+           "requestBody":{
+              "content":{
+                  "application/json":{
+                      "examples":{
+                          "veiculo":{
+                              "value": 
+                              {
+                                "id": 2,
+                                "cliente": 1,
+                                "placa": "12513",
+                                "marca": "teste",
+                                "modelo": "teste",
+                                "ano": "1233",
+                                "combustivel": "",
+                                "data_cadastro": "0000-00-00",
+                                "data_recadastro": "0000-00-00"
+                              }
+                          }
+                      }
+                  }
+              }
+         },
+          
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "veiculo": {  
+                        "value": 
+                        {
+                          "codigo": 2,
+                          "id": 2,
+                          "cliente": 1,
+                          "placa": "12513",
+                          "marca": "teste",
+                          "modelo": "teste",
+                          "ano": "1233",
+                          "combustivel": "",
+                          "data_cadastro": "0000-00-00",
+                          "data_recadastro": "0000-00-00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao Cadastrar veiculo.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao Cadastrar veiculo."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
                             }
                         }
+                      }
                     }
-               }
+                }
+
+                } 
             }
-        } ,
+          }
+        } , 
+        "/veiculo put":{
+          "put":{
+          "summary": "Atualizar veiculo",
+           "description":"Atualizar veiculo",
+           "tags":["veiculos"],
+           "requestBody":{
+              "content":{
+                  "application/json":{
+                      "examples":{
+                          "veiculo":{
+                              "value": 
+                              {
+                                "codigo": 2,
+                                "id": 2,
+                                "cliente": 1,
+                                "placa": "12513",
+                                "marca": "teste",
+                                "modelo": "teste",
+                                "ano": "1233",
+                                "combustivel": "",
+                                "data_cadastro": "0000-00-00",
+                                "data_recadastro": "0000-00-00"
+                              }
+                          }
+                      }
+                  }
+              }
+         },
+          
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "veiculo": {  
+                        "value": 
+                        {
+                          "codigo": 2,
+                          "id": 2,
+                          "cliente": 1,
+                          "placa": "12513",
+                          "marca": "teste",
+                          "modelo": "teste",
+                          "ano": "1233",
+                          "combustivel": "",
+                          "data_cadastro": "0000-00-00",
+                          "data_recadastro": "0000-00-00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao Atualizar veiculo.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao Atualizar veiculo."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        } , 
+        "/formas_pagamento ":{
+          "get":{
+          "summary": "Obtém forma de pagamento",
+           "description":"  Obtém forma de pagamento.",
+           "tags":["formas de pagamento"],
+           "parameters":[
+                {
+                    "name":"codigo",
+                    "in":"query",
+                    "description":"codigo da forma de pagamento.",
+                    "required":false, 
+                    "type": "integer"
+                } ,
+                {
+                  "name":"id",
+                  "in":"query",
+                  "description":"id da forma de pagamento.",
+                  "required":false, 
+                  "type": "integer"
+              } ,
+              {
+                "name":"parcelas",
+                "in":"query",
+                "description":"quantidade de parcelas da forma de pagamento.",
+                "required":false, 
+                "type": "integer"
+            } ,
+              {
+                "name": "limit",
+                "in": "query",
+                "description": "Número máximo de itens a retornar",
+                "required": false,
+                "type": "integer",  
+                "format": "int32",  
+                "default": 20       
+              },
+              {
+                "name": "Descrição",
+                "in": "query",
+                "description": " Descrição da forma de pagamento.",
+                "required": false,
+                "type": "string",  
+                "format": "int32"   
+              } 
+          
+            ],
+     
+           "requestBody":{
+                  "content":{
+                      "application/json":{
+                          "examples":{
+                              "forma de pagamento":{
+                                  "value": 
+                                  {
+                                  "codigo": 1,
+                                "id": 1,
+                                "descricao": "A VISTA",
+                                "desc_maximo": 100,
+                                "parcelas": 1,
+                                "intervalo": 30,
+                                "recebimento": 0,
+                                "data_cadastro": "2003-02-04",
+                                "data_recadastro": "2023-11-06 07:40:33"
+                              }
+                              }
+                          }
+                      }
+                  }
+             },
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "veiculo": {  
+                        "value": 
+                        {
+                          "codigo": 1,
+                          "id": 1,
+                          "descricao": "A VISTA",
+                          "desc_maximo": 100,
+                          "parcelas": 1,
+                          "intervalo": 30,
+                          "recebimento": 0,
+                          "data_cadastro": "2003-02-04",
+                          "data_recadastro": "2023-11-06 07:40:33"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro atualizar forma de pagamento.",
+  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro atualizar forma de pagamento."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+  
+                } 
+            }
+          }
+          },
         "/offline/formas_pagamento":{
             "get":{
             "summary": "busca formas de pagamento",
@@ -1578,11 +2417,192 @@
                }
             }
         },
+        "/formas_pagamento":{
+          "post":{
+          "summary": "cadastra formas de pagamento",
+           "description":"  cadastra formas de pagamento.",
+           "tags":["formas de pagamento"],
+           "requestBody":{
+                  "content":{
+                      "application/json":{
+                          "examples":{
+                              "formas de pagamento":{
+                                  "value": 
+                                  {
+                                    "id": 1,
+                                    "descricao": "A VISTA",
+                                    "desc_maximo": 100,
+                                    "parcelas": 1,
+                                    "intervalo": 30,
+                                    "recebimento": 0,
+                                    "data_cadastro": "2003-02-04",
+                                    "data_recadastro": "2023-11-06 07:40:33"
+                                  }
+                              }
+                          }
+                      }
+                  }
+             },
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "veiculo": {  
+                        "value": 
+                        {
+                          "codigo": 69,
+                          "id": 1,
+                          "descricao": "A VISTA",
+                          "desc_maximo": 100,
+                          "parcelas": 1,
+                          "intervalo": 30,
+                          "recebimento": 0,
+                          "data_cadastro": "2003-02-04",
+                          "data_recadastro": "2023-11-06 07:40:33"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro obter formas de pagamento.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro obter formas de pagamento."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        },
+         "/formas_pagamento put ":{
+        "put":{
+        "summary": "Atualiza forma de pagamento",
+         "description":"  Atualiza forma de pagamento.",
+         "tags":["formas de pagamento"],
+         "requestBody":{
+                "content":{
+                    "application/json":{
+                        "examples":{
+                            "forma de pagamento":{
+                                "value": 
+                                {
+                                "codigo": 1,
+                              "id": 1,
+                              "descricao": "A VISTA",
+                              "desc_maximo": 100,
+                              "parcelas": 1,
+                              "intervalo": 30,
+                              "recebimento": 0,
+                              "data_cadastro": "2003-02-04",
+                              "data_recadastro": "2023-11-06 07:40:33"
+                            }
+                            }
+                        }
+                    }
+                }
+           },
+           "responses": {
+            "200": {  
+              "content": {
+                "application/json": {
+                  "schema": {  
+                  },
+                  "examples": {
+                    "veiculo": {  
+                      "value": 
+                      {
+                        "codigo": 1,
+                        "id": 1,
+                        "descricao": "A VISTA",
+                        "desc_maximo": 100,
+                        "parcelas": 1,
+                        "intervalo": 30,
+                        "recebimento": 0,
+                        "data_cadastro": "2003-02-04",
+                        "data_recadastro": "2023-11-06 07:40:33"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400":{
+              "description": "erro atualizar forma de pagamento.",
+
+              "content": {
+                "application/json": {
+                  "schema": {  
+                  },
+                  "examples": {
+                    "erro":{
+                        "value":{
+                            "erro": true,
+                            "msg": "erro atualizar forma de pagamento."
+                        }
+                     }
+                   }
+                 }
+              }
+            },
+            "401":{
+                "description": "não autorizado.",
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "msg": "Acesso negado, token não informado! "
+                          }
+                      }
+                    }
+                  }
+              }
+
+              } 
+          }
+        }
+         },
+      
         "/offline/tipos_os":{
             "get":{
-            "summary": "busca  tipos de os",
-             "description":"rota responsavel por buscar todos os tipos de os, onde é feito os procedimentos de cadastro no aplicativo.",
-             "tags":["tipos de os"],
+              "summary": "Obtém tipos de ordem de serviços",
+              "description":"Obtém tipos de ordem de serviços.",
+
+              "tags":["tipos de os"],
              "requestBody":{
                     "content":{
                         "application/json":{
@@ -1602,8 +2622,276 @@
                }
             }
         },
-     
+         "/tipos_os":{
+          "get":{
+          "summary": "Obtém tipos de ordem de serviços",
+           "description":"Obtém tipos de ordem de serviços.",
+           "tags":["tipos de os"],
+           "parameters":[
+            {
+                "name":"codigo",
+                "in":"query",
+                "description":"codigo do tipo de os .",
+                "required":false, 
+                "type": "integer"
+            } ,
+            {
+              "name":"id",
+              "in":"query",
+              "description":"id do tipo de os .",
+              "required":false, 
+              "type": "integer"
+          } ,
+      
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Número máximo de itens a retornar",
+            "required": false,
+            "type": "integer",  
+            "format": "int32",  
+            "default": 20       
+          },
+          {
+            "name": "Descrição",
+            "in": "query",
+            "description": " Descrição do tipo de os .",
+            "required": false,
+            "type": "string",  
+            "format": "int32"   
+          } 
+      
+        ],
+           "requestBody":{
+                  "content":{
+                      "application/json":{
+                      }
+                  }
+             },
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "tipo_os": {  
+                        "value": 
+                        [
+                          {
+                            "codigo": 1,
+                            "id": 1,
+                            "descricao": "SERVICOS",
+                            "data_cadastro": "0000-00-00",
+                            "data_recadastro": "0000-00-00 00:00:00"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro obter  tipos de os .",
 
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro obter  tipos de os ."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        },
+        "/tipos_os post":{
+          "post":{
+          "summary": "Cadastra tipos de ordem de serviços",
+           "description":"Cadastra tipos de ordem de serviços.",
+           "tags":["tipos de os"],
+     
+           "requestBody":{
+            "content":{
+              "application/json":{
+                  "examples":{
+                      "tipos_os":{
+                          "value": 
+                          {
+                            "id": 1,
+                            "descricao": "SERVICOS 2",
+                            "data_cadastro": "0000-00-00",
+                            "data_recadastro": "0000-00-00 00:00:00"
+                          }
+                      }
+                  }
+              }
+          }
+             },
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "tipos_os": {  
+                        "value": 
+                        {
+                          "codigo": 4,
+                          "descricao": "SERVICOS 2",
+                          "data_cadastro": "0000-00-00",
+                          "data_recadastro": "0000-00-00 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao registrar tipos de os.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao registrar tipos de os."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        },
+        "/tipos_os put":{
+          "put":{
+          "summary": "Atualizar tipos de ordem de serviços",
+           "description":"Atualizar tipos de ordem de serviços.",
+           "tags":["tipos de os"],
+     
+           "requestBody":{
+            "content":{
+              "application/json":{
+                  "examples":{
+                      "tipos_os":{
+                          "value": 
+                          {
+                            "codigo": 4,
+                            "id": 1,
+                            "descricao": "SERVICOS 2",
+                            "data_cadastro": "0000-00-00",
+                            "data_recadastro": "0000-00-00 00:00:00"
+                          }
+                      }
+                  }
+              }
+          }
+             },
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "tipos_os": {  
+                        "value": 
+                        {
+                          "codigo": 4,
+                          "descricao": "SERVICOS 2",
+                          "data_cadastro": "0000-00-00",
+                          "data_recadastro": "0000-00-00 00:00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao atualizar tipos de os.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao atualizar tipos de os."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+        },
         "/pedidos":{
             "get":{
                 "summary": "busca pedidos",
@@ -1773,8 +3061,194 @@
                     }
                }
             }
-        } 
-   
+        },
+        "/empresa ":{
+          "post":{
+          "summary": "Cadastra empresa",
+           "description":"Cadastra empresa",
+           "tags":["empresa"],
+           "requestBody":{
+              "content":{
+                  "application/json":{
+                      "examples":{
+                          "empresa":{
+                              "value": 
+                              {
+                                "cnpj":"00.000.000/0000-00",
+                                "usuario":"teste",
+                                "email":"user@teste.com",
+                                "senha":"123",
+                                "email_empresa":"user@teste.com",
+                                "nome_empresa":"EMPR TESTE",
+                                "telefone_empresa":"44 999999999"
+                              }
+                              
+                          }
+                      }
+                  }
+              }
+         },
+          
+             "responses": {
+              "200": {  
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "empresa": {  
+                        "value": 
+                        {
+                          "status": {
+                            "ok": true,
+                            "msg": "Empresa registrada com sucesso!"
+                          },
+                          "data": 
+                          {
+                            "cnpj":"00.000.000/0000-00",
+                            "usuario":"teste",
+                            "email":"user@teste.com",
+                            "senha":"123",
+                            "email_empresa":"user@teste.com",
+                            "nome_empresa":"EMPR TESTE",
+                            "telefone_empresa":"44 999999999"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400":{
+                "description": "erro ao cadastrar empresa.",
+
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "erro": true,
+                              "msg": "erro ao cadastrar empresa."
+                          }
+                       }
+                     }
+                   }
+                }
+              },
+              "401":{
+                  "description": "não autorizado.",
+                  "content": {
+                    "application/json": {
+                      "schema": {  
+                      },
+                      "examples": {
+                        "erro":{
+                            "value":{
+                                "msg": "Acesso negado, token não informado! "
+                            }
+                        }
+                      }
+                    }
+                }
+
+                } 
+            }
+          }
+       },
+       "/empresa/validacao ":{
+        "post":{
+        "summary": "Verifica se a empresa já foi cadastrada",
+         "description":"Verifica se a empresa já foi cadastrada",
+         "tags":["empresa"],
+         "requestBody":{
+            "content":{
+                "application/json":{
+                    "examples":{
+                        "empresa":{
+                            "value": 
+                            {
+                              "cnpj":"00.000.000/0000-00"
+                            }
+                            
+                        }
+                    }
+                }
+            }
+       },
+        
+           "responses": {
+            "200": {  
+              "description": "Empresa encontrada .",
+              "content": {
+                "application/json": {
+                  "schema": {  
+                  },
+                  "examples": {
+                    "empresa": {  
+                      "value": 
+                      {
+                        "status": {
+                          "cadastrada": true,
+                          "msg": "Já existe uma empresa cadastrada com este cnpj !"
+                        },
+                        "data": {
+                          "cnpj": "03038683000164",
+                          "email_empresa": "user@teste.com",
+                          "telefone_empresa": "44 999317550",
+                          "nome": "EMPR TESTE",
+                          "codigo": 4,
+                          "responsavel": 6
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400":{
+              "description": "Empresa não encontrada .",
+
+              "content": {
+                "application/json": {
+                  "schema": {  
+                  },
+                  "examples": {
+                    "erro":{
+                        "value": 
+                        {
+                          "status": {
+                            "cadastrada": false,
+                            "msg": "Não encontramos empresa cadastrada com este cnpj!"
+                          },
+                          "data": {}
+                        }
+                     }
+                   }
+                 }
+              }
+            },
+            "401":{
+                "description": "não autorizado.",
+                "content": {
+                  "application/json": {
+                    "schema": {  
+                    },
+                    "examples": {
+                      "erro":{
+                          "value":{
+                              "msg": "Acesso negado, token não informado! "
+                          }
+                      }
+                    }
+                  }
+              }
+
+              } 
+          }
+        }
+     } 
     } 
  
 

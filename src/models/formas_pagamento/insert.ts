@@ -1,6 +1,7 @@
 import { conn } from "../../database/databaseConfig"
-import { fpgt } from "./typeFpgt";
+import { formaPagamentoBanco } from "../../types/formas_pagamento/formas_pagamento"
 
+type fpgt = Omit<formaPagamentoBanco, 'codigo'>;
 
 export class Insert_formaPagamento{
 
