@@ -77,6 +77,7 @@ export class TipoOsController{
          let dateService = new DateService();
       
             if(!req.body.id) req.body.id = 0;
+            if(!req.body.ativo ) req.body.ativo = 'S';
               if(!req.body.descricao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para registrar o tipo de OS!"});
              if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
              if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
@@ -90,6 +91,7 @@ export class TipoOsController{
                     "descricao"            : req.body.descricao,
                     "data_cadastro"        : req.body.data_cadastro,
                     "data_recadastro"      : req.body.data_recadastro,
+                    "ativo"                 :req.body.ativo
                           
                   })
                   
@@ -114,6 +116,7 @@ export class TipoOsController{
                                   req.body.codigo = Number(req.body.codigo)
                                 } 
                                 if(!req.body.id)  req.body.id =  "0";
+                                if(!req.body.ativo ) req.body.ativo = 'S';
                                 if(!req.body.descricao)  return res.status(400).json( { erro:true, msg:`E necessario informar a descricao do tipo de OS!`}) 
                                 if(!req.body.data_cadastro ) req.body.data_cadastro = dateService.obterDataAtual();
                                 if(!req.body.data_recadastro ) req.body.data_recadastro = dateService.obterDataHoraAtual();
@@ -134,7 +137,9 @@ export class TipoOsController{
                             "id": req.body.id,
                             "descricao": req.body.descricao,
                             "data_cadastro": req.body.data_cadastro,
-                            "data_recadastro": req.body.data_recadastro
+                            "data_recadastro": req.body.data_recadastro,
+                            "ativo"      :req.body.ativo
+
                           }
                          )
                     }else{

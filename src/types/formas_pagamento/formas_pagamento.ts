@@ -8,4 +8,5 @@ export type formaPagamentoBanco ={
     recebimento:number,
     data_cadastro:string,
     data_recadastro:string
+    ativo:string
 }

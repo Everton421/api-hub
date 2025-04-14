@@ -49,6 +49,8 @@ export class FormasController{
        let dbName  = `\`${cnpjF}\``;
        
        if(!req.body.id) req.body.id = 0; 
+       if(!req.body.ativo) req.body.ativo = 'S'; 
+
        if(!req.body.descricao)  return res.status(400).json({erro:true, msg:"É necessario informar a descrição para gravar "});  
        if(!req.body.desc_maximo) req.body.desc_maximo = 0;  
        if(!req.body.parcelas) return res.status(400).json({erro:true, msg:"É necessario informar a quantidade de parcelas para gravar"});  
@@ -71,7 +73,8 @@ export class FormasController{
                intervalo: req.body.intervalo,
                recebimento: req.body.recebimento,
                data_cadastro: req.body.data_cadastro,
-               data_recadastro: req.body.data_recadastro
+               data_recadastro: req.body.data_recadastro,
+               ativo: req.body.ativo
              });
          }
       }catch(e){
@@ -96,7 +99,7 @@ export class FormasController{
          let cnpjF = headerCnpj.replace(/\D/g, '');
          let dbName  = `\`${cnpjF}\``;
          if(!req.body.codigo)  return res.status(400).json({erro:true, msg:"É necessario informar o codigo da forma de pagamento "});  
-         
+         if(!req.body.ativo) req.body.ativo = 'S'; 
          if(!req.body.id) req.body.id = 0; 
          if(!req.body.descricao)  return res.status(400).json({erro:true, msg:"É necessario informar a descrição para gravar "});  
          if(!req.body.desc_maximo) req.body.desc_maximo = 0;  
@@ -120,7 +123,9 @@ export class FormasController{
                   intervalo: req.body.intervalo,
                   recebimento: req.body.recebimento,
                   data_cadastro: req.body.data_cadastro,
-                  data_recadastro: req.body.data_recadastro
+                  data_recadastro: req.body.data_recadastro,
+                  ativo: req.body.ativo
+
                 });
             }
         }catch(e){

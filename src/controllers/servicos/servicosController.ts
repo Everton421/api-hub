@@ -98,18 +98,21 @@ export class ServicosController{
  
           if(!req.body.tipo_serv)    req.body.tipo_serv = 0 
           if(!req.body.valor)    req.body.valor = 0 
+          if(!req.body.ativo)    req.body.ativo = 'S' 
 
           if(!req.body.aplicacao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para registrar o servico!"});
          if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
          if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
           let servico = {
-        "valor" :req.body.valor,
-        "aplicacao" :req.body.aplicacao,
-        "tipo_serv" :req.body.tipo_serv,
-        "data_cadastro" :req.body.data_cadastro,
-        "data_recadastro" :req.body.data_recadastro,
-          }
+          "valor" :req.body.valor,
+          "aplicacao" :req.body.aplicacao,
+          "tipo_serv" :req.body.tipo_serv,
+          "data_cadastro" :req.body.data_cadastro,
+          "data_recadastro" :req.body.data_recadastro,
+          "ativo"                : req.body.ativo
+            
+        }
 
        try{
             let resultinsertId:any = await insert.insert(dbName, servico);
@@ -121,6 +124,7 @@ export class ServicosController{
                 "tipo_serv"            : req.body.tipo_serv,
                 "data_cadastro"        : req.body.data_cadastro,
                 "data_recadastro"      : req.body.data_recadastro,
+                "ativo"                : req.body.ativo
                       
               })
           }catch(e){
@@ -200,19 +204,20 @@ async update(req:Request,res:Response){
         if(!req.body.id )  req.body.id = 0; 
         if(!req.body.valor)    req.body.valor = 0 
         if(!req.body.codigo)         return res.status(200).json({ erro:true, msg: "É necessario informar o codigo para atualizar o servico!"});
-
+        if(!req.body.ativo) req.body.ativo = 'S';
         if(!req.body.aplicacao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para atualizar o servico!"});
-       if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
-       if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
+        if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
+        if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
         let servico = {
-       "codigo": req.body.codigo,
-       "id": req.body.id,   
-      "valor" :req.body.valor,
-      "aplicacao" :req.body.aplicacao,
-      "tipo_serv" :req.body.tipo_serv,
-      "data_cadastro" :req.body.data_cadastro,
-      "data_recadastro" :req.body.data_recadastro,
+        "codigo": req.body.codigo,
+        "id": req.body.id,   
+        "valor" :req.body.valor,
+        "aplicacao" :req.body.aplicacao,
+        "tipo_serv" :req.body.tipo_serv,
+        "data_cadastro" :req.body.data_cadastro,
+        "data_recadastro" :req.body.data_recadastro,
+        "ativo":req.body.ativo
         }
 
      try{
@@ -226,7 +231,7 @@ async update(req:Request,res:Response){
               "tipo_serv"            : req.body.tipo_serv,
               "data_cadastro"        : req.body.data_cadastro,
               "data_recadastro"      : req.body.data_recadastro,
-                    
+              "ativo"                :  req.body.ativo
             })
         }catch(e){
           return res.status(200).json({ erro:true, msg: `Ocorreu um erro ao atualizar o servico!`});

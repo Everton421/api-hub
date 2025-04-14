@@ -6,9 +6,9 @@ export class Insert_Marcas{
         return new Promise( async (resolve, reject )=>{
             
             let sql = `
-                    INSERT INTO ${empresa}.marcas ( id, data_cadastro, data_recadastro, descricao ) VALUES
-                                                      ( ? , ? , ? , ? ); `;
-            const values = [ marca.id , marca.data_cadastro, marca.data_recadastro, marca.descricao]
+                    INSERT INTO ${empresa}.marcas ( id, data_cadastro, data_recadastro, descricao, ativo ) VALUES
+                                                      ( ? , ? , ? , ? , ? ); `;
+            const values = [ marca.id , marca.data_cadastro, marca.data_recadastro, marca.descricao, marca.ativo]
 
             await conn.query( sql , values,(err:any, result:any )=>{
                 if(err){

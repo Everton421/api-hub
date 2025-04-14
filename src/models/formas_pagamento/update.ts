@@ -17,8 +17,8 @@ export class update_formaPagamento{
         parcelas,
         recebimento,
         data_cadastro,
-        data_recadastro 
-
+        data_recadastro,
+        ativo
         }= fpgt;
 
         const sql = `
@@ -30,7 +30,9 @@ export class update_formaPagamento{
                 parcelas ='${parcelas}',
                 recebimento ='${recebimento}',
                 data_cadastro ='${data_cadastro}',
-                data_recadastro ='${data_recadastro}'
+                data_recadastro ='${data_recadastro}',
+                ativo ='${ativo}'
+
                 where codigo = ${codigo}
         ` 
 

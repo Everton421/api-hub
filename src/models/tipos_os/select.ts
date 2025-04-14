@@ -36,6 +36,7 @@ export class SelectTipo_os{
           descricao,
           id,
           limit, 
+          ativo
       } = query;
 
       
@@ -52,7 +53,10 @@ export class SelectTipo_os{
       if(!limit || isNaN(limit)){
           limit = 20;
       }
-
+      if (ativo) {
+        conditions.push("ativo = ?");
+        params.push(ativo);
+    }
       if (codigo) {
           conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
           params.push(codigo);          // Adiciona o valor ao array de parâmetros

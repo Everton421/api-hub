@@ -6,9 +6,9 @@ export class Insert_Categorias{
         return new Promise( async (resolve, reject )=>{
             
             let sql = `
-                    INSERT INTO ${empresa}.categorias ( id, data_cadastro, data_recadastro, descricao ) VALUES
-                                                      ( ? , ? , ? , ? ); `;
-            const values = [ categoria.id , categoria.data_cadastro, categoria.data_recadastro, categoria.descricao]
+                    INSERT INTO ${empresa}.categorias ( id, data_cadastro, data_recadastro, descricao, ativo ) VALUES
+                                                      ( ? , ? , ? , ?, ? ); `;
+            const values = [ categoria.id , categoria.data_cadastro, categoria.data_recadastro, categoria.descricao , categoria.ativo]
 
             await conn.query( sql , values,(err:any, result:any )=>{
                 if(err){

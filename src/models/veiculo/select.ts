@@ -81,6 +81,7 @@ export class Select_veiculos{
             marca,
             modelo,
             ano,
+            ativo,
         } = query;
  
         
@@ -110,7 +111,10 @@ export class Select_veiculos{
             conditions.push("cliente = ?");
             params.push(Number(cliente));
         }
-    
+        if (ativo) {
+            conditions.push("ativo = ?");
+            params.push(ativo);
+        }
         if (placa) {
             conditions.push("placa LIKE ?");
             params.push(`%${placa}%`);  

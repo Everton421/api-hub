@@ -78,6 +78,7 @@ async update(  req:Request,res:Response ){
      if( !req.body.cliente ){
         return res.status(400).json({erro:true, msg:"É necessario informar o cliente vinculado ao veiculo "});   
      }
+     if(!req.body.ativo) req.body.ativo = 'S'; 
 
      if(!req.body.placa) req.body.placa = ''; 
      if(!req.body.marca) req.body.marca = ''; 
@@ -115,7 +116,8 @@ async update(  req:Request,res:Response ){
                 "ano": req.body.ano,
                 "combustivel": req.body.combustivel, 
                 "data_cadastro": req.body.data_cadastro,
-                "data_recadastro": req.body.data_recadastro
+                "data_recadastro": req.body.data_recadastro,
+                "ativo": req.body.ativo
             }
         );   
 
@@ -151,6 +153,7 @@ async insert(  req:Request,res:Response ){
      if( !req.body.cliente ){
         return res.status(400).json({erro:true, msg:"É necessario informar o cliente vinculado ao veiculo "});   
      }
+     if(!req.body.ativo) req.body.ativo = 'S'; 
 
      if(!req.body.placa) req.body.placa = ''; 
      if(!req.body.marca) req.body.marca = ''; 
@@ -181,7 +184,8 @@ async insert(  req:Request,res:Response ){
                             "ano": req.body.ano,
                             "combustivel": req.body.combustivel, 
                             "data_cadastro": req.body.data_cadastro,
-                            "data_recadastro": req.body.data_recadastro
+                            "data_recadastro": req.body.data_recadastro,
+                            "ativo": req.body.ativo
                         }
                     );   
 

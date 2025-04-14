@@ -5,4 +5,5 @@ export type categoria =
   id:number,
   data_cadastro:string,
   data_recadastro:string,
+  ativo:string
  }

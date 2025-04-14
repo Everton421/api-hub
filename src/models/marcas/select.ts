@@ -104,7 +104,8 @@ export class Select_Marcas{
             codigo,
             id,
             descricao,
-            limit  
+            limit,
+            ativo
         } = query;
 
         
@@ -129,6 +130,11 @@ export class Select_Marcas{
         if (id) {
             conditions.push("id = ?");
             params.push(Number(id));
+        }
+
+         if (ativo) {
+            conditions.push("ativo = ?");
+            params.push(ativo);
         }
     
         if (descricao) {

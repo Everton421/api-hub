@@ -117,6 +117,7 @@ export class Select_Categorias{
             codigo,
             id,
             descricao,
+            ativo,
             limit  
         } = query;
 
@@ -144,6 +145,11 @@ export class Select_Categorias{
             params.push(Number(id));
         }
     
+        if (ativo) {
+            conditions.push("ativo = ?");
+            params.push(ativo);
+        }
+
         if (descricao) {
             conditions.push("descricao LIKE ?");
             params.push(`%${descricao}%`);  

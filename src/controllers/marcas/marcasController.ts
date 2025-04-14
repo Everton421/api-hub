@@ -187,6 +187,7 @@ export class MarcasController{
                 let postMarca:any = req.body; 
             
                 let  empresa = `\`${cnpj}\``;
+         if(!postMarca.ativo) postMarca.ativo = 'S'; 
             
                 if(!postMarca.id)  postMarca.id =  "0";
                 if(!postMarca.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
@@ -209,6 +210,7 @@ export class MarcasController{
                                     "descricao":postMarca.descricao,
                                     "data_cadastro":postMarca.data_cadastro,
                                     "data_recadastro":postMarca.data_recadastro,
+                                    "ativo":postMarca.ativo
                                     })
                             }
                         }catch(e){
@@ -230,6 +232,7 @@ export class MarcasController{
                           let  empresa = `\`${cnpj}\``;
                       
                           if(!postMarca.codigo)  return res.status(400).json( { erro:true, msg:`E necessario informar o codigo da marca!`}) 
+                          if(!postMarca.ativo) postMarca.ativo = 'S'; 
                           
                           if(!postMarca.id)  postMarca.id =  "0";
                           if(!postMarca.descricao)  return res.status(400).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
@@ -254,6 +257,7 @@ export class MarcasController{
                                                  "descricao":postMarca.descricao,
                                                  "data_cadastro":postMarca.data_cadastro,
                                                  "data_recadastro":postMarca.data_recadastro,
+                                                  "ativo": postMarca.ativo
                                                  })
                                          }
                                      }catch(e){

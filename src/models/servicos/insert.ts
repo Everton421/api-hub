@@ -12,6 +12,7 @@ export class InsertServico{
                 tipo_serv,
                 data_cadastro,
                 data_recadastro,
+                ativo
                     } = servico
 
                 const sql =` INSERT INTO  ${empresa}.servicos  
@@ -20,17 +21,19 @@ export class InsertServico{
                             aplicacao,
                             tipo_serv,
                             data_cadastro,
-                            data_recadastro 
+                            data_recadastro, 
+                            ativo
                                 ) VALUES (
                                      ${valor},
                                     '${aplicacao}',
                                     ${tipo_serv},
                                    '${data_cadastro}',
-                                   '${data_recadastro}' 
-                                  )
+                                   '${data_recadastro}', 
+                                  '${ativo}'
+                                   )
                             `;
 
-                let dados = [  valor, aplicacao, tipo_serv, data_cadastro, data_recadastro]
+                let dados = [  valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo] 
                             await conn.query(sql,   (err:any, result:any )=>{
                                 if(err){
                                      console.log(err)

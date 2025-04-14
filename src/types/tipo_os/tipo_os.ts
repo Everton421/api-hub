@@ -4,4 +4,5 @@ export type tipo_os ={
     data_cadastro:string,
     data_recadastro:string,
     descricao:string,
+    ativo:string
 }

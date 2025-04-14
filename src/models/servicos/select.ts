@@ -70,7 +70,8 @@ async   buscaGeral(empresa:any )   {
             id,
             aplicacao,
             tipo,
-            limit  
+            limit ,
+            ativo 
         } = query;
 
         
@@ -100,7 +101,10 @@ async   buscaGeral(empresa:any )   {
             conditions.push("tipo_serv = ?");
             params.push(Number(tipo));
         }
-    
+        if (ativo) {
+            conditions.push("ativo = ?");
+            params.push(ativo);
+        }
     
         if (aplicacao) {
             conditions.push("aplicacao LIKE ?");

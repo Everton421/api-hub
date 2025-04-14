@@ -13,6 +13,7 @@ export class updateServico{
             tipo_serv,
             data_cadastro,
             data_recadastro,
+            ativo
         } = servico;
   
         return new Promise( async( resolve, reject)=>{
@@ -24,7 +25,8 @@ export class updateServico{
               aplicacao = '${aplicacao}',
               tipo_serv = ${tipo_serv},
               data_cadastro = '${data_cadastro}',
-              data_recadastro = '${data_recadastro}'
+              data_recadastro = '${data_recadastro}',
+              ativo = '${ativo}'
                 where codigo = ${codigo}
               `
        

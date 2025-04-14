@@ -195,6 +195,7 @@ export class CategoriaController{
              let  empresa = `\`${cnpj}\``;
           
             if(!postCategoria.id)  postCategoria.id =  "0";
+            if(!postCategoria.atvo) postCategoria.ativo= 'S';
             if(!postCategoria.descricao)  return res.status(400).json( { erro:true, msg:`E necessario informar a descricao da categoria!`}) 
             if(!postCategoria.data_cadastro ) postCategoria.data_cadastro = dateService.obterDataAtual();
             if(!postCategoria.data_recadastro ) postCategoria.data_recadastro = dateService.obterDataHoraAtual();
@@ -213,6 +214,7 @@ export class CategoriaController{
                                   "descricao":postCategoria.descricao,
                                   "data_cadastro":postCategoria.data_cadastro,
                                   "data_recadastro":postCategoria.data_recadastro,
+                                  "ativo": postCategoria.ativo
                                  })
                          }
                      }catch(e){
@@ -237,7 +239,7 @@ export class CategoriaController{
                  let  empresa = `\`${cnpj}\``;
              
                  if(!postCategoria.codigo)  return res.status(400).json( { erro:true, msg:`E necessario informar o codigo da categoria!`}) 
-                 
+               if(!postCategoria.atvo) postCategoria.ativo= 'S';
                  if(!postCategoria.id)  postCategoria.id =  "0";
                  if(!postCategoria.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da categoria!`}) 
                  if(!postCategoria.data_cadastro ) postCategoria.data_cadastro = dateService.obterDataAtual();
@@ -261,6 +263,7 @@ export class CategoriaController{
                                         "descricao":postCategoria.descricao,
                                         "data_cadastro":postCategoria.data_cadastro,
                                         "data_recadastro":postCategoria.data_recadastro,
+                                        "ativo":postCategoria.ativo
                                         })
                                 }
                             }catch(e){

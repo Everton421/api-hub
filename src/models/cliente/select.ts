@@ -87,7 +87,7 @@ async   buscaPorCodigoOuDescricaoOuCnpj(empresa:any, param:string  )   {
 
 async novaBusca(empresa:any, query:any ){
 
-let { nome, cnpj, codigo, limit } = query 
+let { nome, cnpj, codigo, limit, ativo } = query 
 
     let baseSql = ` select *,
               DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -105,14 +105,19 @@ let { nome, cnpj, codigo, limit } = query
 
 
             if (codigo) {
-              conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
-              params.push(Number(codigo));          // Adiciona o valor ao array de parâmetros
+              conditions.push("codigo = ?");  
+              params.push(Number(codigo));      
           }
 
           if (cnpj) {
-            conditions.push("cnpj = ?"); // Placeholder (?) para o parâmetro
-            params.push(cnpj );          // Adiciona o valor ao array de parâmetros
+            conditions.push("cnpj = ?");  
+            params.push(cnpj );           
          }
+
+         if (ativo) {
+          conditions.push("ativo = ?");  
+          params.push(ativo );           
+       }
 
           if (nome) {
             conditions.push("nome LIKE ?");

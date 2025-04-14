@@ -25,6 +25,7 @@ export class SelectForma_pagamento{
             limit,
             descricao,
             parcelas,
+            ativo,
         } = query
          
         let baseSql = `
@@ -55,7 +56,10 @@ export class SelectForma_pagamento{
             conditions.push("parcelas = ?");
             params.push(Number(parcelas));
         }
-        
+        if (ativo) {
+            conditions.push("ativo = ?");
+            params.push(ativo);
+        }
         if (descricao) {
             conditions.push("descricao LIKE ?");
             params.push(`%${descricao}%`);  

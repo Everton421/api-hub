@@ -12,6 +12,7 @@ export class UpdateMarca{
                 data_cadastro,
                 data_recadastro,
                 descricao,
+                ativo
             } = marca
 
                 const sql =` UPDATE  ${empresa}.marcas SET  
@@ -19,6 +20,7 @@ export class UpdateMarca{
                                     data_cadastro = '${data_cadastro}',
                                     data_recadastro = '${data_recadastro}',
                                     descricao = '${descricao}'
+                                    ativo = '${ativo}'
                                    where codigo = ${codigo}
                             `;
 
