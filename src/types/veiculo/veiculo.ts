@@ -11,5 +11,6 @@ export type VeiculoBanco =
     cor: string,
     combustivel: string,
     data_cadastro: string,
-    data_recadastro: string
+    data_recadastro: string,
+    ativo:string
  }

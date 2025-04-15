@@ -19,7 +19,8 @@ export class update_veiculo{
             cor,
             combustivel,
             data_cadastro,
-            data_recadastro
+            data_recadastro,
+            ativo 
         } = veiculo;
 
                 const sql =` UPDATE  ${empresa}.veiculos SET  
@@ -32,8 +33,9 @@ export class update_veiculo{
                                     cor = '${cor}',
                                     combustivel = '${combustivel}',
                                     data_cadastro = '${data_cadastro}',
-                                    data_recadastro = '${data_recadastro}'
-                                   where codigo = ${codigo}
+                                    data_recadastro = '${data_recadastro}',
+                                    ativo = '${ativo}'
+                                    where codigo = ${codigo}
                             `;
 
                             await conn.query(sql,   (err:any, result:any )=>{
