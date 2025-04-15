@@ -154,7 +154,7 @@ async insert(  req:Request,res:Response ){
         return res.status(400).json({erro:true, msg:"É necessario informar o cliente vinculado ao veiculo "});   
      }
      if(!req.body.ativo) req.body.ativo = 'S'; 
-
+     if(!req.body.id ) req.body.id = 0; 
      if(!req.body.placa) req.body.placa = ''; 
      if(!req.body.marca) req.body.marca = ''; 
      if(!req.body.modelo) req.body.modelo = ''; 
@@ -191,7 +191,7 @@ async insert(  req:Request,res:Response ){
 
                     }
             }catch(e){
-        return res.status(400).json({erro:true, msg:"ocorreu um erro ao tentar atualizar o veiculo! "});   
+        return res.status(400).json({erro:true, msg:"ocorreu um erro ao tentar registrar o veiculo! " });   
                 
             }
        
