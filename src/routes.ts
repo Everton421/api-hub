@@ -43,7 +43,6 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
  
  router.get(`${versao}/offline/produtos`,   checkToken,  new ProdutoController().buscaGeral )//ok
  router.post(`${versao}/produto`,          checkToken, new ProdutoController().cadastrar)//ok
- //router.get(`${versao}/next/produtos/:produto`,  checkToken,  new ProdutoController().buscaProdutoNext)
  router.get(`${versao}/produtos`,  checkToken,  new ProdutoController().buscaProdutos)//ok
  router.get(`${versao}/produto/:codigo`,  checkToken,  new ProdutoController().buscaProdutoNextPorCodigo)//ok
  router.put(`${versao}/produto`,  checkToken,  new ProdutoController().update)//ok
@@ -54,13 +53,10 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
  router.get(`${versao}/clientes`,           checkToken, new ClienteController().buscaClientes)//ok
  router.put(`${versao}/cliente`,            checkToken,  new ClienteController().atualizar)//ok
 
- //router.get(`${versao}/next/clientes/:cliente`,  checkToken,  new ClienteController().buscaClientesNext)
 
- //router.get(`${versao}/categorias` , checkToken, new CategoriaController().buscaPorDescricao)
  router.get(`${versao}/categorias` , checkToken, new CategoriaController().buscaCategorias)//ok
 
  router.get(`${versao}/offline/categorias`,   new CategoriaController().buscaGeral )//ok
- //router.get(`${versao}/offline/categorias/:descricao`,   new CategoriaController().buscaPorDescricao )
  router.post(`${versao}/categoria`,   new CategoriaController().cadastrar )//ok
  router.put(`${versao}/categoria` , checkToken, new CategoriaController().atualizar)//ok
 
@@ -70,7 +66,6 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
  router.get(`${versao}/marcas`,   new MarcasController().buscaMarcas )//ok
 
  router.get(`${versao}/servicos`,   checkToken,  new ServicosController().buscaServicos )//ok
- //router.get(`${versao}/next/servicos`,  checkToken,  new ServicosController().buscaPorCodigo) 
  router.put(`${versao}/servico`,   checkToken,  new ServicosController().update )//ok
  router.get(`${versao}/offline/servicos`,         checkToken,  new ServicosController().buscaGeral ) //ok
  router.get(`${versao}/servicos/:servico`,  checkToken,  new ServicosController().buscaServicosNext)//ok
@@ -102,12 +97,16 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
  router.post(`${versao}/tipo_os`, checkToken,  new TipoOsController().cadastrar )
  router.put(`${versao}/tipo_os`, checkToken,  new TipoOsController().atualizar )
 
-
-
-
+ 
 
  router.get(`${versao}/pedidos`,  checkToken,  new pedidoController().select)
+ router.post(`${versao}/pedidos`, checkToken, new pedidoController().insert)
 
+ router.get(`${versao}/pedidos/vendas`,  checkToken,  new pedidoNextController().novaBusca)
+
+
+
+ router.get(`${versao}/next/pedidoCompletoPorCodigo/`,  checkToken,  new pedidoNextController().buscaPedidosCompleto)
  ////////
   router.post(`${versao}/enviar_codigo`,  checkToken, new EnvioCodigoValidador().main);
   router.post(`${versao}/alterar_senha`,  checkToken, new Alterar_senha().main);
@@ -118,7 +117,6 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
  router.post(`${versao}/registrar_usuario`,checkToken, new UsuariosController().cadastrar)
  router.get(`${versao}/usuarios`,checkToken, new UsuariosController().busca) 
 /////
- router.post(`${versao}/pedidos`, checkToken, new pedidoController().insert)
 ////
 
 
@@ -128,8 +126,7 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
 //////////// rotas next
  
 
- router.get(`${versao}/next/pedidoSimples/`,  checkToken,  new pedidoNextController().buscaPedidosSimplesPorData)
- router.get(`${versao}/next/pedidoCompletoPorCodigo/`,  checkToken,  new pedidoNextController().buscaPedidosCompleto)
+
  
  router.get(`${versao}/next/cliente/:codigo`,  checkToken,  new ClienteController().buscaClienteNextPorCodigo)
 

@@ -107,6 +107,95 @@ export class SelectPedido{
     }) 
     }
 
+
+
+    async novaBusca(empresa:any ,  query:any ){
+
+        let {
+            dataInicial , 
+            dataFinal ,
+            vendedor, 
+            cliente,
+            cnpj,
+            limit,
+            nome
+        } = query 
+
+        let objSelect = new  SelectPedido();
+        
+        return new Promise( async ( resolve, reject )=>{
+
+            const baseSql = `
+            SELECT pe.*, c.nome,
+            DATE_FORMAT(pe.data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(pe.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+            CONVERT(observacoes USING utf8) AS observacoes
+            FROM ${empresa}.pedidos AS pe
+            JOIN ${empresa}.clientes c ON c.codigo = pe.cliente
+
+        `;
+        
+
+
+        const conditions: string[] = [];
+        const params: any[] = [];
+            
+
+        if(!limit || isNaN(limit)){
+            limit = 20;
+        }
+
+       if( dataInicial && dataFinal){
+        conditions.push(`pe.data_cadastro BETWEEN '${dataInicial}' AND '${dataFinal}'  `);
+        }
+
+        if (cliente) {
+            conditions.push("pe.cliente = ?");
+            params.push(Number(cliente));
+        }
+         
+        if (vendedor) {
+            conditions.push("pe.vendedor = ?");
+            params.push(Number(vendedor));
+        }
+          
+        if (cnpj) {
+            conditions.push("c.cnpj = ?");
+            params.push(Number(cnpj));
+        }
+
+        if (nome) {
+            conditions.push("c.nome like  ?");
+            params.push(`%${nome}%`);  
+        }
+         
+        let whereClause = "";
+        
+        if (conditions.length > 0) {
+            whereClause = " WHERE " + conditions.join(" AND ");
+            }
+
+        let limitQuery = " LIMIT ? "
+
+        params.push( Number(limit));  
+
+        const finalSql = baseSql + whereClause + limitQuery     ;
+           console.log(params)
+           console.log(finalSql)
+          
+            await conn.query(finalSql, params,  async (err:any, result:any) => {
+                if (err) {
+                    console.log(err);
+                    reject(err)
+                } else {
+            resolve(result)
+                }
+            })  
+            
+    }) 
+    }
+
+
       obterDataAtualSemHoras() {
         const dataAtual = new Date();
         const dia = String(dataAtual.getDate()).padStart(2, '0');

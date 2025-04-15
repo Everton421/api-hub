@@ -116,4 +116,38 @@ export class pedidoNextController{
         }
      }
 
+     async novaBusca(req:Request, res:Response){
+      if(!req.headers.cnpj ){
+        return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+     } 
+     let headerCnpj:any =   req.headers.cnpj ;
+     let empresa  = headerCnpj.replace(/\D/g, '');
+    
+     let  dbName = `\`${empresa}\``;
+    
+     const select = new SelectPedido();
+
+     let pedidos; 
+
+     try{
+      if( req.query   ){
+        
+        if(req.query.dataInicial && !req.query.dataFinal ||  !req.query.dataInicial && req.query.dataFinal ){
+        return res.status(400).json({
+           erro: true,
+            msg: "informado incorretamente os parametros para consulta com base nas datas de cadastro.  "+
+                  "É necessario que seja informado a dataInicial e a dataFinal"
+          
+          });
+     }
+        let aux   = req.query 
+        pedidos =   await   select.novaBusca(dbName,  aux );
+          return res.status(200).json( pedidos );
+      }
+    }catch(e){ 
+      console.error(e);
+      return res.status(400).json({ erro: true, msg: "Erro ao buscar pedidos." });
+    }
+    }
+
 }
