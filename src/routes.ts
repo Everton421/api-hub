@@ -101,13 +101,10 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
 
  router.get(`${versao}/pedidos`,  checkToken,  new pedidoController().select)
  router.post(`${versao}/pedidos`, checkToken, new pedidoController().insert)
-
  router.get(`${versao}/pedidos/vendas`,  checkToken,  new pedidoNextController().novaBusca)
-
-
-
- router.get(`${versao}/next/pedidoCompletoPorCodigo/`,  checkToken,  new pedidoNextController().buscaPedidosCompleto)
+ router.get(`${versao}/pedido`,  checkToken,  new pedidoNextController().buscaPedidosCompleto)
  ////////
+
   router.post(`${versao}/enviar_codigo`,  checkToken, new EnvioCodigoValidador().main);
   router.post(`${versao}/alterar_senha`,  checkToken, new Alterar_senha().main);
 

@@ -65,7 +65,7 @@ export class pedidoNextController{
         let empresa = headerCnpj.replace(/\D/g, '');
         empresa= `\`${empresa}\``;
 
-        const codigo:number = Number(req.query.codigo);2222
+        const codigo:number = Number(req.query.codigo);
 
    let selectOrcamento = new SelectPedido();
     let select_clientes = new Select_clientes();
