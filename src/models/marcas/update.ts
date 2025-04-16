@@ -19,7 +19,7 @@ export class UpdateMarca{
                                     codigo = ${codigo},
                                     data_cadastro = '${data_cadastro}',
                                     data_recadastro = '${data_recadastro}',
-                                    descricao = '${descricao}'
+                                    descricao = '${descricao}',
                                     ativo = '${ativo}'
                                    where codigo = ${codigo}
                             `;

@@ -144,7 +144,7 @@ export class ClienteController{
      async buscaClientes(req:Request,res:Response){
 
         if(!req.headers.cnpj ){
-            return res.status(200).json({erro:"É necessario informar a empresa "});   
+            return res.status(400).json({erro:true,msg:"É necessario informar a empresa "});   
          } 
          let headerCnpj:any =   req.headers.cnpj ;
          let empresa  = headerCnpj.replace(/\D/g, '');
@@ -173,7 +173,7 @@ export class ClienteController{
         async buscaClientesNext(req:Request,res:Response){
         
           if(!req.headers.cnpj ){
-            return res.status(200).json({erro:"É necessario informar a empresa "});   
+            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
          } 
          let headerCnpj:any =   req.headers.cnpj ;
          let empresa  = headerCnpj.replace(/\D/g, '');
@@ -188,13 +188,10 @@ export class ClienteController{
         
           try{
             cliente =   await   select.buscaPorCodigoOuDescricaoOuCnpj(dbName, queryParam  )
-             if (cliente.length === 0) {
-               return res.status(200).json({ erro: "Nenhum cliente encontrado." });
-             }
              return res.status(200).json(cliente);
         }catch(e){ 
               console.error(e);
-            return res.status(200).json({ erro: "Erro ao buscar clientes." });
+            return res.status(400).json({ erro:true, msg: "Erro ao buscar clientes." });
         }
         }
 
@@ -204,7 +201,7 @@ export class ClienteController{
         async buscaClienteNextPorCodigo(req:Request,res:Response){
         
             if(!req.headers.cnpj ){
-              return res.status(200).json({erro:"É necessario informar a empresa "});   
+              return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
            } 
            let headerCnpj:any =   req.headers.cnpj ;
            let empresa  = headerCnpj.replace(/\D/g, '');

@@ -268,7 +268,7 @@ export class CategoriaController{
                                 }
                             }catch(e){
                                     console.log(e);
-                                    return res.status(200).json({erro:"ocorreu um erro ao tentar registrar a categoria"})
+                                    return res.status(400).json({erro:true, msg:"ocorreu um erro ao tentar registrar a categoria"})
                             }
                     }else{
                 return res.status(400).json( { erro:true, msg:`Não foi encontrada categoria com o codigo ${postCategoria.codigo}  `}) 

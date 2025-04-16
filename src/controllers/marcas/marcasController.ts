@@ -143,7 +143,7 @@ export class MarcasController{
          
          }catch(e){
             console.log("ocorreu um erro ao consultar as marcas", e)
-        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
+        return res.status(400).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
 
          }
      }
@@ -190,7 +190,7 @@ export class MarcasController{
          if(!postMarca.ativo) postMarca.ativo = 'S'; 
             
                 if(!postMarca.id)  postMarca.id =  "0";
-                if(!postMarca.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
+                if(!postMarca.descricao)  return res.status(400).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
                 if(!postMarca.data_cadastro ) postMarca.data_cadastro = dateService.obterDataAtual();
                 if(!postMarca.data_recadastro ) postMarca.data_recadastro = dateService.obterDataHoraAtual();
     
@@ -198,7 +198,7 @@ export class MarcasController{
 
                 let validMarca:any = await select.busca_por_descricao( empresa, postMarca.descricao, limit  )
         
-            if( validMarca.length > 0  )  return  res.status(200).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
+            if( validMarca.length > 0  )  return  res.status(400).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
             
                 let responseMarca:any;
                         try{    
@@ -215,7 +215,7 @@ export class MarcasController{
                             }
                         }catch(e){
                                 console.log(e);
-                                return res.status(200).json({erro:"ocorreu um erro ao tentar registrar a marca"})
+                                return res.status(400).json({erro:true, msg:"ocorreu um erro ao tentar registrar a marca"})
                         }
 
     }
@@ -244,6 +244,12 @@ export class MarcasController{
                              if( postMarca.codigo > 0 ){
                                 resultMarca = await select.busca_por_codigo( empresa,postMarca.codigo, 1);
                              }
+                             let result2:marca[] =[]; 
+
+                             if(postMarca.codigo > 0){
+                                result2 = await select.busca_por_descricao( empresa,postMarca.descricao, 1);
+                             }
+                             if(result2.length > 0 ) return  res.status(400).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
          
                              if(resultMarca.length > 0 ){
                                      let responseMarca:any;
@@ -262,7 +268,7 @@ export class MarcasController{
                                          }
                                      }catch(e){
                                              console.log(e);
-                                             return res.status(400).json({erro:"ocorreu um erro ao tentar registrar a marca"})
+                                             return res.status(400).json({erro:true, msg:"ocorreu um erro ao tentar registrar a marca"})
                                      }
                              }else{
                          return res.status(400).json( { erro:true, msg:`Não foi encontrada marca com o codigo ${postMarca.codigo}  `}) 
