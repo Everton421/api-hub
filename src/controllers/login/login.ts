@@ -9,9 +9,10 @@ export class Login {
     async login( req:Request,res:Response){
         let selectUserApi = new UsuariosApi();
         let selectUserEmpresa = new Select_UsuarioEmpresa();
-
-        if(!req.body.email){ return res.status(200).json({msg:`É necessario informar o email`}) };
-        if(!req.body.senha) {return res.status(200).json({msg:`É necessario informar a senha`}) };
+        
+        if(!req.body.email) return res.status(400).json({erro:true, msg:`É Necessario Informar o Email`})  ;
+        
+        if(!req.body.senha || req.body.senha ==='' )  return res.status(400).json({erro:true, msg:`É Necessario Informar a Senha`})  ;
         
         let  { email , senha  } = req.body 
 
@@ -21,10 +22,10 @@ export class Login {
         if( validUserEmail.length > 0 ){
             let validPassword =validUserEmail[0].senha 
             if(validPassword !== senha ){
-                return res.status(200).json({msg:` senha incorreta!`});
+                return res.status(400).json({ erro:true, msg:`Senha Incorreta!`});
             } 
         } else{
-            return res.status(200).json({msg:`usuario nao encontrado!`});
+            return res.status(400).json({erro:true, msg:`Usuário não Encontrado!`});
             
         }        
 
@@ -43,12 +44,16 @@ export class Login {
                       let useLogin:any = arrUser[0];
                      return res.status(200).json( 
                          {
-                            ok:true,
+                            status:{
+                            ok:true
+                            } ,                            
+                            data:{
                               email: useLogin.email,
                               senha: useLogin.senha ,
                                empresa:validUserApi[0].cnpj,
                                 codigo:useLogin.codigo,
                                 nome:useLogin.nome
+                            }
                             })
                    }
 
