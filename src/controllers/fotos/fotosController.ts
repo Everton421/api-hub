@@ -58,6 +58,10 @@ export class fotosController{
                         for(let i of dados ){
                             await insert.cadastrar(dbName,i )
                         }
+                      }else{
+                        for(let i of dados ){
+                            await insert.cadastrar(dbName,i )
+                        }
                       }
                       res.status(200).json(
                         {   ok:true,
