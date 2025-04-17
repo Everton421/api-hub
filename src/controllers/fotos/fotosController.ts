@@ -45,10 +45,10 @@ export class fotosController{
 
 
                if(!req.body.fotos) return res.status(400).json({erro:true, msg: "é necessario informar as fotos do produto"});
-               if(!req.body.codigo) return res.status(400).json({erro: true, msg:"é necessario informar o codigo do produto"});
+               if(!req.body.produto) return res.status(400).json({erro: true, msg:"é necessario informar o codigo do produto"});
 
                let dados  = req.body.fotos 
-               let codigo_produto = req.body.codigo
+               let codigo_produto = req.body.produto
 
                  try{
                     let validItems:any = await select.buscaPorProduto(dbName,codigo_produto)
@@ -59,8 +59,13 @@ export class fotosController{
                             await insert.cadastrar(dbName,i )
                         }
                       }
-                      res.status(200).json({   msg: 'fotos alteradas com sucesso'})
+                      res.status(200).json(
+                        {   ok:true,
+                             msg: 'fotos alteradas com sucesso'
+
+                        })
                  }catch(e){ 
+                    console.log(e)
                     res.status(400).json({ erro:true, msg: 'erro ao registrar as fotos do produto', codigo_produto})
                  }
                

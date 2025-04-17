@@ -7,6 +7,7 @@ export class Select_fotos{
         return new Promise( async (resolve, reject)=>{
 
             let sql = ` SELECT *,
+              TO_BASE64(foto) AS foto,
                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
             FROM ${empresa}.fotos_produtos   `
