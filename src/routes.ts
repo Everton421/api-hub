@@ -129,7 +129,7 @@ import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextControl
 
 
 
- router.get(`${versao}/next/fotos/:codigo`,  checkToken,  new fotosController().buscafotosNext)
+ router.get(`${versao}/next/fotos`,  checkToken,  new fotosController().buscafotosNext)
  
  router.get(`${versao}/next/veiculos/:cliente`,         checkToken,  new VeiculoController().buscaPorCliente )
 

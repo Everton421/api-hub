@@ -84,13 +84,12 @@ export class fotosController{
                        let headerCnpj:any  = empresa.replace(/\D/g, '');
                        let  dbName = `\`${headerCnpj}\``;
 
-                       let codigo = Number(req.params.codigo);
+                       if(!req.query.codigo) return res.status(400).json({erro:true, msg:"É necessario informar o codigo do produto "});
+                       let codigo = Number(req.query.codigo);
 
                  try{
                           let resultado:any = await select.buscaPorProduto( dbName, codigo );
-                         if( resultado.length > 0 ){
                              return res.status(200).json(resultado)
-                         } 
              
                   }catch(e){
                      console.log("ocorreu um erro ao consultar as fotos dos produtos", e)
