@@ -10,7 +10,7 @@ export class fotosController{
 
            let select = new Select_fotos();
                  if(!req.headers.cnpj ){
-                     return res.status(200).json({erro:"É necessario informar a empresa "});   
+                     return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
                   } 
                   let headerCnpj:any  = empresa.replace(/\D/g, '');
                   let  dbName = `\`${headerCnpj}\``;
@@ -20,12 +20,12 @@ export class fotosController{
                     if( resultado.length > 0 ){
                         return res.status(200).json(resultado)
                     }else{
-                        return res.status(200).json({ erro: "Nenhuma foto encontrada." });
+                        return res.status(400).json({ erro: true, msg:"Nenhuma foto encontrada." });
                     }
         
              }catch(e){
                 console.log("ocorreu um erro ao consultar as fotos dos produtos", e)
-                return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as fotos dos produtos"})
+                return res.status(400).json({erro:true, msg:"ocorreu um erro ao consultar as fotos dos produtos"})
              }
     }
 
@@ -38,14 +38,14 @@ export class fotosController{
         const insert = new Insert_fotos();
 
             if(!req.headers.cnpj ){
-                  return res.status(200).json({erro:"É necessario informar a empresa "});   
+                  return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
                } 
                let headerCnpj:any  = empresa.replace(/\D/g, '');
                let  dbName = `\`${headerCnpj}\``;
 
 
-               if(!req.body.fotos) return res.status(200).json({erro: "é necessario informar as fotos do produto"});
-               if(!req.body.codigo) return res.status(200).json({erro: "é necessario informar o codigo do produto"});
+               if(!req.body.fotos) return res.status(400).json({erro:true, msg: "é necessario informar as fotos do produto"});
+               if(!req.body.codigo) return res.status(400).json({erro: true, msg:"é necessario informar o codigo do produto"});
 
                let dados  = req.body.fotos 
                let codigo_produto = req.body.codigo
@@ -59,9 +59,9 @@ export class fotosController{
                             await insert.cadastrar(dbName,i )
                         }
                       }
-                      res.status(200).json({ erro:false, msg: 'fotos alteradas com sucesso'})
+                      res.status(200).json({   msg: 'fotos alteradas com sucesso'})
                  }catch(e){ 
-                    res.status(200).json({ erro:true, msg: 'erro ao registrar as fotos do produto', codigo_produto})
+                    res.status(400).json({ erro:true, msg: 'erro ao registrar as fotos do produto', codigo_produto})
                  }
                
             }
@@ -71,7 +71,7 @@ export class fotosController{
      
                 let select = new Select_fotos();
                       if(!req.headers.cnpj ){
-                          return res.status(200).json({erro:"É necessario informar a empresa "});   
+                          return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
                        } 
                        let headerCnpj:any  = empresa.replace(/\D/g, '');
                        let  dbName = `\`${headerCnpj}\``;
@@ -83,12 +83,12 @@ export class fotosController{
                          if( resultado.length > 0 ){
                              return res.status(200).json(resultado)
                          }else{
-                             return res.status(200).json({ erro: "Nenhuma foto encontrada." });
+                             return res.status(400).json({ erro:true, msg: "Nenhuma foto encontrada." });
                          }
              
                   }catch(e){
                      console.log("ocorreu um erro ao consultar as fotos dos produtos", e)
-                     return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as fotos dos produtos"})
+                     return res.status(400).json({erro:true, msg:"ocorreu um erro ao consultar as fotos dos produtos"})
                   }
          }
      
