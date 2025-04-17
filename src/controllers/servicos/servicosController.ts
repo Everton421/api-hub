@@ -22,7 +22,7 @@ export class ServicosController{
    let select = new Select_servicos();
 
      if(!empresa){
-        return res.json(400).json({erro:"É necessario informar a empresa "});   
+        return res.json(400).json({erro:true, msg: "É necessario informar a empresa "});   
      } 
      
      let headerCnpj:any =   String(req.headers.cnpj) ;
@@ -35,15 +35,12 @@ export class ServicosController{
 
         try{
             servicos =   await   select.buscaGeral(dbName  )
-                
-      if (servicos.length === 0) {
-        return res.status(404).json({ erro: "Nenhum servico encontrado." });
-      }
+    
       return res.status(200).json(servicos);
 
         }catch(e){ 
               console.error(e);
-            return res.status(500).json({ erro: "Erro ao buscar servico." });
+            return res.status(500).json({ erro: true, msg: "Erro ao buscar servico." });
         }
  
       }
@@ -88,7 +85,7 @@ export class ServicosController{
   async cadastrar(req:Request,res:Response){
     let empresa   = req.headers.cnpj 
     if(!empresa){
-      return res.json(400).json({erro:"É necessario informar a empresa "});   
+      return res.json(400).json({erro:true, msg: "É necessario informar a empresa "});   
    } 
    let  dbName = `\`${empresa}\``;
   
@@ -100,7 +97,7 @@ export class ServicosController{
           if(!req.body.valor)    req.body.valor = 0 
           if(!req.body.ativo)    req.body.ativo = 'S' 
 
-          if(!req.body.aplicacao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para registrar o servico!"});
+          if(!req.body.aplicacao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para registrar o servico!"});
          if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
          if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
@@ -128,7 +125,8 @@ export class ServicosController{
                       
               })
           }catch(e){
-            return res.status(200).json({ erro:true, msg: `Ocorreu um erro ao cadastrar o servico!`});
+            console.log('Ocorreu um erro ao cadastrar o servico!', e );
+            return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao cadastrar o servico!`});
   
            }
    
@@ -162,6 +160,7 @@ async buscaServicosNext(req:Request,res:Response){
     return res.status(400).json({ erro:true, msg: "Erro ao buscar servicos." });
 }
 }
+
  async buscaServicos(req:Request,res:Response){
         let empresa:any   = req.headers.cnpj 
  
@@ -203,9 +202,9 @@ async update(req:Request,res:Response){
         if(!req.body.tipo_serv)    req.body.tipo_serv = 0 
         if(!req.body.id )  req.body.id = 0; 
         if(!req.body.valor)    req.body.valor = 0 
-        if(!req.body.codigo)         return res.status(200).json({ erro:true, msg: "É necessario informar o codigo para atualizar o servico!"});
+        if(!req.body.codigo)         return res.status(400).json({ erro:true, msg: "É necessario informar o codigo para atualizar o servico!"});
         if(!req.body.ativo) req.body.ativo = 'S';
-        if(!req.body.aplicacao)         return res.status(200).json({ erro:true, msg: "É necessario informar a descrição para atualizar o servico!"});
+        if(!req.body.aplicacao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para atualizar o servico!"});
         if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
         if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
@@ -234,7 +233,7 @@ async update(req:Request,res:Response){
               "ativo"                :  req.body.ativo
             })
         }catch(e){
-          return res.status(200).json({ erro:true, msg: `Ocorreu um erro ao atualizar o servico!`});
+          return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao atualizar o servico!`});
 
          }
 
