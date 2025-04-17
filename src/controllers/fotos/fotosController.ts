@@ -19,8 +19,7 @@ export class fotosController{
                     let resultado:any = await select.busca_geral(dbName);
                     if( resultado.length > 0 ){
                         return res.status(200).json(resultado)
-                    }else{
-                        return res.status(400).json({ erro: true, msg:"Nenhuma foto encontrada." });
+                
                     }
         
              }catch(e){
@@ -91,9 +90,7 @@ export class fotosController{
                           let resultado:any = await select.buscaPorProduto( dbName, codigo );
                          if( resultado.length > 0 ){
                              return res.status(200).json(resultado)
-                         }else{
-                             return res.status(400).json({ erro:true, msg: "Nenhuma foto encontrada." });
-                         }
+                         } 
              
                   }catch(e){
                      console.log("ocorreu um erro ao consultar as fotos dos produtos", e)
