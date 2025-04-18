@@ -184,6 +184,7 @@ async buscaProdutos(req:Request,res:Response){
   let select = new Select_produtos();
 
  
+ 
     let responseProdutos;
 
   try{
