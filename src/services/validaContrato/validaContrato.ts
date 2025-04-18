@@ -3,22 +3,13 @@ import { SelectEmpresa } from "../../models/empresa/select";
 import { DateService } from "../../services/dateService";
 
 
- export  async function validaContratoMiddleware(  req:Request, res:Response,  next:NextFunction){
+ export  async function validaContratoLogin( cnpj:string  ){
     
- 
-        if(!req.headers.cnpj ){
-            return res.status(400).json(
-               {
-                erro: true,
-                msg:"É necessario informar a empresa "
-              } 
-              );   
-         } 
- 
-         let cnpj:any =   req.headers.cnpj ;
-
+  
+  
             const select = new SelectEmpresa();
-         
+            // const dateService = new DateService(); // Removido se não usado aqui
+    
             try {
                 const resultEmpresaValid = await select.selectPorCnpj(cnpj);
     
@@ -58,45 +49,39 @@ import { DateService } from "../../services/dateService";
                     // --- Fim do Cálculo ---
     
     
-                    console.log(`CNPJ: ${cnpj}`);
-                    console.log(`Data Contrato (Normalizada): ${data_contrato.toISOString().split('T')[0]}`);
-                    console.log(`Data Atual (Normalizada): ${dataAtual.toISOString().split('T')[0]}`);
-                    console.log(`Dias Permitidos: ${dias_contrato_permitidos}`);
-                    console.log(`Dias Passados: ${diasPassados}`);
+                    //console.log(`CNPJ: ${cnpj}`);
+                   // console.log(`Data Contrato (Normalizada): ${data_contrato.toISOString().split('T')[0]}`);
+                   // console.log(`Data Atual (Normalizada): ${dataAtual.toISOString().split('T')[0]}`);
+                   // console.log(`Dias Permitidos: ${dias_contrato_permitidos}`);
+                  //  console.log(`Dias Passados: ${diasPassados}`);
     
                     // --- Comparação ---
                     // Verifica se o número de dias passados EXCEDEU o permitido
                     if (diasPassados > dias_contrato_permitidos) {
-                        console.log("Status: Contrato Expirado.");
-                        /*return {
+                     //   console.log("Status: Contrato Expirado.");
+                         return {
                             valido: false,
                             diasPassados: diasPassados,
                             diasPermitidos: dias_contrato_permitidos,
                             motivo: "Contrato expirado",
                             tipo_contrato:tipo_contrato
                         };
-                        */
-                        return res.status(400).json(   {
-                                erro:true,
-                                tipo_contrato:   tipo_contrato,
-                                msg: tipo_contrato === 'T' ? 'Período de teste Expirado!' : "Contrato expirado"  
-                                });
+                       
+                      
 
                     } else{
-                        next();
-                    }
-                    
-                   /* else {
-                        console.log("Status: Contrato Válido.");
+                      
+                       
+                    //    console.log("Status: Contrato Válido.");
                         return {
                             valido: true,
                             diasPassados: diasPassados,
                             diasPermitidos: dias_contrato_permitidos
                         };
-                    }*/
+                    } 
     
                 } else {
-                     console.log(`Empresa com CNPJ ${cnpj} não encontrada.`);
+                     //console.log(`Empresa com CNPJ ${cnpj} não encontrada.`);
                     return { valido: false, motivo: "Empresa não encontrada" };
                 }
             } catch (error) {

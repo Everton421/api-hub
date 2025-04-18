@@ -3,6 +3,7 @@ import { Select_UsuarioEmpresa } from "../../models/usuariosEmpresa/select";
 import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { UsuarioApi } from "../../models/usuariosApi/interface";
 import { db_api } from "../../database/databaseConfig";
+import { validaContratoLogin } from "../../services/validaContrato/validaContrato";
  
 export class Login {
 
@@ -43,7 +44,26 @@ export class Login {
                 let empresa = validUserApi[0].cnpj.replace(/\D/g, '');
                 empresa= `\`${empresa}\``;
 
-  
+
+
+                
+
+                let resultValidContrato = await validaContratoLogin(validUserApi[0].cnpj)
+
+                    if(resultValidContrato.valido === false ){
+                        return res.status(400).json(
+                            {
+                                erro:true,
+                                tipo_contrato: resultValidContrato.tipo_contrato,
+                                msg:    resultValidContrato.tipo_contrato === 'T' ? 'Período de teste Expirado' :`${resultValidContrato.motivo}`  
+                                });
+
+                    }
+
+             //   console.log(resultValidContrato)
+                
+
+
               let arrUser  = await selectUserEmpresa.buscaPorEmailSenha( empresa,email,senha  );
                if( arrUser.length > 0 ){
 
