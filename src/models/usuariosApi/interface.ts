@@ -2,11 +2,12 @@
 export interface UsuarioApi
 {
 codigo:number,
-usuario:string,
+nome:string,
 email:string,
 cnpj:string,
 senha:string, 
 responsavel:string       
+telefone:string
 }
 
 

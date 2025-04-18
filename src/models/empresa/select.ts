@@ -8,7 +8,11 @@ export class SelectEmpresa{
 
         return new Promise((resolve, reject ) =>{
             const sql = `
-            select * from ${db_api}.empresas where cnpj = ?     
+            select *,
+                DATE_FORMAT(data_contrato, '%Y-%m-%d') as data_contrato,
+                DATE_FORMAT(inicio_contrato, '%Y-%m-%d') as inicio_contrato,
+                DATE_FORMAT(fim_contrato, '%Y-%m-%d') as fim_contrato 
+             from ${db_api}.empresas where cnpj = ?     
             `
             conn.query(sql, String(cnpj) , (err, result )=>{
                         if(err){
@@ -27,7 +31,13 @@ export class SelectEmpresa{
 
         return new Promise((resolve, reject ) =>{
             const sql = `
-            select * from ${db_api}.empresas      
+            select 
+            
+            *,
+                DATE_FORMAT(data_contrato, '%Y-%m-%d') as data_contrato,
+                DATE_FORMAT(inicio_contrato, '%Y-%m-%d') as inicio_contrato,
+                DATE_FORMAT(fim_contrato, '%Y-%m-%d') as fim_contrato 
+            from ${db_api}.empresas      
             `
             conn.query(sql, String(cnpj) , (err, result )=>{
                         if(err){

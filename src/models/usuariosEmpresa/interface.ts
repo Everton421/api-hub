@@ -1,6 +1,6 @@
 export interface usuarioEmpresa {
     codigo:number,
-    usuario:string,
+    nome:string,
     email:string,
     cnpj:string,
     senha:string,

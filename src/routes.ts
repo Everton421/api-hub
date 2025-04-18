@@ -72,7 +72,7 @@ import { validaContratoMiddleware } from "./middleware/validaContrato/validaCont
  router.get(`${versao}/servicos/:servico`,  checkToken, validaContratoMiddleware,  new ServicosController().buscaServicosNext)//ok
  router.post(`${versao}/servico`,           checkToken, validaContratoMiddleware,  new ServicosController().cadastrar)//ok
 
- router.post(`${versao}/empresa`,           checkToken, validaContratoMiddleware, new CreateEmpresa().create)//ok
+ router.post(`${versao}/empresa`,           checkToken , new CreateEmpresa().create)//ok
  router.post(`${versao}/empresa/validacao`, checkToken, validaContratoMiddleware,  new CreateEmpresa().validaExistencia)//ok
  
 

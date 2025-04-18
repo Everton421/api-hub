@@ -10,11 +10,11 @@ export class UsuariosApi{
                     let sql = `
                         INSERT INTO ${db_api}.usuarios
                         (
-                            nome, email, cnpj, senha, responsavel
-                        ) values( ?, ?, ?, ? , ? )
+                            nome, email, cnpj, senha, responsavel, telefone
+                        ) values( ?, ?, ?, ? , ?, ? )
                     `;
 
-                    await conn.query(sql, [usuario.usuario, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel],(err:any, result:any )=>{ 
+                    await conn.query(sql, [usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel, usuario.telefone],(err:any, result:any )=>{ 
                         if(err) reject(err);
                         else resolve(result);
                     })

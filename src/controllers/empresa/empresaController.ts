@@ -4,8 +4,10 @@ import { UsuarioApi } from "../../models/usuariosApi/interface";
 import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { Insert_UsuarioEmpresa } from "../../models/usuariosEmpresa/insert";
 import { Insert_empresa } from "../../models/empresa/insert";
+import { DateService } from "../../services/dateService";
 
 export class CreateEmpresa {
+
   async create(request: Request, response: Response) {
     type newUser = Omit<UsuarioApi, "codigo">;
 
@@ -13,25 +15,59 @@ export class CreateEmpresa {
     let objUsuariosApi = new UsuariosApi();
     let objInertUserEmpresa = new Insert_UsuarioEmpresa();
     let insert_empresa = new Insert_empresa();
+    let dateService = new DateService();
+
+
+
+
+    
+    if (!request.body.usuario) return response.status(400).json({ erro:true, msg: "nao informado o usuario da empresa " });
+    
+    if (!request.body.empresa)
+      return response.status(400).json({
+        erro:true,
+        msg: `nao foi informado os dados da empresa `,
+      });
+
+      let requestTipCont = String(request.body.empresa.tipo_contrato);
+
+      if (!request.body.empresa.cnpj) return response.status(400).json({ erro:true, msg: "nao informado o cnpj da empresa " });
+      if (!request.body.empresa.email_empresa) return response.status(400).json({ erro:true, msg: "nao informado o email da empresa " });
+      if (!request.body.empresa.nome_empresa) return response.status(400).json({ erro:true, msg: "nao informado o nome da empresa " });
+      if (!request.body.empresa.telefone_empresa) return response.status(400).json({ erro:true, msg: "nao informado o telefone da empresa " });
+      if ( requestTipCont !== "N" || requestTipCont !== "N") return response.status(400).json({ erro:true, msg: "Tipo de contrato Invalido!" });
+
+       
+
+      if (!request.body.usuario.nome) return response.status(400).json({ erro:true, msg: "nao informado o nome do usuario reponsavel pela empresa " });
+      if (!request.body.usuario.senha) return response.status(400).json({ erro:true, msg: "nao informado a senha do usuario reponsavel pela empresa " });
+      if (!request.body.usuario.email) return response.status(400).json({ erro:true, msg: "nao informado o email do usuario reponsavel pela empresa " });
+      if (!request.body.usuario.telefone) return response.status(400).json({ erro:true, msg: "nao informado o telefone do usuario reponsavel pela empresa " });
+
 
     let dbName: any;
-    let cnpj: string = request.body.cnpj;
-    let usuario: string = String(request.body.usuario);
-    let email: string = request.body.email;
-    let senha: string = request.body.senha;
-    let email_empresa: string = request.body.email_empresa;
-    let nome_empresa: string = request.body.nome_empresa;
-    let telefone_empresa: string = request.body.telefone_empresa;
+    let cnpj: string = request.body.empresa.cnpj;
+    
+    
+    let nome: string = String(request.body.usuario.nome);
+    let email: string = request.body.usuario.email;
+    let senha: string = request.body.usuario.senha;
+    let telefone:string = String(request.body.usuario.telefone)
+
+    let email_empresa: string = request.body.empresa.email_empresa;
+    let nome_empresa: string = request.body.empresa.nome_empresa;
+    let telefone_empresa: string = request.body.empresa.telefone_empresa;
     let responsavel: string = "S";
 
-    let objUser: newUser = { usuario, email, cnpj, senha, responsavel };
+           let tipo_contrato = request.body.empresa.tipo_contrato
+           let data_contrato = dateService.obterDataAtual();
+           let dias_contrato = tipo_contrato === "T" ? 30 : request.body.empresa.dias_contrato 
+           let inicio_contrato = dateService.obterDataAtual();
+           let fim_contrato = '0000-00-00'
 
-    if (!cnpj) {
-      return response.json({
-        erro: true,
-        msg: "nao informado o cnpj da empresa ",
-      });
-    }  
+    let objUser: newUser = { nome, email, cnpj, senha, responsavel ,telefone};
+
+ 
   // Regex para remover caracteres não numéricos
   cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
 
@@ -46,14 +82,7 @@ export class CreateEmpresa {
 
   dbName = `\`${cnpj}\``;  // Usando o CNPJ formatado como nome do banco
 
-
-    if (!usuario)
-      return response.status(400).json({ erro:true, msg: "nao informado o usuario da empresa " });
-    if (!senha)
-      return response.status(400).json({
-        erro:true,
-        msg: `nao foi informado a senha para o usuario ${usuario} da empresa `,
-      });
+ 
 
     let validUserApi: UsuarioApi[] = await objUsuariosApi.selectPorEmail(
       objUser.email
@@ -262,13 +291,7 @@ export class CreateEmpresa {
     console.log(valid);
     if (valid === true) {
       console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
-
-      sqlTables.forEach(async (e) => {
-        await conn.query(e, (err, result) => {
-          if (err) throw err;
-          // else console.log(`tabela registrada com sucesso!`)
-        });
-      });
+ 
 
       return response.status(400).json({
         erro: true,
@@ -296,6 +319,11 @@ export class CreateEmpresa {
               nome_empresa: nome_empresa,
               email_empresa: email_empresa,
               telefone_empresa: telefone_empresa,
+                tipo_contrato : tipo_contrato,
+                data_contrato : data_contrato, 
+                dias_contrato :  dias_contrato,
+                inicio_contrato : inicio_contrato,
+                fim_contrato :  fim_contrato 
             };
 
             codigoEmpresa = await insert_empresa.registrar_empresa(objEmpresa);
@@ -316,7 +344,7 @@ export class CreateEmpresa {
             },
              "data":{
               codigo_usuario: codigoUsuario.insertId,
-              usuario: usuario,
+              usuario: nome,
               senha: senha,
               cnpj: cnpj,
               nome_empresa: nome_empresa,
@@ -417,7 +445,13 @@ export class CreateEmpresa {
     console.log(`select * from ${db_api}.empresas where cnpj = ${empresa}`);
     return new Promise<any[]>(async (resolve, reject) => {
       await conn.query(
-        `select * from ${db_api}.empresas where cnpj = ${empresa}`,
+        `select 
+        *,
+                DATE_FORMAT(data_contrato, '%Y-%m-%d') as data_contrato,
+                DATE_FORMAT(inicio_contrato, '%Y-%m-%d') as inicio_contrato,
+                DATE_FORMAT(fim_contrato, '%Y-%m-%d') as fim_contrato 
+         from ${db_api}.empresas where cnpj = ${empresa}`,
+
         (err, result) => {
           if (err) reject(err);
           else resolve(result);
