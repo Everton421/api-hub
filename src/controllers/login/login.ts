@@ -55,7 +55,7 @@ export class Login {
                             {
                                 erro:true,
                                 tipo_contrato: resultValidContrato.tipo_contrato,
-                                msg:    resultValidContrato.tipo_contrato === 'T' ? 'Período de teste Expirado' :`${resultValidContrato.motivo}`  
+                                msg:    resultValidContrato.tipo_contrato === 'T' ? 'Período de teste Expirado.' :`${resultValidContrato.motivo}`  
                                 });
 
                     }
