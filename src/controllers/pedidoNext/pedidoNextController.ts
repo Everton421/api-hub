@@ -66,7 +66,6 @@ export class pedidoNextController{
         empresa= `\`${empresa}\``;
 
         const codigo:number = Number(req.query.codigo);
-
    let selectOrcamento = new SelectPedido();
     let select_clientes = new Select_clientes();
     const selectItensPedido = new SelectItensPedido();
@@ -74,7 +73,9 @@ export class pedidoNextController{
     try{
 
         const dados_orcamentos:any  = await selectOrcamento.validaExistencia(  empresa, codigo );
-         if( dados_orcamentos.length === 0 ) return res.status(200).json([]);
+         
+        if( dados_orcamentos.length === 0 ) return res.status(200).json([]);
+
             const orcamentos_registrados = await Promise.all(dados_orcamentos.map( async (i:any) =>{
                 let produtos: any = [];
                 let servicos: any = [];

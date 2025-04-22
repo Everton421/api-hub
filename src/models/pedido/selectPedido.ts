@@ -61,12 +61,7 @@ export class SelectPedido{
     }
 
     async buscaPorDataInicialFinal(empresa:any ,dataInicial:string, dataFinal:string ,filter:string | null, vendedor:number ){
-
-
         let objSelect = new  SelectPedido();
-  
-      
-        
         return new Promise( async ( resolve, reject )=>{
 
             const sql = `
@@ -118,7 +113,8 @@ export class SelectPedido{
             cliente,
             cnpj,
             limit,
-            nome
+            nome,
+            tipo
         } = query 
 
         let objSelect = new  SelectPedido();
@@ -164,6 +160,11 @@ export class SelectPedido{
             params.push(Number(cnpj));
         }
 
+        if (tipo) {
+            conditions.push("pe.tipo = ?");
+            params.push(Number(tipo));
+        }
+
         if (nome) {
             conditions.push("c.nome like  ?");
             params.push(`%${nome}%`);  
@@ -180,8 +181,6 @@ export class SelectPedido{
         params.push( Number(limit));  
 
         const finalSql = baseSql + whereClause + limitQuery     ;
-           console.log(params)
-           console.log(finalSql)
           
             await conn.query(finalSql, params,  async (err:any, result:any) => {
                 if (err) {

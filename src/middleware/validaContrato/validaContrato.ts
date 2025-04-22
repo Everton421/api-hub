@@ -21,7 +21,8 @@ import { DateService } from "../../services/dateService";
          
             try {
                 const resultEmpresaValid = await select.selectPorCnpj(cnpj);
-    
+
+
                 if (resultEmpresaValid.length > 0) {
                     const emrpr = resultEmpresaValid[0];
     
@@ -53,16 +54,14 @@ import { DateService } from "../../services/dateService";
                     // Milissegundos em um dia
                     const MILISSEGUNDOS_POR_DIA = 1000 * 60 * 60 * 24;
     
-                    // Diferença em dias (arredondando para baixo para dias completos passados)
                     const diasPassados = Math.floor(diffEmMilissegundos / MILISSEGUNDOS_POR_DIA);
-                    // --- Fim do Cálculo ---
     
     
-                    console.log(`CNPJ: ${cnpj}`);
-                    console.log(`Data Contrato (Normalizada): ${data_contrato.toISOString().split('T')[0]}`);
-                    console.log(`Data Atual (Normalizada): ${dataAtual.toISOString().split('T')[0]}`);
-                    console.log(`Dias Permitidos: ${dias_contrato_permitidos}`);
-                    console.log(`Dias Passados: ${diasPassados}`);
+                   // console.log(`CNPJ: ${cnpj}`);
+                   // console.log(`Data Contrato (Normalizada): ${data_contrato.toISOString().split('T')[0]}`);
+                   // console.log(`Data Atual (Normalizada): ${dataAtual.toISOString().split('T')[0]}`);
+                   // console.log(`Dias Permitidos: ${dias_contrato_permitidos}`);
+                   // console.log(`Dias Passados: ${diasPassados}`);
     
                     // --- Comparação ---
                     // Verifica se o número de dias passados EXCEDEU o permitido

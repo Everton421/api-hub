@@ -29,13 +29,16 @@ export class CreateEmpresa {
         msg: `nao foi informado os dados da empresa `,
       });
 
-      let requestTipCont: any = String(request.body.empresa.tipo_contrato);
+      let requestTipCont: any  = request.body.empresa.tipo_contrato ;
+
+      console.log( request.body.empresa)
 
       if (!request.body.empresa.cnpj) return response.status(400).json({ erro:true, msg: "nao informado o cnpj da empresa " });
       if (!request.body.empresa.email_empresa) return response.status(400).json({ erro:true, msg: "nao informado o email da empresa " });
       if (!request.body.empresa.nome_empresa) return response.status(400).json({ erro:true, msg: "nao informado o nome da empresa " });
       if (!request.body.empresa.telefone_empresa) return response.status(400).json({ erro:true, msg: "nao informado o telefone da empresa " });
-      if ( requestTipCont !== "N" || requestTipCont !== "T") return response.status(400).json({ erro:true, msg: "Tipo de contrato Invalido!" });
+      
+      //if ( requestTipCont !== "N" || requestTipCont !== "T") return response.status(400).json({ erro:true, msg: "Tipo de contrato Invalido!" });
 
        
 
@@ -61,7 +64,7 @@ export class CreateEmpresa {
 
            let tipo_contrato = request.body.empresa.tipo_contrato
            let data_contrato = dateService.obterDataAtual();
-           let dias_contrato = tipo_contrato === "T" ? 30 : request.body.empresa.dias_contrato 
+           let dias_contrato =  30;
            let inicio_contrato = dateService.obterDataAtual();
            let fim_contrato = '0000-00-00'
            

@@ -14,7 +14,7 @@ export class SelectEmpresa{
                 DATE_FORMAT(fim_contrato, '%Y-%m-%d') as fim_contrato 
              from ${db_api}.empresas where cnpj = ?     
             `
-            conn.query(sql, String(cnpj) , (err, result )=>{
+            conn.query(sql, cnpj , (err, result )=>{
                         if(err){
                             console.log(err);
                             reject(err)
