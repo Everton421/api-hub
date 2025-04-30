@@ -378,7 +378,7 @@ export class CreateEmpresa {
 
   async validaExistencia(request: Request, response: Response) {
     let obj = new CreateEmpresa();
-    let cnpj: string = request.body.cnpj;
+    let cnpj: string = request.body.empresa.cnpj;
     cnpj = cnpj.replace(/\D/g, '');  
 
     let valid = await obj.consulta_empresas(cnpj);
@@ -424,7 +424,7 @@ export class CreateEmpresa {
       );
     } else {
       return response
-        .status(400)
+        .status(200)
         .json({
           status:{
           cadastrada: false,
