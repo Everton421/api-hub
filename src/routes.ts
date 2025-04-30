@@ -24,7 +24,7 @@ import { validaContratoMiddleware } from "./middleware/validaContrato/validaCont
   const router = Router();
   export const versao = '/v1'
 
-    router.get(`${versao}/`, async (req:Request, res:Response)=>{
+    router.get(`${versao}/`, checkToken,validaContratoMiddleware,async (req:Request, res:Response)=>{
        await conn.getConnection(
          async (err:Error)=>{
            if(err){
