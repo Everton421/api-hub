@@ -2,18 +2,20 @@ import { Request, Response } from "express";
 import { Select_fotos } from "../../models/fotos/select";
 import { Delete_fotos } from "../../models/fotos/delete";
 import { Insert_fotos } from "../../models/fotos/insert";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class fotosController{
 
-    async buscaGeral(req:Request ,res: Response){
-           let empresa:any   = req.headers.cnpj 
-
+    async findAll(req:Request ,res: Response){
+        
            let select = new Select_fotos();
-                 if(!req.headers.cnpj ){
-                     return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
-                  } 
-                  let headerCnpj:any  = empresa.replace(/\D/g, '');
-                  let  dbName = `\`${headerCnpj}\``;
+           if(!req.headers.token ){
+                  return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+               } 
+               let decodToken= DecodedToken(String(req.headers.token))
+               let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+              
+                  let  dbName = `\`${empresa}\``;
 
             try{
                     let resultado:any = await select.busca_geral(dbName);
@@ -29,20 +31,20 @@ export class fotosController{
     }
 
  
-    async cadastrar_deletarFotos(req:Request ,res: Response){
-        let empresa:any   = req.headers.cnpj 
-
+    async insertOrUpdateItens(req:Request ,res: Response){
+      
         const select = new Select_fotos();
         const deletar  = new Delete_fotos();
         const insert = new Insert_fotos();
 
-            if(!req.headers.cnpj ){
-                  return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
-               } 
-               let headerCnpj:any  = empresa.replace(/\D/g, '');
-               let  dbName = `\`${headerCnpj}\``;
-
-
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+         } 
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+   
+               let  dbName = `\`${empresa}\``;
+ 
                if(!req.body.fotos) return res.status(400).json({erro:true, msg: "é necessario informar as fotos do produto"});
                if(!req.body.produto) return res.status(400).json({erro: true, msg:"é necessario informar o codigo do produto"});
 
@@ -75,14 +77,15 @@ export class fotosController{
             }
  
             async buscafotosNext(req:Request ,res: Response){
-                let empresa:any   = req.headers.cnpj 
-     
+         
                 let select = new Select_fotos();
-                      if(!req.headers.cnpj ){
-                          return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
-                       } 
-                       let headerCnpj:any  = empresa.replace(/\D/g, '');
-                       let  dbName = `\`${headerCnpj}\``;
+                if(!req.headers.token ){
+                    return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+                 } 
+                 let decodToken= DecodedToken(String(req.headers.token))
+                 let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+           
+                       let  dbName = `\`${empresa}\``;
 
                        if(!req.query.codigo) return res.status(400).json({erro:true, msg:"É necessario informar o codigo do produto "});
                        let codigo = Number(req.query.codigo);

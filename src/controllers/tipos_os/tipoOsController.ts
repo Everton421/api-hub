@@ -5,21 +5,19 @@ import { DateService } from "../../services/dateService";
 import { Insert_tipos_os } from "../../models/tipos_os/insert";
 import { Update_tipo_os } from "../../models/tipos_os/update";
 import { tipo_os } from "../../types/tipo_os/tipo_os";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class TipoOsController{
  
 
-    async buscaGeral(req:Request,res:Response){
-      let empresa   = req.headers.cnpj 
+    async findAll(req:Request,res:Response){
+    
       let select = new  SelectTipo_os();
-  
-       if(!empresa){
-          return res.json(400).json({erro:"É necessario informar a empresa "});   
-       } 
-
-
-       let headerCnpj:any =   String(req.headers.cnpj) ;
-       empresa  = headerCnpj.replace(/\D/g, '');
+     if(!req.headers.token ){
+                      return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+                   } 
+                   let decodToken= DecodedToken(String(req.headers.token))
+                   let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
         let  dbName = `\`${empresa}\``;
         let tipoOS:any;  
@@ -39,17 +37,15 @@ export class TipoOsController{
     }
   
 
-    async buscaTiposDeOs(req:Request,res:Response){
-      let empresa   = req.headers.cnpj 
-
-       if(!empresa){
-          return res.json(400).json({erro:true, msg:"É necessario informar a empresa "});   
-       } 
+    async findByParam(req:Request,res:Response){
+    
+      if(!req.headers.token ){
+        return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+     } 
+     let decodToken= DecodedToken(String(req.headers.token))
+     let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
   
-       let headerCnpj:any =   String(req.headers.cnpj) ;
-
-       let cnpjF = headerCnpj.replace(/\D/g, '');
-       let dbName  = `\`${cnpjF}\``;
+       let dbName  = `\`${empresa}\``;
 
         let select = new SelectTipo_os();
 
@@ -66,11 +62,12 @@ export class TipoOsController{
     }
   
       
-      async cadastrar(req:Request,res:Response){
-        let empresa   = req.headers.cnpj 
-        if(!empresa){
-          return res.json(400).json({erro:"É necessario informar a empresa "});   
+      async insert(req:Request,res:Response){
+        if(!req.headers.token ){
+          return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
        } 
+       let decodToken= DecodedToken(String(req.headers.token))
+       let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
        let  dbName = `\`${empresa}\``;
       
          let insert = new Insert_tipos_os();
@@ -102,14 +99,17 @@ export class TipoOsController{
        
       }
 
-      async atualizar(req:Request,res:Response){
-        let cnpj:any   = req.headers.cnpj 
-
+      async update(req:Request,res:Response){
+        if(!req.headers.token ){
+          return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+       } 
+       let decodToken= DecodedToken(String(req.headers.token))
+       let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+       
              let select = new SelectTipo_os();
                         let dateService = new DateService();
                        let update = new Update_tipo_os();
-                                
-                       let  empresa = `\`${cnpj}\``;
+                
                                 if(!req.body.codigo){
                                   return res.status(400).json( { erro:true, msg:`E necessario informar o codigo do tipo de OS!`})
                                 }else{

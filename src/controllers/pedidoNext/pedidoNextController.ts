@@ -3,18 +3,21 @@ import { SelectPedido } from "../../models/pedido/selectPedido";
 import { Select_clientes } from "../../models/cliente/select";
 import { SelectItensPedido } from "../../models/pedido/selectItens";
 import { DateService } from "../../services/dateService";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class pedidoNextController{
 
 
 
-    async buscaPedidosSimplesPorData( req:Request, res:Response ){ 
+    async findOrders( req:Request, res:Response ){ 
         
       let dateService = new DateService();
 
-
-      let headerCnpj:string = String(req.headers.cnpj);
-      let empresa = headerCnpj.replace(/\D/g, '');
+                  if(!req.headers.token ){
+                      return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+                   } 
+                   let decodToken= DecodedToken(String(req.headers.token))
+                   let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
       empresa= `\`${empresa}\``;
 
     const select = new SelectPedido();
@@ -59,13 +62,19 @@ export class pedidoNextController{
          return res.status(200).json(pedidos)
     }
 
-    async buscaPedidosCompleto(req:Request, res:Response){
-
-        let headerCnpj:string = String(req.headers.cnpj);
-        let empresa = headerCnpj.replace(/\D/g, '');
+    async findCompleteOrderByCode(req:Request, res:Response){
+      if(!req.headers.token ){
+        return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+     } 
+     let decodToken= DecodedToken(String(req.headers.token))
+     let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
         empresa= `\`${empresa}\``;
 
-        const codigo:number = Number(req.query.codigo);
+        if(!req.query.codigo ){
+          return res.status(400).json({erro:true, msg:"É necessario informar o codigo do Pedido!"});   
+       } 
+       const codigo:number = Number(req.query.codigo);
+
    let selectOrcamento = new SelectPedido();
     let select_clientes = new Select_clientes();
     const selectItensPedido = new SelectItensPedido();
@@ -117,12 +126,12 @@ export class pedidoNextController{
         }
      }
 
-     async novaBusca(req:Request, res:Response){
-      if(!req.headers.cnpj ){
-        return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+     async findByParam(req:Request, res:Response){
+      if(!req.headers.token ){
+        return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
      } 
-     let headerCnpj:any =   req.headers.cnpj ;
-     let empresa  = headerCnpj.replace(/\D/g, '');
+     let decodToken= DecodedToken(String(req.headers.token))
+     let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
     
      let  dbName = `\`${empresa}\``;
     

@@ -4,23 +4,22 @@ import { Insert_Marcas } from "../../models/marcas/insert";
 import { DateService } from "../../services/dateService";
 import { UpdateMarca } from "../../models/marcas/update";
 import { marca } from "../../types/marcaProduto/marca";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class MarcasController{
 
  
  
-    async buscaGeral( req:Request,res:Response  ){
-        let empresa:any   = req.headers.cnpj 
-        let select = new Select_Marcas();
-        let insert = new Insert_Marcas();
-
-        if(!req.headers.cnpj ){
-            return res.status(200).json({erro:"É necessario informar a empresa "});   
-         } 
-           
-         let headerCnpj:any  = empresa.replace(/\D/g, '');
+    async findAll( req:Request,res:Response  ){
+         let select = new Select_Marcas();
+      
+       if(!req.headers.token ){
+               return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+            } 
+            let decodToken= DecodedToken(String(req.headers.token))
+            let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
     
-         let  dbName = `\`${headerCnpj}\``;
+         let  dbName = `\`${empresa}\``;
          
          let limit:number = 20;
 
@@ -46,18 +45,17 @@ export class MarcasController{
     
     }
 
-    async buscaPorDescricao(req:Request,res:Response){
-        let empresa:any   = req.headers.cnpj 
- 
+    async findByDescription(req:Request,res:Response){
+       
         let select = new Select_Marcas();
-        let insert = new Insert_Marcas();
-
-        if(!req.headers.cnpj ){
-            return res.status(200).json({erro:true, msg:"É necessario informar a empresa "});   
+        
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
-         
-          let headerCnpj:any  = empresa.replace(/\D/g, '');
-         let  dbName = `\`${headerCnpj}\``;
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+   
+         let  dbName = `\`${empresa}\``;
          let descricao   = String(req.query.descricao) 
          let codigo:number = Number(req.query.codigo);
          let id:number = Number(req.query.id);
@@ -113,22 +111,19 @@ export class MarcasController{
 
 
 
-     async buscaPorCodigo(req:Request,res:Response){
-        let empresa:any   = req.headers.cnpj 
+     async findByCode(req:Request,res:Response){
  
         let select = new Select_Marcas();
-        let insert = new Insert_Marcas();
-
-        if(!req.headers.cnpj ){
-            return res.status(200).json({erro:true, msg:"É necessario informar a empresa "});   
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
-         
-          let headerCnpj:any  = empresa.replace(/\D/g, '');
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
          let descricao = req.params.descricao
 
-         let  dbName = `\`${headerCnpj}\``;
-         
-         
+         let  dbName = `\`${empresa}\``;
+          
          let limit:number = 20;
             
          if(  req.query.limit ){
@@ -148,18 +143,17 @@ export class MarcasController{
          }
      }
 
-  async buscaMarcas(req:Request,res:Response){
-        let empresa:any   = req.headers.cnpj 
- 
+  async findByParam(req:Request,res:Response){
+       
         let select = new Select_Marcas();
-        let insert = new Insert_Marcas();
-
-        if(!req.headers.cnpj ){
-            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
-         
-          let headerCnpj:any  = empresa.replace(/\D/g, '');
-          let  dbName = `\`${headerCnpj}\``;
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+   
+     
+          let  dbName = `\`${empresa}\``;
     
          let categorias;
         
@@ -175,10 +169,14 @@ export class MarcasController{
     }
     
 
-    async cadastrar(req:Request,res:Response){
-        let obj = new MarcasController();
-        let cnpj:any   = req.headers.cnpj 
-    
+    async insert(req:Request,res:Response){
+ 
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+         } 
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
         const dateService = new DateService();
 
         let select = new Select_Marcas();
@@ -186,7 +184,7 @@ export class MarcasController{
     
                 let postMarca:any = req.body; 
             
-                let  empresa = `\`${cnpj}\``;
+                let  dbName = `\`${empresa}\``;
          if(!postMarca.ativo) postMarca.ativo = 'S'; 
             
                 if(!postMarca.id)  postMarca.id =  "0";
@@ -196,13 +194,13 @@ export class MarcasController{
     
                     let limit = 1;
 
-                let validMarca:any = await select.busca_por_descricao( empresa, postMarca.descricao, limit  )
+                let validMarca:any = await select.busca_por_descricao( dbName, postMarca.descricao, limit  )
         
             if( validMarca.length > 0  )  return  res.status(400).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
             
                 let responseMarca:any;
                         try{    
-                            responseMarca = await insert.cadastrar(empresa, postMarca)
+                            responseMarca = await insert.cadastrar(dbName, postMarca)
                         
                             if( responseMarca.insertId > 0 ){
                                 return res.status(200).json({ 
@@ -220,16 +218,19 @@ export class MarcasController{
 
     }
         
-   async atualizar(req:Request,res:Response){
-                 let cnpj:any   = req.headers.cnpj 
-              
+   async update(req:Request,res:Response){
+                
                  let select = new Select_Marcas();
                   let dateService = new DateService();
                  let update = new UpdateMarca();
              
                          let postMarca:any = req.body; 
-                        
-                          let  empresa = `\`${cnpj}\``;
+                         if(!req.headers.token ){
+                            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+                         } 
+                         let decodToken= DecodedToken(String(req.headers.token))
+                         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+                          let  dbName = `\`${empresa}\``;
                       
                           if(!postMarca.codigo)  return res.status(400).json( { erro:true, msg:`E necessario informar o codigo da marca!`}) 
                           if(!postMarca.ativo) postMarca.ativo = 'S'; 
@@ -242,19 +243,19 @@ export class MarcasController{
                           let resultMarca:marca[] = []
 
                              if( postMarca.codigo > 0 ){
-                                resultMarca = await select.busca_por_codigo( empresa,postMarca.codigo, 1);
+                                resultMarca = await select.busca_por_codigo( dbName,postMarca.codigo, 1);
                              }
                              let result2:marca[] =[]; 
 
                              if(postMarca.codigo > 0){
-                                result2 = await select.busca_por_descricao( empresa,postMarca.descricao, 1);
+                                result2 = await select.busca_por_descricao( dbName,postMarca.descricao, 1);
                              }
                              if(result2.length > 0 ) return  res.status(400).json({ erro:true, msg:`A marca ${postMarca.descricao} ja foi cadastrada!`})
          
                              if(resultMarca.length > 0 ){
                                      let responseMarca:any;
                                      try{    
-                                         responseMarca = await update.update(empresa, postMarca)
+                                         responseMarca = await update.update(dbName, postMarca)
                                  
                                          if( responseMarca.affectedRows > 0    ){
                                              console.log(responseMarca)

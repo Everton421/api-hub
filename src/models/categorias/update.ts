@@ -12,10 +12,11 @@ export class updateCategoria{
                 data_recadastro,
                 descricao,
                 ativo,
+                id,
             } = categoria
 
                 const sql =` UPDATE  ${empresa}.categorias SET  
-                                    codigo = ${codigo},
+                                     id='${id}',
                                     data_cadastro = '${data_cadastro}',
                                     data_recadastro = '${data_recadastro}',
                                     descricao = '${descricao}',

@@ -3,20 +3,21 @@ import { SelectForma_pagamento } from "../../models/formas_pagamento/select";
 import { Insert_formaPagamento } from "../../models/formas_pagamento/insert";
 import { DateService } from "../../services/dateService";
 import { update_formaPagamento } from "../../models/formas_pagamento/update";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class FormasController{
  
 
-    async buscaGeral(req:Request,res:Response){
-      let empresa   = req.headers.cnpj 
-      let select = new  SelectForma_pagamento();
+    async findAll(req:Request,res:Response){
+       let select = new  SelectForma_pagamento();
   
-       if(!empresa){
-          return res.json(200).json({erro:"É necessario informar a empresa "});   
-       } 
-       let headerCnpj:any =   String(req.headers.cnpj) ;
-       let cnpjF = headerCnpj.replace(/\D/g, '');
-       let dbName  = `\`${cnpjF}\``;
+         if(!req.headers.token ){
+               return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+            } 
+            let decodToken= DecodedToken(String(req.headers.token))
+            let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+        
+       let dbName  = `\`${empresa}\``;
 
         let fpgt:any;  
           try{
@@ -32,21 +33,18 @@ export class FormasController{
           }
     }
 
-    async cadastrar(req:Request,res:Response){
-      let empresa   = req.headers.cnpj 
-      let select = new  SelectForma_pagamento();
+    async insert(req:Request,res:Response){
+    
       let insert = new Insert_formaPagamento();
-      let obj = new FormasController()
       let dateService = new DateService();
 
-       if(!empresa){
-          return res.json(400).json({erro:true, msg:"É necessario informar a empresa "});   
-       } 
-  
-       let headerCnpj:any =   String(req.headers.cnpj) ;
-
-       let cnpjF = headerCnpj.replace(/\D/g, '');
-       let dbName  = `\`${cnpjF}\``;
+      if(!req.headers.token ){
+        return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+     } 
+     let decodToken= DecodedToken(String(req.headers.token))
+     let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+   
+       let dbName  = `\`${empresa}\``;
        
        if(!req.body.id) req.body.id = 0; 
        if(!req.body.ativo) req.body.ativo = 'S'; 
@@ -85,19 +83,17 @@ export class FormasController{
       }
 
 
-      async atualizar(req:Request,res:Response){
-        let empresa   = req.headers.cnpj 
+      async update(req:Request,res:Response){
+ 
         let update = new update_formaPagamento();
-        let dateService = new DateService();
-  
-         if(!empresa){
-            return res.json(400).json({erro:true, msg:"É necessario informar a empresa "});   
-         } 
-    
-         let headerCnpj:any =   String(req.headers.cnpj) ;
-  
-         let cnpjF = headerCnpj.replace(/\D/g, '');
-         let dbName  = `\`${cnpjF}\``;
+        let dateService = new DateService(); 
+        if(!req.headers.token ){
+          return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+       } 
+       let decodToken= DecodedToken(String(req.headers.token))
+       let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+         let dbName  = `\`${empresa}\``;
+
          if(!req.body.codigo)  return res.status(400).json({erro:true, msg:"É necessario informar o codigo da forma de pagamento "});  
          if(!req.body.ativo) req.body.ativo = 'S'; 
          if(!req.body.id) req.body.id = 0; 
@@ -135,17 +131,14 @@ export class FormasController{
           }
       }
   
-      async buscaFormaPagamento(req:Request,res:Response){
-        let empresa   = req.headers.cnpj 
-  
-         if(!empresa){
-            return res.json(400).json({erro:true, msg:"É necessario informar a empresa "});   
-         } 
-    
-         let headerCnpj:any =   String(req.headers.cnpj) ;
-  
-         let cnpjF = headerCnpj.replace(/\D/g, '');
-         let dbName  = `\`${cnpjF}\``;
+      async findByParam(req:Request,res:Response){
+        if(!req.headers.token ){
+          return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+       } 
+       let decodToken= DecodedToken(String(req.headers.token))
+       let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+ 
+         let dbName  = `\`${empresa}\``;
 
           let select = new SelectForma_pagamento();
 

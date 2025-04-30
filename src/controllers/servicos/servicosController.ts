@@ -3,6 +3,7 @@ import { Select_servicos } from "../../models/servicos/select";
 import { InsertServico } from "../../models/servicos/insert";
 import { updateServico } from "../../models/servicos/update";
 import { DateService } from "../../services/dateService";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 type service = {
   codigo : number,
   id: number,
@@ -17,20 +18,18 @@ export class ServicosController{
 
 
    
-  async buscaGeral(req:Request,res:Response){
-    let empresa   = req.headers.cnpj 
+  async findAll(req:Request,res:Response){
+   
    let select = new Select_servicos();
 
-     if(!empresa){
-        return res.json(400).json({erro:true, msg: "É necessario informar a empresa "});   
-     } 
-     
-     let headerCnpj:any =   String(req.headers.cnpj) ;
-       empresa  = headerCnpj.replace(/\D/g, '');
-
-     let  dbName = `\`${empresa}\``;
-
-
+        
+         if(!req.headers.token ){
+                 return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+              } 
+              let decodToken= DecodedToken(String(req.headers.token))
+              let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      let  dbName = `\`${empresa}\``;
+ 
       let servicos:any
 
         try{
@@ -45,21 +44,20 @@ export class ServicosController{
  
       }
 
-  async buscaPorCodigo(req:Request,res:Response){
-    let empresa   = req.headers.cnpj 
+  async findByCode(req:Request,res:Response){
+  
     let select = new Select_servicos();
     let codigo = Number(req.query.codigo);
- 
-      if(!empresa){
-         return res.json(400).json({erro:"É necessario informar a empresa "});   
-      } 
+  
       if(!req.query.codigo){
         return res.json(400).json({erro:"É necessario informar o codigo do servico "});   
       }
-
-      let headerCnpj:any =   String(req.headers.cnpj) ;
-        empresa  = headerCnpj.replace(/\D/g, '');
  
+      if(!req.headers.token ){
+        return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+     } 
+     let decodToken= DecodedToken(String(req.headers.token))
+     let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
       let  dbName = `\`${empresa}\``;
       
  
@@ -82,11 +80,13 @@ export class ServicosController{
 
 
   
-  async cadastrar(req:Request,res:Response){
-    let empresa   = req.headers.cnpj 
-    if(!empresa){
-      return res.json(400).json({erro:true, msg: "É necessario informar a empresa "});   
+  async insert(req:Request,res:Response){
+           
+    if(!req.headers.token ){
+      return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
    } 
+   let decodToken= DecodedToken(String(req.headers.token))
+   let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
    let  dbName = `\`${empresa}\``;
   
      let insert = new InsertServico();
@@ -136,11 +136,12 @@ export class ServicosController{
 
 async buscaServicosNext(req:Request,res:Response){
 
-  if(!req.headers.cnpj ){
-    return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+        
+  if(!req.headers.token ){
+    return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
  } 
- let headerCnpj:any =   req.headers.cnpj ;
- let empresa  = headerCnpj.replace(/\D/g, '');
+ let decodToken= DecodedToken(String(req.headers.token))
+ let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
  let  dbName = `\`${empresa}\``;
 
@@ -161,17 +162,16 @@ async buscaServicosNext(req:Request,res:Response){
 }
 }
 
- async buscaServicos(req:Request,res:Response){
-        let empresa:any   = req.headers.cnpj 
- 
+ async findByParam(req:Request,res:Response){
+      
         let select = new Select_servicos();
-
-        if(!req.headers.cnpj ){
-            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
-         } 
-         
-          let headerCnpj:any  = empresa.replace(/\D/g, '');
-          let  dbName = `\`${headerCnpj}\``;
+      
+        if(!req.headers.token ){
+          return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+       } 
+       let decodToken= DecodedToken(String(req.headers.token))
+       let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+          let  dbName = `\`${empresa}\``;
     
          let servicos;
         
@@ -188,10 +188,12 @@ async buscaServicosNext(req:Request,res:Response){
     
 
 async update(req:Request,res:Response){
-  let empresa   = req.headers.cnpj 
-  if(!empresa){
-    return res.json(400).json({erro:"É necessario informar a empresa "});   
+       
+  if(!req.headers.token ){
+    return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
  } 
+ let decodToken= DecodedToken(String(req.headers.token))
+ let empresa  = decodToken.payload?.cnpj.replace(/\D/g, ''); 
  let  dbName = `\`${empresa}\``;
 
    let update = new updateServico();

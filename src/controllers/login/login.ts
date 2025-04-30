@@ -4,9 +4,9 @@ import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { UsuarioApi } from "../../models/usuariosApi/interface";
 import { db_api } from "../../database/databaseConfig";
 import { validaContratoLogin } from "../../services/validaContrato/validaContrato";
- 
-export class Login {
+import jwt from 'jsonwebtoken';
 
+export class Login {
     async login( req:Request,res:Response){
         let selectUserApi = new UsuariosApi();
         let selectUserEmpresa = new Select_UsuarioEmpresa();
@@ -17,8 +17,6 @@ export class Login {
         
         let  { email , senha  } = req.body 
 
- 
-
         let validUserEmail = await selectUserApi.selectPorEmail( email  );
 
         if( validUserEmail.length > 0 ){
@@ -26,13 +24,11 @@ export class Login {
             if(validPassword !== String(senha) ){
                 return res.status(400).json({ erro:true, msg:`Senha Incorreta!`});
             }
- 
 
         } else{
             return res.status(400).json({erro:true, msg:`Usuário não Encontrado!`});
             
         }    
-        
         
    
         let validUserApi = await selectUserApi.selectPorEmailSenha( email,senha ); 
@@ -44,10 +40,7 @@ export class Login {
                 let empresa = validUserApi[0].cnpj.replace(/\D/g, '');
                 empresa= `\`${empresa}\``;
 
-
-
-                
-
+  
                 let resultValidContrato = await validaContratoLogin(validUserApi[0].cnpj)
 
                     if(resultValidContrato.valido === false ){
@@ -62,7 +55,6 @@ export class Login {
 
              //   console.log(resultValidContrato)
                 
-
 
               let arrUser  = await selectUserEmpresa.buscaPorEmailSenha( empresa,email,senha  );
                if( arrUser.length > 0 ){
@@ -90,5 +82,77 @@ export class Login {
            
 
       //  return res.status(200).json(req.body)
+    }
+
+
+    async login2( req:Request,res:Response){
+        let selectUserApi = new UsuariosApi();
+        let selectUserEmpresa = new Select_UsuarioEmpresa();
+        
+        if(!req.body.email) return res.status(400).json({erro:true, msg:`É Necessario Informar o Email`})  ;
+        
+        if(!req.body.senha || req.body.senha ==='' )  return res.status(400).json({erro:true, msg:`É Necessario Informar a Senha`})  ;
+        
+        let  { email , senha  } = req.body 
+
+        let validUserEmail = await selectUserApi.selectPorEmail( email  );
+
+        if( validUserEmail.length > 0 ){
+            let validPassword =validUserEmail[0].senha 
+            if(validPassword !== String(senha) ){
+                return res.status(400).json({ erro:true, msg:`Senha Incorreta!`});
+            }
+
+        } else{
+            return res.status(400).json({erro:true, msg:`Usuário não Encontrado!`});
+            
+        }    
+        
+   try{
+             let validUserApi = await selectUserApi.selectPorEmailSenha( email,senha ); 
+
+            if(validUserApi.length > 0  ){
+                let cnpj = validUserApi[0].cnpj;
+
+                let empresa = validUserApi[0].cnpj.replace(/\D/g, '');
+                empresa= `\`${empresa}\``;
+  
+                let resultValidContrato = await validaContratoLogin(validUserApi[0].cnpj)
+
+                    if(resultValidContrato.valido === false ){
+                        return res.status(400).json(
+                            {
+                                erro:true,
+                                tipo_contrato: resultValidContrato.tipo_contrato,
+                                msg:    resultValidContrato.tipo_contrato === 'T' ? 'Período de teste Expirado.' :`${resultValidContrato.motivo}`  
+                                });
+
+                    }
+
+                    const secret = process.env.SECRET
+                const payload = { 
+                    cnpj: cnpj,
+                    email:email,
+                    senha:senha
+                } 
+
+                   if (!secret) {
+                            console.error("Erro crítico: JWT_SECRET não está definido!");
+                            return res.status(500).json({ msg: "Erro interno do servidor [JWT Secret Missing]." });
+                        }
+                       
+                        const token = jwt.sign(
+                            payload, secret 
+                        )
+                        return res.json({
+                            msg:"Autenticação bem sucedida!",
+                            token:token
+                        })
+
+                }
+       }catch(e){
+        console.log('ocorreu um erro ao tentar fazer o login!');
+        return res.status(500).json({ msg: "Erro interno do servidor durante a autenticação!"})
+         }
     }
 }

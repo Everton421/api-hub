@@ -5,6 +5,7 @@ import { InsertPedido } from "../../models/pedido/insertPedido";
 import { Select_clientes } from "../../models/cliente/select";
 
 import { SelectItensPedido } from "../../models/pedido/selectItens";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 export class pedidoController{
 
 
@@ -30,10 +31,11 @@ export class pedidoController{
         const insertPedido = new InsertPedido();
         const selectPedido = new SelectPedido();
         const updatePedido = new UpdatePedido();
-
-        if(!req.headers.cnpj) return res.status(400).json({erro:"É necessario informar o codigo da empresa "});
-        let headerCnpj:string = String(req.headers.cnpj);
-        let empresa = headerCnpj.replace(/\D/g, '');
+               if(!req.headers.token ){
+                      return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+                   } 
+                   let decodToken= DecodedToken(String(req.headers.token))
+                   let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
         empresa= `\`${empresa}\``;
 
 
@@ -79,13 +81,17 @@ export class pedidoController{
 
     async select( req:Request,res:Response){
         let obj = new pedidoController();
- 
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+         } 
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+         
     if(!req.query.data)  return res.status(400).json({erro:`é necessario informar uma data`});
     if(!req.query.vendedor)  return res.status(400).json({erro:`é necessario informar o vendedor`});
     if(!req.headers.cnpj) return  res.status(400).json({erro:"É necessario informar o codigo da empresa "})
 
-        let headerCnpj:string = String(req.headers.cnpj);
-        let empresa = headerCnpj.replace(/\D/g, '');
+        
         empresa= `\`${empresa}\``;
 
     let vendedor = Number(req.query.vendedor);

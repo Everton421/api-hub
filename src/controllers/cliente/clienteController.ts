@@ -4,6 +4,7 @@ import { Insert_clientes } from "../../models/cliente/insert";
 import { Cliente } from "../../models/cliente/interface_cliente";  
 import { Update_clientes } from "../../models/cliente/update";
 import { DateService } from "../../services/dateService";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class ClienteController{
 
@@ -11,12 +12,15 @@ export class ClienteController{
 
        
 
-    async buscaGeral( req:Request,res:Response  ){
-        let empresa:any   = req.headers.cnpj 
+    async findAll( req:Request,res:Response  ){
+       
+           if(!req.headers.token ){
+             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+          } 
+          let decodToken= DecodedToken(String(req.headers.token))
+          let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
-           
-         let headerCnpj:any  = empresa.replace(/\D/g, '');
-         let  dbName = `\`${headerCnpj}\``;
+         let  dbName = `\`${empresa}\``;
         
         const queryVendedor = req.query.vendedor;
         let vendedor = req.query
@@ -42,9 +46,17 @@ export class ClienteController{
         }
     }
 
-    async cadastrar(req:Request,res:Response){
+    async insert(req:Request,res:Response){
         let obj = new ClienteController();
-        let empresa:any   = req.headers.cnpj 
+        
+        
+    if(!req.headers.token ){
+        return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+     } 
+     let decodToken= DecodedToken(String(req.headers.token))
+     let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
+        
         let select = new Select_clientes();
         let insert = new Insert_clientes();
 
@@ -53,8 +65,8 @@ export class ClienteController{
         if(!req.headers.cnpj ){
             return res.status(400).json({erro:true,msg:"É necessario informar a empresa "});   
         } 
-        let headerCnpj:any  = empresa.replace(/\D/g, '');
-        let  dbName = `\`${headerCnpj}\``;
+        
+        let  dbName = `\`${empresa}\``;
 
                 let vCnpj = req.body.cnpj;
                 let postCliente:Cliente = req.body; 
@@ -141,21 +153,19 @@ export class ClienteController{
      }
 
 
-     async buscaClientes(req:Request,res:Response){
+     async findByParam(req:Request,res:Response){
 
-        if(!req.headers.cnpj ){
-            return res.status(400).json({erro:true,msg:"É necessario informar a empresa "});   
+    
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
-         let headerCnpj:any =   req.headers.cnpj ;
-         let empresa  = headerCnpj.replace(/\D/g, '');
-        
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
          let  dbName = `\`${empresa}\``;
         
           let select = new Select_clientes();
           let cliente;
-
-
-
+  
           try{
     
             if( req.query   ){
@@ -226,20 +236,22 @@ export class ClienteController{
           }
           }
 
-     async atualizar(req:Request,res:Response){
+     async update(req:Request,res:Response){
             let obj = new ClienteController();
-            let empresa:any   = req.headers.cnpj 
+        
             let select = new Select_clientes();
             let insert = new Insert_clientes();
             let update = new Update_clientes();
             let dateService = new DateService();
 
     
-            if(!req.headers.cnpj ){
-                return res.status(400).json({erro:true,msg:"É necessario informar a empresa "});   
-            } 
-            let headerCnpj:any  = empresa.replace(/\D/g, '');
-            let  dbName = `\`${headerCnpj}\``;
+            if(!req.headers.token ){
+                return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+             } 
+             let decodToken= DecodedToken(String(req.headers.token))
+             let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
+            let  dbName = `\`${empresa}\``;
                     let vCnpj = req.body.cnpj;
                     let postCliente:Cliente = req.body; 
                     let cnpjFormat;

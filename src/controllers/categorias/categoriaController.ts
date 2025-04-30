@@ -7,24 +7,23 @@ import { Insert_Categorias } from "../../models/categorias/insert";
 import { DateService } from "../../services/dateService";
 import { updateCategoria } from "../../models/categorias/update";
 import { categoria } from "../../types/categoriaProduto/categoria";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class CategoriaController{
 
      
  
-    async buscaGeral( req:Request,res:Response  ){
-        let empresa:any   = req.headers.cnpj 
- 
+    async findAll( req:Request,res:Response  ){
+   
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
-
-        if(!req.headers.cnpj ){
-            return res.status(200).json({erro:true, msg:"É necessario informar a empresa "});   
-         } 
-           
-         let headerCnpj:any  = empresa.replace(/\D/g, '');
-    
-         let  dbName = `\`${headerCnpj}\``;
+      if(!req.headers.token ){
+              return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+           } 
+           let decodToken= DecodedToken(String(req.headers.token))
+           let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+ 
+         let  dbName = `\`${empresa}\``;
          let limit = 1000
          try{
 
@@ -44,18 +43,18 @@ export class CategoriaController{
     
     }
 
-    async buscaCategorias(req:Request,res:Response){
-        let empresa:any   = req.headers.cnpj 
- 
+    async findByParam(req:Request,res:Response){
+        
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
 
-        if(!req.headers.cnpj ){
-            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
-         
-          let headerCnpj:any  = empresa.replace(/\D/g, '');
-          let  dbName = `\`${headerCnpj}\``;
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
+          let  dbName = `\`${empresa}\``;
     
          let categorias;
         
@@ -71,18 +70,18 @@ export class CategoriaController{
     }
     
 
-    async buscaPorDescricao(req:Request,res:Response){
-        let empresa:any   = req.headers.cnpj 
+    async findByDescription(req:Request,res:Response){
  
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
 
-        if(!req.headers.cnpj ){
-            return res.status(400).json({erro:true, msg:"É necessario informar a empresa "});   
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
-         
-          let headerCnpj:any  = empresa.replace(/\D/g, '');
-          let  dbName = `\`${headerCnpj}\``;
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
+          let  dbName = `\`${empresa}\``;
 
          let descricao   = String(req.query.descricao) 
          let codigo:number = Number(req.query.codigo);
@@ -146,25 +145,24 @@ export class CategoriaController{
 
      }
 
-     async buscaPorCodigo(req:Request,res:Response){
-        let empresa:any   = req.headers.cnpj 
- 
+     async findByCode(req:Request,res:Response){
+     
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
-
-        if(!req.headers.cnpj ){
-            return res.status(200).json({erro:true, msg:"É necessario informar a empresa "});   
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
-         
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
 
          if(!req.params.codigo ){
-            return res.status(200).json({erro:true, msg:"É necessario informar o codigo da categoria "});   
+            return res.status(400).json({erro:true, msg:"É necessario informar o codigo da categoria "});   
          } 
-
-          let headerCnpj:any  = empresa.replace(/\D/g, '');
+ 
          let codigo = Number(req.params.codigo)
 
-         let  dbName = `\`${headerCnpj}\``;
+         let  dbName = `\`${empresa}\``;
             let limit = Number(req.query.limit)
             if(!req.query.limit){
                 limit = 1
@@ -182,17 +180,20 @@ export class CategoriaController{
 
      }
 
-     async cadastrar(req:Request,res:Response){
-    let obj = new CategoriaController();
-    let cnpj:any   = req.headers.cnpj 
- 
+     async insert(req:Request,res:Response){
+    if(!req.headers.token ){
+        return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+     } 
+     let decodToken= DecodedToken(String(req.headers.token))
+     let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
     let select = new Select_Categorias();
     let insert = new Insert_Categorias();
         let dateService = new DateService();
 
             let postCategoria:any = req.body; 
            
-             let  empresa = `\`${cnpj}\``;
+             let  dbName = `\`${empresa}\``;
           
             if(!postCategoria.id)  postCategoria.id =  "0";
             if(!postCategoria.atvo) postCategoria.ativo= 'S';
@@ -200,13 +201,13 @@ export class CategoriaController{
             if(!postCategoria.data_cadastro ) postCategoria.data_cadastro = dateService.obterDataAtual();
             if(!postCategoria.data_recadastro ) postCategoria.data_recadastro = dateService.obterDataHoraAtual();
  
-              let validCategor:any = await select.busca_por_descricao( empresa, postCategoria.descricao )
+              let validCategor:any = await select.busca_por_descricao( dbName, postCategoria.descricao )
     
         if( validCategor.length > 0  )  return  res.status(400).json({ erro:true, msg:`A categoria ${postCategoria.descricao} ja foi cadastrada!`})
            
              let responseCategoria:any;
                      try{    
-                           responseCategoria = await insert.cadastrar(empresa, postCategoria)
+                           responseCategoria = await insert.cadastrar(dbName, postCategoria)
                     
                          if( responseCategoria.insertId > 0 ){
                              return res.status(200).json({ 
@@ -225,10 +226,15 @@ export class CategoriaController{
        }
 	
         
-       async atualizar(req:Request,res:Response){
-        let obj = new CategoriaController();
-        let cnpj:any   = req.headers.cnpj 
-     
+       async update(req:Request,res:Response){
+         
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+         } 
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
+
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
          let dateService = new DateService();
@@ -236,7 +242,7 @@ export class CategoriaController{
     
                 let postCategoria:any = req.body; 
                
-                 let  empresa = `\`${cnpj}\``;
+                 let  dbName = `\`${empresa}\``;
              
                  if(!postCategoria.codigo)  return res.status(400).json( { erro:true, msg:`E necessario informar o codigo da categoria!`}) 
                if(!postCategoria.atvo) postCategoria.ativo= 'S';
@@ -247,14 +253,14 @@ export class CategoriaController{
      
                  let resultCategory:categoria[] = []
                     if( postCategoria.codigo > 0 ){
-                          resultCategory = await select.buscaPorCodigo( empresa,postCategoria.codigo, 1);
+                          resultCategory = await select.buscaPorCodigo( dbName,postCategoria.codigo, 1);
                     }
 
                     if(resultCategory.length > 0 ){
                         
                             let responseCategoria:any;
                             try{    
-                                responseCategoria = await update.update(empresa, postCategoria)
+                                responseCategoria = await update.update(dbName, postCategoria)
                         
                                 if( responseCategoria.affectedRows > 0    ){
                                     console.log(responseCategoria)
