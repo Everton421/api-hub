@@ -5,6 +5,7 @@ import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { Insert_UsuarioEmpresa } from "../../models/usuariosEmpresa/insert";
 import { Insert_empresa } from "../../models/empresa/insert";
 import { DateService } from "../../services/dateService";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class CreateEmpresa {
 
@@ -377,6 +378,17 @@ export class CreateEmpresa {
   }
 
   async validaExistencia(request: Request, response: Response) {
+        if(!request.headers.token ){
+                   return response.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+                } 
+           let decodToken= DecodedToken(String(request.headers.token))
+           let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
+
+           if(!request.body.empresa) return response.status(400).json({erro:true, msg:"É necessario informar a empresa a ser validada!"})
+           if(!request.body.empresa.cnpj) return response.status(400).json({erro:true, msg:"É necessario informar o cnpj da empresa a ser validada!"});   
+                
+
     let obj = new CreateEmpresa();
     let cnpj: string = request.body.empresa.cnpj;
     cnpj = cnpj.replace(/\D/g, '');  
