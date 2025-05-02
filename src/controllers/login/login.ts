@@ -110,13 +110,22 @@ export class Login {
         
    try{
              let validUserApi = await selectUserApi.selectPorEmailSenha( email,senha ); 
-
+        let nomeUsuario ='';
+        let codigoUsuario;
             if(validUserApi.length > 0  ){
+               
                 let cnpj = validUserApi[0].cnpj;
-
+                nomeUsuario = validUserApi[0].nome
                 let empresa = validUserApi[0].cnpj.replace(/\D/g, '');
                 empresa= `\`${empresa}\``;
-  
+                try{
+                    let resultUserEmpr = await   selectUserEmpresa.buscaPorEmail(empresa,email  );
+                codigoUsuario = resultUserEmpr[0].codigo
+                 }catch(e){
+                    console.log(`Erro ao tentar acessar o usuario da empresa `,e )
+        return res.status(500).json({ msg: "Erro interno do servidor durante a autenticação!"})
+
+                 }
                 let resultValidContrato = await validaContratoLogin(validUserApi[0].cnpj)
 
                     if(resultValidContrato.valido === false ){
@@ -146,7 +155,9 @@ export class Login {
                         )
                         return res.json({
                             msg:"Autenticação bem sucedida!",
-                            token:token
+                            token:token,
+                            usuario:nomeUsuario,
+                            codigo:codigoUsuario
                         })
 
                 }

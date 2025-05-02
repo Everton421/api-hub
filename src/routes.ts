@@ -71,7 +71,7 @@ import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware";
  router.post(`${versao}/servico`,            AuthMiddleware,  new ServicosController().insert)//ok
 
  router.post(`${versao}/empresa`,               new CreateEmpresa().create)//ok
- router.post(`${versao}/empresa/validacao`,     new CreateEmpresa().validaExistencia)//ok
+ router.post(`${versao}/empresa/validacao`,   AuthMiddleware,  new CreateEmpresa().validaExistencia)//ok
  
 
 

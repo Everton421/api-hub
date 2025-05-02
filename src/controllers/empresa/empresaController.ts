@@ -6,6 +6,18 @@ import { Insert_UsuarioEmpresa } from "../../models/usuariosEmpresa/insert";
 import { Insert_empresa } from "../../models/empresa/insert";
 import { DateService } from "../../services/dateService";
 import { DecodedToken } from "../../services/decodedToken/decodedToken";
+type decoded = {
+  cnpj: string,
+  email: string,
+  senha: string,
+  iat: number
+}
+
+interface responseDecodToken  { 
+erro:boolean,
+msg?:string
+payload?:decoded 
+}
 
 export class CreateEmpresa {
 
@@ -382,69 +394,63 @@ export class CreateEmpresa {
                    return response.status(400).json({erro:true, msg:"É necessario informar o token!"});   
                 } 
            let decodToken= DecodedToken(String(request.headers.token))
-           let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+           let cnpj  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      let obj = new CreateEmpresa();
+    if(cnpj){
+          let valid = await obj.consulta_empresas(cnpj);
 
+          let formatCnpj = `'${cnpj}'`;
 
-           if(!request.body.empresa) return response.status(400).json({erro:true, msg:"É necessario informar a empresa a ser validada!"})
-           if(!request.body.empresa.cnpj) return response.status(400).json({erro:true, msg:"É necessario informar o cnpj da empresa a ser validada!"});   
-                
+          if (valid === true) {
+            let dados = await obj.consulta_dados_empresa(formatCnpj);
+            let nome_empresa;
+            let telefone_empresa;
+            let email_empresa;
+            let cnpj_empresa;
+            let codigo;
+            let responsavel;
 
-    let obj = new CreateEmpresa();
-    let cnpj: string = request.body.empresa.cnpj;
-    cnpj = cnpj.replace(/\D/g, '');  
+            if (dados.length > 0) {
+              cnpj_empresa = dados[0].cnpj;
+              email_empresa = dados[0].email;
+              telefone_empresa = dados[0].telefone;
+              nome_empresa = dados[0].nome;
+              codigo = dados[0].codigo;
+              responsavel = dados[0].responsavel;
+            }
 
-    let valid = await obj.consulta_empresas(cnpj);
-
-    let formatCnpj = `'${cnpj}'`;
-
-    if (valid === true) {
-      let dados = await obj.consulta_dados_empresa(formatCnpj);
-      let nome_empresa;
-      let telefone_empresa;
-      let email_empresa;
-      let cnpj_empresa;
-      let codigo;
-      let responsavel;
-
-      if (dados.length > 0) {
-        cnpj_empresa = dados[0].cnpj;
-        email_empresa = dados[0].email;
-        telefone_empresa = dados[0].telefone;
-        nome_empresa = dados[0].nome;
-        codigo = dados[0].codigo;
-        responsavel = dados[0].responsavel;
+            console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
+            return response
+              .status(200)
+              .json(
+                {
+                status:{
+                  cadastrada: true,
+                msg: `Já existe uma empresa cadastrada com este cnpj !`,
+                },
+                data:{
+                  cnpj: cnpj_empresa,
+                email_empresa: email_empresa,
+                telefone_empresa: telefone_empresa,
+                nome: nome_empresa,
+                codigo: codigo,
+                responsavel: responsavel,
+                } 
+              }
+            );
+          } else {
+            return response
+              .status(200)
+              .json({
+                status:{
+                cadastrada: false,
+                msg: `Não encontramos empresa cadastrada com este cnpj!`,
+              },
+              data:{}
+              });
+          }
       }
 
-      console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
-      return response
-        .status(200)
-        .json(
-          {
-          status:{
-            cadastrada: true,
-           msg: `Já existe uma empresa cadastrada com este cnpj !`,
-           },
-          data:{
-            cnpj: cnpj_empresa,
-          email_empresa: email_empresa,
-          telefone_empresa: telefone_empresa,
-          nome: nome_empresa,
-          codigo: codigo,
-          responsavel: responsavel,
-          } 
-        }
-      );
-    } else {
-      return response
-        .status(200)
-        .json({
-          status:{
-          cadastrada: false,
-          msg: `Não encontramos empresa cadastrada com este cnpj!`,
-        },
-        data:{}
-        });
-    }
   }
 
   async consulta_empresas(empresa: string) {
