@@ -100,8 +100,9 @@ async buscaPorCodigoOuDescricaoLimit(empresa:any, parametro:string){
     })
 }
 
-async   buscaGeral(empresa:any )   {
+async   buscaGeral(empresa:any, data_recadastro:string )   {
     return new Promise <ProdutoBanco[]> ( async ( resolve , reject ) =>{
+        
         let sql = ` select 
         *,
         DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -110,7 +111,22 @@ async   buscaGeral(empresa:any )   {
              CONVERT(observacoes2 USING utf8) as observacoes2,
              CONVERT(observacoes3 USING utf8) as observacoes3
         from ${empresa}.produtos  `
-        await conn.query(sql,  (err:any, result:ProdutoBanco[] )=>{
+
+            let paramQuery =[];
+            let valueQuery=[];
+        if(data_recadastro){
+            paramQuery.push( ' WHERE data_recadastro >  ? ')
+            valueQuery.push(data_recadastro);
+        }
+
+            let finalSql = sql;
+
+                if( paramQuery.length > 0 ){
+                    finalSql = sql + paramQuery;
+                }
+             
+
+        await conn.query(finalSql, valueQuery, (err:any, result:ProdutoBanco[] )=>{
             if (err)  reject(err); 
               resolve(result)
         })

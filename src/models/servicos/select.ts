@@ -49,13 +49,26 @@ async buscaPorCodigoDescricao(empresa:any, param:string){
 }
 
 
-async   buscaGeral(empresa:any )   {
+async   buscaGeral(empresa:any, data_recadastro:string )   {
     return new Promise <service[]>  ( async ( resolve , reject ) =>{
     let sql = ` select *,
       DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
     from ${empresa}.servicos  `
-        await conn.query(sql,  (err:any, result:any )=>{
+        let paramQuery =[];
+        let valueQuery=[];
+
+    
+        if(data_recadastro){
+           paramQuery.push( ' WHERE data_recadastro >  ? ')
+          valueQuery.push(data_recadastro);
+        }
+    let finalSql = sql;
+    if( paramQuery.length > 0 ){
+        finalSql = sql + paramQuery;
+    }
+
+        await conn.query(finalSql,valueQuery,  (err:any, result:any )=>{
             if (err)  reject(err); 
               resolve(result)
         })

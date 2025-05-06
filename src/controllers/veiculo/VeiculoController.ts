@@ -17,10 +17,14 @@ export class VeiculoController{
         let decodToken= DecodedToken(String(req.headers.token))
         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
          let  dbName = `\`${empresa}\``;
-    
+
+         let data_recadastro:string ='';
+         if(req.query.data_recadastro){
+          data_recadastro = String(req.query.data_recadastro);
+         } 
 
             try{
-                 let dados:any[] = await selectVeiculos.buscaGeral(dbName);
+                 let dados:any[] = await selectVeiculos.buscaGeral(dbName, data_recadastro);
                         if(dados.length > 0 ){
                             return res.status(200).json(dados);
                         }else{

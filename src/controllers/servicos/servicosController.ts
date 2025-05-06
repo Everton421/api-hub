@@ -30,10 +30,14 @@ export class ServicosController{
               let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
       let  dbName = `\`${empresa}\``;
  
-      let servicos:any
-
+        let servicos:any
+        let data_recadastro:string ='';
+        if(req.query.data_recadastro){
+        data_recadastro = String(req.query.data_recadastro);
+        }  
+   
         try{
-            servicos =   await   select.buscaGeral(dbName  )
+            servicos =   await   select.buscaGeral(dbName ,data_recadastro)
     
       return res.status(200).json(servicos);
 

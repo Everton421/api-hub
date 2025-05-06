@@ -16,9 +16,12 @@ export class fotosController{
                let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
               
                   let  dbName = `\`${empresa}\``;
-
+                  let data_recadastro:string ='';
+                  if(req.query.data_recadastro){
+                   data_recadastro = String(req.query.data_recadastro);
+                  } 
             try{
-                    let resultado:any = await select.busca_geral(dbName);
+                    let resultado:any = await select.busca_geral(dbName, data_recadastro);
                     if( resultado.length > 0 ){
                         return res.status(200).json(resultado)
                 

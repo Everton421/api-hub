@@ -25,10 +25,16 @@ export class ProdutoController{
    let decodToken= DecodedToken(String(req.headers.token))
    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
+   let data_recadastro:string ='';
+   if(req.query.data_recadastro){
+    data_recadastro = String(req.query.data_recadastro);
+   }  
+
+
      let  dbName = `\`${empresa}\``;
       let produtos:ProdutoBanco[]
           try{
-              produtos =   await   select.buscaGeral(dbName  )
+              produtos =   await   select.buscaGeral(dbName ,data_recadastro )
                if (produtos.length === 0) {
                  return res.status(404).json({
                     erro: true,

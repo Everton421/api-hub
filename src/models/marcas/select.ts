@@ -74,7 +74,7 @@ export class Select_Marcas{
     }
 
 
-    async busca_geral(empresa:string, limit:number ): Promise<marca[]>{
+    async busca_geral(empresa:string, limit:number , data_recadastro:string): Promise<marca[]>{
 
         return new Promise( async (resolve, reject)=>{
 
@@ -82,11 +82,27 @@ export class Select_Marcas{
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
              FROM ${empresa}.marcas   
-                limit ? 
+              
              `
-             let param= [   limit ]
+  
+             let paramQuery =[];
+             let valueQuery=[];
+
+         if(data_recadastro){
+             paramQuery.push( ' WHERE data_recadastro >  ? ')
+             valueQuery.push(data_recadastro);
+         }
+         if(limit && limit > 0 ){
+            paramQuery.push( ' LIMIT ? ')
+            valueQuery.push(limit);
+         }
  
-            await conn.query( sql,param  ,(err:any, result:any )=>{
+             let finalSql = sql;
+                 if( paramQuery.length > 0 ){
+                     finalSql = sql + paramQuery;
+                 }
+ 
+            await conn.query( finalSql,valueQuery  ,(err:any, result:any )=>{
                 if(err){
                     reject(err);
                 }else{

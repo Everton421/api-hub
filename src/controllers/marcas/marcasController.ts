@@ -21,15 +21,19 @@ export class MarcasController{
     
          let  dbName = `\`${empresa}\``;
          
-         let limit:number = 20;
+         let limit:number =0 ;
 
          if(req.query.limit){
           limit  = Number(req.query.limit)
         }
-
+        let data_recadastro:string ='';
+        if(req.query.data_recadastro){
+         data_recadastro = String(req.query.data_recadastro);
+        }  
+     
          try{
 
-            let resultado:any = await select.busca_geral(dbName, limit );
+            let resultado:any = await select.busca_geral(dbName, limit, data_recadastro );
             if( resultado.length > 0 ){
                 return res.status(200).json(resultado)
             }else{
@@ -98,7 +102,7 @@ export class MarcasController{
      
      if( !codigo || ! id || !descricao){
         try{
-            let resultado:any = await select.busca_geral( dbName, limit);
+            let resultado:any = await select.busca_geral( dbName, limit, '');
                 return res.status(200).json(resultado)
         }catch(e){
             console.log("ocorreu um erro ao consultar as marcas", e)

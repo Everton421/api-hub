@@ -4,7 +4,7 @@ import { Cliente } from "./interface_cliente";
 
 export class Select_clientes{
 
-    async   buscaGeral(empresa:any, vendedor:any )   {
+    async   buscaGeral(empresa:any, vendedor:any, data_recadastro:string )   {
         return new Promise <Cliente[]> ( async ( resolve , reject ) =>{
        let sql = ` select *,
              DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -12,8 +12,23 @@ export class Select_clientes{
             from ${empresa}.clientes c
             WHERE c.ativo = 'S' and 
                        ( c.vendedor = ${vendedor} OR c.vendedor = 0 or c.vendedor = null)
-                       order by c.vendedor    `
-            await conn.query(sql,  (err:any, result:Cliente[] )=>{
+                          `
+
+                       let paramQuery =[];
+                       let valueQuery=[];
+                   if(data_recadastro){
+                       paramQuery.push( ' AND data_recadastro >  ? ')
+                       valueQuery.push(data_recadastro);
+                   }
+           
+                       let finalSql = sql;
+           
+                           if( paramQuery.length > 0 ){
+                               finalSql = sql + paramQuery;
+                           }
+                        
+
+            await conn.query(finalSql, data_recadastro, (err:any, result:Cliente[] )=>{
                 if (err)  reject(err); 
                   resolve(result)
             })

@@ -19,9 +19,14 @@ export class FormasController{
         
        let dbName  = `\`${empresa}\``;
 
+       let data_recadastro:string ='';
+       if(req.query.data_recadastro){
+        data_recadastro = String(req.query.data_recadastro);
+       }  
+
         let fpgt:any;  
           try{
-            fpgt =   await   select.buscaGeral(dbName  )
+            fpgt =   await   select.buscaGeral(dbName ,data_recadastro )
           if (fpgt.length === 0) {
             return res.status(404).json({ erro: "Nenhuma forma de pagamento encontrada." });
           }
