@@ -27,9 +27,6 @@ export class FormasController{
         let fpgt:any;  
           try{
             fpgt =   await   select.buscaGeral(dbName ,data_recadastro )
-          if (fpgt.length === 0) {
-            return res.status(404).json({ erro: "Nenhuma forma de pagamento encontrada." });
-          }
         return res.status(200).json(fpgt);
   
           }catch(e){ 
