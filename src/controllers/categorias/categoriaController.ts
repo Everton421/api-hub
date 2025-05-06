@@ -138,7 +138,7 @@ export class CategoriaController{
 
        if( !codigo || ! id || !descricao){
                    try{
-                    let resultado:any = await select.busca_geral( dbName, limit   );
+                    let resultado:any = await select.busca_geral( dbName, limit ,'' );
                         return res.status(200).json(resultado)
                 }catch(e){
                     console.log("ocorreu um erro ao consultar as categorias", e)
