@@ -34,12 +34,7 @@ export class MarcasController{
          try{
 
             let resultado:any = await select.busca_geral(dbName, limit, data_recadastro );
-            if( resultado.length > 0 ){
                 return res.status(200).json(resultado)
-            }else{
-                return res.status(404).json({ erro: "Nenhuma marca encontrada." });
-            }
-
      }catch(e){
         console.log("ocorreu um erro ao consultar as marcas", e)
         return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})

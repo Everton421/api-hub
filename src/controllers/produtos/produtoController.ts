@@ -35,14 +35,7 @@ export class ProdutoController{
       let produtos:ProdutoBanco[]
           try{
               produtos =   await   select.buscaGeral(dbName ,data_recadastro )
-               if (produtos.length === 0) {
-                 return res.status(404).json({
-                    erro: true,
-                   msg: "Nenhum produto encontrado." });
-               }else{
                return res.status(200).json(produtos);
-                
-               }
           }catch(e){ 
                 console.error(e);
               return res.status(500).json({ erro: "Erro ao buscar produtos." });

@@ -38,9 +38,7 @@ export class ServicosController{
    
         try{
             servicos =   await   select.buscaGeral(dbName ,data_recadastro)
-    
-      return res.status(200).json(servicos);
-
+        return res.status(200).json(servicos);
         }catch(e){ 
               console.error(e);
             return res.status(500).json({ erro: true, msg: "Erro ao buscar servico." });

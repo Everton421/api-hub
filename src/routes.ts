@@ -33,7 +33,6 @@ import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware";
            }
          }
        )
-
     })
 
     router.get(`${versao}/teste`,AuthMiddleware,(req,res)=>{ 

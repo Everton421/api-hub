@@ -23,14 +23,11 @@ export class ClienteController{
          let  dbName = `\`${empresa}\``;
         
         const queryVendedor = req.query.vendedor;
-        let vendedor = req.query
        
-        
             let data_recadastro:string ='';
             if(req.query.data_recadastro){
              data_recadastro = String(req.query.data_recadastro);
             }  
-
 
          if(!queryVendedor){
             return res.json(400).json({erro:true, msg: "É necessario informar a o vendedor  "});   
@@ -39,12 +36,7 @@ export class ClienteController{
         let select = new Select_clientes();
         try{
             let clientes = await select.buscaGeral(dbName, queryVendedor, data_recadastro);
-
-            if (clientes.length === 0) {
-                return res.status(400).json({ erro: true, msg: "Nenhum cliente encontrado." });
-              }
               return res.status(200).json(clientes);
-
         }catch(e ) { 
             console.error(e)
             return res.status(400).json({ erro: "Erro ao buscar clientes." });
@@ -159,7 +151,6 @@ export class ClienteController{
 
 
      async findByParam(req:Request,res:Response){
-
     
         if(!req.headers.token ){
             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   

@@ -25,12 +25,7 @@ export class VeiculoController{
 
             try{
                  let dados:any[] = await selectVeiculos.buscaGeral(dbName, data_recadastro);
-                        if(dados.length > 0 ){
-                            return res.status(200).json(dados);
-                        }else{
-                            return res.status(200).json({"msg": "Nenhum veiculo encontrado!"})
-                        }
-
+                    return res.status(200).json(dados);
             }catch(err){
               return res.status(500).json({ erro: "Erro ao buscar veiculos." });
              }
