@@ -24,15 +24,20 @@ export class CategoriaController{
            let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
  
          let  dbName = `\`${empresa}\``;
-         let limit = 1000
+          
+         let limit:number = 0 ;
+
+         if(req.query.limit){
+          limit  = Number(req.query.limit)
+        }
+        let data_recadastro:string ='';
+        if(req.query.data_recadastro){
+         data_recadastro = String(req.query.data_recadastro);
+        }  
          try{
 
-                let resultado:any = await select.busca_geral(dbName, limit);
-                if( resultado.length > 0 ){
+                let resultado:any = await select.busca_geral(dbName, limit, data_recadastro);
                     return res.status(200).json(resultado)
-                }else{
-                return res.status(404).json({ erro: "Nenhuma categoria encontrada." });
-                }
 
          }catch(e){
             console.log("ocorreu um erro ao consultar as categorias", e)
