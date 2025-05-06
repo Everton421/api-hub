@@ -98,10 +98,10 @@ import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware";
 
  
 
- router.get(`${versao}/pedidos`,    new pedidoController().select)
- router.post(`${versao}/pedidos`,  new pedidoController().insert)
- router.get(`${versao}/pedidos/vendas`,    new pedidoNextController().findByParam)
- router.get(`${versao}/pedido`,    new pedidoNextController().findCompleteOrderByCode)
+ router.get(`${versao}/pedidos`,        AuthMiddleware, new pedidoController().select)
+ router.post(`${versao}/pedidos`,       AuthMiddleware, new pedidoController().insert)
+ router.get(`${versao}/pedidos/vendas`, AuthMiddleware,   new pedidoNextController().findByParam)
+ router.get(`${versao}/pedido`,         AuthMiddleware,new pedidoNextController().findCompleteOrderByCode)
  ////////
 
   router.post(`${versao}/enviar_codigo`,   new EnvioCodigoValidador().main);

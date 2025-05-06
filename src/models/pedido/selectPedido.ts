@@ -48,7 +48,6 @@ export class SelectPedido{
             join ${empresa}.clientes c on c.codigo = co.cliente
                 where   co.data_recadastro >= '${param_data}' and co.vendedor = ${vendedor} 
             `;
-            console.log(sql)
             await conn.query(sql,   async (err:any, result:any) => {
                 if (err) {
                     console.log(err);

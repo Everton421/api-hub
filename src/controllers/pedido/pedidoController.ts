@@ -89,7 +89,6 @@ export class pedidoController{
          
     if(!req.query.data)  return res.status(400).json({erro:`é necessario informar uma data`});
     if(!req.query.vendedor)  return res.status(400).json({erro:`é necessario informar o vendedor`});
-    if(!req.headers.cnpj) return  res.status(400).json({erro:"É necessario informar o codigo da empresa "})
 
         
         empresa= `\`${empresa}\``;
