@@ -84,8 +84,9 @@ async update(  req:Request,res:Response ){
      if(!req.body.placa) req.body.placa = ''; 
      if(!req.body.marca) req.body.marca = ''; 
      if(!req.body.modelo) req.body.modelo = ''; 
-     if(!req.body.ano) req.body.id = 0; 
-     if(!req.body.id) req.body.ano = ''; 
+     if(!req.body.ano) req.body.ano = ''; 
+     if(!req.body.id) req.body.id = 0; 
+     
      if(!req.body.cor) req.body.cor = ''; 
      if(!req.body.combustivel) req.body.combustivel = ''; 
      if(!req.body.data_cadastro)  req.body.data_cadastro = dateService.obterDataAtual();
