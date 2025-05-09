@@ -1,4 +1,8 @@
 import { conn } from "../../database/databaseConfig";
+import { queryFpgt } from "../../types/formas_pagamento/formas_pagamento";
+
+
+
 
 export class SelectForma_pagamento{
 
@@ -31,7 +35,7 @@ export class SelectForma_pagamento{
     }
 
 
-    async novaBusca(empresa: string, query:any) {
+    async novaBusca(empresa: string, query: Partial<queryFpgt>) {
     
         let {
             codigo,

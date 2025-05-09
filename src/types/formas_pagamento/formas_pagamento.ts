@@ -10,3 +10,11 @@ export type formaPagamentoBanco ={
     data_recadastro:string
     ativo:string
 }
+export type queryFpgt= {
+            codigo:number,
+            id:number,
+            limit:number,
+            descricao:string,
+            parcelas:number,
+            ativo:string,
+}

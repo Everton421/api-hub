@@ -4,6 +4,7 @@ import { Insert_formaPagamento } from "../../models/formas_pagamento/insert";
 import { DateService } from "../../services/dateService";
 import { update_formaPagamento } from "../../models/formas_pagamento/update";
 import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { queryFpgt } from "../../types/formas_pagamento/formas_pagamento";
 
 export class FormasController{
  
@@ -87,7 +88,9 @@ export class FormasController{
 
       async update(req:Request,res:Response){
  
-        let update = new update_formaPagamento();
+        const update = new update_formaPagamento();
+        const select = new SelectForma_pagamento();
+
         let dateService = new DateService(); 
         if(!req.headers.token ){
           return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
@@ -105,9 +108,16 @@ export class FormasController{
          if(!req.body.intervalo) req.body.intervalo = 0;  
          if(!req.body.recebimento) req.body.recebimento = 0;   
          if(!req.body.data_cadastro) req.body.data_cadastro =  dateService.obterDataAtual(); 
-         if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();     
+       req.body.data_recadastro = dateService.obterDataHoraAtual();     
   
-         try{
+         try{ 
+          let queryfpgt:Partial<queryFpgt>= {
+             codigo:req.body.codigo,
+             limit:1
+          }
+
+          const verifFpgt = await select.novaBusca(dbName,queryfpgt  )
+
           let aux:any = await update.update(dbName, req.body)
 
             if(aux.affectedRows > 0 ){
