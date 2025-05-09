@@ -175,7 +175,7 @@ export class ClienteController{
      
     }
 
-        
+        /*
         async buscaClientesNext(req:Request,res:Response){
         
           if(!req.headers.cnpj ){
@@ -231,6 +231,7 @@ export class ClienteController{
               return res.status(200).json({ erro: "Erro ao buscar clientes." });
           }
           }
+          */
 
      async update(req:Request,res:Response){
             let obj = new ClienteController();

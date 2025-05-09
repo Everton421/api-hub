@@ -20,8 +20,10 @@ async insert_usuario( empresa:any, usuario:newUserEmpresa ){
 
         await conn.query( sql,[ usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel ] ,(err:any, result:any )=>{
             if(err){
+                console.log(` Erro ao tentar cadastrar usuario ${usuario.nome } na empresa `,err)
                 reject(err)
             }else{  
+                console.log(result)
                 resolve(result);
             }
         } )

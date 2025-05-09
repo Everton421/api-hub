@@ -29,7 +29,6 @@ export  async function AuthMiddleware(  req:Request, res:Response,  next:NextFun
 
                       cnpj = decodedPayload.cnpj
                           
-                  console.log(decodedPayload)
             })
             
               let resulValidContr = await  validaContratoLogin(cnpj);

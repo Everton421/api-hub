@@ -1,4 +1,5 @@
 import { conn, db_api } from "../../database/databaseConfig"
+import { queryUsuarioEmpresa } from "../../types/usuarioEmpresa/usuarioEmpresa";
 import { newUserEmpresa, usuarioEmpresa } from "./interface";
 
 export class Select_UsuarioEmpresa{
@@ -8,6 +9,7 @@ export class Select_UsuarioEmpresa{
             let sql = ` select * from ${empresa}.usuarios;`
             await conn.query( sql ,( err:any, result:any )=>{
                 if(err){
+                    console.log(err)
                     reject(err);
                 }else{
                     resolve(result);
@@ -59,11 +61,12 @@ export class Select_UsuarioEmpresa{
             })
         })
     }
-    async buscaPorEmailNome( empresa:any,email:any, usuario:any ){
+    async buscaPorEmailNome( empresa:any,email:any, nome:any ){
         return new Promise<usuarioEmpresa[]>( async ( resolve, reject )=>{
             let sql = ` select * from ${empresa}.usuarios where email = ? and nome = ?    ;`
-            await conn.query( sql ,[ email, usuario  ],( err:any, result:any )=>{
+            await conn.query( sql ,[ email, nome  ],( err:any, result:any )=>{
                 if(err){
+                    console.log(`erro ao tentar consultar usuario: ${nome}  da empresa ${empresa}`)
                     reject(err);
                 }else{
                     resolve(result);
@@ -72,6 +75,31 @@ export class Select_UsuarioEmpresa{
         })
     }
 
+    async novaBusca(empresa:string, query:queryUsuarioEmpresa){
+         return new Promise<usuarioEmpresa[]>( async ( resolve, reject )=>{
+          
+            let sql = ` select * from ${empresa}.usuarios;`
+
+            let paramSql = [];
+            const valueSql =[]
+
+            if(query.codigo){
+                    paramSql.push(" codigo = ? ")
+                    valueSql.push(query.codigo)
+            }
+
+            let whereClause
+     await conn.query( sql ,( err:any, result:any )=>{
+                if(err){
+                    console.log(err)
+                    reject(err);
+                }else{
+                    resolve(result);
+                }
+            })
+        })
+
+        }
 
 
 

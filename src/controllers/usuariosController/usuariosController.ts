@@ -4,89 +4,84 @@ import { Select_UsuarioEmpresa } from "../../models/usuariosEmpresa/select";
 import { newUserEmpresa } from "../../models/usuariosEmpresa/interface";
 import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { newUser, UsuarioApi } from "../../models/usuariosApi/interface";
+import { DecodedToken } from "../../services/decodedToken/decodedToken";
 
 export class UsuariosController{
 
 
 
-    async cadastrar( req:Request ,res:Response ){
+    async cadastrar(req: Request, res: Response) {
 
 
-        let  objInsertUser = new Insert_UsuarioEmpresa();
-        let selectUserEmpresa   = new Select_UsuarioEmpresa();
-        let objUserApi = new UsuariosApi();
+        let usuarioEmpresa = new Insert_UsuarioEmpresa();
+        let selectUserEmpresa = new Select_UsuarioEmpresa();
+        let usuarioApi = new UsuariosApi();
 
-             if(!req.body.email)   return res.status(200).json({erro:"É necessario informar o email do usuario "})
-             if(!req.body.senha)   return res.status(200).json({erro:"É necessario informar a senha do usuario "})
-             if(!req.body.usuario) return res.status(200).json({erro:"É necessario informar o nome do usuario "})
+        if (!req.headers.token) return res.status(400).json({ erro: true, msg: "É necessario informar o token!" });
 
-            if(!req.headers.cnpj) res.status(200).json({erro:"É necessario informar o cnpj da empresa "})
-                        let email = req.body.email;
-                        let senha = req.body.senha;
-                        let usuario = req.body.usuario;
-                       
-                        let headerCnpj:any =   String(req.headers.cnpj) ;
+        if (!req.body.email) return res.status(400).json({ erro: true, msg: "É necessario informar o email do usuario " })
+        if (!req.body.senha) return res.status(400).json({ erro: true, msg: "É necessario informar a senha do usuario " })
+        if (!req.body.nome) return res.status(400).json({ erro: true, msg: "É necessario informar o nome do usuario " })
 
-                        let cnpjF:any = req.headers.cnpj;
-                        let empresa  = headerCnpj.replace(/\D/g, '');
-                        let cnpj  = `\`${empresa}\``;
+        let email = req.body.email;
+        let senha = req.body.senha;
+        let nome = req.body.nome;
 
-                let user:newUserEmpresa = {cnpj:cnpjF, email:email, senha:senha,usuario:usuario , responsavel:'N'};
-                let validUserEmpresa = await selectUserEmpresa.buscaPorEmailNome(cnpj,usuario, email  );
-                let validUserApi = await objUserApi.selectPorEmail( email );
+        let decodToken = DecodedToken(String(req.headers.token))
+        let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
+        let dbName = `\`${empresa}\``;
 
-                 if( validUserEmpresa.length > 0  ){
-                         return res.status(200).json({ok:false, msg:`O usuario ${email} já foi cadastrado na empresa !`})
-                    }
 
-                 if( validUserApi.length > 0  ){
-                        return res.status(200).json({ ok:false, msg:`O usuario ${email} já foi cadastrado !`})
-                   }
-                    
-                    let userCad:any =  await objInsertUser.insert_usuario( cnpj, user)
-                        if(userCad.insertId > 0 ){
-                            let userApi:newUser   = {
-                                usuario:req.body.usuario,
-                                email:req.body.email,
-                                cnpj:String(req.headers.cnpj),
-                                senha:req.body.senha,        
-                                responsavel:'N'
-                                }
+        let user: any = { cnpj: empresa, email: email, senha: senha, nome: nome, responsavel: 'N' };
 
-                              await objUserApi.insertUsuario(userApi)
-                            return res.status(200).json(  
-                                                            {
-                                                                ok:true ,
-                                                                msg:`usuario registrado com sucesso!` ,
-                                                                codigo:userCad.insertId,
-                                                                usuario:user.usuario,
-                                                                senha:user.senha
-                                                            }
-                                                        )
-                        }
+
+        let validUserEmpresa = await selectUserEmpresa.buscaPorEmailNome(dbName, nome, email);
+
+        let validUserApi = await usuarioApi.selectPorEmail(email);
+
+        if (validUserEmpresa.length > 0) {
+            return res.status(400).json({ erro: true, msg: `O usuario ${email} já foi cadastrado na empresa !` })
+        }
+
+        if (validUserApi.length > 0) {
+            return res.status(400).json({ erro: true, msg: `O usuario ${email} já foi cadastrado !` })
+        }
+
+        let userCad: any = await usuarioEmpresa.insert_usuario(dbName, user)
+        if (userCad.insertId > 0) {
+            let userApi: any = {
+                nome: req.body.nome,
+                email: req.body.email,
+                cnpj: empresa,
+                senha: req.body.senha,
+                responsavel: 'N'
+            }
+
+            await usuarioApi.insertUsuario(userApi)
+            return res.status(200).json(
+                {
+                    codigo: userCad.insertId,
+                    usuario: user.nome,
+                    senha: user.senha
+                }
+            )
+        }
 
     }
 
 
 
     async busca(req:Request ,res:Response){
-        let selectUserEmpresa   = new Select_UsuarioEmpresa();
-        let headerCnpj:any =   String(req.headers.cnpj) ;
-
-        let cnpjF:any = req.headers.cnpj;
-        let empresa  = headerCnpj.replace(/\D/g, '');
-        let cnpj  = `\`${empresa}\``;
-
-        if(!req.headers.cnpj ){
-            return res.status(200).json({erro:"É necessario informar a empresa "});   
-         } 
-           
-    
-         let  dbName = `\`${headerCnpj}\``;
-     
+       let selectUserEmpresa   = new Select_UsuarioEmpresa();
+         if(!req.headers.token )  return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+        
+                let decodToken= DecodedToken(String(req.headers.token))
+                                 let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+                   let  dbName = `\`${empresa}\``;
          try{
 
             let resultado:any = await selectUserEmpresa.buscaGeral(dbName)
+            console.log(resultado)
             if( resultado.length > 0 ){
                 return res.status(200).json(resultado)
             }else{
@@ -95,7 +90,7 @@ export class UsuariosController{
 
      }catch(e){
         console.log("ocorreu um erro ao consultar os usuarios", e)
-        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar os usuarios"})
+        return res.status(400).json({erro:true, msg:"ocorreu um erro ao consultar os usuarios"})
      }
     }
 }

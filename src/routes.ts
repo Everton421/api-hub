@@ -110,14 +110,14 @@ import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware";
 //
 
  router.post(`${versao}/login`,   new Login().login2)
- router.post(`${versao}/registrar_usuario`, new UsuariosController().cadastrar)
- router.get(`${versao}/usuarios`, new UsuariosController().busca) 
+
+ router.post(`${versao}/usuarios`,AuthMiddleware, new UsuariosController().cadastrar)
+
+ router.get(`${versao}/usuarios`,AuthMiddleware, new UsuariosController().busca)
 /////
 //// 
 
 
- 
- router.get(`${versao}/next/cliente/:codigo`,   AuthMiddleware,   new ClienteController().buscaClienteNextPorCodigo)
  
  
  router.get(`${versao}/next/veiculos/:cliente`,          AuthMiddleware,  new VeiculoController().findByClient )
