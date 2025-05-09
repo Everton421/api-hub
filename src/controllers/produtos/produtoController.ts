@@ -323,7 +323,7 @@ async update(req:Request,res:Response){
         if (!req.body.cst) req.body.cst='00'   //return res.status(200).json({ erro:true, msg: "É necessario informar  cst para registrar o produto!"});
         if(!req.body.tipo) req.body.tipo = 0
         if(!req.body.data_cadastro ) req.body.data_cadastro = obterDataAtual(); 
-        if(!req.body.data_recadastro ) req.body.data_recadastro = obterDataHoraAtual();
+        req.body.data_recadastro = obterDataHoraAtual();
 
         if(!req.body.observacoes1) req.body.observacoes1 =  ""
         if(!req.body.observacoes2) req.body.observacoes2 = "" 

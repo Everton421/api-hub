@@ -90,7 +90,7 @@ async update(  req:Request,res:Response ){
      if(!req.body.cor) req.body.cor = ''; 
      if(!req.body.combustivel) req.body.combustivel = ''; 
      if(!req.body.data_cadastro)  req.body.data_cadastro = dateService.obterDataAtual();
-     if(!req.body.data_recadastro)  req.body.data_recadastro = dateService.obterDataHoraAtual();
+      req.body.data_recadastro = dateService.obterDataHoraAtual();
 
 
      let codigo = req.body.codigo;
@@ -119,7 +119,7 @@ async update(  req:Request,res:Response ){
                 "ano": req.body.ano,
                 "combustivel": req.body.combustivel, 
                 "data_cadastro": req.body.data_cadastro,
-                "data_recadastro": req.body.data_recadastro,
+                "data_recadastro":  req.body.data_recadastro ,
                 "ativo": req.body.ativo
             }
         );   

@@ -210,7 +210,7 @@ async update(req:Request,res:Response){
         if(!req.body.ativo) req.body.ativo = 'S';
         if(!req.body.aplicacao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para atualizar o servico!"});
         if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual(); 
-        if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
+        req.body.data_recadastro = dateService.obterDataHoraAtual();
 
         let servico = {
         "codigo": req.body.codigo,

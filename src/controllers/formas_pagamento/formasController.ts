@@ -57,7 +57,7 @@ export class FormasController{
        if(!req.body.intervalo) req.body.intervalo = 0;  
        if(!req.body.recebimento) req.body.recebimento = 0;   
        if(!req.body.data_cadastro) req.body.data_cadastro =  dateService.obterDataAtual(); 
-       if(!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();         
+         req.body.data_recadastro = dateService.obterDataHoraAtual();         
       
     try{
         let aux:any = await insert.cadastrar(dbName, req.body)

@@ -237,7 +237,7 @@ export class MarcasController{
                           if(!postMarca.id)  postMarca.id =  "0";
                           if(!postMarca.descricao)  return res.status(400).json( { erro:true, msg:`E necessario informar a descricao da marca!`}) 
                           if(!postMarca.data_cadastro ) postMarca.data_cadastro = dateService.obterDataAtual();
-                          if(!postMarca.data_recadastro ) postMarca.data_recadastro = dateService.obterDataHoraAtual();
+                            postMarca.data_recadastro = dateService.obterDataHoraAtual();
               
                           let resultMarca:marca[] = []
 

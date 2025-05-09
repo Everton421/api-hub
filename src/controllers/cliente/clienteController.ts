@@ -262,9 +262,8 @@ export class ClienteController{
                     if (!postCliente.cnpj)            return res.status(400).json({erro:true, msg:" é necessario informar o cnpj/cpf do cliente"});            
                     if (!postCliente.cidade)          postCliente.cidade = "";
                     if(!postCliente.ativo)            postCliente.ativo = "S";
-                    if (!postCliente.data_cadastro  ) {
                         postCliente.data_cadastro = dateService.obterDataAtual();
-                    } 
+                   
                 
                     if (!postCliente.data_recadastro || postCliente.data_recadastro === "0000-00-00 00:00:00" ){ 
                             postCliente.data_recadastro = dateService.obterDataHoraAtual()

@@ -254,7 +254,7 @@ export class CategoriaController{
                  if(!postCategoria.id)  postCategoria.id =  "0";
                  if(!postCategoria.descricao)  return res.status(200).json( { erro:true, msg:`E necessario informar a descricao da categoria!`}) 
                  if(!postCategoria.data_cadastro ) postCategoria.data_cadastro = dateService.obterDataAtual();
-                 if(!postCategoria.data_recadastro ) postCategoria.data_recadastro = dateService.obterDataHoraAtual();
+                 postCategoria.data_recadastro = dateService.obterDataHoraAtual();
      
                  let resultCategory:categoria[] = []
                     if( postCategoria.codigo > 0 ){
