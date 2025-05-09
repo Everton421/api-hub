@@ -117,25 +117,29 @@ export class FormasController{
           }
 
           const verifFpgt = await select.novaBusca(dbName,queryfpgt  )
+            if( verifFpgt.length > 0 ){
+            let aux:any = await update.update(dbName, req.body)
 
-          let aux:any = await update.update(dbName, req.body)
+              if(aux.affectedRows > 0 ){
+              
+                return res.status(200).json({ 
+                    codigo:   req.body.codigo,
+                    id: req.body.id,
+                    descricao: req.body.descricao,
+                    desc_maximo: req.body.desc_maximo,
+                    parcelas: req.body.parcelas,
+                    intervalo: req.body.intervalo,
+                    recebimento: req.body.recebimento,
+                    data_cadastro: req.body.data_cadastro,
+                    data_recadastro: req.body.data_recadastro,
+                    ativo: req.body.ativo
 
-            if(aux.affectedRows > 0 ){
-             
-              return res.status(200).json({ 
-                  codigo:   req.body.codigo,
-                  id: req.body.id,
-                  descricao: req.body.descricao,
-                  desc_maximo: req.body.desc_maximo,
-                  parcelas: req.body.parcelas,
-                  intervalo: req.body.intervalo,
-                  recebimento: req.body.recebimento,
-                  data_cadastro: req.body.data_cadastro,
-                  data_recadastro: req.body.data_recadastro,
-                  ativo: req.body.ativo
+                  });
+              }
+         }else{
+           return res.status(400).json({erro:true, msg:` Não foi encontrada Forma de pagamento codigo: ${req.body.codigo} `}); 
 
-                });
-            }
+         }
         }catch(e){
            console.log(e)
            return res.status(400).json({erro:true, msg:" Ocorreu um erro ao tentar atualizar Forma de pagamento"}); 

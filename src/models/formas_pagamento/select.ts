@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig";
-import { queryFpgt } from "../../types/formas_pagamento/formas_pagamento";
+import { formaPagamentoBanco, queryFpgt } from "../../types/formas_pagamento/formas_pagamento";
 
 
 
@@ -35,7 +35,7 @@ export class SelectForma_pagamento{
     }
 
 
-    async novaBusca(empresa: string, query: Partial<queryFpgt>) {
+    async novaBusca(empresa: string, query: Partial<queryFpgt>):Promise<formaPagamentoBanco[]> {
     
         let {
             codigo,
