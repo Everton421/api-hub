@@ -362,13 +362,14 @@ export class CreateEmpresa {
              codigo_usuario: codigoUsuario.insertId,
               usuario: nome,
               senha: senha,
-              token:token
+              token:token,
+               email_usuario: email,
               },
              "empresa":{
               cnpj: cnpj,
               nome_empresa: nome_empresa,
               email_empresa: email_empresa,
-              email_usuario: email,
+              
               codigo_empresa: codigoEmpresa.insertId,
              }
            
