@@ -6,18 +6,7 @@ import { Insert_UsuarioEmpresa } from "../../models/usuariosEmpresa/insert";
 import { Insert_empresa } from "../../models/empresa/insert";
 import { DateService } from "../../services/dateService";
 import { DecodedToken } from "../../services/decodedToken/decodedToken";
-type decoded = {
-  cnpj: string,
-  email: string,
-  senha: string,
-  iat: number
-}
-
-interface responseDecodToken  { 
-erro:boolean,
-msg?:string
-payload?:decoded 
-}
+import jwt from 'jsonwebtoken';
 
 export class CreateEmpresa {
 
@@ -42,19 +31,14 @@ export class CreateEmpresa {
         msg: `nao foi informado os dados da empresa `,
       });
 
-      let requestTipCont: any  = request.body.empresa.tipo_contrato ;
-
+   
       console.log( request.body.empresa)
 
       if (!request.body.empresa.cnpj) return response.status(400).json({ erro:true, msg: "nao informado o cnpj da empresa " });
       if (!request.body.empresa.email_empresa) return response.status(400).json({ erro:true, msg: "nao informado o email da empresa " });
       if (!request.body.empresa.nome_empresa) return response.status(400).json({ erro:true, msg: "nao informado o nome da empresa " });
       if (!request.body.empresa.telefone_empresa) return response.status(400).json({ erro:true, msg: "nao informado o telefone da empresa " });
-      
-      //if ( requestTipCont !== "N" || requestTipCont !== "T") return response.status(400).json({ erro:true, msg: "Tipo de contrato Invalido!" });
-
-       
-
+    
       if (!request.body.usuario.nome) return response.status(400).json({ erro:true, msg: "nao informado o nome do usuario reponsavel pela empresa " });
       if (!request.body.usuario.senha) return response.status(400).json({ erro:true, msg: "nao informado a senha do usuario reponsavel pela empresa " });
       if (!request.body.usuario.email) return response.status(400).json({ erro:true, msg: "nao informado o email do usuario reponsavel pela empresa " });
@@ -348,12 +332,25 @@ export class CreateEmpresa {
           }
 
           if (userRegister.insertId > 0) {
-            codigoUsuario = await objInertUserEmpresa.insert_usuario(
-              dbName,
-              objUser
-            );
-            //return  response.status(200).json({  empresa:`Empresa ${cnpj } registrada com sucesso ! `, usuario:` Usuario ${objUser.usuario} registrado com sucesso!`});
-            return response.status(200).json(
+            codigoUsuario = await objInertUserEmpresa.insert_usuario(    dbName,   objUser  );
+
+             const secret = process.env.SECRET  
+
+               if (!secret) {
+                            console.error("Erro crítico: JWT_SECRET não está definido!");
+                            return response.status(500).json({ msg: "Erro interno do servidor [JWT Secret Missing]." });
+                        }
+        
+             const payload = { 
+                    cnpj: cnpj,
+                    email:email,
+                    senha:senha
+                } 
+                        const token = jwt.sign(
+                            payload, secret 
+                        )
+
+             return response.status(200).json(
            {
             "status":{
               ok: true,
@@ -361,14 +358,20 @@ export class CreateEmpresa {
               
             },
              "data":{
-              codigo_usuario: codigoUsuario.insertId,
+              "usuario":{
+             codigo_usuario: codigoUsuario.insertId,
               usuario: nome,
               senha: senha,
+              token:token
+              },
+             "empresa":{
               cnpj: cnpj,
               nome_empresa: nome_empresa,
               email_empresa: email_empresa,
               email_usuario: email,
               codigo_empresa: codigoEmpresa.insertId,
+             }
+           
             }
           }
 
@@ -394,63 +397,69 @@ export class CreateEmpresa {
                    return response.status(400).json({erro:true, msg:"É necessario informar o token!"});   
                 } 
            let decodToken= DecodedToken(String(request.headers.token))
-           let cnpj  = decodToken.payload?.cnpj.replace(/\D/g, '');
-      let obj = new CreateEmpresa();
-    if(cnpj){
-          let valid = await obj.consulta_empresas(cnpj);
+           let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
-          let formatCnpj = `'${cnpj}'`;
 
-          if (valid === true) {
-            let dados = await obj.consulta_dados_empresa(formatCnpj);
-            let nome_empresa;
-            let telefone_empresa;
-            let email_empresa;
-            let cnpj_empresa;
-            let codigo;
-            let responsavel;
+           if(!request.body.empresa) return response.status(400).json({erro:true, msg:"É necessario informar a empresa a ser validada!"})
+           if(!request.body.empresa.cnpj) return response.status(400).json({erro:true, msg:"É necessario informar o cnpj da empresa a ser validada!"});   
+                
 
-            if (dados.length > 0) {
-              cnpj_empresa = dados[0].cnpj;
-              email_empresa = dados[0].email;
-              telefone_empresa = dados[0].telefone;
-              nome_empresa = dados[0].nome;
-              codigo = dados[0].codigo;
-              responsavel = dados[0].responsavel;
-            }
+    let obj = new CreateEmpresa();
+    let cnpj: string = request.body.empresa.cnpj;
+    cnpj = cnpj.replace(/\D/g, '');  
 
-            console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
-            return response
-              .status(200)
-              .json(
-                {
-                status:{
-                  cadastrada: true,
-                msg: `Já existe uma empresa cadastrada com este cnpj !`,
-                },
-                data:{
-                  cnpj: cnpj_empresa,
-                email_empresa: email_empresa,
-                telefone_empresa: telefone_empresa,
-                nome: nome_empresa,
-                codigo: codigo,
-                responsavel: responsavel,
-                } 
-              }
-            );
-          } else {
-            return response
-              .status(200)
-              .json({
-                status:{
-                cadastrada: false,
-                msg: `Não encontramos empresa cadastrada com este cnpj!`,
-              },
-              data:{}
-              });
-          }
+    let valid = await obj.consulta_empresas(cnpj);
+
+    let formatCnpj = `'${cnpj}'`;
+
+    if (valid === true) {
+      let dados = await obj.consulta_dados_empresa(formatCnpj);
+      let nome_empresa;
+      let telefone_empresa;
+      let email_empresa;
+      let cnpj_empresa;
+      let codigo;
+      let responsavel;
+
+      if (dados.length > 0) {
+        cnpj_empresa = dados[0].cnpj;
+        email_empresa = dados[0].email;
+        telefone_empresa = dados[0].telefone;
+        nome_empresa = dados[0].nome;
+        codigo = dados[0].codigo;
+        responsavel = dados[0].responsavel;
       }
 
+      console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
+      return response
+        .status(200)
+        .json(
+          {
+          status:{
+            cadastrada: true,
+           msg: `Já existe uma empresa cadastrada com este cnpj !`,
+           },
+          data:{
+            cnpj: cnpj_empresa,
+          email_empresa: email_empresa,
+          telefone_empresa: telefone_empresa,
+          nome: nome_empresa,
+          codigo: codigo,
+          responsavel: responsavel,
+          } 
+        }
+      );
+    } else {
+      return response
+        .status(200)
+        .json({
+          status:{
+          cadastrada: false,
+          msg: `Não encontramos empresa cadastrada com este cnpj!`,
+        },
+        data:{}
+        });
+    }
   }
 
   async consulta_empresas(empresa: string) {
