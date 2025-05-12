@@ -251,7 +251,7 @@ export class CreateEmpresa {
       foto  longblob DEFAULT NULL,
       data_cadastro  date NOT NULL DEFAULT '0000-00-00',
        data_recadastro  datetime DEFAULT NULL,
-         PRIMARY KEY ( produto , sequencia )
+         PRIMARY KEY ( produto ) 
       );`,
      ` CREATE TABLE  ${dbName}.categorias  (
          codigo  int(11) NOT NULL AUTO_INCREMENT,
