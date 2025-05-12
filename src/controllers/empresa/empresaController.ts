@@ -18,10 +18,6 @@ export class CreateEmpresa {
     let objInertUserEmpresa = new Insert_UsuarioEmpresa();
     let insert_empresa = new Insert_empresa();
     let dateService = new DateService();
-
-
-
-
     
     if (!request.body.usuario) return response.status(400).json({ erro:true, msg: "nao informado o usuario da empresa " });
     
@@ -30,9 +26,6 @@ export class CreateEmpresa {
         erro:true,
         msg: `nao foi informado os dados da empresa `,
       });
-
-   
-      console.log( request.body.empresa)
 
       if (!request.body.empresa.cnpj) return response.status(400).json({ erro:true, msg: "nao informado o cnpj da empresa " });
       if (!request.body.empresa.email_empresa) return response.status(400).json({ erro:true, msg: "nao informado o email da empresa " });
@@ -47,7 +40,6 @@ export class CreateEmpresa {
 
     let dbName: any;
     let cnpj: string = request.body.empresa.cnpj;
-    
     
     let nome: string = String(request.body.usuario.nome);
     let email: string = request.body.usuario.email;
@@ -68,7 +60,6 @@ export class CreateEmpresa {
            cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
 
     let objUser: newUser = { nome, email, cnpj, senha, responsavel ,telefone};
-
  
   // Regex para remover caracteres não numéricos
   cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
@@ -81,10 +72,7 @@ export class CreateEmpresa {
     }
   }
 
-
   dbName = `\`${cnpj}\``;  // Usando o CNPJ formatado como nome do banco
-
- 
 
     let validUserApi: UsuarioApi[] = await objUsuariosApi.selectPorEmail(
       objUser.email
@@ -398,23 +386,15 @@ export class CreateEmpresa {
                    return response.status(400).json({erro:true, msg:"É necessario informar o token!"});   
                 } 
            let decodToken= DecodedToken(String(request.headers.token))
-           let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
-
-
-           if(!request.body.empresa) return response.status(400).json({erro:true, msg:"É necessario informar a empresa a ser validada!"})
-           if(!request.body.empresa.cnpj) return response.status(400).json({erro:true, msg:"É necessario informar o cnpj da empresa a ser validada!"});   
-                
+           let empresa  = String(decodToken.payload?.cnpj.replace(/\D/g, ''));
 
     let obj = new CreateEmpresa();
-    let cnpj: string = request.body.empresa.cnpj;
-    cnpj = cnpj.replace(/\D/g, '');  
+     let formatCnpj = `'${empresa}'`;
 
-    let valid = await obj.consulta_empresas(cnpj);
-
-    let formatCnpj = `'${cnpj}'`;
+    let valid = await obj.consulta_empresas(empresa);
 
     if (valid === true) {
-      let dados = await obj.consulta_dados_empresa(formatCnpj);
+      let dados = await obj.consulta_dados_empresa(empresa);
       let nome_empresa;
       let telefone_empresa;
       let email_empresa;
@@ -431,7 +411,6 @@ export class CreateEmpresa {
         responsavel = dados[0].responsavel;
       }
 
-      console.log(` a empresa com o cnpj ${cnpj} ja foi cadastrada!`);
       return response
         .status(200)
         .json(
