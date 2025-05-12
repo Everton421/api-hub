@@ -7,6 +7,7 @@ import { Insert_empresa } from "../../models/empresa/insert";
 import { DateService } from "../../services/dateService";
 import { DecodedToken } from "../../services/decodedToken/decodedToken";
 import jwt from 'jsonwebtoken';
+import { registerDados } from "../../services/dadosTeste/dadosTeste";
 
 export class CreateEmpresa {
 
@@ -49,6 +50,8 @@ export class CreateEmpresa {
     let email_empresa: string = request.body.empresa.email_empresa;
     let nome_empresa: string = request.body.empresa.nome_empresa;
     let telefone_empresa: string = request.body.empresa.telefone_empresa;
+    const dadosTeste:boolean = request.body.empresa.dados_teste;
+
     let responsavel: string = "S";
 
            let tipo_contrato = request.body.empresa.tipo_contrato
@@ -295,6 +298,7 @@ export class CreateEmpresa {
             await conn.query(e, async (err, result) => {
               if (err) throw err;
               else console.log(`tabela registrada com sucesso!`);
+           
             });
           });
 
@@ -317,6 +321,9 @@ export class CreateEmpresa {
             };
 
             codigoEmpresa = await insert_empresa.registrar_empresa(objEmpresa);
+                if( request.body.empresa.dados_teste && dadosTeste === true ){
+                await registerDados(dbName);
+              } 
           }
 
           if (userRegister.insertId > 0) {

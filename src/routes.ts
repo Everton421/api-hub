@@ -116,7 +116,7 @@ import { DadosController } from "./controllers/dados/dadosController";
 
  router.get(`${versao}/usuarios`,AuthMiddleware, new UsuariosController().busca)
 
- router.get(`${versao}/dados`,AuthMiddleware, new DadosController().main)
+ router.get(`${versao}/dados`,AuthMiddleware, new DadosController().insertDadosTeste)
 
 /////
 //// 

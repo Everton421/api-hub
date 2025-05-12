@@ -12,6 +12,7 @@ import { Insert_tipos_os } from "../../models/tipos_os/insert";
 import { Insert_fotos } from "../../models/fotos/insert";
 import { Select_fotos } from "../../models/fotos/select";
 import { Delete_fotos } from "../../models/fotos/delete";
+import { registerDados } from "../../services/dadosTeste/dadosTeste";
 
 
 export class DadosController{
@@ -119,5 +120,18 @@ export class DadosController{
                         }
                         */ 
                             return res.status(200).json({msg:msgs})
+    }
+
+    async insertDadosTeste( req:Request, res:Response ){
+        
+           if(!req.headers.token ){
+                       return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+                    } 
+                    let decodToken= DecodedToken(String(req.headers.token))
+                    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+                
+               let dbName  = `\`${empresa}\``;
+
+               await registerDados(String(dbName))
     }
 }
