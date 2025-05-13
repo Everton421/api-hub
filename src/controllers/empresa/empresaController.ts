@@ -104,7 +104,7 @@ export class CreateEmpresa {
         ativo  char(1) NOT NULL DEFAULT 'S',
         class_fiscal  varchar(255) NOT NULL DEFAULT '',
         cst  char(3) DEFAULT '00',
-        data_recadastro  datetime DEFAULT NULL,
+        data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
         observacoes1  blob DEFAULT NULL,
         observacoes2  blob DEFAULT NULL,
@@ -120,7 +120,7 @@ export class CreateEmpresa {
           aplicacao TEXT NOT NULL,
           tipo_serv INTEGER DEFAULT 0,
           data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-          data_recadastro  datetime DEFAULT NULL,
+           data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
         ativo  char(1) NOT NULL DEFAULT 'S',
           PRIMARY KEY ( codigo)
     );`,
@@ -152,7 +152,7 @@ export class CreateEmpresa {
         intervalo INTEGER DEFAULT 0,  
         recebimento INTEGER DEFAULT 0,
         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-         data_recadastro  datetime DEFAULT NULL,
+          data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
         ativo  char(1) NOT NULL DEFAULT 'S',
           PRIMARY KEY (codigo)
     );`,
@@ -173,7 +173,7 @@ export class CreateEmpresa {
          cliente  int(11) NOT NULL DEFAULT 0,
          veiculo  int(11) NOT NULL DEFAULT 0,
          data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-         data_recadastro  datetime DEFAULT NULL,
+          data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
          tipo_os  int(11) DEFAULT 0,
          enviado  enum('N','S') NOT NULL DEFAULT 'S',
          tipo  int(11) NOT NULL DEFAULT 1, 
@@ -218,7 +218,7 @@ export class CreateEmpresa {
           id  int(10) unsigned NOT NULL DEFAULT 0,
           descricao TEXT NOT NULL,
          data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-         data_recadastro  datetime DEFAULT NULL,
+          data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
         ativo  char(1) NOT NULL DEFAULT 'S',
          PRIMARY KEY ( codigo )
     );`,
@@ -234,7 +234,7 @@ export class CreateEmpresa {
         cor varchar(255) NOT NULL DEFAULT '',
         combustivel varchar(255) NOT NULL DEFAULT '',
         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-        data_recadastro  datetime DEFAULT NULL,
+         data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
         ativo  char(1) NOT NULL DEFAULT 'S',
           PRIMARY KEY ( codigo )
     );`,
@@ -253,14 +253,14 @@ export class CreateEmpresa {
        link  text NOT NULL,
       foto  longblob DEFAULT NULL,
       data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-       data_recadastro  datetime DEFAULT NULL,
+       data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
          PRIMARY KEY ( produto ) 
       );`,
      ` CREATE TABLE  ${dbName}.categorias  (
          codigo  int(11) NOT NULL AUTO_INCREMENT,
          id  int(10) unsigned NOT NULL DEFAULT 0,
          data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-         data_recadastro  datetime DEFAULT NULL,
+         data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
          descricao  varchar(255) NOT NULL DEFAULT '',
         ativo  char(1) NOT NULL DEFAULT 'S',
         PRIMARY KEY ( codigo )
@@ -270,7 +270,7 @@ export class CreateEmpresa {
         codigo  int(11) NOT NULL AUTO_INCREMENT,
         id  int(10) unsigned NOT NULL DEFAULT 0,
         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-        data_recadastro  datetime DEFAULT NULL,
+        data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
         descricao  varchar(255) NOT NULL DEFAULT '',
         ativo  char(1) NOT NULL DEFAULT 'S',
        PRIMARY KEY ( codigo )
