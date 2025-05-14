@@ -18,7 +18,6 @@ import { MarcasController } from "./controllers/marcas/marcasController";
 import { fotosController } from "./controllers/fotos/fotosController";
 import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextController";
 import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware"; 
-import { DadosController } from "./controllers/dados/dadosController";
 
   const crypt = require('crypt');
   const router = Router();
@@ -116,7 +115,6 @@ import { DadosController } from "./controllers/dados/dadosController";
 
  router.get(`${versao}/usuarios`,AuthMiddleware, new UsuariosController().busca)
 
- router.get(`${versao}/dados`,AuthMiddleware, new DadosController().insertDadosTeste)
 
 /////
 //// 
