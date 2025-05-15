@@ -16,7 +16,7 @@ const host_mail  = process.env.HOST_MAIL;
                     pass: passwordMail,
                     },
                     tls: {
-                    rejectUnauthorized: true  // Ignora erros de certificado
+                    rejectUnauthorized: false  // Ignora erros de certificado
                     }
                 });
         
