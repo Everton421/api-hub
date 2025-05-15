@@ -10,7 +10,7 @@ const host_mail  = process.env.HOST_MAIL;
                 const transporter = nodemailer.createTransport({
                     host:  host_mail,
                     port: 465,
-                    secure: false, // usa SSL
+                    secure: true, // usa SSL
                     auth: {
                     user: mail,
                     pass: passwordMail,
