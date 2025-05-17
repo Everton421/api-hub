@@ -180,6 +180,7 @@ async insert(  req:Request,res:Response ){
                             "cliente": req.body.cliente,
                             "placa": req.body.placa,
                             "marca": req.body.marca,
+                            "cor": req.body.cor,
                             "modelo": req.body.modelo,
                             "ano": req.body.ano,
                             "combustivel": req.body.combustivel, 
