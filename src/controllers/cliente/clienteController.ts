@@ -59,10 +59,7 @@ export class ClienteController{
 
         let dateService = new DateService();
 
-        if(!req.headers.cnpj ){
-            return res.status(400).json({erro:true,msg:"É necessario informar a empresa "});   
-        } 
-        
+       
         let  dbName = `\`${empresa}\``;
 
                 let vCnpj = req.body.cnpj;
