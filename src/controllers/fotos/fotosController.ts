@@ -20,12 +20,11 @@ export class fotosController{
                   if(req.query.data_recadastro){
                    data_recadastro = String(req.query.data_recadastro);
                   } 
+                  console.log(req.query)
             try{
                     let resultado:any = await select.busca_geral(dbName, data_recadastro);
-                    if( resultado.length > 0 ){
                         return res.status(200).json(resultado)
                 
-                    }
         
              }catch(e){
                 console.log("ocorreu um erro ao consultar as fotos dos produtos", e)
