@@ -48,7 +48,8 @@ export class InsertPedido {
           just_icms,
           just_subst,
           enviado,
-          id
+          id,
+          id_externo
       } = orcamento;
 
       enviado = 'S';
@@ -59,6 +60,7 @@ export class InsertPedido {
        const cliente = orcamento.cliente;
 
       if (!id)   id = 0;
+      if (!id_externo )   id_externo = 0;
 
       if (!situacao)   situacao = 'EA';
       if (!vendedor)   vendedor = 1;
@@ -81,8 +83,8 @@ export class InsertPedido {
        
       let sql = `INSERT INTO 
       ${empresa}.pedidos 
-      ( codigo ,  id ,  vendedor , situacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )  
+      ( codigo ,  id , id_externo, vendedor , situacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )  
         `
         await conn.query(
           sql,
