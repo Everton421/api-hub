@@ -159,7 +159,8 @@ export class CreateEmpresa {
 
       `CREATE TABLE IF NOT EXISTS ${dbName}.pedidos (
         codigo bigint(20)  unsigned NOT NULL DEFAULT 0,
-         id  int(10) unsigned NOT NULL DEFAULT 0,
+         id  varchar(255) NOT NULL DEFAULT '0',
+         id_externo  varchar(255) DEFAULT NULL,
          vendedor  int(11) NOT NULL DEFAULT 0,
          situacao  char(2) NOT NULL DEFAULT 'EA',
          contato  varchar(255) DEFAULT NULL,
