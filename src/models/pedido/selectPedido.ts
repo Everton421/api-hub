@@ -129,8 +129,6 @@ export class SelectPedido{
             JOIN ${empresa}.clientes c ON c.codigo = pe.cliente
 
         `;
-        
-
 
         const conditions: string[] = [];
         const params: any[] = [];

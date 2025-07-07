@@ -88,7 +88,7 @@ export class InsertPedido {
         `
         await conn.query(
           sql,
-          [codigo ,  id ,  vendedor ,  situacao, contato,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente.codigo,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes ],
+          [codigo ,  id , id_externo, vendedor ,  situacao, contato,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente.codigo,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes ],
           async    (err: any, result: any) => {
               if (err) {
                   console.log(err)
