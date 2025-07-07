@@ -24,15 +24,15 @@ import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware";
   export const versao = '/v1'
 
     router.get(`${versao}/`, AuthMiddleware,async (req:Request, res:Response)=>{
-       await conn.getConnection(
-         async (err:Error)=>{
-           if(err){
-               return res.json({"erro": "falha ao se conectar ao banco de dados1 "})
+   
+       await conn.query("SELECT 1 ", (err ,result )=>{
+         if(err){
+               return res.json({"erro": "falha ao se conectar ao banco de dados  "})
            }else{
+            console.log(result)
              return  res.json({"ok":true});
            }
-         }
-       )
+       })
     })
 
     router.get(`${versao}/teste`,AuthMiddleware,(req,res)=>{ 
