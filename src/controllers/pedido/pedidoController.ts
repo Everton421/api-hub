@@ -46,19 +46,19 @@ export class pedidoController{
                     let dadosPedidos = req.body;
                     const results = await Promise.all(dadosPedidos.map(async (p:any) => {
                                 let status: string;
-                            
+
                                 const validPedido:any = await selectPedido.validaExistencia( empresa, p.codigo);
-                            
+
                                 if(validPedido.length > 0){
                                     const pedidoEncontrado = validPedido[0];
-                                     const data_recad = obj.formatarData(new Date(pedidoEncontrado.data_recadastro), true)
+                                    // const data_recad = obj.formatarData(new Date(pedidoEncontrado.data_recadastro), true)
 
-                                        if ( new Date(p.data_recadastro) > new Date(data_recad )){
-                                            console.log(`atualizando pedido ${p.codigo} ${p.data_recadastro} > ${data_recad} `)
-                                             await updatePedido.update(empresa, p, p.codigo)
+                                        if (  p.data_recadastro  > pedidoEncontrado.data_recadastro  ){
+                                            console.log(`atualizando pedido ${p.codigo} ${ p.data_recadastro  } > ${   pedidoEncontrado.data_recadastro  } `)
+                                            await updatePedido.update(empresa, p, p.codigo)
                                             status = 'atualizado';
                                         } else{
-                                            status = ` O pedido ${p.codigo} se encontra atualizado, data mobile: ${p.data_recadastro} data servidor: ${data_recad}`;
+                                            status = ` O pedido ${p.codigo} se encontra atualizado, data mobile: ${p.data_recadastro} data servidor: ${pedidoEncontrado.data_recadastro}`;
                                             console.log( status)
 
                                         }
