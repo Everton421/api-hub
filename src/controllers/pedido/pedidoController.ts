@@ -52,12 +52,13 @@ export class pedidoController{
                                 if(validPedido.length > 0){
                                     const pedidoEncontrado = validPedido[0];
                                      const data_recad = obj.formatarData(new Date(pedidoEncontrado.data_recadastro), true)
-                                        if ( p.data_recadastro > data_recad ){
+
+                                        if ( new Date(p.data_recadastro) > new Date(data_recad )){
                                             console.log(`atualizando pedido ${p.codigo} ${p.data_recadastro} > ${data_recad} `)
                                              await updatePedido.update(empresa, p, p.codigo)
                                             status = 'atualizado';
                                         } else{
-                                            status = ` O pedido ${p.codigo} se encontra atualizado`;
+                                            status = ` O pedido ${p.codigo} se encontra atualizado, data mobile: ${p.data_recadastro} data servidor: ${data_recad}`;
                                             console.log( status)
 
                                         }

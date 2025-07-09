@@ -5,11 +5,28 @@ import { DeleteItensPedido } from "./deleteItems";
 import { SelectItensPedido } from "./selectItens";
 import { InsertitensPedido } from "./insertItens";
 
+type orderReceived = 
+{
+codigo_cliente:number
+total_geral:number
+total_produtos:number
+total_servicos:number
+tipo_os:number
+tipo:number
+quantidade_parcelas:number
+contato:string
+veiculo:number
+forma_pagamento:number
+observacoes:string
+data_cadastro:string
+data_recadastro:string
+situacao:string
+}
 
 export class UpdatePedido{
     
     
-    async  updateTabelaPedido( empresa:any ,orcamento:any, codigo:number ) {
+    async  updateTabelaPedido( empresa:any ,orcamento:orderReceived, codigo:number ) {
         return new Promise(async (resolve, reject) => {
             let sql = `
                 UPDATE ${empresa}.pedidos  
@@ -28,7 +45,6 @@ export class UpdatePedido{
                 data_cadastro       = '${orcamento.data_cadastro}',
                 data_recadastro     = '${orcamento.data_recadastro}',
                 enviado             = 'S',
-                observacoes         =  '${orcamento.observacoes}',
                 situacao            = '${orcamento.situacao}'
                 where codigo = ${codigo}
             `
