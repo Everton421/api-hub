@@ -112,7 +112,7 @@ export class pedidoController{
                 let cliente:any;
                 
                 i.data_recadastro = obj.formatarData(new Date(i.data_recadastro), true);
-                i.data_cadastro = obj.formatarData(new Date(i.data_cadastro));
+               // i.data_cadastro = obj.formatarData(new Date(i.data_cadastro));
 
                 try{
                   const resultCliente = await select_clientes.buscaPorcodigo(empresa, i.cliente);
