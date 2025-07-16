@@ -1,5 +1,12 @@
 import { conn } from "../../database/databaseConfig"
 
+type queryUltimoPedido ={ 
+    id_externo:boolean   
+    id:boolean
+    codigo:boolean 
+    total:boolean
+}
+
 export class SelectPedido{
     
     async validaExistencia(empresa:any,codigo:number   ){
@@ -58,6 +65,15 @@ export class SelectPedido{
             })
     }) 
     }
+
+    /**
+     * 
+     * @param empresa empresa a ser consultado o pedido 
+     * @param queryData  dado para obter o ultimo pedido, ex: total: obtem o pedido com maior total, id: traz o pedido com o maior id 
+     * @param vendedor 
+     * @returns 
+     */
+ 
 
     async buscaPorDataInicialFinal(empresa:any ,dataInicial:string, dataFinal:string ,filter:string | null, vendedor:number ){
         let objSelect = new  SelectPedido();
