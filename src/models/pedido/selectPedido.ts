@@ -193,7 +193,7 @@ export class SelectPedido{
 
         params.push( Number(limit));  
 
-        const finalSql = baseSql + whereClause + limitQuery  + " order by pe.data_recadastro " ;
+        const finalSql = baseSql + whereClause  + " order by pe.data_recadastro "+ limitQuery  ;
           
             await conn.query(finalSql, params,  async (err:any, result:any) => {
                 if (err) {
