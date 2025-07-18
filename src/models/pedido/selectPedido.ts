@@ -227,8 +227,128 @@ export class SelectPedido{
 
     async buscaCompleta(){
 
+    }
+
+    /**
+     *  obtem os totais dos pedidos agrupados por data
+     * @param empresa 
+     * @param vendedor 
+     * @returns 
+     */
+    async totalPedidosAgrupData(empresa:any , vendedor:number){
+        return new Promise( async ( resolve, reject )=>{
+
+        let sqL =  ` SELECT 
+                       SUM(total_geral ) as total,
+                       DATE_FORMAT(data_cadastro, '%Y-%d-%m') as data_cadastro
+                  FROM
+                   ${empresa}.pedidos 
+                 WHERE  vendedor =  ?   
+                 GROUP BY  data_cadastro;   `
+                 await conn.query(sqL, vendedor,  async (err:any, result:any) => {
+                if (err) {
+                    console.log(err);
+                    reject(err)
+                } else {
+            resolve(result)
+                }
+            })  
+            
+    }) 
+
+    }
+
+    /**
+     *  obtem os ultimos inseridos pelo vendedor 
+     * @param empresa 
+     * @param vendedor 
+     * @param limit 
+     * @returns 
+     */
+   async ultimosInseridos(empresa:any , vendedor:number, limit:number  ){
+        return new Promise( async ( resolve, reject )=>{
+
+            let sql =   `
+                      SELECT
+                              p.id, COALESCE(p.id_externo,0) AS id_externo  , p.total_geral, p.situacao, c.nome, DATE_FORMAT(p.data_cadastro,'%Y-%m-%d') AS data_cadastro
+                          FROM ${empresa}.pedidos AS p 
+                              JOIN ${empresa}.clientes as c on c.codigo = p.cliente
+                              WHERE p.vendedor  = ? 
+                              order by p.data_cadastro DESC
+                          LIMIT ?; `
+
+        await conn.query(sql, [ vendedor, limit ],  async (err:any, result:any) => {
+                if (err) {
+                    console.log(err);
+                    reject(err)
+                } else {
+            resolve(result)
+                }
+            })  
+            
+    }) 
+    }
 
 
+    /**
+     *  obtem os totais, media, etc
+     * @param empresa 
+     * @param vendedor 
+     * @returns 
+     */
+    async totaisMedia(empresa:any, vendedor:any){
+        
+        return new Promise( async ( resolve, reject )=>{
+    let sql =   `  SELECT  
+                (
+                    SELECT SUM( pf.total_geral  ) AS  total_faturado 
+                    FROM ${empresa}.pedidos pf WHERE pf.situacao = 'FI' 
+                    AND vendedor = ${vendedor} 
+                ) AS total_faturado,
+                    (
+                    SELECT SUM(  total_geral  ) AS  total_faturado 
+                    FROM ${empresa}.pedidos    
+                    WHERE vendedor = ${vendedor}  
+                ) AS total_pedidos,
+                (
+                    SELECT AVG( total_geral  ) AS  total_faturado 
+                    FROM ${empresa}.pedidos    
+                    WHERE  vendedor = ${vendedor} 
+                ) AS media_pedidos,
+                    (
+                    SELECT COUNT( codigo)  
+                    FROM ${empresa}.pedidos 
+                    WHERE vendedor = ${vendedor} 
+                ) AS quantidade_pedidos,
+                ( 
+                SELECT 
+                    COUNT( codigo) 
+                    FROM ${empresa}.clientes WHERE 
+                    ativo = 'S' AND 
+                    data_cadastro >=  DATE_FORMAT( NOW(), '%Y-%m-01') AND
+                    vendedor = ${vendedor}  
+                ) AS novos_clientes,
+                (
+                SELECT 
+                    COUNT( codigo) 
+                    FROM ${empresa}.clientes WHERE
+                    ativo = 'S' AND
+                     vendedor = ${vendedor}
+                      OR vendedor = 0    
+                ) AS total_clientes 
+                    
+                FROM ${empresa}.pedidos as p 
+                WHERE p.vendedor = ${vendedor} 
+                    GROUP BY 1; `
+                await conn.query(sql,  vendedor ,  async (err:any, result:any) => {
+                if (err) {
+                    console.log(err);
+                    reject(err)
+                } else {
+                   resolve(result)
+                }
+            })  
+       })
     }
 
 }

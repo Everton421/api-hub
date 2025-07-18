@@ -148,7 +148,75 @@ export class pedidoController{
         }
 
     }
- 
+  
+    async selectTotais( req:Request,res:Response){
+      let selectOrcamento = new SelectPedido();
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+         } 
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+            empresa= `\`${empresa}\``;
+         
+     if(!req.query.vendedor)  return res.status(400).json({erro:`é necessario informar o vendedor`});
+      let vendedor = Number(req.query.vendedor);
 
+            try{
+                let result = await selectOrcamento.totaisMedia(empresa, vendedor )
+                    return res.status(200).json(result);
+                } catch(e){
+              return res.status(500).json({ error: "Erro interno ao buscar os dados dos orcamentos." });
+            }
+    }
+
+       async selectUltimosInseridos( req:Request,res:Response){
+      let selectOrcamento = new SelectPedido();
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+         } 
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+            empresa= `\`${empresa}\``;
+         
+     if(!req.query.vendedor)  return res.status(400).json({erro:`é necessario informar o vendedor`});
+      let vendedor = Number(req.query.vendedor);
+      
+      let limit = 7;
+
+        if(req.query.limit){
+            limit = Number(req.query.limit)
+            }   
+
+            try{
+                let result = await selectOrcamento.ultimosInseridos(empresa, vendedor, limit)
+                    return res.status(200).json(result);
+                } catch(e){
+              return res.status(500).json({ error: "Erro interno ao buscar os dados dos orcamentos." });
+            }
+    }
+
+
+    
+       async selectTotaiPorData( req:Request,res:Response){
+      let selectOrcamento = new SelectPedido();
+        if(!req.headers.token ){
+            return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+         } 
+         let decodToken= DecodedToken(String(req.headers.token))
+         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+            empresa= `\`${empresa}\``;
+         
+     if(!req.query.vendedor)  return res.status(400).json({erro:`é necessario informar o vendedor`});
+      let vendedor = Number(req.query.vendedor);
+      
+         
+
+            try{
+                let result = await selectOrcamento.totalPedidosAgrupData(empresa, vendedor )
+                    return res.status(200).json(result);
+                } catch(e){
+              return res.status(500).json({ error: "Erro interno ao buscar os dados dos orcamentos." });
+            }
+    }
 
 }

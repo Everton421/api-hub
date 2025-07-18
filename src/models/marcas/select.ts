@@ -114,7 +114,7 @@ export class Select_Marcas{
 
 
 
- async novaBusca(empresa: string, query:any):Promise<marca[]> {
+    async novaBusca(empresa: string, query:any):Promise<marca[]> {
 
         let {
             codigo,
@@ -195,5 +195,7 @@ export class Select_Marcas{
             // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
         }
     }
+
+    
 
 }

@@ -103,6 +103,13 @@ import { SelectPedido } from "./models/pedido/selectPedido";
  router.post(`${versao}/pedidos`,       AuthMiddleware, new pedidoController().insert)
  router.get(`${versao}/pedidos/vendas`, AuthMiddleware,   new pedidoNextController().findByParam)
  router.get(`${versao}/pedido`,         AuthMiddleware, new pedidoNextController().findCompleteOrderByCode)
+
+ router.get(`${versao}/pedidos_totais`,    AuthMiddleware, new pedidoController().selectTotais )
+ router.get(`${versao}/pedidos_ultimos_inseridos`,    AuthMiddleware, new pedidoController().selectUltimosInseridos )
+ router.get(`${versao}/pedidos_totais_por_data`,    AuthMiddleware, new pedidoController().selectTotaiPorData )
+
+
+
  ////////
 
   router.post(`${versao}/enviar_codigo`,   new EnvioCodigoValidador().main);
