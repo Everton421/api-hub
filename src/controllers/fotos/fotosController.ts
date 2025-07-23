@@ -3,6 +3,7 @@ import { Select_fotos } from "../../models/fotos/select";
 import { Delete_fotos } from "../../models/fotos/delete";
 import { Insert_fotos } from "../../models/fotos/insert";
 import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DateService } from "../../services/dateService";
 
 export class fotosController{
 
@@ -37,6 +38,7 @@ export class fotosController{
         const select = new Select_fotos();
         const deletar  = new Delete_fotos();
         const insert = new Insert_fotos();
+      const dateService = new DateService();
 
         if(!req.headers.token ){
             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
@@ -58,10 +60,22 @@ export class fotosController{
                         await deletar.delete(dbName,codigo_produto);
                     
                         for(let i of dados ){
+                            if( !i.data_cadastro || i.data_cadastro === null ){
+                              i.data_cadastro = dateService.obterDataAtual();
+                           }
+                            if( !i.data_recadastro || i.data_recadastro === null ){
+                              i.data_recadastro = dateService.obterDataAtual();
+                           }
                             await insert.cadastrar(dbName,i )
                         }
                       }else{
                         for(let i of dados ){
+                           if( !i.data_cadastro || i.data_cadastro === null ){
+                              i.data_cadastro = dateService.obterDataAtual();
+                           }
+                            if( !i.data_recadastro || i.data_recadastro === null ){
+                              i.data_recadastro = dateService.obterDataAtual();
+                           }
                             await insert.cadastrar(dbName,i )
                         }
                       }
