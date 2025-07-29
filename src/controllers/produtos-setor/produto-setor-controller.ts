@@ -214,15 +214,20 @@ async updateSaldo(req:Request,res:Response){
                         }catch(e){
                         }
                               let prodSector = verifyItem[0];
-                               if( verifyItem && new Date(i.data_recadastro) >  new Date(prodSector.data_recadastro)){
-                                   let aux = await insert.insertUpateProdutoSetor(dbName,i)
-                                   console.log(aux)
+                              if( verifyItem.length > 0){
+                                  if(  new Date(i.data_recadastro) >  new Date(prodSector.data_recadastro)){
+                                console.log('atualizando saldo')
+
+                                    let aux = await insert.upateProdutoSetor(dbName,i)
                                    if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
-                                  }else{
-                                     let aux = await insert.insertUpateProdutoSetor(dbName,i)
-                                     console.log(aux)
+                                }  
+                              }else{
+                                console.log('registrando item')
+
+                                let aux = await insert.cadastrarProdutoSetor(dbName,i)
                                    if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
-                                }
+                              }
+                              
                          
                             return res.status(200).json({ok:true, itens: updatedItens})
                     }
