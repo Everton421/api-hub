@@ -133,107 +133,6 @@ async findBysProdSector(req:Request,res:Response){
 }
 }
 
- 
-
-
-async insert(req:Request,res:Response){
-    if(!req.headers.token ){
-      return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
-   } 
-   let decodToken= DecodedToken(String(req.headers.token))
-   let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
-
-  let  dbName = `\`${empresa}\``;
-  let produtos:ProdutoBanco[]
-
-    let select = new Select_produtos();
-    let insert = new InsertProdutos();
-    let dateService = new DateService();
-
-
-          if(!req.body.id)    req.body.id = 0 
-          if(!req.body.preco)    req.body.preco = 0 
-          if(!req.body.estoque)    req.body.estoque = 0 
-
-          if(!req.body.descricao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
-          if(!req.body.num_fabricante)   req.body.num_fabricante =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
-          if(!req.body.num_original)     req.body.num_original =''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
-          
-          if(!req.body.grupo || !req.body.grupo.codigo ) req.body.grupo =  { "codigo":0} ; 
-          if(!req.body.marca || !req.body.marca.codigo ) req.body.marca  = { "codigo":0}; 
-
-          if(!req.body.origem) req.body.origem = 0;     
-          if(!req.body.sku)              req.body.sku =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o sku  para registrar o produto!"});
-          if (!req.body.ativo)   req.body.ativo = 'S'     // return res.status(200).json({ erro:true, msg: "É necessario informar o status do produto !"});
-          if (!req.body.class_fiscal) req.body.class_fiscal= '0000.00.00'    //return res.status(200).json({ erro:true, msg: "É necessario informar o ncm  para registrar o produto!"});
-          if (!req.body.cst) req.body.cst='00'   //return res.status(200).json({ erro:true, msg: "É necessario informar  cst para registrar o produto!"});
-          if(!req.body.tipo) req.body.tipo = 0
-          if(!req.body.data_cadastro ) req.body.data_cadastro = dateService.obterDataAtual(); 
-          if(!req.body.data_recadastro ) req.body.data_recadastro = dateService.obterDataHoraAtual();
-
-          if(!req.body.observacoes1) req.body.observacoes1 =  ""
-          if(!req.body.observacoes2) req.body.observacoes2 = "" 
-          if(!req.body.observacoes3) req.body.observacoes3 = "" 
-
-          let produto =  {
-            "codigo"          : req.body.codigo,
-            "id"              : req.body.id,
-            "estoque"         : req.body.estoque,
-            "preco"           : req.body.preco,
-            "grupo"           : req.body.grupo.codigo,
-            "origem"          : req.body.origem,
-            "descricao"       : req.body.descricao,
-            "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
-            "num_original"    : req.body.num_original,   //referencia 
-            "sku"             : req.body.sku,
-            "marca"           : req.body.marca.codigo,
-            "ativo"           : req.body.ativo,
-            "class_fiscal"    : req.body.class_fiscal,
-            "cst"             : req.body.cst,
-            "data_recadastro" : req.body.data_recadastro,
-            "data_cadastro"   : req.body.data_cadastro,
-            "observacoes1"    : req.body.observacoes1,
-            "observacoes2"    : req.body.observacoes2,
-            "observacoes3"    : req.body.observacoes3,
-            "tipo"            : req.body.tipo 
-          }   
-    
-      try{
-            let resultinsertId:any = await insert.insert(dbName, produto);
-              return res.status(200).json(
-                {
-                "codigo": resultinsertId.insertId,
-                "id"              : req.body.id,
-                "estoque"         : req.body.estoque,
-                "preco"           : req.body.preco,
-                "grupo"           : req.body.grupo,
-                "origem"          : req.body.origem,
-                "descricao"       : req.body.descricao,
-                "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
-                "num_original"    : req.body.num_original,   //referencia 
-                "sku"             : req.body.sku,
-                "marca"           : req.body.marca,
-                "ativo"           : req.body.ativo,
-                "class_fiscal"    : req.body.class_fiscal,
-                "cst"             : req.body.cst,
-                "data_recadastro" : req.body.data_recadastro,
-                "data_cadastro"   : req.body.data_cadastro,
-                "observacoes1"    : req.body.observacoes1,
-                "observacoes2"    : req.body.observacoes2,
-                "observacoes3"    : req.body.observacoes3,
-                "tipo"            : req.body.tipo 
-              })
-            
-              
-          }catch(e){
-            return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao cadastrar o produto!`});
-
-          }
-
-  
-  }
-
-
 
 async updateSaldo(req:Request,res:Response){
   if(!req.headers.token ){
@@ -288,6 +187,50 @@ async updateSaldo(req:Request,res:Response){
  
 }
 
+  async updateOffline(req:Request,res:Response){
+      if(!req.headers.token ){
+          return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+      } 
+      let decodToken= DecodedToken(String(req.headers.token))
+      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      
+      let  dbName = `\`${empresa}\``;
+
+        let update = new UpdateProdutoSetor();
+        let insert = new InsertProdutoSetor();
+        let select = new SelectProdutoSetor();
+        
+      const dateService = new DateService();
+        if(Array.isArray(req.body)   ){
+          if(req.body.length > 0 ){
+
+              let dados:IProdutoSetor[] = req.body;
+
+                for( let i of dados){
+                    let updatedItens = []
+                     let verifyItem: IProdutoSetor[]=[];
+                        try{
+                            verifyItem = await select.findByProdSector(dbName, i.produto, i.setor);
+                        }catch(e){
+                        }
+                              let prodSector = verifyItem[0];
+                               if( verifyItem && new Date(i.data_recadastro) >  new Date(prodSector.data_recadastro)){
+                                   let aux = await insert.insertUpateProdutoSetor(dbName,i)
+                                   console.log(aux)
+                                   if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
+                                  }else{
+                                     let aux = await insert.insertUpateProdutoSetor(dbName,i)
+                                     console.log(aux)
+                                   if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
+                                }
+                         
+                            return res.status(200).json({ok:true, itens: updatedItens})
+                    }
+               }
+           } else{
+          return res.status(400).json({erro:true, msg:"É necessario que seja fornecido um array com os itens a serem atualizados!"});   
+           }
+      }
 }
 
  
