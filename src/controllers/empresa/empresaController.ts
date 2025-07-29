@@ -276,6 +276,43 @@ export class CreateEmpresa {
         ativo  char(1) NOT NULL DEFAULT 'S',
        PRIMARY KEY ( codigo )
      ) ;
+     `,
+     `
+     CREATE TABLE  ${dbName}.produto_setor  (
+       setor  int(10) unsigned NOT NULL DEFAULT 0,
+       produto  int(10) unsigned NOT NULL DEFAULT 0,
+       estoque  float(15,6) NOT NULL DEFAULT 0.000000,
+       local_produto  varchar(20) DEFAULT '',
+       local1_produto  varchar(20) DEFAULT '',
+       local2_produto  varchar(20) DEFAULT '',
+       local3_produto  varchar(20) DEFAULT '',
+       local4_produto  varchar(20) DEFAULT '',
+       data_recadastro  datetime DEFAULT NULL,
+      PRIMARY KEY (setor , produto) USING BTREE,
+      KEY PRODUTO (produto,setor) USING BTREE
+     ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC COMMENT='Produtos do Setor';
+     `,
+     `
+      CREATE TABLE ${dbName}.setores (
+         codigo  int(11) NOT NULL AUTO_INCREMENT,
+         descricao  text NOT NULL,
+         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+         data_recadastro  datetime DEFAULT NULL,
+        PRIMARY KEY (codigo)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+     `,
+     `
+     CREATE TABLE ${dbName}.movimentos_produtos (
+       codigo int(11) NOT NULL AUTO_INCREMENT,,
+       setor int(10) DEFAULT 0,
+       produto int(10) DEFAULT 0,
+       quantidade varchar(255) DEFAULT '0',
+       tipo varchar(255) DEFAULT 'A' COMMENT 'A=acerto',
+       historico varchar(255) DEFAULT NULL,
+       data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
+      PRIMARY KEY (codigo)
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
      `
     ];
 

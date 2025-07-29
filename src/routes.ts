@@ -19,6 +19,9 @@ import { fotosController } from "./controllers/fotos/fotosController";
 import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextController";
 import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware"; 
 import { SelectPedido } from "./models/pedido/selectPedido";
+import { ProdutoSetorController } from "./controllers/produtos-setor/produto-setor-controller";
+import { SetorController } from "./controllers/setor/setor-controller";
+import { MovimentosProdutosController } from "./controllers/movimentos-produtos/movimentos-produtos-controller";
 
   const crypt = require('crypt');
   const router = Router();
@@ -109,6 +112,19 @@ import { SelectPedido } from "./models/pedido/selectPedido";
  router.get(`${versao}/pedidos_totais_por_data`,    AuthMiddleware, new pedidoController().selectTotaiPorData )
 
 
+ router.get(`${versao}/produto_setor/:produto`,   AuthMiddleware, new ProdutoSetorController().findByCode)//ok
+ router.get( `${versao}/produto_setor`,           AuthMiddleware, new ProdutoSetorController().findBysProdSector)
+ router.post(`${versao}/produto_setor`,            AuthMiddleware, new ProdutoSetorController().updateSaldo)//ok
+ router.get( `${versao}/offline/produto_setor`,           AuthMiddleware, new ProdutoSetorController().findAll)
+
+ router.get( `${versao}/offline/setores`,  AuthMiddleware, new SetorController().findAll)
+ router.put( `${versao}/setores`,  AuthMiddleware, new SetorController().update)
+ router.post( `${versao}/setores`,  AuthMiddleware, new SetorController().insert)
+
+ router.get( `${versao}/offline/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().findAll)
+ //router.put( `${versao}/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().update)
+ router.post( `${versao}/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().insert)
+ router.get( `${versao}/movimentos_produtos`,           AuthMiddleware, new MovimentosProdutosController().findByParam)
 
  ////////
 
