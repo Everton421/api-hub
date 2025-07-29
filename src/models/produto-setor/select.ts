@@ -144,14 +144,12 @@ export class SelectProdutoSetor{
     }
  async   findByProdSector(empresa:any,  produto:number, setor:number )   {
         return new Promise <IProdutoSetor[]> ( async ( resolve , reject ) =>{
-            
             let sql = ` select 
             *,
                  coalesce( DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
-            from ${empresa}.produto_setor where produto = ?  and setor = ? `
+            from ${empresa}.produto_setor where produto = ${produto}  and setor = ${setor} `
     
-             
-            await conn.query(sql, [produto,setor], (err:any, result:IProdutoSetor[] )=>{
+            await conn.query(sql , (err:any, result:IProdutoSetor[] )=>{
                 if (err)  reject(err); 
                   resolve(result)
             })

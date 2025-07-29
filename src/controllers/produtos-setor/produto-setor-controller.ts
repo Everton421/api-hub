@@ -205,32 +205,34 @@ async updateSaldo(req:Request,res:Response){
           if(req.body.length > 0 ){
 
               let dados:IProdutoSetor[] = req.body;
+                //console.log(req.body)
 
-                for( let i of dados){
                     let updatedItens = []
+               
+                for( let i of dados){
                      let verifyItem: IProdutoSetor[]=[];
-                        try{
+                     
                             verifyItem = await select.findByProdSector(dbName, i.produto, i.setor);
-                        }catch(e){
-                        }
+                          
                               let prodSector = verifyItem[0];
                               if( verifyItem.length > 0){
-                                  if(  new Date(i.data_recadastro) >  new Date(prodSector.data_recadastro)){
-                                console.log('atualizando saldo')
+                                  if(  new Date(i.data_recadastro) >  new Date(prodSector.data_recadastro) ){
+                                        console.log( new Date(i.data_recadastro) ,' > ', new Date(prodSector.data_recadastro) )
+                                       console.log(`atualizando saldo do produto : ${i.produto} saldo: ${i.estoque} ` )
 
-                                    let aux = await insert.upateProdutoSetor(dbName,i)
-                                   if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
+                                     let aux = await insert.upateProdutoSetor(dbName,i)
+                                    if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
                                 }  
                               }else{
-                                console.log('registrando item')
+                                console.log(`registrando produto : ${i.produto}`)
 
-                                let aux = await insert.cadastrarProdutoSetor(dbName,i)
-                                   if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
+                                 let aux = await insert.cadastrarProdutoSetor(dbName,i)
+                                    if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
                               }
                               
-                         
-                            return res.status(200).json({ok:true, itens: updatedItens})
                     }
+                              return res.status(200).json({ok:true, itens: updatedItens})
+                    
                }
            } else{
           return res.status(400).json({erro:true, msg:"É necessario que seja fornecido um array com os itens a serem atualizados!"});   
