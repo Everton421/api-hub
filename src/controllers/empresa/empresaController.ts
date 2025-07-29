@@ -303,7 +303,7 @@ export class CreateEmpresa {
      `,
      `
      CREATE TABLE ${dbName}.movimentos_produtos (
-       codigo int(11) NOT NULL AUTO_INCREMENT,,
+       codigo int(11) NOT NULL AUTO_INCREMENT,
        setor int(10) DEFAULT 0,
        produto int(10) DEFAULT 0,
        quantidade varchar(255) DEFAULT '0',
