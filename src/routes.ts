@@ -131,6 +131,7 @@ import { MovimentosProdutosController } from "./controllers/movimentos-produtos/
  //router.put( `${versao}/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().update)
  router.post( `${versao}/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().insert)
  router.get( `${versao}/movimentos_produtos`,           AuthMiddleware, new MovimentosProdutosController().findByParam)
+ router.post( `${versao}/offline/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().updateOffline )
 
  ////////
 

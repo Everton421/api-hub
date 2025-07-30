@@ -13,7 +13,7 @@ type OkPacket = {
 }
 export class InsertMovimentosProdutos{
 
-    async insertMovimentos( empresa:string, movimentoProduto:Partial<IMovimentosProdutos> ){
+    async insertMovimentosAutoIncrement( empresa:string, movimentoProduto:Partial<IMovimentosProdutos> ) :Promise<OkPacket>{
         return new Promise( async (resolve, reject )=>{
             
             let sql = `
@@ -47,6 +47,45 @@ export class InsertMovimentosProdutos{
             })  
         })
     }
+    async insertMovimentos( empresa:string, movimentoProduto:Partial<IMovimentosProdutos> ) :Promise<OkPacket>{
+        return new Promise( async (resolve, reject )=>{
+            
+            let sql = `
+                    INSERT INTO ${empresa}.movimentos_produtos (  
+                    codigo,
+                        setor,
+                        produto,
+                        quantidade,
+                        tipo,
+                        historico,
+                        data_recadastro ,
+                        usuario
+                    ) VALUES
+                            ( ? , ? , ? , ? , ?, ?, ?, ? ); `;
+            const values = [  
+                        movimentoProduto.codigo,
+                        movimentoProduto.setor,
+                        movimentoProduto.produto,
+                        movimentoProduto.quantidade,
+                        movimentoProduto.tipo,
+                        movimentoProduto.historico,
+                        movimentoProduto.data_recadastro,
+                        movimentoProduto.usuario,
+             ]
+
+            await conn.query( sql , values,(err:any, result:any )=>{
+                if(err){
+                    console.log(err)
+                    reject(err);
+                }else{
+                    resolve(result);
+                }
+            })  
+        })
+    }
+
+
+
 
       /*async insertUpateMovimentos( empresa:string, produtoSetor:IMovimentosProdutos ):Promise<OkPacket>{
         return new Promise( async (resolve, reject )=>{

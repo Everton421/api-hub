@@ -127,7 +127,7 @@ if(!req.body.historico  ){
   
   }
 
-  /*
+   
  async updateOffline(req:Request,res:Response){
     if(!req.headers.token ){
       return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
@@ -145,11 +145,21 @@ if(!req.body.historico  ){
             if(req.body.length > 0 ){
         
                let dados:IMovimentosProdutos[] = req.body;
+                let  itensProcessados = []
+
+
                 for( let i of dados){
                   let verifyItem: IMovimentosProdutos[]=[];
-                       verifyItem = await select.findByProdSector(dbName, i.produto, i.setor);
-                
+                  i.produto, i.setor
+                       verifyItem = await select.findByParam(dbName, { codigo: i.codigo, usuario:i.usuario});
+                        if( verifyItem.length > 0 ){
+                          console.log(` o movimento: ${i.codigo} ja foi registrado  `)
+                        } else{
+                           let result  = await insert.insertMovimentos(dbName, i);
+                              if(result.insertId > 0 ) itensProcessados.push({movimento: result.insertId}) 
+                        }
                 }
+               return res.status(200).json({ok:true, itens: itensProcessados})
 
           }
         
@@ -185,7 +195,7 @@ if(!req.body.historico  ){
 
   
   }
-  */
+ 
 
 }
 

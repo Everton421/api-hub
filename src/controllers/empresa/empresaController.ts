@@ -303,15 +303,15 @@ export class CreateEmpresa {
      `,
      `
      CREATE TABLE ${dbName}.movimentos_produtos (
-       codigo int(11) NOT NULL AUTO_INCREMENT,
+       codigo int(11) NOT NULL DEFAULT 0,
        setor int(10) DEFAULT 0,
        produto int(10) DEFAULT 0,
        quantidade varchar(255) DEFAULT '0',
        tipo varchar(255) DEFAULT 'A' COMMENT 'A=acerto',
-       usuario int(10) DEFAULT 0,
        historico varchar(255) DEFAULT NULL,
        data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
-      PRIMARY KEY (codigo)
+       usuario int(10) NOT NULL DEFAULT 0,
+      PRIMARY KEY (codigo,usuario)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
      `
