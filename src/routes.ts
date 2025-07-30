@@ -116,7 +116,7 @@ import { MovimentosProdutosController } from "./controllers/movimentos-produtos/
  router.get( `${versao}/produto_setor`,           AuthMiddleware, new ProdutoSetorController().findBysProdSector)
  router.post(`${versao}/produto_setor`,            AuthMiddleware, new ProdutoSetorController().updateSaldo)//ok
  router.get( `${versao}/offline/produto_setor`,           AuthMiddleware, new ProdutoSetorController().findAll)
- 
+
  /**
   * processa dados dos produtos nos setores
   */

@@ -7,5 +7,6 @@ export interface IMovimentosProdutos{
     quantidade:string
     tipo:string
     historico:string
-    data_recadastro:string 
+    data_recadastro:string,
+    usuario:number
 }

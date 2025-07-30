@@ -23,10 +23,10 @@ export class InsertMovimentosProdutos{
                         quantidade,
                         tipo,
                         historico,
-                        data_recadastro  
-                    
+                        data_recadastro ,
+                        usuario
                     ) VALUES
-                            ( ? , ? , ? , ?, ?, ? ); `;
+                            ( ? , ? , ? , ?, ?, ?, ? ); `;
             const values = [  
                         movimentoProduto.setor,
                         movimentoProduto.produto,
@@ -34,6 +34,7 @@ export class InsertMovimentosProdutos{
                         movimentoProduto.tipo,
                         movimentoProduto.historico,
                         movimentoProduto.data_recadastro,
+                        movimentoProduto.usuario,
              ]
 
             await conn.query( sql , values,(err:any, result:any )=>{

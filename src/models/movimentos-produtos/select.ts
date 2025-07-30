@@ -8,11 +8,18 @@ type query = {
     tipo:string
     historico:string
     data_recadastro:string
-     codigo :number
+     codigo :number,
+    usuario:number
+
+}
+
+type queryAll= {
+    data_recadastro:string
+    usuario?:number
 }
 export class SelectMovimentosProdutos{
     
-    async   findAll(empresa:any, data_recadastro:string )   {
+    async   findAll(empresa:any, query:queryAll )   {
         return new Promise <IMovimentosProdutos[]> ( async ( resolve , reject ) =>{
             
             let sql = ` select 
@@ -22,15 +29,24 @@ export class SelectMovimentosProdutos{
     
                 let paramQuery =[];
                 let valueQuery=[];
-            if(data_recadastro){
-                paramQuery.push( ' WHERE data_recadastro >  ? ')
-                valueQuery.push(data_recadastro);
+             if( query.usuario && query.usuario !== 0  ){
+                paramQuery.push( ' usuario = ? ')
+                valueQuery.push(query.usuario)
+             }
+
+
+            if(query.data_recadastro && query.data_recadastro !== '' ){
+                paramQuery.push( ' data_recadastro >  ? ')
+                valueQuery.push(query.data_recadastro);
             }
-                let finalSql = sql;
-    
-                    if( paramQuery.length > 0 ){
-                        finalSql = sql + paramQuery;
-                    }
+            let whereClause = ` WHERE `;
+            
+             let finalSql = sql;
+
+            if(paramQuery.length > 0 ){
+                finalSql = sql + whereClause +  paramQuery.join(' AND ') 
+            }
+                  
             await conn.query(finalSql, valueQuery, (err:any, result:IMovimentosProdutos[] )=>{
                 if (err)  reject(err); 
                   resolve(result)
@@ -47,7 +63,8 @@ export class SelectMovimentosProdutos{
             tipo,
             historico,
             data_recadastro,
-            codigo
+            codigo,
+            usuario
             } = query;
     
             let baseSql = `
@@ -82,6 +99,10 @@ export class SelectMovimentosProdutos{
             if(tipo){
                 conditions.push(' tipo = ? ');
                 params.push(`${tipo}`)
+            }
+             if(usuario){
+                conditions.push(' usuario = ? ');
+                params.push( usuario )
             }
             if(historico){
                 conditions.push(' historico  like  ? ');
