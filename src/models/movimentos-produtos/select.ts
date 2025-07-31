@@ -10,6 +10,7 @@ type query = {
     data_recadastro:string
      codigo :number,
     usuario:number
+    ent_sai:string
 
 }
 
@@ -64,7 +65,8 @@ export class SelectMovimentosProdutos{
             historico,
             data_recadastro,
             codigo,
-            usuario
+            usuario,
+            ent_sai
             } = query;
     
             let baseSql = `
@@ -103,6 +105,10 @@ export class SelectMovimentosProdutos{
              if(usuario){
                 conditions.push(' usuario = ? ');
                 params.push( usuario )
+            }
+              if(ent_sai){
+                conditions.push(' ent_sai = ? ');
+                params.push( `${ent_sai}` )
             }
             if(historico){
                 conditions.push(' historico  like  ? ');

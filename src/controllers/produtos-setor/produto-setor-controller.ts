@@ -149,9 +149,7 @@ async updateSaldo(req:Request,res:Response){
  const dateService = new DateService();
 
         if(!req.body.produto)      return res.status(400).json({ erro:true, msg: "É necessario informar o codigo para atualizar o produto!"});
-
         if(!req.body.estoque)    req.body.estoque = 0 
-
          if(!req.body.setor)             return res.status(400).json({ erro:true, msg: "É necessario informar o codigo da marca para registrar o produto!"});
         if(!req.body.local_produto) req.body.local_produto ='';
         if(!req.body.local1_produto) req.body.local1_produto ='';
@@ -211,7 +209,11 @@ async updateSaldo(req:Request,res:Response){
                
                 for( let i of dados){
                      let verifyItem: IProdutoSetor[]=[];
-                     
+                            
+                            if(!i.setor) return res.status(400).json({erro:true, msg: "Não foi informado o setor "})
+                            if(!i.produto) return res.status(400).json({erro:true, msg: "Não foi informado o produto "})
+                            if(!i.estoque) return res.status(400).json({erro:true, msg: "Não foi informado o estoque "})
+
                             verifyItem = await select.findByProdSector(dbName, i.produto, i.setor);
                           
                               let prodSector = verifyItem[0];

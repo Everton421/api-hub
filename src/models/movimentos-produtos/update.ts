@@ -20,7 +20,7 @@ type OkPacket = {
     historico:string
     data_recadastro:string,
     usuario:number
-
+      ent_sai:string
     }
 export class UpdateMovimentos{
     
@@ -34,7 +34,8 @@ export class UpdateMovimentos{
                             produto ='${query.produto}',
                             historico = '${query.historico}',
                                tipo = '${query.tipo}',
-                               usurio=  ${query.usuario}
+                               usurio=  ${query.usuario},
+                               ent_sai = '${query.ent_sai}'
                             where codigo = ${query.codigo}    
                          `
                           await conn.query(sql,   (err:any, result:OkPacket )=>{

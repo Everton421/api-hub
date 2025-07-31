@@ -5,7 +5,7 @@ import { SelectMovimentosProdutos } from "../../models/movimentos-produtos/selec
 import { IMovimentosProdutos } from "../../models/movimentos-produtos/types/movimentos_produtos";
 import { InsertMovimentosProdutos } from "../../models/movimentos-produtos/insert";
  
-
+type newMoviment = Omit<IMovimentosProdutos ,'codigo'>
 export class MovimentosProdutosController{
  
 
@@ -88,21 +88,28 @@ async insert(req:Request,res:Response){
    let insert = new InsertMovimentosProdutos();
    let dateService = new DateService();
 
+if(!req.body.codigo) return res.status(400).json({ erro:true, msg: "é necessario informar o codigo para registrar  movimento!"}); 
 if(!req.body.setor) return res.status(400).json({ erro:true, msg: "é necessario informar um setor para registrar o movimento!"}); 
 if(!req.body.produto) return res.status(400).json({ erro:true, msg: "é necessario informar um produto para registrar o movimento! "}); 
 if(!req.body.quantidade) return res.status(400).json({ erro:true, msg: "é necessario informar a quantidade para registrar o movimento! "}); 
-if(!req.body.tipo) return res.status(400).json({ erro:true, msg: "é necessario informar o tipo para registrar o movimento! "}); 
+if(!req.body.ent_sai)   return res.status(400).json({ erro:true, msg: "é necessario informar se o movimento é do tipo saida = ent_sai:S ou  entrada = ent_sai:E "}); 
+if(!req.body.tipo) return res.status(400).json({ erro:true, msg: "é necessario informar o tipo do movimento para registrar o movimento! "}); 
+if(!req.body.usuario) return res.status(400).json({ erro:true, msg: "é necessario informar o usuario responsavel pelo movimento! "}); 
+
 if(!req.body.historico  ){
   req.body.historico =''
 }  
-          let movimento:Partial<IMovimentosProdutos> = 
-           {
+          let movimento: IMovimentosProdutos  = 
+           {  
+            codigo:req.body.codigo,
              setor: req.body.setor,
              produto: Number(req.body.produto),
              quantidade: String(req.body.quantidade),
              tipo: String(req.body.tipo),
              historico: String(req.body.historico),
-             data_recadastro: dateService.obterDataHoraAtual()
+             data_recadastro: dateService.obterDataHoraAtual(),
+             ent_sai: req.body.ent_sai,
+             usuario: req.body.usuario
           }   
     
       try{
@@ -146,53 +153,31 @@ if(!req.body.historico  ){
         
                let dados:IMovimentosProdutos[] = req.body;
                 let  itensProcessados = []
-
-
                 for( let i of dados){
+                    if(!i.codigo )  return res.status(400).json({ erro:true, msg: "nao foi informado o codigo do movimento"})   
+                    if(!i.setor)    return res.status(400).json({ erro:true, msg:"nao foi informado o  setor relacionado ao movimento"})
+                    if(!i.produto ) return res.status(400).json({ erro:true, msg:"nao foi informado o produto  relacionado ao movimento"})
+                    if(!i.tipo)     return res.status(400).json({ erro:true, msg:"nao foi informado tipo do movimento"})
+                    if(!i.ent_sai ) return res.status(400).json({ erro:true, msg:"nao foi informado o parametro que indica se é uma entrada ou saida  ( ent_sai:'E'|'S' )  do  movimento"})
+                    if(!i.historico ) i.historico = '';
+
                   let verifyItem: IMovimentosProdutos[]=[];
                   i.produto, i.setor
+
                        verifyItem = await select.findByParam(dbName, { codigo: i.codigo, usuario:i.usuario});
                         if( verifyItem.length > 0 ){
-                          console.log(` o movimento: ${i.codigo} ja foi registrado  `)
+                           console.log(` o movimento: ${i.codigo} ja foi registrado  `)
                         } else{
                            let result  = await insert.insertMovimentos(dbName, i);
                               if(result.insertId > 0 ) itensProcessados.push({movimento: result.insertId}) 
                         }
                 }
                return res.status(200).json({ok:true, itens: itensProcessados})
-
           }
         
-        }
-          let movimento:Partial<IMovimentosProdutos> = 
-           {
-             setor: req.body.setor,
-             produto: Number(req.body.produto),
-             quantidade: String(req.body.quantidade),
-             tipo: String(req.body.tipo),
-             historico: String(req.body.historico),
-             data_recadastro: dateService.obterDataHoraAtual()
-          }   
-    
-      try{
-            let resultinsertId:any = await insert.insertMovimentos(dbName, movimento);
-              return res.status(200).json(
-                {
-                  codigo:resultinsertId.insertId,
-                  setor: movimento.setor,
-                  produto: movimento.produto,
-                  quantidade: movimento.quantidade,
-                  tipo: movimento.tipo,
-                  historico: movimento.historico,
-                  data_recadastro: movimento.data_recadastro,
-              })
-            
-              
-          }catch(e){
-            return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao registrar o movimento!`});
-
-          }
-
+        }else{
+          return res.status(400).json({erro:true, msg:"É necessario que seja fornecido um array com os itens a serem atualizados!"});   
+           }
   
   }
  

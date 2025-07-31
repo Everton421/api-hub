@@ -312,6 +312,7 @@ export class CreateEmpresa {
        historico  varchar(255) DEFAULT NULL,
        data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
        usuario  int(10) NOT NULL,
+       ent_sai  char(1) NOT NULL DEFAULT '',
       PRIMARY KEY ( id ),
       UNIQUE KEY  codigo  ( codigo , usuario )
     ) ENGINE=InnoDB   DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;

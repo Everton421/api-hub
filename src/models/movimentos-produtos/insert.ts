@@ -24,9 +24,10 @@ export class InsertMovimentosProdutos{
                         tipo,
                         historico,
                         data_recadastro ,
-                        usuario
+                        usuario,
+                        ent_sai
                     ) VALUES
-                            ( ? , ? , ? , ?, ?, ?, ? ); `;
+                            ( ? , ? , ? , ?, ?, ?, ? , ? ); `;
             const values = [  
                         movimentoProduto.setor,
                         movimentoProduto.produto,
@@ -35,6 +36,7 @@ export class InsertMovimentosProdutos{
                         movimentoProduto.historico,
                         movimentoProduto.data_recadastro,
                         movimentoProduto.usuario,
+                        movimentoProduto.ent_sai,
              ]
 
             await conn.query( sql , values,(err:any, result:any )=>{
@@ -52,16 +54,17 @@ export class InsertMovimentosProdutos{
             
             let sql = `
                     INSERT INTO ${empresa}.movimentos_produtos (  
-                    codigo,
+                        codigo,
                         setor,
                         produto,
                         quantidade,
                         tipo,
                         historico,
                         data_recadastro ,
-                        usuario
+                        usuario,
+                        ent_sai
                     ) VALUES
-                            ( ? , ? , ? , ? , ?, ?, ?, ? ); `;
+                            ( ? , ? , ? , ? , ?, ?, ?, ? , ? ); `;
             const values = [  
                         movimentoProduto.codigo,
                         movimentoProduto.setor,
@@ -71,6 +74,7 @@ export class InsertMovimentosProdutos{
                         movimentoProduto.historico,
                         movimentoProduto.data_recadastro,
                         movimentoProduto.usuario,
+                        movimentoProduto.ent_sai,
              ]
 
             await conn.query( sql , values,(err:any, result:any )=>{
