@@ -54,7 +54,9 @@ export class SetorController{
           if(!req.body.data_recadastro ){
               req.body.data_recadastro = dateService.obterDataHoraAtual();
           }
-
+      if(!req.body.data_cadastro ){
+              req.body.data_cadastro = dateService.obterDataAtual();
+          }
         let objInsert = { 
           codigo: req.body.codigo,
           descricao: req.body.descricao,
