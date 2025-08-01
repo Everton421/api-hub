@@ -309,6 +309,7 @@ export class CreateEmpresa {
        setor  int(10) DEFAULT 0,
        produto  int(10) DEFAULT 0,
        quantidade  varchar(255) DEFAULT '0',
+       unidade_medida varchar(255) NOT NULL DEFAULt 'UND',
        tipo  varchar(255) DEFAULT 'A' COMMENT 'A=acerto',
        historico  varchar(255) DEFAULT NULL,
        data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',

@@ -95,6 +95,7 @@ if(!req.body.quantidade) return res.status(400).json({ erro:true, msg: "é neces
 if(!req.body.ent_sai)   return res.status(400).json({ erro:true, msg: "é necessario informar se o movimento é do tipo saida = ent_sai:S ou  entrada = ent_sai:E "}); 
 if(!req.body.tipo) return res.status(400).json({ erro:true, msg: "é necessario informar o tipo do movimento para registrar o movimento! "}); 
 if(!req.body.usuario) return res.status(400).json({ erro:true, msg: "é necessario informar o usuario responsavel pelo movimento! "}); 
+ if(!req.body.unidade_medida )  req.body.unidade_medida = 'UND';
 
 if(!req.body.historico  ){
   req.body.historico =''
@@ -104,6 +105,7 @@ if(!req.body.historico  ){
             codigo:req.body.codigo,
              setor: req.body.setor,
              produto: Number(req.body.produto),
+             unidade_medida: req.body.unidade_medida,
              quantidade: String(req.body.quantidade),
              tipo: String(req.body.tipo),
              historico: String(req.body.historico),
@@ -119,6 +121,7 @@ if(!req.body.historico  ){
                   codigo:resultinsertId.insertId,
                   setor: movimento.setor,
                   produto: movimento.produto,
+                  unidade_medida: movimento.unidade_medida,
                   quantidade: movimento.quantidade,
                   tipo: movimento.tipo,
                   historico: movimento.historico,
@@ -160,6 +163,9 @@ if(!req.body.historico  ){
                     if(!i.tipo)     return res.status(400).json({ erro:true, msg:"nao foi informado tipo do movimento"})
                     if(!i.ent_sai ) return res.status(400).json({ erro:true, msg:"nao foi informado o parametro que indica se é uma entrada ou saida  ( ent_sai:'E'|'S' )  do  movimento"})
                     if(!i.historico ) i.historico = '';
+                    if(!i.codigo )  return res.status(400).json({ erro:true, msg: "nao foi informado o codigo do movimento"})   
+                    if(!i.unidade_medida ) i.unidade_medida = 'UND';
+
 
                   let verifyItem: IMovimentosProdutos[]=[];
                   i.produto, i.setor

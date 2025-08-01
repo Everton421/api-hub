@@ -21,17 +21,20 @@ export class InsertMovimentosProdutos{
                         setor,
                         produto,
                         quantidade,
+                        unidade_medida,
                         tipo,
                         historico,
                         data_recadastro ,
                         usuario,
                         ent_sai
                     ) VALUES
-                            ( ? , ? , ? , ?, ?, ?, ? , ? ); `;
+                            ( ? , ? , ? , ?, ?, ?, ? , ? , ?); `;
             const values = [  
+
                         movimentoProduto.setor,
                         movimentoProduto.produto,
                         movimentoProduto.quantidade,
+                        movimentoProduto.unidade_medida,
                         movimentoProduto.tipo,
                         movimentoProduto.historico,
                         movimentoProduto.data_recadastro,
@@ -58,18 +61,20 @@ export class InsertMovimentosProdutos{
                         setor,
                         produto,
                         quantidade,
+                        unidade_medida,
                         tipo,
                         historico,
                         data_recadastro ,
                         usuario,
                         ent_sai
                     ) VALUES
-                            ( ? , ? , ? , ? , ?, ?, ?, ? , ? ); `;
+                            ( ? , ? , ? , ? , ?, ?, ?, ? , ?, ? ); `;
             const values = [  
                         movimentoProduto.codigo,
                         movimentoProduto.setor,
                         movimentoProduto.produto,
                         movimentoProduto.quantidade,
+                        movimentoProduto.unidade_medida,
                         movimentoProduto.tipo,
                         movimentoProduto.historico,
                         movimentoProduto.data_recadastro,

@@ -16,6 +16,7 @@ type OkPacket = {
     setor:number
     produto:number
     quantidade:string
+    unidade_medida:string
     tipo:string
     historico:string
     data_recadastro:string,
@@ -32,6 +33,7 @@ export class UpdateMovimentos{
                             data_recadastro = '${query.data_recadastro}',
                             setor = '${query.setor}',
                             produto ='${query.produto}',
+                            unidade_medida = '${query.unidade_medida}',
                             historico = '${query.historico}',
                                tipo = '${query.tipo}',
                                usurio=  ${query.usuario},

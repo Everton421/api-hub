@@ -4,6 +4,7 @@ export interface IMovimentosProdutos{
     codigo:number
     setor:number
     produto:number
+    unidade_medida:string 
     ent_sai:string,
     quantidade:string
     tipo:string
