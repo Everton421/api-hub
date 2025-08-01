@@ -14,6 +14,7 @@ export class InsertProdutos{
                 descricao,
                 estoque,
                 grupo,
+                unidade_medida,
                 marca,
                 num_original,
                 origem,
@@ -29,6 +30,7 @@ export class InsertProdutos{
                              (
                             estoque ,
                             preco ,
+                            unidade_medida,
                             grupo ,
                             origem ,
                             descricao ,
@@ -46,6 +48,7 @@ export class InsertProdutos{
                                 ) VALUES (
                                     ${estoque} ,
                                     ${preco} ,
+                                    '${unidade_medida}',
                                     ${grupo} ,
                                     ${origem} ,
                                     '${descricao}',
@@ -63,7 +66,6 @@ export class InsertProdutos{
                                   )
                             `;
 
-                let dados = [   estoque , preco ,  grupo , origem ,  descricao ,  num_fabricante ,   num_original , sku ,  marca ,  class_fiscal , data_cadastro , data_recadastro ,  tipo, observacoes1, observacoes2, observacoes3 ]
                             await conn.query(sql,   (err:any, result:any )=>{
                                 if(err){
                                      console.log(err)

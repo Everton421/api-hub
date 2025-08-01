@@ -6,6 +6,7 @@ export type ProdutoBanco =
         codigo:number, 
         estoque:number,
         preco:number,
+        unidade_medida:string, 
         grupo:number,
         origem:number,
         descricao:string, 
@@ -29,6 +30,7 @@ export type ProdutoCompleto =
         codigo:number, 
         estoque:number,
         preco:number,
+        unidade_medida:string 
         grupo: categoria | {},
         origem:number,
         descricao:string, 

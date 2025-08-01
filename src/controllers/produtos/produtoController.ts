@@ -62,7 +62,7 @@ export class ProdutoController{
           if(!req.body.id)    req.body.id = 0 
           if(!req.body.preco)    req.body.preco = 0 
           if(!req.body.estoque)    req.body.estoque = 0 
-
+            if(!req.body.unidade_medida) req.body.unidade_medida = 'UND'
           if(!req.body.descricao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
           if(!req.body.num_fabricante)   req.body.num_fabricante =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
           if(!req.body.num_original)     req.body.num_original =''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
@@ -88,6 +88,7 @@ export class ProdutoController{
             "id"              : req.body.id,
             "estoque"         : req.body.estoque,
             "preco"           : req.body.preco,
+            "unidade_medida"  : req.body.unidade_medida,
             "grupo"           : req.body.grupo.codigo,
             "origem"          : req.body.origem,
             "descricao"       : req.body.descricao,
@@ -114,6 +115,7 @@ export class ProdutoController{
                 "id"              : req.body.id,
                 "estoque"         : req.body.estoque,
                 "preco"           : req.body.preco,
+                "unidade_medida"  : req.body.unidade_medida,
                 "grupo"           : req.body.grupo,
                 "origem"          : req.body.origem,
                 "descricao"       : req.body.descricao,
@@ -315,7 +317,7 @@ async update(req:Request,res:Response){
         if(!req.body.descricao)         return res.status(400).json({ erro:true, msg: "É necessario informar a descrição para registrar o produto!"});
         if(!req.body.num_fabricante)   req.body.num_fabricante =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
         if(!req.body.num_original)     req.body.num_original =''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
-        
+        if(!req.body.unidade_medida) req.body.unidade_medida = 'UND';
         if(!req.body.origem) req.body.origem = 0;     
         if(!req.body.sku)              req.body.sku =''  //return res.status(200).json({ erro:true, msg: "É necessario informar o sku  para registrar o produto!"});
         if (!req.body.ativo)   req.body.ativo = 'S'     // return res.status(200).json({ erro:true, msg: "É necessario informar o status do produto !"});
@@ -334,6 +336,7 @@ async update(req:Request,res:Response){
           "id"              : req.body.id,
           "estoque"         : req.body.estoque,
           "preco"           : req.body.preco,
+          "unidade_medida"  : req.body.unidade_medida,
           "grupo"           : req.body.grupo.codigo,
           "origem"          : req.body.origem,
           "descricao"       : req.body.descricao,
@@ -361,6 +364,7 @@ async update(req:Request,res:Response){
               "id"              : req.body.id,
               "estoque"         : req.body.estoque,
               "preco"           : req.body.preco,
+              "unidade_medida"  : req.body.unidade_medida,
               "grupo"           : req.body.grupo,
               "origem"          : req.body.origem,
               "descricao"       : req.body.descricao,

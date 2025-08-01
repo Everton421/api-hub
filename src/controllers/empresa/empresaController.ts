@@ -94,6 +94,7 @@ export class CreateEmpresa {
         id  int(10) unsigned NOT NULL DEFAULT 0,
         estoque  double DEFAULT 0,
         preco  double DEFAULT 0,
+        unidade_medida  varchar(255) DEFAULT 'UND',
         grupo  int(11) DEFAULT 0,
         origem  char(1) NOT NULL DEFAULT '0',
         descricao  varchar(255) NOT NULL DEFAULT '',
