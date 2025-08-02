@@ -105,8 +105,8 @@ export class CreateEmpresa {
         ativo  char(1) NOT NULL DEFAULT 'S',
         class_fiscal  varchar(255) NOT NULL DEFAULT '',
         cst  char(3) DEFAULT '00',
-        data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
-        data_cadastro  date NOT NULL DEFAULT '0000-00-00',
+         data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
         observacoes1  blob DEFAULT NULL,
         observacoes2  blob DEFAULT NULL,
         observacoes3  blob DEFAULT NULL,
@@ -120,8 +120,8 @@ export class CreateEmpresa {
           valor REAL DEFAULT 0,
           aplicacao TEXT NOT NULL,
           tipo_serv INTEGER DEFAULT 0,
-          data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-           data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+          data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
         ativo  char(1) NOT NULL DEFAULT 'S',
           PRIMARY KEY ( codigo)
     );`,
@@ -137,8 +137,8 @@ export class CreateEmpresa {
     cnpj  varchar(255) DEFAULT '',
     ativo  char(1) NOT NULL DEFAULT 'S',
     cidade  varchar(255) DEFAULT NULL,
-    data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-    data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+    data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+    data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
     vendedor  int(11) NOT NULL DEFAULT 0,
     bairro  varchar(255) DEFAULT NULL,
     estado  char(2) DEFAULT NULL,
@@ -152,8 +152,8 @@ export class CreateEmpresa {
         parcelas INTEGER DEFAULT 0,  
         intervalo INTEGER DEFAULT 0,  
         recebimento INTEGER DEFAULT 0,
-        data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-          data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+        data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
         ativo  char(1) NOT NULL DEFAULT 'S',
           PRIMARY KEY (codigo)
     );`,
@@ -174,8 +174,8 @@ export class CreateEmpresa {
          total_servicos  double DEFAULT 0,
          cliente  int(11) NOT NULL DEFAULT 0,
          veiculo  int(11) NOT NULL DEFAULT 0,
-         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-          data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+           data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
          tipo_os  int(11) DEFAULT 0,
          enviado  enum('N','S') NOT NULL DEFAULT 'S',
          tipo  int(11) NOT NULL DEFAULT 1, 
@@ -219,8 +219,8 @@ export class CreateEmpresa {
           codigo  int(11) NOT NULL AUTO_INCREMENT,
           id  int(10) unsigned NOT NULL DEFAULT 0,
           descricao TEXT NOT NULL,
-         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-          data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+        data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
         ativo  char(1) NOT NULL DEFAULT 'S',
          PRIMARY KEY ( codigo )
     );`,
@@ -235,8 +235,8 @@ export class CreateEmpresa {
         ano varchar(255) NOT NULL DEFAULT '',
         cor varchar(255) NOT NULL DEFAULT '',
         combustivel varchar(255) NOT NULL DEFAULT '',
-        data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-         data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+        data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
         ativo  char(1) NOT NULL DEFAULT 'S',
           PRIMARY KEY ( codigo )
     );`,
@@ -249,30 +249,30 @@ export class CreateEmpresa {
     );`,
 
       `CREATE TABLE IF NOT EXISTS ${dbName}.fotos_produtos(
-      produto int(10) unsigned NOT NULL DEFAULT 0,
-      sequencia  int(10) unsigned NOT NULL DEFAULT 0,
-      descricao  varchar(50) DEFAULT NULL,
+       produto int(10) unsigned NOT NULL DEFAULT 0,
+       sequencia  int(10) unsigned NOT NULL DEFAULT 0,
+       descricao  varchar(50) DEFAULT NULL,
        link  text NOT NULL,
-      foto  longblob DEFAULT NULL,
-      data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-       data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
+       foto  longblob DEFAULT NULL,
+       data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+       data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
          PRIMARY KEY ( produto ) 
       );`,
      ` CREATE TABLE  ${dbName}.categorias  (
-         codigo  int(11) NOT NULL AUTO_INCREMENT,
-         id  int(10) unsigned NOT NULL DEFAULT 0,
-         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-         data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
-         descricao  varchar(255) NOT NULL DEFAULT '',
-        ativo  char(1) NOT NULL DEFAULT 'S',
+          codigo  int(11) NOT NULL AUTO_INCREMENT,
+          id  int(10) unsigned NOT NULL DEFAULT 0,
+          data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+          data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+          descricao  varchar(255) NOT NULL DEFAULT '',
+          ativo  char(1) NOT NULL DEFAULT 'S',
         PRIMARY KEY ( codigo )
       ) ;
       `,
       ` CREATE TABLE  ${dbName}.marcas  (
         codigo  int(11) NOT NULL AUTO_INCREMENT,
         id  int(10) unsigned NOT NULL DEFAULT 0,
-        data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-        data_recadastro datetime DEFAULT '0000-00-00 00:00:00',
+        data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
         descricao  varchar(255) NOT NULL DEFAULT '',
         ativo  char(1) NOT NULL DEFAULT 'S',
        PRIMARY KEY ( codigo )
@@ -288,17 +288,19 @@ export class CreateEmpresa {
        local2_produto  varchar(20) DEFAULT '',
        local3_produto  varchar(20) DEFAULT '',
        local4_produto  varchar(20) DEFAULT '',
-       data_recadastro  datetime DEFAULT NULL,
-      PRIMARY KEY (setor , produto) USING BTREE,
+       data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+       PRIMARY KEY (setor , produto) USING BTREE,
       KEY PRODUTO (produto,setor) USING BTREE
      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC COMMENT='Produtos do Setor';
      `,
      `
       CREATE TABLE ${dbName}.setores (
          codigo  int(11) NOT NULL AUTO_INCREMENT,
+        id  varchar(255) NOT NULL DEFAULT '0',
          descricao  text NOT NULL,
-         data_cadastro  date NOT NULL DEFAULT '0000-00-00',
-         data_recadastro  datetime DEFAULT NULL,
+       data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+         ativo  char(1) NOT NULL DEFAULT 'S',
         PRIMARY KEY (codigo)
       ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
      `,
@@ -312,14 +314,34 @@ export class CreateEmpresa {
        unidade_medida varchar(255) NOT NULL DEFAULt 'UND',
        tipo  varchar(255) DEFAULT 'A' COMMENT 'A=acerto',
        historico  varchar(255) DEFAULT NULL,
-       data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
        usuario  int(10) NOT NULL,
        ent_sai  char(1) NOT NULL DEFAULT '',
       PRIMARY KEY ( id ),
       UNIQUE KEY  codigo  ( codigo , usuario )
     ) ENGINE=InnoDB   DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-
-     `
+     `,
+     `CREATE TABLE ${dbName}.locais (
+      codigo  int(11) NOT NULL AUTO_INCREMENT,
+      id  varchar(255) NOT NULL DEFAULT '0',
+      descricao  text NOT NULL,
+      setor  int(11) NOT NULL DEFAULT 0,
+      data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+      data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+      ativo  char(1) NOT NULL DEFAULT 'S',
+      PRIMARY KEY (codigo)
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+     `,
+     ` CREATE TABLE  ${dbName}.distribuicao_locais_setor  (    
+        produto  int(11) NOT NULL DEFAULT 0,
+        setor  int(11) NOT NULL DEFAULT 0,
+        unidade_medida varchar(255)  DEFAULT 'UND',
+        quantidade varchar(255) NOT NULL DEFAULT '0',
+         local int(11) NOT NULL DEFAULT 0,
+        data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' 
+  ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `
     ];
 
     let sql = ` create database if not exists  ${dbName}  ;  `;

@@ -22,6 +22,7 @@ import { SelectPedido } from "./models/pedido/selectPedido";
 import { ProdutoSetorController } from "./controllers/produtos-setor/produto-setor-controller";
 import { SetorController } from "./controllers/setor/setor-controller";
 import { MovimentosProdutosController } from "./controllers/movimentos-produtos/movimentos-produtos-controller";
+import { LocaisController } from "./controllers/locais/locais-controller";
 
   const crypt = require('crypt');
   const router = Router();
@@ -132,6 +133,11 @@ import { MovimentosProdutosController } from "./controllers/movimentos-produtos/
  router.post( `${versao}/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().insert)
  router.get( `${versao}/movimentos_produtos`,           AuthMiddleware, new MovimentosProdutosController().findByParam)
  router.post( `${versao}/offline/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().updateOffline )
+
+ ////////
+ router.get( `${versao}/locais`,  AuthMiddleware, new LocaisController().busca)
+ router.post( `${versao}/locais`,  AuthMiddleware, new LocaisController().insert)
+ router.put( `${versao}/locais`,  AuthMiddleware, new LocaisController().update)
 
  ////////
 

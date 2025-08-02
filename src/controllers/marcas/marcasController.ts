@@ -37,7 +37,7 @@ export class MarcasController{
                 return res.status(200).json(resultado)
      }catch(e){
         console.log("ocorreu um erro ao consultar as marcas", e)
-        return res.status(200).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
+        return res.status(400).json({erro:true, msg:"ocorreu um erro ao consultar as marcas"})
      }
    
          
