@@ -23,6 +23,8 @@ import { ProdutoSetorController } from "./controllers/produtos-setor/produto-set
 import { SetorController } from "./controllers/setor/setor-controller";
 import { MovimentosProdutosController } from "./controllers/movimentos-produtos/movimentos-produtos-controller";
 import { LocaisController } from "./controllers/locais/locais-controller";
+import { InsertDistribuicaoLocaisSetor } from "./models/distribuicao_locais_setor/insert";
+import { DistribuicaoController } from "./controllers/distribuicao-locais/distribuicao-controller";
 
   const crypt = require('crypt');
   const router = Router();
@@ -133,6 +135,10 @@ import { LocaisController } from "./controllers/locais/locais-controller";
  router.post( `${versao}/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().insert)
  router.get( `${versao}/movimentos_produtos`,           AuthMiddleware, new MovimentosProdutosController().findByParam)
  router.post( `${versao}/offline/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().updateOffline )
+
+ router.post(`${versao}/offline/distribuicao_locais_setor`,  AuthMiddleware, new DistribuicaoController().update)
+ router.get(`${versao}/offline/distribuicao_locais_setor`,  AuthMiddleware, new DistribuicaoController().findAll)
+ router.get(`${versao}/distribuicao_locais_setor`,  AuthMiddleware, new DistribuicaoController().findByParam)
 
  ////////
  router.get( `${versao}/locais`,  AuthMiddleware, new LocaisController().busca)

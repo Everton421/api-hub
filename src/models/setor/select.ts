@@ -32,7 +32,7 @@ export class SelectSetor{
          })
     }
 
-    async findByDescription(empresa: string, query:any): Promise<ISetor[]> {
+    async findByDescription(empresa: string, query:Partial<{ codigo:number, descricao:string, limit :number}>): Promise<ISetor[]> {
 
    
             let {

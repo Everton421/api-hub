@@ -4,6 +4,8 @@ import { DecodedToken } from "../../services/decodedToken/decodedToken";
 import { SelectMovimentosProdutos } from "../../models/movimentos-produtos/select";
 import { IMovimentosProdutos } from "../../models/movimentos-produtos/types/movimentos_produtos";
 import { InsertMovimentosProdutos } from "../../models/movimentos-produtos/insert";
+import { SelectSetor } from "../../models/setor/select";
+import { SelectLocais } from "../../models/locais/select";
  
 type newMoviment = Omit<IMovimentosProdutos ,'codigo'>
 export class MovimentosProdutosController{
@@ -36,7 +38,7 @@ export class MovimentosProdutosController{
                return res.status(200).json(movimentos);
           }catch(e){ 
                 console.error(e);
-              return res.status(500).json({ erro: "Erro ao buscar os movimentos dos produtos." });
+              return res.status(400).json({ erro: "Erro ao buscar os movimentos dos produtos." });
           }
   }
 
@@ -149,7 +151,7 @@ if(!req.body.historico  ){
    let insert = new InsertMovimentosProdutos();
    let select = new SelectMovimentosProdutos();
 
-   let dateService = new DateService();
+
 
       if(Array.isArray(req.body)   ){
             if(req.body.length > 0 ){
@@ -166,7 +168,7 @@ if(!req.body.historico  ){
                     if(!i.codigo )  return res.status(400).json({ erro:true, msg: "nao foi informado o codigo do movimento"})   
                     if(!i.unidade_medida ) i.unidade_medida = 'UND';
 
-
+             
                   let verifyItem: IMovimentosProdutos[]=[];
                   i.produto, i.setor
 
