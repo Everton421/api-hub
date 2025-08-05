@@ -43,7 +43,7 @@ export class ProdutoSetorController{
           }
   }
 
-
+/*
 async findByParam(req:Request,res:Response){
 
   if(!req.headers.token ){
@@ -72,7 +72,7 @@ async findByParam(req:Request,res:Response){
 
 
 }
-
+*/
 
 async findByCode(req:Request,res:Response){
 
