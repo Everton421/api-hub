@@ -129,6 +129,7 @@ import { DistribuicaoController } from "./controllers/distribuicao-locais/distri
  router.get( `${versao}/offline/setores`,  AuthMiddleware, new SetorController().findAll)
  router.put( `${versao}/setores`,  AuthMiddleware, new SetorController().update)
  router.post( `${versao}/setores`,  AuthMiddleware, new SetorController().insert)
+ router.get( `${versao}/setores`,  AuthMiddleware, new SetorController().findByParam)
 
  router.get( `${versao}/offline/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().findAll)
  //router.put( `${versao}/movimentos_produtos`,  AuthMiddleware, new MovimentosProdutosController().update)

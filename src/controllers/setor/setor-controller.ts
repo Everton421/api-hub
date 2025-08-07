@@ -6,6 +6,13 @@ import { UpdateSetor } from "../../models/setor/update";
 import { InsertSetor } from "../../models/setor/insert";
 import { DateService } from "../../services/dateService";
 
+type query = { 
+codigo:number,
+ descricao:string, 
+limit :number,
+id:number,
+ativo: 'S' | 'N'
+}
 
 export class SetorController{
 
@@ -113,6 +120,30 @@ export class SetorController{
          
                   }
           
-         }
-   
+       }
+    async findByParam(req:Request,res:Response){
+         
+      let select = new SelectSetor();
+         
+           if(!req.headers.token ){
+             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+          } 
+          let decodToken= DecodedToken(String(req.headers.token))
+          let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+             let  dbName = `\`${empresa}\``;
+       
+            let servicos;
+           
+              let query:Partial<query>  = req.query
+            try{
+               if( req.query   ){
+                   servicos =   await   select.findByDescription(dbName,  query)
+              }
+                return res.status(200).json(servicos);
+           }catch(e){ 
+                 console.error(e);
+               return res.status(400).json({ erro:true, msg: "Erro ao buscar os serviços." });
+           }
+       }
+       
 }

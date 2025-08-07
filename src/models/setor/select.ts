@@ -1,7 +1,13 @@
 import { conn } from "../../database/databaseConfig";
 import { ISetor } from "./types/setor";
 
-
+type query = { 
+codigo:number,
+ descricao:string, 
+limit :number,
+id:number,
+ativo: 'S' | 'N'
+}
 export class SelectSetor{
     
     async   findAll(empresa:any, data_recadastro:string )   {
@@ -32,13 +38,15 @@ export class SelectSetor{
          })
     }
 
-    async findByDescription(empresa: string, query:Partial<{ codigo:number, descricao:string, limit :number}>): Promise<ISetor[]> {
+    async findByDescription(empresa: string, query:Partial<query>): Promise<ISetor[]> {
 
    
             let {
                 codigo,
                 descricao,
                 limit ,
+                id,
+                ativo
             } = query;
     
             let baseSql = `
@@ -57,12 +65,21 @@ export class SelectSetor{
             }
     
             if (codigo) {
-                conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
+                conditions.push(" codigo = ? "); // Placeholder (?) para o parâmetro
                 params.push(codigo);          // Adiciona o valor ao array de parâmetros
             }
-            
+             if (id) {
+                conditions.push(" id = ? "); // Placeholder (?) para o parâmetro
+                params.push(id);          // Adiciona o valor ao array de parâmetros
+            }
+             if (ativo) {
+                conditions.push(" ativo = ? "); // Placeholder (?) para o parâmetro
+                params.push(ativo);          // Adiciona o valor ao array de parâmetros
+            }
+
+
             if (descricao) {
-                conditions.push("descricao LIKE ?");
+                conditions.push(" descricao LIKE ? ");
                 params.push(`%${descricao}%`);  
             }
             let whereClause = "";
