@@ -117,6 +117,22 @@ export class SelectSetor{
             }
        }
 
-  
+      async   findByCode(empresa:any, codigo:number ) : Promise<ISetor[]>  {
+        return new Promise <ISetor[]> ( async ( resolve , reject ) =>{
+            
+            let sql = ` select 
+            *,
+            coalesce( DATE_FORMAT(data_cadastro, '%Y-%m-%d') , '0000-00-00') AS data_cadastro,
+           coalesce( DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro   
+            from ${empresa}.setores where codigo = ? and ativo = 'S';`
+    
+           
+              
+            await conn.query(sql, codigo, (err:any, result:ISetor[] )=>{
+                if (err)  reject(err); 
+                  resolve(result)
+            })
+         })
+    }
 
 }

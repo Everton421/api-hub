@@ -167,6 +167,7 @@ import { DistribuicaoController } from "./controllers/distribuicao-locais/distri
  
  
  router.get(`${versao}/next/veiculos/:cliente`,          AuthMiddleware,  new VeiculoController().findByClient )
+ router.get( `${versao}/next/movimentos_produtos`,           AuthMiddleware, new MovimentosProdutosController().findCompleteByParam)
 
  
  

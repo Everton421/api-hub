@@ -188,6 +188,34 @@ if(!req.body.historico  ){
            }
   
   }
+
+  async findCompleteByParam(req:Request,res:Response){
+
+  if(!req.headers.token ){
+    return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
+ } 
+ let decodToken= DecodedToken(String(req.headers.token))
+ let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+ let  dbName = `\`${empresa}\``;
+
+        let select = new SelectMovimentosProdutos();
+        let responseProdutos;
+  try{
+  
+    if( req.query   ){
+      let aux   = req.query 
+      responseProdutos =   await   select.findCompleteByParam(dbName,  aux );
+        return res.status(200).json( responseProdutos );
+    }
+  }catch(e){ 
+    console.error(e);
+    return res.status(400).json({ erro: true, msg: "Erro ao buscar os movimentos." });
+  }
+
+
+}
+
+
  
 
 }
