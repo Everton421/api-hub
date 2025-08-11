@@ -290,11 +290,11 @@ export class SelectMovimentosProdutos{
                         }else{
                             resultDataMoviment = result 
 
-                             let arrResult :resutlCompleteMovment = [ { produto:{}, movimento:{} , setor:{}} ]
+                             let arrResult :resutlCompleteMovment | any = [ ]
                              
                             if( resultDataMoviment && resultDataMoviment.length > 0 ){
                                 for( let mov of resultDataMoviment ){
-                                let obj:completeMoviment   = { produto:{}, movimento:{} , setor:{}}
+                                let obj:completeMoviment    = { produto:{}, movimento:{} , setor:{}}
                                 
                                 let produto:ProdutoBanco | {} = {} 
                                 let setor:ISetor 
