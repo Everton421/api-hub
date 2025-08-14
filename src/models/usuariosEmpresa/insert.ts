@@ -12,13 +12,14 @@ async insert_usuario( empresa:any, usuario:newUserEmpresa ){
             email,
             cnpj,
             senha,
-            responsavel
+            responsavel, 
+            ativo
         )VALUES
-         ( ?, ?, ?, ?, ? )
+         ( ?, ?, ?, ?, ? , ? )
         `;
     return new Promise  ( async ( resolve ,reject )=>{
 
-        await conn.query( sql,[ usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel ] ,(err:any, result:any )=>{
+        await conn.query( sql,[ usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel , usuario.ativo ] ,(err:any, result:any )=>{
             if(err){
                 console.log(` Erro ao tentar cadastrar usuario ${usuario.nome } na empresa `,err)
                 reject(err)

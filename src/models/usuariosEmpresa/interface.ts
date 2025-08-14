@@ -4,7 +4,8 @@ export interface usuarioEmpresa {
     email:string,
     cnpj:string,
     senha:string,
-    responsavel:string        
+    responsavel:string    
+    ativo: 'S'| 'N'    
     }
 
 export type newUserEmpresa = Omit<usuarioEmpresa , "codigo"> 

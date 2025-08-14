@@ -12,8 +12,9 @@ import { registerDados } from "../../services/dadosTeste/dadosTeste";
 export class CreateEmpresa {
 
   async create(request: Request, response: Response) {
-    type newUser = Omit<UsuarioApi, "codigo">;
-
+    type newUserOmitCode = Omit<UsuarioApi, "codigo"> ;
+     type ativo = { ativo:'S'|'N'}
+    type newUser = newUserOmitCode & ativo 
     let obj = new CreateEmpresa();
     let objUsuariosApi = new UsuariosApi();
     let objInertUserEmpresa = new Insert_UsuarioEmpresa();
@@ -50,6 +51,7 @@ export class CreateEmpresa {
     let email_empresa: string = request.body.empresa.email_empresa;
     let nome_empresa: string = request.body.empresa.nome_empresa;
     let telefone_empresa: string = request.body.empresa.telefone_empresa;
+    const ativo = 'S'
     const dadosTeste:boolean = request.body.empresa.dados_teste;
 
     let responsavel: string = "S";
@@ -62,7 +64,7 @@ export class CreateEmpresa {
            
            cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
 
-    let objUser: newUser = { nome, email, cnpj, senha, responsavel ,telefone};
+    let objUser: newUser = { nome, email, cnpj, senha, responsavel ,telefone, ativo };
  
   // Regex para remover caracteres não numéricos
   cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
@@ -362,8 +364,18 @@ export class CreateEmpresa {
         else if (result.affectedRows > 0) {
           sqlTables.forEach(async (e) => {
             await conn.query(e, async (err, result) => {
-              if (err) throw err;
-              else console.log(`tabela registrada com sucesso!`);
+              if (err) {
+                  console.log("Erro: ", err  );
+                console.log('')
+                console.log(e)
+                console.log('')
+
+             return response.status(500).json({ msg: "Erro interno do servidor [ Erro ao tentar registrar banco de dados da empresa ]." });
+
+              }else{
+                 console.log(`tabela registrada com sucesso!`);
+              }
+                 
            
             });
           });
@@ -388,7 +400,9 @@ export class CreateEmpresa {
 
             codigoEmpresa = await insert_empresa.registrar_empresa(objEmpresa);
                 if( request.body.empresa.dados_teste && dadosTeste === true ){
-                await registerDados(dbName);
+                     
+                    await registerDados(dbName);
+
               } 
           }
 
