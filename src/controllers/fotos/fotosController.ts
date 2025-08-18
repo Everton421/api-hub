@@ -57,17 +57,19 @@ export class fotosController{
                  try{
                     let validItems:any = await select.buscaPorProduto(dbName,codigo_produto)
                     if(validItems.length > 0 ){
-                        await deletar.delete(dbName,codigo_produto);
-                    
-                        for(let i of dados ){
-                            if( !i.data_cadastro || i.data_cadastro === null ){
-                              i.data_cadastro = dateService.obterDataAtual();
+                       let resultDeleteItens =  await deletar.delete(dbName,codigo_produto);
+                        if( resultDeleteItens.serverStatus > 0 ){
+                           for(let i of dados ){
+                              if( !i.data_cadastro || i.data_cadastro === null ){
+                                 i.data_cadastro = dateService.obterDataAtual();
+                              }
+                              if( !i.data_recadastro || i.data_recadastro === null ){
+                                 i.data_recadastro = dateService.obterDataAtual();
+                              }
+                              await insert.cadastrar(dbName,i )
                            }
-                            if( !i.data_recadastro || i.data_recadastro === null ){
-                              i.data_recadastro = dateService.obterDataAtual();
-                           }
-                            await insert.cadastrar(dbName,i )
                         }
+
                       }else{
                         for(let i of dados ){
                            if( !i.data_cadastro || i.data_cadastro === null ){

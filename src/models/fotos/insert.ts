@@ -29,10 +29,10 @@ let sql =
 
             await conn.query(sql,(err, result)=>{
                     if(err){
-                        console.log(err);
+                        console.log(`Erro ao tentar registrar a foto `,err);
                         reject(err);
                     }else{
-                        console.log("foto registradaa com sucesso  ",result)
+                      //  console.log("foto registradaa com sucesso  ",result)
                         resolve(result.affectedRows)
                     }
                 })
