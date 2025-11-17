@@ -113,6 +113,7 @@ export class CreateEmpresa {
         observacoes2  blob DEFAULT NULL,
         observacoes3  blob DEFAULT NULL,
         tipo  int(10) NOT NULL DEFAULT 0,
+        caracteristica int(11) DEFAULT 0,
         PRIMARY KEY ( codigo )
       
     );`,
@@ -249,18 +250,20 @@ export class CreateEmpresa {
         porta INTEGER NOT NULL DEFAULT 3000,
         token TEXT NOT NULL 
     );`,
-
-      `CREATE TABLE IF NOT EXISTS ${dbName}.fotos_produtos(
+     ` 
+      CREATE TABLE  ${dbName}.fotos_produtos (
        produto int(10) unsigned NOT NULL DEFAULT 0,
-       sequencia  int(10) unsigned NOT NULL DEFAULT 0,
-       descricao  varchar(50) DEFAULT NULL,
-       link  text NOT NULL,
-       foto  longblob DEFAULT NULL,
-       data_cadastro  date NOT NULL DEFAULT '2000-01-01',
-       data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
-         PRIMARY KEY ( produto ) 
-      );`,
-     ` CREATE TABLE  ${dbName}.categorias  (
+       sequencia int(10) unsigned NOT NULL DEFAULT 0,
+       descricao varchar(50) DEFAULT NULL,
+       link text NOT NULL,
+       foto longblob DEFAULT NULL,
+       data_cadastro date NOT NULL DEFAULT '0000-00-00',
+       data_recadastro datetime DEFAULT NULL,
+      PRIMARY KEY ( produto , sequencia ) USING BTREE
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
+
+      `,
+     ` CREATE TABLE IF NOT EXISTS ${dbName}.categorias  (
           codigo  int(11) NOT NULL AUTO_INCREMENT,
           id  int(10) unsigned NOT NULL DEFAULT 0,
           data_cadastro  date NOT NULL DEFAULT '2000-01-01',
@@ -270,7 +273,7 @@ export class CreateEmpresa {
         PRIMARY KEY ( codigo )
       ) ;
       `,
-      ` CREATE TABLE  ${dbName}.marcas  (
+      ` CREATE TABLE  IF NOT EXISTS${dbName}.marcas  (
         codigo  int(11) NOT NULL AUTO_INCREMENT,
         id  int(10) unsigned NOT NULL DEFAULT 0,
         data_cadastro  date NOT NULL DEFAULT '2000-01-01',
@@ -281,7 +284,7 @@ export class CreateEmpresa {
      ) ;
      `,
      `
-     CREATE TABLE  ${dbName}.produto_setor  (
+     CREATE TABLE IF NOT EXISTS ${dbName}.produto_setor  (
        setor  int(10) unsigned NOT NULL DEFAULT 0,
        produto  int(10) unsigned NOT NULL DEFAULT 0,
        estoque  float(15,6) NOT NULL DEFAULT 0.000000,
@@ -296,7 +299,7 @@ export class CreateEmpresa {
      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC COMMENT='Produtos do Setor';
      `,
      `
-      CREATE TABLE ${dbName}.setores (
+      CREATE TABLE IF NOT EXISTS ${dbName}.setores (
          codigo  int(11) NOT NULL AUTO_INCREMENT,
         id  varchar(255) NOT NULL DEFAULT '0',
          descricao  text NOT NULL,
@@ -307,7 +310,7 @@ export class CreateEmpresa {
       ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
      `,
      `
-     CREATE TABLE ${dbName}.movimentos_produtos (
+     CREATE TABLE IF NOT EXISTS ${dbName}.movimentos_produtos (
        id  int(10) unsigned NOT NULL AUTO_INCREMENT,
        codigo  int(11) NOT NULL DEFAULT 0,
        setor  int(10) DEFAULT 0,
@@ -323,7 +326,7 @@ export class CreateEmpresa {
       UNIQUE KEY  codigo  ( codigo , usuario )
     ) ENGINE=InnoDB   DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
      `,
-     `CREATE TABLE ${dbName}.locais (
+     `CREATE TABLE  IF NOT EXISTS ${dbName}.locais (
       codigo  int(11) NOT NULL AUTO_INCREMENT,
       id  varchar(255) NOT NULL DEFAULT '0',
       descricao  text NOT NULL,
@@ -334,7 +337,7 @@ export class CreateEmpresa {
       PRIMARY KEY (codigo)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
      `,
-     ` CREATE TABLE  ${dbName}.distribuicao_locais_setor  (    
+     ` CREATE TABLE   IF NOT EXISTS ${dbName}.distribuicao_locais_setor  (    
         produto  int(11) NOT NULL DEFAULT 0,
         setor  int(11) NOT NULL DEFAULT 0,
         unidade_medida varchar(255)  DEFAULT 'UND',
@@ -343,7 +346,19 @@ export class CreateEmpresa {
         data_cadastro  date NOT NULL DEFAULT '2000-01-01',
         data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' 
   ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `,
   `
+      CREATE TABLE IF NOT EXISTS ${dbName}.caracteristicas (
+         codigo  int(11) NOT NULL AUTO_INCREMENT,
+         id  varchar(255) NOT NULL DEFAULT '0',
+         descricao  varchar(255) NOT NULL ,
+         unidade  varchar(255) NOT NULL DEFAULT 'Und',
+         data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+         data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+         ativo  char(1) NOT NULL DEFAULT 'S',
+        PRIMARY KEY (codigo)
+      ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+     `
     ];
 
     let sql = ` create database if not exists  ${dbName}  ;  `;
@@ -375,8 +390,6 @@ export class CreateEmpresa {
               }else{
                  console.log(`tabela registrada com sucesso!`);
               }
-                 
-           
             });
           });
 
@@ -400,8 +413,11 @@ export class CreateEmpresa {
 
             codigoEmpresa = await insert_empresa.registrar_empresa(objEmpresa);
                 if( request.body.empresa.dados_teste && dadosTeste === true ){
-                     
-                    await registerDados(dbName);
+                   
+                  let resutl =  await registerDados(dbName);
+                  if(resutl.sucess === false){
+                            return response.status(500).json({ msg: resutl.message});
+                  }
 
               } 
           }

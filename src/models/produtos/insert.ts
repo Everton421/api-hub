@@ -1,8 +1,10 @@
 import { conn } from "../../database/databaseConfig"
+import { ProdutoBanco } from "../../types/produto/produto"
+
 
 export class InsertProdutos{
 
-    async insert ( empresa:any, produto:any){
+    async insert ( empresa:any, produto:ProdutoBanco){
 
        return new Promise( async ( resolve, reject)=>{
             let {
@@ -12,6 +14,7 @@ export class InsertProdutos{
                 data_cadastro,
                 data_recadastro,
                 descricao,
+                caracteristica,
                 estoque,
                 grupo,
                 unidade_medida,
@@ -24,7 +27,9 @@ export class InsertProdutos{
                 num_fabricante,
                 observacoes1,
                 observacoes2,
-                observacoes3   } = produto
+                observacoes3 
+            
+            } = produto
 
                 const sql =` INSERT INTO  ${empresa}.produtos  
                              (
@@ -34,6 +39,7 @@ export class InsertProdutos{
                             grupo ,
                             origem ,
                             descricao ,
+                            caracteristica,
                             num_fabricante ,
                             num_original ,
                             sku ,
@@ -52,6 +58,7 @@ export class InsertProdutos{
                                     ${grupo} ,
                                     ${origem} ,
                                     '${descricao}',
+                                    ${caracteristica},
                                     '${num_fabricante}' ,
                                     '${num_original}' ,
                                     '${sku}' ,

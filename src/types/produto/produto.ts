@@ -5,6 +5,7 @@ export type ProdutoBanco =
  {
         codigo:number, 
         estoque:number,
+        id:number
         preco:number,
         unidade_medida:string, 
         grupo:number,
@@ -21,7 +22,8 @@ export type ProdutoBanco =
         data_recadastro:string, 
         observacoes1:string,  
         observacoes2:string, 
-        observacoes3:string, 
+        observacoes3:string,
+        caracteristica:number
         tipo:number 
           fotos: any     
 }       

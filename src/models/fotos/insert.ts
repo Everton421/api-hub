@@ -2,7 +2,7 @@ import { conn } from "../../database/databaseConfig"
 
 export class Insert_fotos{
 
-    async   cadastrar( empresa:string, foto:IFoto) {
+    async   cadastrar( empresa:string, foto:IFoto):Promise<{ sucess:boolean, message:string } | number>  {
 
         return new Promise( async (resolve, reject ) =>{
 let sql = 
@@ -30,10 +30,11 @@ let sql =
             await conn.query(sql,(err, result)=>{
                     if(err){
                         console.log(`Erro ao tentar registrar a foto `,err);
-                        reject(err);
+                        reject({ sucess: false, message: `Erro ao tentar registrar a foto ${err}` });
+
                     }else{
                       //  console.log("foto registradaa com sucesso  ",result)
-                        resolve(result.affectedRows)
+                        resolve( result.affectedRows  )
                     }
                 })
         })

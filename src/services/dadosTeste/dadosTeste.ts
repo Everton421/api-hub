@@ -1,42 +1,144 @@
-import { conn } from "../../database/databaseConfig"
+import { Insert_Categorias } from "../../models/categorias/insert";
+import { Insert_clientes } from "../../models/cliente/insert";
+import { Cliente } from "../../models/cliente/interface_cliente";
+import { Insert_formaPagamento } from "../../models/formas_pagamento/insert";
+import { Insert_fotos } from "../../models/fotos/insert";
+import { Insert_Marcas } from "../../models/marcas/insert";
+import { InsertProdutos } from "../../models/produtos/insert";
+import { InsertServico } from "../../models/servicos/insert";
+import { Insert_tipos_os } from "../../models/tipos_os/insert";
+import { Insert_Veiculos } from "../../models/veiculo/insert";
+import { categoria } from "../../types/categoriaProduto/categoria";
+import { formaPagamentoBanco } from "../../types/formas_pagamento/formas_pagamento";
+import { marca } from "../../types/marcaProduto/marca";
+import { ProdutoBanco } from "../../types/produto/produto";
+import { service } from "../../types/servico/servico";
+import { tipo_os } from "../../types/tipo_os/tipo_os";
+import { VeiculoBanco } from "../../types/veiculo/veiculo";
 
-    
-    
-export async function registerDados( dbName:string ){
+type product = Omit<ProdutoBanco,'fotos'>
 
- 
 
-    const sqlTables = [
-        `INSERT INTO ${dbName}.fotos_produtos  VALUES (1,1,'intel i5','https://i.ibb.co/tpDk4DD5/i5.png',NULL,'0000-00-00','0000-00-00 00:00:00'),
- (2,1,'SSD','https://i.ibb.co/Brqvtvj/Screenshot-6.png',X'49413D3D','2000-01-01','2000-01-01 00:00:00'),
- (3,1,'memoria','https://i.ibb.co/hFyNBk2/Screenshot-5.png',X'49413D3D','0000-00-00','2000-01-01 00:00:00'),
- (4,1,'placa mae','https://i.ibb.co/tpQ2byG/Screenshot-4.png',X'706C616361206D6165','0000-00-00','2000-01-01 00:00:00'),
- (5,1,'RYZEN-5','https://i.ibb.co/H7grssp/RYZEN-5.png',X'5A6E5177','0000-00-00','2000-01-01 00:00:00');`,
-        `INSERT INTO ${dbName}.categorias VALUES (1,0,'2025-05-12','2025-05-12 12:23:12','LUBRIFICANTE','S'),(2,0,'2025-05-12','2025-05-12 12:23:12','MOTOR','S');`,
-        `INSERT INTO ${dbName}.clientes VALUES (1,'0','(44) 99916-0504','CLIENT-TESTE-0001','02982-090','Rua Carmem Cunha','392.840.731.374','5','83.227.465/0001-07','S','São Paulo','2025-05-12','2025-05-12 12:23:12',0,'Jardim Sydney','SP'),(2,'0','(22) 22222-2222','CLIENT-TESTE-0002','04472-030','Rua Mazinho','656.991.912.536','2','88.987.659/0001-24','S','São Paulo','2025-05-12','2025-05-12 12:23:12',0,'Jardim Novo Pantanal','SP'); `,
-        ` INSERT INTO ${dbName}.forma_pagamento  VALUES (1,1,'A VISTA',100,1,30,0,'2025-05-12','2025-05-12 12:23:12','S'),(2,2,'30 DIAS',100,1,0,0,'2025-05-12','2025-05-12 12:23:12','S'); `,
-         `INSERT INTO ${dbName}.marcas  VALUES (1,2,'2025-05-12','2025-05-12 12:23:12','TINKEN7','S'),(2,0,'2025-05-12','2025-05-12 12:23:12','TINKEN9','S'); `,
-        `INSERT INTO ${dbName}.produtos VALUES 
-         (1,0,1,400,'UND',1,'2','Processador Intel Core I5-10400 Cache 12mb','1434124','324243','1555445',1,'S','8555.00.00','00','2025-05-12 12:23:12','2025-05-12',X'',X'',X'',1)
-        ,(2,0,2,192.83,'UND',2,'0','SSD, Kingston, SA400S37/960G','7316573929277','ALR399365L','',148,'S','8555.00.00','00','2025-05-12 12:23:12','2025-05-12',X'',X'',X'',8),
-        (3,0,0,86.37,'UND', 2,'0','Memória HyperX Fury de 8GB DIMM DDR4 2400Mhz para desktop','3982/3920','802740','7316574201396',43,'S','8555.00.00','00','2025-05-12 12:23:12','2025-05-12',X'6E756C6C',X'6E756C6C',X'6E756C6C',0),
-        (4,0,3,520.15,'UND', 1,'0','Placa mãe LGA1700 / DDR5 - MSI MPG Z790 Carbon WiFi Gaming (ATX) ','6514654','5346','56486',1,'S','8555.00.00','00','2025-05-12 12:23:12','2025-05-12',NULL,NULL,NULL,1),
-        (5,0,5,250,'UND', 1,'0','PROCESSADOR AMD RYZEN 5 8500G 3.5GHZ (MAX TURBO 5.0GHZ) 22MB CACHE AM5','987654','96151','4213',1,'S','8631.00.00','00','2025-05-12 12:23:12','2025-05-12',NULL,NULL,NULL,1);`,
-        `INSERT INTO  ${dbName}.servicos  VALUES (1,0,3,'SUBSTITUIR PIVO DA SUSPENSAO 11',3,'2025-05-12','2025-05-12 12:23:12','S'),(2,0,900,'REVISAR DIFERENCIAL',0,'2025-05-12','2025-05-12 12:23:12','S'); `,
-        `INSERT INTO  ${dbName}.tipos_os  VALUES (1,1,'SERVICOS','2025-05-12','2025-05-12 12:23:12','S'),(2,1,'SERVICOS','2025-05-12','2025-05-12 12:26:05','S');`,
-        `INSERT INTO  ${dbName}.veiculos  VALUES (1,0,1,'ARI-7664','Fiat','Strada Working Celeb.1.4 Fire Flex 8V CS','2012','Preto','23','2025-05-12','2025-05-12 12:23:12','S'),(2,0,6,'AFB-9317','Fiat','Toro Volcano 2.0 16V 4x4 TB Diesel Aut.','2016','Prata','2','2025-05-12','2025-05-12 12:23:12','S');`,
-    ]
+const produtos:product[]
+=
+[
 
-    sqlTables.forEach( async ( i )=>{
+  { codigo:1 , id:0,ativo:'S', caracteristica:0 , class_fiscal:'0000.00.00', cst:'00', descricao:'Processador Intel Core I5-10400 Cache 12mb',                estoque:1, grupo:1,marca:1, preco:899, sku:'1555445',origem:0, tipo:0, unidade_medida:'und', num_fabricante:'1434124', num_original:'', data_cadastro:'2025-11-14',data_recadastro:'2025-11-14 16:12:45',observacoes1:'',observacoes2:'',observacoes3:'' },
+  { codigo:2 , id:0,ativo:'S', caracteristica:0 , class_fiscal:'0000.00.00', cst:'00', descricao:'SSD, Kingston, SA400S37/960G',                              estoque:1, grupo:2,marca:3, preco:389, sku:'1555223',origem:0, tipo:0, unidade_medida:'und', num_fabricante:'7316573929277', num_original:'', data_cadastro:'2025-11-14',data_recadastro:'2025-11-14 16:12:45',observacoes1:'',observacoes2:'',observacoes3:'' },
+  { codigo:3 , id:0,ativo:'S', caracteristica:0 , class_fiscal:'0000.00.00', cst:'00', descricao:'Memória HyperX Fury de 8GB DIMM DDR4 2400Mhz para desktop', estoque:1, grupo:3,marca:3, preco:159, sku:'1555445',origem:0, tipo:0, unidade_medida:'und', num_fabricante:'3982/3920', num_original:'', data_cadastro:'2025-11-14',data_recadastro:'2025-11-14 16:12:45',observacoes1:'',observacoes2:'',observacoes3:'' },
+  { codigo:4 , id:0,ativo:'S', caracteristica:0 , class_fiscal:'0000.00.00', cst:'00', descricao:'Placa-mãe Msi Mpg Z790 Carbon, Intel, ATX, DDR5, RGB, Wi-Fi II, Preto - Mpg Z790 Carbon Wifi II', estoque:1, grupo:5,marca:5, preco: 3700, sku:'1555778',origem:0, tipo:0, unidade_medida:'und', num_fabricante:'6514654', num_original:'', data_cadastro:'2025-11-14',data_recadastro:'2025-11-14 16:12:45',observacoes1:'',observacoes2:'',observacoes3:'' },
+  { codigo:5 , id:0,ativo:'S', caracteristica:0 , class_fiscal:'0000.00.00', cst:'00', descricao:'Processador AMD Ryzen 5 8500G, 3.5GHz (5.0GHz Turbo)',              estoque:1, grupo:1,marca:2, preco: 900, sku:'4213',origem:0, tipo:0, unidade_medida:'und', num_fabricante:'987654', num_original:'', data_cadastro:'2025-11-14',data_recadastro:'2025-11-14 16:12:45',observacoes1:'',observacoes2:'',observacoes3:'' },
+  { codigo:6 , id:0,ativo:'S', caracteristica:0 , class_fiscal:'0000.00.00', cst:'00', descricao:'Placa de Video NVIDIA GeForce RTX 3090 24 GB GDDR6X 384 Bits Asus', estoque:1, grupo:7,marca:4, preco: 1500, sku:'659234',origem:0, tipo:0, unidade_medida:'und', num_fabricante:'9876543412', num_original:'', data_cadastro:'2025-11-14',data_recadastro:'2025-11-14 16:12:45',observacoes1:'',observacoes2:'',observacoes3:'' },
+  { codigo:7 , id:0,ativo:'S', caracteristica:0 , class_fiscal:'0000.00.00', cst:'00', descricao:'Water Cooler Corsair 280mm iCUE H115i RGB Elite',                   estoque:1, grupo:6,marca:7, preco: 900, sku:'000234',origem:0, tipo:0, unidade_medida:'und', num_fabricante:'9876543412', num_original:'', data_cadastro:'2025-11-14',data_recadastro:'2025-11-14 16:12:45',observacoes1:'',observacoes2:'',observacoes3:'' },
 
-        await conn.query(i, (err, result )=>{
-                if(err) throw err;
-                else
-               console.log("dados registrados com sucesso!")
-            return;
-        })
-    })
+]
 
+const servicos:service[] =
+[
+  { codigo: 1, valor:150 ,aplicacao:'Montagem Computador', id:0, tipo_serv:1, data_cadastro:'2025-05-12', data_recadastro:'2025-05-12 12:23:12', ativo:'S'},
+  { codigo: 2,valor:100 ,aplicacao:'Formatação', id:0, tipo_serv:1, data_cadastro:'2025-05-12', data_recadastro:'2025-05-12 12:23:12',ativo:'S'},
+]
+const tiposDeOs:tipo_os[] =[
+  { codigo:0, ativo:'S', descricao:"Serviços", id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' }
+]
+const veiculos :VeiculoBanco[]=[
+  { codigo:1, placa:'ARI-7664', ano:'2012',ativo:'S',cliente:1, combustivel:'Gasolina',cor:'Preto', id:0, marca:'Fiat', modelo:'Strada Working Celeb.1.4 Fire Flex 8V CS', data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'  },
+  { codigo:2, placa:'AFB-9317', ano:'2016',ativo:'S',cliente:2, combustivel:'Gasolina',cor:'Preto', id:0, marca:'Fiat', modelo:'Toro Volcano 2.0 16V 4x4 TB Diesel Aut.' , data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+]
+const marcas:marca[]=[
+  {codigo:1, ativo:'S',descricao :'Intel', id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  {codigo:2, ativo:'S',descricao :'Amd', id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  {codigo:3, ativo:'S',descricao :'Kingston', id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  {codigo:5, ativo:'S',descricao :'Msi', id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  {codigo:4, ativo:'S',descricao :'Asus', id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  {codigo:7, ativo:'S',descricao :'Corsair', id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+]
+
+const formasPagamento: formaPagamentoBanco[]=[
+  { codigo:1, ativo:'S',recebimento:0,desc_maximo:0,id:0,descricao:'A VISTA ',intervalo:0, parcelas:1, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  { codigo:2, ativo:'S',recebimento:0,desc_maximo:0,id:0,descricao:'30 DIAS',intervalo:30, parcelas:1, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+]
+
+const categorias:categoria[]=[
+  { codigo:1, ativo:'S',descricao:"Processadores", id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  { codigo:2, ativo:'S',descricao:"Hd/Ssd", id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  { codigo:3, ativo:'S',descricao:"Memoria", id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  { codigo:5, ativo:'S',descricao:"Placas Mãe", id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  { codigo:6, ativo:'S',descricao:"Cooler", id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  { codigo:7, ativo:'S',descricao:"Placas de video", id:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+]
+const clientes:Cliente[]=
+[
+  {codigo:1, ativo:'S', bairro:'Jardim Sydney', celular:'(44) 99916-0504', cep:'02982-090',cidade:'São Paulo',cnpj:'83.227.465/0001-07',endereco:'Rua Carmem Cunha', estado:'SP',id:0, nome:'Cliente-Teste-0001',ie:'392.840.731.374', numero:'5',vendedor:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  {codigo:2, ativo:'S', bairro:'Jardim Sydney', celular:'(44) 99915-0205', cep:'02982-090',cidade:'São Paulo',cnpj:'88.987.659/0001-24',endereco:'Rua Carmem Cunha', estado:'SP',id:0, nome:'Cliente-Teste-0002',ie:'322.540.751.574', numero:'6',vendedor:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+  {codigo:3, ativo:'S', bairro:'Jardim Sydney', celular:'(44) 99925-0401', cep:'02982-090',cidade:'São Paulo',cnpj:'88.987.619/0001-25',endereco:'Rua Carmem Cunha', estado:'SP',id:0, nome:'Cliente-Teste-0003',ie:'656.991.912.123', numero:'7',vendedor:0, data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05'},
+]
+ const fotosProdutos   =[
+  {produto:1,sequencia:1, descricao:'intel i5',foto:'',link:'https://i.ibb.co/tpDk4DD5/i5.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  {produto:2,sequencia:1, descricao:'Ssd',foto:'',link:'https://i.ibb.co/Brqvtvj/Screenshot-6.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  {produto:2,sequencia:2, descricao:'Ssd',foto:'',link:'https://i.ibb.co/0ygGXYsR/Screenshot-3.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  {produto:3,sequencia:1, descricao:'memoriaram',foto:'',link:'https://i.ibb.co/60yG7hQN/Screenshot-1.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  {produto:4,sequencia:1, descricao:'https://i.ibb.co/7tvNczCd/Screenshot-2.png',foto:'',link:'https://i.ibb.co/7tvNczCd/Screenshot-2.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  {produto:5,sequencia:1, descricao:'ryzen',foto:'',link:'https://i.ibb.co/L0Cxydc/Screenshot-3.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  {produto:5,sequencia:2, descricao:'ryzen',foto:'',link:'https://i.ibb.co/KjVhB83/RYZEN-5-8400-F.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  {produto:6,sequencia:1, descricao:'https://i.ibb.co/Nnt2b2v7/Screenshot-1.png',foto:'',link:'https://i.ibb.co/Nnt2b2v7/Screenshot-1.png' ,data_cadastro:'2025-05-12' , data_recadastro:'2025-05-12 12:26:05' },
+  
+]
+
+
+
+export async function registerDados(dbName: string): Promise<{ sucess: boolean; message: string }> {
+
+    const insertProd = new InsertProdutos();
+    const insertServico = new InsertServico();
+    const  insertVeiculo = new Insert_Veiculos();
+    const insertCategorias = new Insert_Categorias();
+    const insertfpgt = new Insert_formaPagamento();
+    const insertMarca = new Insert_Marcas();
+    const insertTipoOs = new Insert_tipos_os();
+    const insertFotos = new Insert_fotos();
+    const insertCliente = new Insert_clientes();
+
+  try {
+    for( const i of fotosProdutos ){
+          let result =  await insertFotos.cadastrar(dbName, i);
+        }
+
+   for(const i of tiposDeOs){
+          let result = await insertTipoOs.cadastrar(dbName, i)
+        }
+
+   for(const i of marcas){
+          let result = await insertMarca.cadastrar(dbName, i)
+        }
+
+   for(const i of categorias){
+          let result = await insertCategorias.cadastrar(dbName, i)
+        }
+   for(const i  of produtos){
+          let result = await insertProd.insert(dbName, i  as ProdutoBanco )
+        }
+   for(const i  of servicos){
+          let result = await insertServico.insert(dbName, i  )
+        }
+   for(const i  of veiculos){
+          let result = await insertVeiculo.cadastrar(dbName, i  )
+        }
+
+   for(const i  of formasPagamento){
+          let result = await insertfpgt.cadastrar(dbName, i  )
+        }
+   for(const i  of clientes){
+          let result = await insertCliente.cadastrar(dbName, i  )
+        }
+
+
+      // Se todas as queries forem executadas com sucesso
+      return { sucess: true, message: "Dados registrados com sucesso!" };
+
+    } catch (error:any) {
+      // Captura erros inesperados fora das queries individuais
+      console.error("Erro inesperado:", error);
+      return { sucess: false, message: `Ocorreu um erro inesperado: ${error.message}` };
+    }
 }
-
-

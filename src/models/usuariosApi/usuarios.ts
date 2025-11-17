@@ -13,10 +13,14 @@ export class UsuariosApi{
                             nome, email, cnpj, senha, responsavel, telefone
                         ) values( ?, ?, ?, ? , ?, ? )
                     `;
-
-                    await conn.query(sql, [usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel, usuario.telefone],(err:any, result:any )=>{ 
-                        if(err) reject(err);
-                        else resolve(result);
+                    const values = [usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel, usuario.telefone]
+                    await conn.query(sql,values ,(err:any, result:any )=>{ 
+                        if(err) { 
+                            reject(err);
+                            console.log("ERRO: "+ err +" "+ sql +" "+values   )
+                        } else{
+                        resolve(result);
+                        } 
                     })
 
                 })

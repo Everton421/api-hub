@@ -78,11 +78,10 @@ export class ProdutoController{
           if(!req.body.tipo) req.body.tipo = 0
           if(!req.body.data_cadastro ) req.body.data_cadastro = dateService.obterDataAtual(); 
           if(!req.body.data_recadastro ) req.body.data_recadastro = dateService.obterDataHoraAtual();
-
+          if(!req.body.caracteristica) req.body.caracteristica = 0;
           if(!req.body.observacoes1) req.body.observacoes1 =  ""
           if(!req.body.observacoes2) req.body.observacoes2 = "" 
           if(!req.body.observacoes3) req.body.observacoes3 = "" 
-
           let produto =  {
             "codigo"          : req.body.codigo,
             "id"              : req.body.id,
@@ -92,6 +91,7 @@ export class ProdutoController{
             "grupo"           : req.body.grupo.codigo,
             "origem"          : req.body.origem,
             "descricao"       : req.body.descricao,
+            "caracteristica"  : req.body.caracteristica,
             "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
             "num_original"    : req.body.num_original,   //referencia 
             "sku"             : req.body.sku,
@@ -105,7 +105,7 @@ export class ProdutoController{
             "observacoes2"    : req.body.observacoes2,
             "observacoes3"    : req.body.observacoes3,
             "tipo"            : req.body.tipo 
-          }   
+          }  as ProdutoBanco
     
       try{
             let resultinsertId:any = await insert.insert(dbName, produto);
@@ -119,6 +119,7 @@ export class ProdutoController{
                 "grupo"           : req.body.grupo,
                 "origem"          : req.body.origem,
                 "descricao"       : req.body.descricao,
+                "caracteristica"  : req.body.caracteristica,
                 "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
                 "num_original"    : req.body.num_original,   //referencia 
                 "sku"             : req.body.sku,
@@ -311,6 +312,7 @@ async update(req:Request,res:Response){
 
         if(!req.body.grupo )   return res.status(400).json({ erro:true, msg: "É necessario informar o grupo para registrar o produto!"});
          if(!req.body.grupo.codigo )   return res.status(400).json({ erro:true, msg: "É necessario informar o codigo do grupo para registrar o produto!"});
+          if(!req.body.caracteristica) req.body.caracteristica = 0;
 
          if(!req.body.marca)             return res.status(400).json({ erro:true, msg: "É necessario informar a marca para registrar o produto!"});
          if(!req.body.marca.codigo)             return res.status(400).json({ erro:true, msg: "É necessario informar o codigo da marca para registrar o produto!"});
@@ -340,6 +342,7 @@ async update(req:Request,res:Response){
           "grupo"           : req.body.grupo.codigo,
           "origem"          : req.body.origem,
           "descricao"       : req.body.descricao,
+          "caracteristica"  : req.body.caracteristica,
           "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
           "num_original"    : req.body.num_original,   //referencia 
           "sku"             : req.body.sku,
@@ -368,6 +371,7 @@ async update(req:Request,res:Response){
               "grupo"           : req.body.grupo,
               "origem"          : req.body.origem,
               "descricao"       : req.body.descricao,
+              "caracteristica"  : req.body.caracteristica,
               "num_fabricante"  : req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
               "num_original"    : req.body.num_original,   //referencia 
               "sku"             : req.body.sku,
