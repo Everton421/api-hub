@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { SelectPedido } from "../../models/pedido/selectPedido";
 import { Select_clientes } from "../../models/cliente/select";
 import { SelectItensPedido } from "../../models/pedido/selectItens";
-import { DateService } from "../../services/dateService";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DateService } from "../../services/date-service/dateService";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class pedidoNextController{
 

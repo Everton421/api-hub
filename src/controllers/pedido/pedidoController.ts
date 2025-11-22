@@ -5,7 +5,7 @@ import { InsertPedido } from "../../models/pedido/insertPedido";
 import { Select_clientes } from "../../models/cliente/select";
 
 import { SelectItensPedido } from "../../models/pedido/selectItens";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 export class pedidoController{
 
 

@@ -4,10 +4,10 @@ import { UsuarioApi } from "../../models/usuariosApi/interface";
 import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { Insert_UsuarioEmpresa } from "../../models/usuariosEmpresa/insert";
 import { Insert_empresa } from "../../models/empresa/insert";
-import { DateService } from "../../services/dateService";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DateService } from "../../services/date-service/dateService";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import jwt from 'jsonwebtoken';
-import { registerDados } from "../../services/dadosTeste/dadosTeste";
+import { registerDados } from "../../database/seeds/dados-teste/dadosTeste";
 
 export class CreateEmpresa {
 

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { Select_Marcas } from "../../models/marcas/select";
 import { Insert_Marcas } from "../../models/marcas/insert";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../../services/date-service/dateService";
 import { UpdateMarca } from "../../models/marcas/update";
 import { marca } from "../../types/marcaProduto/marca";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class MarcasController{
 

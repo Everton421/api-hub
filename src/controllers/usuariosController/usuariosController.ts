@@ -4,7 +4,7 @@ import { Select_UsuarioEmpresa } from "../../models/usuariosEmpresa/select";
 import { newUserEmpresa } from "../../models/usuariosEmpresa/interface";
 import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { newUser, UsuarioApi } from "../../models/usuariosApi/interface";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class UsuariosController{
 

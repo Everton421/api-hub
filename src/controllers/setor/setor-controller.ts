@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { SelectSetor } from "../../models/setor/select";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { ISetor } from "../../models/setor/types/setor";
 import { UpdateSetor } from "../../models/setor/update";
 import { InsertSetor } from "../../models/setor/insert";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../../services/date-service/dateService";
 
 type query = { 
 codigo:number,

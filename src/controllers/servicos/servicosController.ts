@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { Select_servicos } from "../../models/servicos/select";
 import { InsertServico } from "../../models/servicos/insert";
 import { updateServico } from "../../models/servicos/update";
-import { DateService } from "../../services/dateService";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DateService } from "../../services/date-service/dateService";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 type service = {
   codigo : number,
   id: number,

@@ -1,20 +1,20 @@
-import { Insert_Categorias } from "../../models/categorias/insert";
-import { Insert_clientes } from "../../models/cliente/insert";
-import { Cliente } from "../../models/cliente/interface_cliente";
-import { Insert_formaPagamento } from "../../models/formas_pagamento/insert";
-import { Insert_fotos } from "../../models/fotos/insert";
-import { Insert_Marcas } from "../../models/marcas/insert";
-import { InsertProdutos } from "../../models/produtos/insert";
-import { InsertServico } from "../../models/servicos/insert";
-import { Insert_tipos_os } from "../../models/tipos_os/insert";
-import { Insert_Veiculos } from "../../models/veiculo/insert";
-import { categoria } from "../../types/categoriaProduto/categoria";
-import { formaPagamentoBanco } from "../../types/formas_pagamento/formas_pagamento";
-import { marca } from "../../types/marcaProduto/marca";
-import { ProdutoBanco } from "../../types/produto/produto";
-import { service } from "../../types/servico/servico";
-import { tipo_os } from "../../types/tipo_os/tipo_os";
-import { VeiculoBanco } from "../../types/veiculo/veiculo";
+import { Insert_Categorias } from "../../../models/categorias/insert";
+import { Insert_clientes } from "../../../models/cliente/insert";
+import { Cliente } from "../../../models/cliente/interface_cliente";
+import { Insert_formaPagamento } from "../../../models/formas_pagamento/insert";
+import { Insert_fotos } from "../../../models/fotos/insert";
+import { Insert_Marcas } from "../../../models/marcas/insert";
+import { InsertProdutos } from "../../../models/produtos/insert";
+import { InsertServico } from "../../../models/servicos/insert";
+import { Insert_tipos_os } from "../../../models/tipos_os/insert";
+import { Insert_Veiculos } from "../../../models/veiculo/insert";
+import { categoria } from "../../../types/categoriaProduto/categoria";
+import { formaPagamentoBanco } from "../../../types/formas_pagamento/formas_pagamento";
+import { marca } from "../../../types/marcaProduto/marca";
+import { ProdutoBanco } from "../../../types/produto/produto";
+import { service } from "../../../types/servico/servico";
+import { tipo_os } from "../../../types/tipo_os/tipo_os";
+import { VeiculoBanco } from "../../../types/veiculo/veiculo";
 
 type product = Omit<ProdutoBanco,'fotos'>
 

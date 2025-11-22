@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { SelectLocais } from "../../models/locais/select";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../../services/date-service/dateService";
 import { ILocal } from "../../types/locais/local";
 import { InsertLocais,   } from "../../models/locais/insert";
 import { UpdateLocais } from "../../models/locais/update";

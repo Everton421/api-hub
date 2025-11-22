@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { SelectForma_pagamento } from "../../models/formas_pagamento/select";
 import { SelectTipo_os } from "../../models/tipos_os/select";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../../services/date-service/dateService";
 import { Insert_tipos_os } from "../../models/tipos_os/insert";
 import { Update_tipo_os } from "../../models/tipos_os/update";
 import { tipo_os } from "../../types/tipo_os/tipo_os";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class TipoOsController{
  

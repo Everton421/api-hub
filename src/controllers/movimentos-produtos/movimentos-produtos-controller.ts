@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { DateService } from "../../services/dateService";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DateService } from "../../services/date-service/dateService";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { SelectMovimentosProdutos } from "../../models/movimentos-produtos/select";
 import { IMovimentosProdutos } from "../../models/movimentos-produtos/types/movimentos_produtos";
 import { InsertMovimentosProdutos } from "../../models/movimentos-produtos/insert";

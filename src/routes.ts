@@ -46,16 +46,14 @@ import { MlController } from "./controllers/integration/ml-controlller/ml-contro
     router.get(`${versao}/teste`,AuthMiddleware,(req,res)=>{ 
       return  res.json({"ok":true});
     })
-    //https://b3abcbb1b172.ngrok-free.app/v1/ml/notification
-    //https://b3abcbb1b172.ngrok-free.app/v1/ml/callback
-//https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=4127824475666105&redirect_uri=https://b3abcbb1b172.ngrok-free.app/v1/ml/integrations/callback
+  
+  router.get(`${versao}/ml/integrations/notification`, new MlController().callback);
 
-    router.get(`${versao}/ml/integrations/notification`, new MlController().callback
-);
+ router.get(`${versao}/ml/integrations/callback`, new MlController().callback );
 
- router.get(`${versao}/ml/integrations/callback`, 
-   new MlController().callback
-);
+router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlController().getCode);
+
+ 
  
  router.get(`${versao}/offline/produtos`,    AuthMiddleware,  new ProdutoController().findAll )//ok
  router.post(`${versao}/produto`,            AuthMiddleware, new ProdutoController().insert)//ok

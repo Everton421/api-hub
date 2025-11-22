@@ -3,14 +3,11 @@ import { Select_clientes } from "../../models/cliente/select";
 import { Insert_clientes } from "../../models/cliente/insert";
 import { Cliente } from "../../models/cliente/interface_cliente";  
 import { Update_clientes } from "../../models/cliente/update";
-import { DateService } from "../../services/dateService";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DateService } from "../../services/date-service/dateService";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class ClienteController{
 
- 
-
-       
 
     async findAll( req:Request,res:Response  ){
        

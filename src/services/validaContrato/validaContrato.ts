@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { SelectEmpresa } from "../../models/empresa/select";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../date-service/dateService";
 
 
  export  async function validaContratoLogin( cnpj:string  ){

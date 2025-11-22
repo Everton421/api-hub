@@ -8,9 +8,9 @@ import { Select_Marcas } from "../../models/marcas/select";
 import { Select_Categorias } from "../../models/categorias/select";
 import { marca } from "../../types/marcaProduto/marca";
 import { categoria } from "../../types/categoriaProduto/categoria";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../../services/date-service/dateService";
 import { Select_fotos } from "../../models/fotos/select";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
  
 
 export class ProdutoController{

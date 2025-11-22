@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { IDistribuicaoLocaisSetor } from "../../types/distribuicao_locais_setor/distribuicao_locais_setor";
 import { SelectDistribuicaoSetor } from "../../models/distribuicao_locais_setor/select";
 import { UpdateDistribuicaoSetor } from "../../models/distribuicao_locais_setor/update";

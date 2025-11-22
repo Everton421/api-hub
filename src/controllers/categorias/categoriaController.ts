@@ -4,10 +4,10 @@ import { Insert_clientes } from "../../models/cliente/insert";
 import { Cliente } from "../../models/cliente/interface_cliente";  
 import { Select_Categorias } from "../../models/categorias/select";
 import { Insert_Categorias } from "../../models/categorias/insert";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../../services/date-service/dateService";
 import { updateCategoria } from "../../models/categorias/update";
 import { categoria } from "../../types/categoriaProduto/categoria";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class CategoriaController{
 

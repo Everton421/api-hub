@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { Select_veiculos } from "../../models/veiculo/select";
 import { update_veiculo } from "../../models/veiculo/update";
-import { DateService } from "../../services/dateService";
+import { DateService } from "../../services/date-service/dateService";
 import { Insert_clientes } from "../../models/cliente/insert";
 import { Insert_Veiculos } from "../../models/veiculo/insert";
-import { DecodedToken } from "../../services/decodedToken/decodedToken";
+import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class VeiculoController{
 
