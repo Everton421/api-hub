@@ -6,13 +6,21 @@ import { CreateTableMLAccounts } from "../../../database/tables-structures/ml-ac
 
 export class MlController{
 
-  async   callback(req:Request, res:Response ){
-      const returnTokens  = await exchangeCodeForToken(req.query.code as any, req.query.state as any)
-        if(returnTokens?.access_token){
+async callback(req: Request, res: Response) {
+    try {
+        const returnTokens = await exchangeCodeForToken(req.query.code as any, req.query.state as any);
+
+        if (returnTokens?.access_token) {
+            // Sucesso: Redireciona com params para o front
+            return res.redirect("http://localhost:8000/integracoes?status=success&message=Conta+conectada+com+sucesso");
+        } else {
+             return res.redirect("http://localhost:8000/integracoes?status=error&message=Nao+foi+possivel+obter+token");
         }
-         
-      return res.redirect("http://localhost:8000/integracoes")
-  }
+    } catch (error) {
+        console.log(error);
+        return res.redirect("http://localhost:8000/integracoes?status=error&message=Erro+interno+na+integracao");
+    }
+}
 
 
 

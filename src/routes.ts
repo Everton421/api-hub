@@ -26,6 +26,7 @@ import { LocaisController } from "./controllers/locais/locais-controller";
 import { InsertDistribuicaoLocaisSetor } from "./models/distribuicao_locais_setor/insert";
 import { DistribuicaoController } from "./controllers/distribuicao-locais/distribuicao-controller";
 import { MlController } from "./controllers/integration/ml-controlller/ml-controller";
+import { MlItensController } from "./controllers/ml/get-itens";
 
   const crypt = require('crypt');
   const router = Router();
@@ -53,7 +54,8 @@ import { MlController } from "./controllers/integration/ml-controlller/ml-contro
 
 router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlController().getCode);
 
- 
+ router.get(`${versao}/ml/items`, AuthMiddleware, new MlItensController().getItems);
+
  
  router.get(`${versao}/offline/produtos`,    AuthMiddleware,  new ProdutoController().findAll )//ok
  router.post(`${versao}/produto`,            AuthMiddleware, new ProdutoController().insert)//ok

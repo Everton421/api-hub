@@ -142,7 +142,8 @@ export class Login {
                 const payload = { 
                     cnpj: cnpj,
                     email:email,
-                    senha:senha
+                    senha:senha,
+                    codigo:codigoUsuario
                 } 
 
                    if (!secret) {
