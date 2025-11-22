@@ -46,9 +46,10 @@ export const exchangeCodeForToken = async (code: string, state:state) => {
 
     const CLIENT_ID= process.env.APP_ID_ML
     const CLIENT_SECRET = process.env.SECRET_ML
-    
-    if(!CLIENT_SECRET || !CLIENT_ID){
-        return 
+    const REDIRECT_URI = process.env.REDIRECT_URI_ML
+
+    if(!CLIENT_SECRET || !CLIENT_ID || !REDIRECT_URI) {
+          throw  Error("credenciais ausentes")
     }
 
     const params = new URLSearchParams();
@@ -57,7 +58,7 @@ export const exchangeCodeForToken = async (code: string, state:state) => {
     params.append('client_id', CLIENT_ID); 
     params.append('client_secret', CLIENT_SECRET); // ROTE ESTE SEGREDO IMEDIATAMENTE
     params.append('code', code);
-    params.append('redirect_uri', 'https://3acc823e2f47.ngrok-free.app/v1/ml/integrations/callback');
+    params.append('redirect_uri', REDIRECT_URI);
     params.append('state', JSON.stringify(state));
    
     try {
@@ -109,7 +110,9 @@ export const exchangeCodeForToken = async (code: string, state:state) => {
    
 };
 
-
+export const tokensRefres = async ()=>{
+        
+} 
 
   export const getUserCode = async ()=>{
 

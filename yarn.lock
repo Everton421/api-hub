@@ -255,6 +255,7 @@ anymatch@~3.1.2:
     jsonwebtoken "^9.0.2"
     multer "^1.4.5-lts.1"
     mysql "^2.18.1"
+    mysql2 "^3.15.3"
     nodemailer "^6.9.16"
     swagger-ui-express "^5.0.1"
     tsx "^4.20.6"
