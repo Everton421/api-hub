@@ -27,14 +27,11 @@ interface responseDecodToken  {
 const ML_API_URL = 'https://api.mercadolibre.com';
 
 export const exchangeCodeForToken = async (code: string, state: state) => {
-    const dateService = new DateService();
+   
     const insertaMLAccountClient = new InsertaMLAccountClient();
     const selectMlAccountClient = new SelectMLAccountClient();
     const updateMlAccountClient = new UpdateMLAccountClient();
-    const updateUsersMlIntegration = new UpdateUsersMLIntegrations();
-    const selectUsersMlIntegration = new SelectUsersMlIntegrations();
-    const insertUsersMlIntegration = new InsertUsersMlintegration();
-
+ 
     const CLIENT_ID = process.env.APP_ID_ML;
     const CLIENT_SECRET = process.env.SECRET_ML;
     const REDIRECT_URI = process.env.REDIRECT_URI_ML;
@@ -60,7 +57,7 @@ export const exchangeCodeForToken = async (code: string, state: state) => {
         const expirationDate = dayjs().add(expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
         if (response.status === 200 && access_token) {
-            const dataUser = DecodedToken(String(state)).payload;
+            const dataUser = DecodedStateToken(String(state)).payload;
             if (!dataUser) return;
 
             let dbName = `\`${dataUser.cnpj}\``;
@@ -70,10 +67,10 @@ export const exchangeCodeForToken = async (code: string, state: state) => {
                 user_id: dataUser.codigo,
                 ml_user_id: user_id,
                 refresh_token: refresh_token,
-                token_expires_in: expirationDate // <--- AQUI USAMOS A DATA CALCULADA
+                token_expires_in: expirationDate  
             };
 
-            // Lógica de Insert/Update (Mantida igual a sua)
+           
             let resultValidUser = await selectMlAccountClient.fincByIdMLandCodeSystem(dbName, dataUser.codigo, user_id);
             if (resultValidUser.length > 0) {
                 await updateMlAccountClient.update(dbName, userMlAccount);
@@ -81,13 +78,13 @@ export const exchangeCodeForToken = async (code: string, state: state) => {
                 await insertaMLAccountClient.cadastrar(dbName, userMlAccount);
             }
 
-            // Lógica de Mapeamento Global (Mantida igual a sua)
-            let validuserMlIntegration = await selectUsersMlIntegration.fincByIdMLandCodeSystem(dataUser.codigo, user_id);
-            if (validuserMlIntegration.length > 0) {
-                await updateUsersMlIntegration.update({ cnpj: dataUser.cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: dataUser.codigo, ml_user_id: user_id });
-            } else {
-                await insertUsersMlIntegration.cadastrar({ cnpj: dataUser.cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: dataUser.codigo, ml_user_id: user_id });
-            }
+             
+           // let validuserMlIntegration = await selectUsersMlIntegration.fincByIdMLandCodeSystem(dataUser.codigo, user_id);
+           // if (validuserMlIntegration.length > 0) {
+            //    await updateUsersMlIntegration.update({ cnpj: dataUser.cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: dataUser.codigo, ml_user_id: user_id });
+            //} else {
+             //   await insertUsersMlIntegration.cadastrar({ cnpj: dataUser.cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: dataUser.codigo, ml_user_id: user_id });
+            //}
         }
 
         return { access_token, refresh_token, expirationDate, ml_user_id: user_id };
@@ -183,7 +180,7 @@ export const getValidAccessToken = async (cnpj: string, systemUserCode: number, 
         return base_uri
   }
  
-  export function DecodedToken( token:string ): responseDecodToken {
+  export function DecodedStateToken( token:string ): responseDecodToken {
           const secret = process.env.SECRET_ML_ENCODE_STATE;
           if(!secret ){
               return { erro: true, msg: `secret nao informado`}
