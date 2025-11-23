@@ -28,8 +28,9 @@ async callback(req: Request, res: Response) {
 
          const payload = {
             ml_user_id: returnTokens.ml_user_id,
-            system_user_code: payloadState.codigo // Assumindo que vc decodificou o state antes
-        };
+            system_user_code: payloadState.codigo, // Assumindo que vc decodificou o state antes
+            cnpj:payloadState.cnpj
+          };
  
         const secret = process.env.SECRET_ML_ENCODE_STATE; 
         
@@ -41,7 +42,7 @@ async callback(req: Request, res: Response) {
 
         // 3. Redireciona para a tela de "Nomear Integração" no Next.js
         // Passamos o token na URL
-        return res.redirect(`http://localhost:3000/integracoes/concluir?data=${tempToken}`);
+        return res.redirect(`http://localhost:8000/integracoes?/concluir?data=${tempToken}`);
 
 
     } catch (error) {
@@ -141,13 +142,10 @@ async callback(req: Request, res: Response) {
              if (validuserMlIntegration.length > 0) {
                  await updateUsersMlIntegration.update({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
              } else {
-                 await insertUsersMlIntegration.cadastrar({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
+                 await insertUsersMlIntegration.cadastrar({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id, integration_name:integrationName });
              }
-
-
-             
-         
-
+ 
+          
         return res.status(200).json({ msg: "Integração concluída com sucesso!" });
 
     } catch (error) {

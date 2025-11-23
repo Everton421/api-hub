@@ -48,11 +48,13 @@ import { MlItensController } from "./controllers/ml/get-itens";
       return  res.json({"ok":true});
     })
   
-  router.get(`${versao}/ml/integrations/notification`, new MlController().callback);
+ router.get(`${versao}/ml/integrations/notification`, new MlController().callback);
 
  router.get(`${versao}/ml/integrations/callback`, new MlController().callback );
 
-router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlController().getCode);
+ router.post(`${versao}/ml/integrations/finalizeIntegration` , AuthMiddleware , new MlController().finalizeIntegration);
+ 
+ router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlController().getCode);
 
  router.get(`${versao}/ml/items`, AuthMiddleware, new MlItensController().getItems);
 

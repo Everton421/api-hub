@@ -12,6 +12,7 @@ export class UpdateUsersMLIntegrations{
 
                 const sql =` UPDATE  ${db_api}.users_ml_integrations SET  
                                     cnpj = '${user.cnpj}' 
+                                    
                                    WHERE system_user_code = ${user.system_user_code}
                                    AND ml_user_id = ${user.ml_user_id}
                             `;
