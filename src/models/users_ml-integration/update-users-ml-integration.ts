@@ -11,8 +11,8 @@ export class UpdateUsersMLIntegrations{
        return new Promise( async ( resolve, reject)=>{
 
                 const sql =` UPDATE  ${db_api}.users_ml_integrations SET  
-                                    cnpj = '${user.cnpj}' 
-                                    
+                                    cnpj = '${user.cnpj}',
+                                    integration_name = '${user.integration_name}' 
                                    WHERE system_user_code = ${user.system_user_code}
                                    AND ml_user_id = ${user.ml_user_id}
                             `;

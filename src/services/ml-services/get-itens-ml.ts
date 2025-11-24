@@ -3,7 +3,7 @@ import { getValidAccessToken } from "../integration/mercadolivre-integration/ml-
 
 const ML_API_URL = 'https://api.mercadolibre.com';
 
-export class MlItemsService {
+export class GetMlItemsService {
 
     async getItemsFromSeller(cnpj: string, systemUserCode: number, mlUserId: number) {
         try {

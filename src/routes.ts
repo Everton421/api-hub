@@ -25,8 +25,11 @@ import { MovimentosProdutosController } from "./controllers/movimentos-produtos/
 import { LocaisController } from "./controllers/locais/locais-controller";
 import { InsertDistribuicaoLocaisSetor } from "./models/distribuicao_locais_setor/insert";
 import { DistribuicaoController } from "./controllers/distribuicao-locais/distribuicao-controller";
-import { MlController } from "./controllers/integration/ml-controlller/ml-controller";
+import { MlIntegrationController } from "./controllers/integration/ml-controlller/ml-integration-controller";
 import { MlItensController } from "./controllers/ml/get-itens";
+import { MlAccountsController } from "./controllers/ml/get-accounts";
+import { PostItensController } from "./controllers/ml/post-itens";
+import { MlToolsController } from "./controllers/ml/ml-tools-controller";
 
   const crypt = require('crypt');
   const router = Router();
@@ -47,16 +50,20 @@ import { MlItensController } from "./controllers/ml/get-itens";
     router.get(`${versao}/teste`,AuthMiddleware,(req,res)=>{ 
       return  res.json({"ok":true});
     })
-  
- router.get(`${versao}/ml/integrations/notification`, new MlController().callback);
 
- router.get(`${versao}/ml/integrations/callback`, new MlController().callback );
+ router.post(`${versao}/ml/tools/predict-category`, AuthMiddleware, new MlToolsController().predictCategory);
+ router.get(`${versao}/ml/integrations/notification`, new MlIntegrationController().callback);
 
- router.post(`${versao}/ml/integrations/finalizeIntegration` , AuthMiddleware , new MlController().finalizeIntegration);
+ router.get(`${versao}/ml/integrations/callback`, new MlIntegrationController().callback );
+
+ router.post(`${versao}/ml/integrations/finalizeIntegration` , AuthMiddleware , new MlIntegrationController().finalizeIntegration);
  
- router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlController().getCode);
+ router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlIntegrationController().getCode);
 
+
+ router.post(`${versao}/ml/items`, AuthMiddleware, new PostItensController().post);
  router.get(`${versao}/ml/items`, AuthMiddleware, new MlItensController().getItems);
+ router.get(`${versao}/ml/accounts/:codigo`, AuthMiddleware, new MlAccountsController().getAccounts);
 
  
  router.get(`${versao}/offline/produtos`,    AuthMiddleware,  new ProdutoController().findAll )//ok

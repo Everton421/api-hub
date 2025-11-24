@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { MlItemsService } from "../../services/ml-services/get-itens-ml"; 
 import { SelectUsersMlIntegrations } from "../../models/users_ml-integration/select-users-ml-integration";  
 import { DecodedToken } from "../../services/decoded-token/decodedToken";  
+import { GetMlItemsService } from "../../services/ml-services/get-itens-ml";
 
 export class MlItensController {
     // ... seus métodos anteriores (callback, getCode) ...
@@ -45,7 +45,7 @@ export class MlItensController {
             const mlUserId = integracoes[0].ml_user_id;
 
             // 3. Chama o Service para buscar os itens
-            const mlItemsService = new MlItemsService();
+            const mlItemsService = new GetMlItemsService();
             const result = await mlItemsService.getItemsFromSeller(userCnpj, systemUserCode, mlUserId);
 
             return res.status(200).json(result);

@@ -8,7 +8,7 @@ import { InsertUsersMlintegration } from "../../../models/users_ml-integration/i
 import { UpdateUsersMLIntegrations } from "../../../models/users_ml-integration/update-users-ml-integration";
 import { SelectUsersMlIntegrations } from "../../../models/users_ml-integration/select-users-ml-integration";
 
-export class MlController{
+export class MlIntegrationController{
 
 async callback(req: Request, res: Response) {
   console.log(req.query)
@@ -42,7 +42,7 @@ async callback(req: Request, res: Response) {
 
         // 3. Redireciona para a tela de "Nomear Integração" no Next.js
         // Passamos o token na URL
-        return res.redirect(`http://localhost:8000/integracoes?/concluir?data=${tempToken}`);
+        return res.redirect(`http://localhost:8000/integracoes?data=${tempToken}`);
 
 
     } catch (error) {
@@ -140,7 +140,7 @@ async callback(req: Request, res: Response) {
         // 2. FINALMENTE insere na tabela principal
     const validuserMlIntegration = await selectUsersMlIntegration.fincByIdMLandCodeSystem(system_user_code , ml_user_id);
              if (validuserMlIntegration.length > 0) {
-                 await updateUsersMlIntegration.update({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
+                 await updateUsersMlIntegration.update({ integration_name: integrationName, cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
              } else {
                  await insertUsersMlIntegration.cadastrar({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id, integration_name:integrationName });
              }
