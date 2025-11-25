@@ -12,7 +12,8 @@ export interface PublishItem{
     pictures: string[]; 
     brand?: string; 
     model?: string;
-    ean?: string;  
+    ean?: string; 
+    attributes:any
 }
 
 const ML_API_URL = 'https://api.mercadolibre.com';
@@ -23,32 +24,25 @@ export class PostMlItemsService {
 
     async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, data: PublishItem ) {
         try {
-            // 1. Garante Token Válido
+          
             const accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
+ 
+               let finalAttributes = [];
 
-            // 2. Prepara os Atributos (O Pesadelo do ML)
-            // O ML rejeita produtos sem BRAND e MODEL na maioria das categorias.
-            // Aqui fazemos um tratamento para garantir que enviamos ALGO.
-            const attributes = [
-                {
-                    id: "BRAND",
-                    value_name: data.brand || "Outras Marcas" // Fallback se vazio
-                },
-                {
-                    id: "MODEL",
-                    value_name: data.model || "Outros" // Fallback se vazio
-                }
+        if (data.attributes && data.attributes.length > 0) {
+            // Se vieram atributos dinâmicos, usamos eles!
+            finalAttributes = data.attributes;
+        } else {
+            // FALLBACK: Se não veio nada (produtos antigos/simples), criamos o básico
+            finalAttributes = [
+                { id: "BRAND", value_name: data.brand || "Genérica" },
+                { id: "MODEL", value_name: data.model || "Padrão" }
             ];
-            
-            // Se tiver EAN/GTIN, adiciona (Melhora muito a exposição)
             if (data.ean) {
-                attributes.push({
-                    id: "GTIN",
-                    value_name: data.ean
-                });
+                finalAttributes.push({ id: "GTIN", value_name: data.ean });
             }
+        }
 
-            // 3. Monta o Payload Oficial do Mercado Livre
             const mlPayload = {
                 title: data.title,
                 category_id: data.category_id,
@@ -62,12 +56,12 @@ export class PostMlItemsService {
                     plain_text: data.description || "Produto enviado via integração MicroERP"
                 },
                 pictures: data.pictures.map(url => ({ source: url })),
-                attributes: attributes,
+                attributes: finalAttributes,
                 // Garantir envio correios (Mercado Envios)
                 shipping: {
-                    mode: "me2", // Mercado Envios 2 (Padrão)
+                    mode: "me2",  
                     local_pick_up: false,
-                    free_shipping: false // Lógica complexa, melhor deixar false e configurar no painel por enquanto
+                    free_shipping: false  
                 }
             };
 
@@ -79,7 +73,6 @@ export class PostMlItemsService {
                 }
             });
 
-            // 5. Retorna sucesso com o ID gerado (ex: MLB123456)
             return {
                 success: true,
                 ml_id: response.data.id,
@@ -88,8 +81,6 @@ export class PostMlItemsService {
             };
 
         } catch (error: any) {
-            // Tratamento de erro detalhado é CRUCIAL aqui
-            // O ML retorna erros muito específicos dentro de error.response.data.cause
             console.error("Erro ao publicar:", JSON.stringify(error.response?.data, null, 2));
 
             let errorMessage = "Erro ao publicar no Mercado Livre.";

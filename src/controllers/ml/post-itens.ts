@@ -39,12 +39,13 @@ export class PostItensController{
                     description: req.body.description,
                     pictures: req.body.pictures || [], // Array de strings
                     brand: req.body.brand, // Opcional
-                    model: req.body.model  // Opcional
+                    model: req.body.model,  // Opcional
+                     attributes: req.body.attributes || []
                 };
 
                 const mlService = new PostMlItemsService();
                 const result = await mlService.publishItem(userCnpj, systemUserCode, mlUserId, itemData);
-
+                // const result = req.body
                 return res.status(201).json(result);
 
         }catch(e){

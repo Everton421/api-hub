@@ -31,7 +31,10 @@ export  async function AuthMiddleware(  req:Request, res:Response,  next:NextFun
                           
             })
             
+            try{
+
               let resulValidContr = await  validaContratoLogin(cnpj);
+              
               if(resulValidContr.valido === false ){
                  return res.status(400).json(
                      {
@@ -41,6 +44,11 @@ export  async function AuthMiddleware(  req:Request, res:Response,  next:NextFun
                          });
          
                      }
+            }catch(e){
+                   return res.status(500).json(
+                     { erro:true, msg:"Ocorreu um erro ao tentar verificar o contrato!"});
+            }
+
 
 
   next();
