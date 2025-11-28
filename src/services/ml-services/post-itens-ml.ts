@@ -23,9 +23,16 @@ export class PostMlItemsService {
     // ... seus métodos anteriores (getItemsFromSeller, predictCategory) ...
 
     async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, data: PublishItem ) {
+        let accessToken
         try {
-          
-            const accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
+            
+            try{
+                  accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
+            }catch(e){
+                if(e instanceof Error ) {
+                  throw new Error(e.message);
+                }
+            }   
  
                let finalAttributes = [];
 
