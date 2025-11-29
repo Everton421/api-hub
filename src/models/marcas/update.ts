@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig"
-import { marca } from "../../types/marcaProduto/marca";
+import { marca } from "../../types/marcaProduto/type-marca";
 
 export class UpdateMarca{
 

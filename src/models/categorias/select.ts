@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig"
-import { categoria } from "../../types/categoriaProduto/categoria";
+import { categoria } from "../../types/categoriaProduto/type-categoria";
 
 
 export class Select_Categorias{

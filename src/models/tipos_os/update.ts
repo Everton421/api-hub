@@ -1,6 +1,6 @@
 import { conn } from "../../database/databaseConfig"
-import { marca } from "../../types/marcaProduto/marca";
-import { tipo_os } from "../../types/tipo_os/tipo_os";
+import { marca } from "../../types/marcaProduto/type-marca";
+import { tipo_os } from "../../types/tipo_os/type-tipo-os";
 
 export class Update_tipo_os{
 

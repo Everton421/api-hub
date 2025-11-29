@@ -28,7 +28,7 @@ import { DistribuicaoController } from "./controllers/distribuicao-locais/distri
 import { MlIntegrationController } from "./controllers/integration/ml-controlller/ml-integration-controller";
 import { MlItensController } from "./controllers/ml/get-itens";
 import { MlAccountsController } from "./controllers/ml/get-accounts";
-import { PostItensController } from "./controllers/ml/post-itens";
+import { AnunciosController } from "./controllers/ml/anuncios-controller";
 import { MlToolsController } from "./controllers/ml/ml-tools-controller";
 
   const crypt = require('crypt');
@@ -61,8 +61,8 @@ import { MlToolsController } from "./controllers/ml/ml-tools-controller";
  router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlIntegrationController().getCode);
 
 
- router.post(`${versao}/ml/items`, AuthMiddleware, new PostItensController().post);
- router.get(`${versao}/ml/items`, AuthMiddleware, new MlItensController().getItems);
+ router.post(`${versao}/ml/anuncios/create`, AuthMiddleware, new AnunciosController().post);
+ router.get(`${versao}/ml/anuncios`, AuthMiddleware, new MlItensController().getItems);
  router.get(`${versao}/ml/accounts/:codigo`, AuthMiddleware, new MlAccountsController().getAccounts);
 
  

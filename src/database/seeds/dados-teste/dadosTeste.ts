@@ -8,13 +8,13 @@ import { InsertProdutos } from "../../../models/produtos/insert";
 import { InsertServico } from "../../../models/servicos/insert";
 import { Insert_tipos_os } from "../../../models/tipos_os/insert";
 import { Insert_Veiculos } from "../../../models/veiculo/insert";
-import { categoria } from "../../../types/categoriaProduto/categoria";
-import { formaPagamentoBanco } from "../../../types/formas_pagamento/formas_pagamento";
-import { marca } from "../../../types/marcaProduto/marca";
-import { ProdutoBanco } from "../../../types/produto/produto";
-import { service } from "../../../types/servico/servico";
-import { tipo_os } from "../../../types/tipo_os/tipo_os";
-import { VeiculoBanco } from "../../../types/veiculo/veiculo";
+import { categoria } from "../../../types/categoriaProduto/type-categoria";
+import { formaPagamentoBanco } from "../../../types/formas_pagamento/type-formas-pagamento";
+import { marca } from "../../../types/marcaProduto/type-marca";
+import { ProdutoBanco } from "../../../types/produto/type-produto";
+import { service } from "../../../types/servico/type-servico";
+import { tipo_os } from "../../../types/tipo_os/type-tipo-os";
+import { VeiculoBanco } from "../../../types/veiculo/type-veiculo";
 
 type product = Omit<ProdutoBanco,'fotos'>
 

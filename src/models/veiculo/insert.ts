@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig"
-import { VeiculoBanco } from "../../types/veiculo/veiculo";
+import { VeiculoBanco } from "../../types/veiculo/type-veiculo";
 
 
 

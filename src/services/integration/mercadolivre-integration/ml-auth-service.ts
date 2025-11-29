@@ -4,7 +4,7 @@ import Jwt from "jsonwebtoken";
 import { InsertaMLAccountClient } from "../../../models/ml-accounts/insert-ml-accounts";
 import { SelectMLAccountClient } from "../../../models/ml-accounts/select-ml-accounts";
 import { UpdateMLAccountClient } from "../../../models/ml-accounts/update-ml-accounts";
- import { InsertUserMl } from "../../../types/ml-account/ml-account";
+ import { InsertUserMl } from "../../../types/ml-account/type-ml-account";
 
  
 type dataStateuser = {

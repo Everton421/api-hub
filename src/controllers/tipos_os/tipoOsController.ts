@@ -4,7 +4,7 @@ import { SelectTipo_os } from "../../models/tipos_os/select";
 import { DateService } from "../../services/date-service/dateService";
 import { Insert_tipos_os } from "../../models/tipos_os/insert";
 import { Update_tipo_os } from "../../models/tipos_os/update";
-import { tipo_os } from "../../types/tipo_os/tipo_os";
+import { tipo_os } from "../../types/tipo_os/type-tipo-os";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class TipoOsController{

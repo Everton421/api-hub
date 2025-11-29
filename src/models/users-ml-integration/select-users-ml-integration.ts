@@ -1,6 +1,6 @@
 import { conn, db_api } from "../../database/databaseConfig";
-import { IMl_account } from "../../types/ml-account/ml-account";
-import { IUsersMlIntegrations } from "../../types/users_ml_integrations/users_ml_integrations";
+import { IMl_account } from "../../types/ml-account/type-ml-account";
+import { IUsersMlIntegrations } from "../../types/users_ml_integrations/type-users-ml-integrations";
 
 export class SelectUsersMlIntegrations{
 

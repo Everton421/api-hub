@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { DecodedStateToken, exchangeCodeForToken } from "../../../services/integration/mercadolivre-integration/ml-auth-service";
 import { DecodedToken } from "../../../services/decoded-token/decodedToken";
 import jwt from 'jsonwebtoken';
-import { CreateTableMLAccounts } from "../../../database/tables-structures/ml-accounts";
+import { CreateTableMLAccounts } from "../../../database/tables-structures/create-table-ml-accounts";
 import { DateService } from "../../../services/date-service/dateService";
-import { InsertUsersMlintegration } from "../../../models/users_ml-integration/insert-users-ml-integration";
-import { UpdateUsersMLIntegrations } from "../../../models/users_ml-integration/update-users-ml-integration";
-import { SelectUsersMlIntegrations } from "../../../models/users_ml-integration/select-users-ml-integration";
+import { InsertUsersMlintegration } from "../../../models/users-ml-integration/insert-users-ml-integration";
+import { UpdateUsersMLIntegrations } from "../../../models/users-ml-integration/update-users-ml-integration";
+import { SelectUsersMlIntegrations } from "../../../models/users-ml-integration/select-users-ml-integration";
 
 export class MlIntegrationController{
 

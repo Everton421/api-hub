@@ -1,5 +1,5 @@
-import { categoria } from "../categoriaProduto/categoria"
-import { marca } from "../marcaProduto/marca"
+import { categoria } from "../categoriaProduto/type-categoria"
+import { marca } from "../marcaProduto/type-marca"
 
 export type ProdutoBanco =
  {

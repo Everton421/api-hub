@@ -4,7 +4,7 @@ import { Insert_formaPagamento } from "../../models/formas_pagamento/insert";
 import { DateService } from "../../services/date-service/dateService";
 import { update_formaPagamento } from "../../models/formas_pagamento/update";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
-import { queryFpgt } from "../../types/formas_pagamento/formas_pagamento";
+import { queryFpgt } from "../../types/formas_pagamento/type-formas-pagamento";
 
 export class FormasController{
  

@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig"
-import { InsertUserMl } from "../../types/ml-account/ml-account";
+import { InsertUserMl } from "../../types/ml-account/type-ml-account";
 
 
 export class InsertaMLAccountClient{

@@ -1,5 +1,5 @@
 import { conn, db_api } from "../../database/databaseConfig"
-import { queryUsuarioEmpresa } from "../../types/usuarioEmpresa/usuarioEmpresa";
+import { queryUsuarioEmpresa } from "../../types/usuarioEmpresa/type-usuario-empresa";
 import { newUserEmpresa, usuarioEmpresa } from "./interface";
 
 export class Select_UsuarioEmpresa{

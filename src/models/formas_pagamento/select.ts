@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig";
-import { formaPagamentoBanco, queryFpgt } from "../../types/formas_pagamento/formas_pagamento";
+import { formaPagamentoBanco, queryFpgt } from "../../types/formas_pagamento/type-formas-pagamento";
 
 
 

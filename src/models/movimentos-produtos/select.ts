@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig";
-import { ProdutoBanco } from "../../types/produto/produto";
+import { ProdutoBanco } from "../../types/produto/type-produto";
 import { Select_produtos } from "../produtos/select";
 import { SelectSetor } from "../setor/select";
 import { ISetor } from "../setor/types/setor";

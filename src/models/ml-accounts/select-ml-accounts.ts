@@ -1,5 +1,5 @@
 import { conn, db_api } from "../../database/databaseConfig";
-import { IMl_account } from "../../types/ml-account/ml-account";
+import { IMl_account } from "../../types/ml-account/type-ml-account";
 
 export class SelectMLAccountClient{
 

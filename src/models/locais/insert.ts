@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig";
-import { ILocal } from "../../types/locais/local";
+import { ILocal } from "../../types/locais/type-local";
 
 type localSemCodigo = Omit<ILocal,'codigo'>
 

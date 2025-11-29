@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { SelectUsersMlIntegrations } from "../../models/users_ml-integration/select-users-ml-integration";  
+import { SelectUsersMlIntegrations } from "../../models/users-ml-integration/select-users-ml-integration";  
 import { DecodedToken } from "../../services/decoded-token/decodedToken";  
 import { GetMlItemsService } from "../../services/ml-services/get-itens-ml";
 

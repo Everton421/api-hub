@@ -1,6 +1,6 @@
 import { conn } from "../../database/databaseConfig"
-import { marca } from "../../types/marcaProduto/marca";
-import { VeiculoBanco } from "../../types/veiculo/veiculo";
+import { marca } from "../../types/marcaProduto/type-marca";
+import { VeiculoBanco } from "../../types/veiculo/type-veiculo";
 
 export class update_veiculo{
 

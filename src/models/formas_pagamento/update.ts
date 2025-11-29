@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig";
-import { formaPagamentoBanco } from "../../types/formas_pagamento/formas_pagamento";
+import { formaPagamentoBanco } from "../../types/formas_pagamento/type-formas-pagamento";
 
 
 

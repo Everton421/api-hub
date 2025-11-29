@@ -6,7 +6,7 @@ import { Select_Categorias } from "../../models/categorias/select";
 import { Insert_Categorias } from "../../models/categorias/insert";
 import { DateService } from "../../services/date-service/dateService";
 import { updateCategoria } from "../../models/categorias/update";
-import { categoria } from "../../types/categoriaProduto/categoria";
+import { categoria } from "../../types/categoriaProduto/type-categoria";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class CategoriaController{

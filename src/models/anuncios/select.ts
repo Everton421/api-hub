@@ -1,90 +1,20 @@
 import { conn } from "../../database/databaseConfig"
-import { marca } from "../../types/marcaProduto/type-marca";
+import { typeAnuncios } from "../../types/anuncios/type-anuncio";
+import { categoria } from "../../types/categoriaProduto/type-categoria";
 
 
-export class Select_Marcas{
+export class SelectAnuncios{
 
-
-    async busca_por_descricao(empresa:string, descricao:string , limit:number) : Promise<marca[]>{
-
-        return new Promise( async (resolve, reject)=>{
-
-             let sql = ` SELECT *,
-                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.marcas 
-               WHERE descricao like ? `
-               let param= [ `%${descricao}%`, limit ]
- 
-            await conn.query( sql , param ,(err:any, result :any)=>{
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(result);
-                }
-            })
-        })
-    }
-
-    async busca_por_codigo(empresa:string, codigo:number,limit:number ): Promise<marca[]>{
+    
+    async busca_geral(empresa:string , data_recadastro?:string, limit?:number): Promise<typeAnuncios[]>{
 
         return new Promise( async (resolve, reject)=>{
 
              let sql = ` SELECT *,
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.marcas 
-               WHERE codigo = ?
-               limit ?
-               `
-               let param= [ codigo, limit ]
- 
-            await conn.query( sql, param ,(err:any, result :any)=>{
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(result);
-                }
-            })
-        })
-    }
+             FROM ${empresa}.anuncios  `
 
-    async buscaPorId(empresa:string, id:number , limit:number): Promise<marca[]>{
-
-        return new Promise( async (resolve, reject)=>{
-
-             let sql = ` SELECT *,
-                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.marcas 
-               WHERE id = ?
-               limit ? 
-               `
-
-            let param= [ id, limit ]
-
-            await conn.query( sql, param  ,(err:any, result :any)=>{
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(result);
-                }
-            })
-        })
-    }
-
-
-    async busca_geral(empresa:string, limit:number , data_recadastro:string): Promise<marca[]>{
-
-        return new Promise( async (resolve, reject)=>{
-
-             let sql = ` SELECT *,
-                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.marcas   
-              
-             `
-  
              let paramQuery =[];
              let valueQuery=[];
 
@@ -102,7 +32,7 @@ export class Select_Marcas{
                      finalSql = sql + paramQuery;
                  }
  
-            await conn.query( finalSql,valueQuery  ,(err:any, result:any )=>{
+            await conn.query( finalSql ,valueQuery ,(err:any, result:any )=>{
                 if(err){
                     reject(err);
                 }else{
@@ -112,16 +42,69 @@ export class Select_Marcas{
         })
     }
 
+    async buscaPorid(empresa:string , id:number, limit:number): Promise<typeAnuncios[]>{
+
+        return new Promise( async (resolve, reject)=>{
+
+             let sql = ` SELECT *,
+                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+             FROM ${empresa}.anuncios
+            where id = ? limit ?
+             `
+            const params = [ id, limit ];
+            await conn.query( sql, params  ,(err:any, result:any )=>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(result);
+                }
+            })
+        })
+    }
+
+    /**
+     * 
+     * @param empresa 
+     * @param id id do anuncio
+     * @returns 
+     */
+    async buscaPorCodigoAnuncio(empresa:string , id:number  ){
+
+        return new Promise( async (resolve, reject)=>{
+
+             let sqlAnuncios = ` SELECT an.*,
+                DATE_FORMAT(an.data_cadastro, '%Y-%m-%d') AS data_cadastro,
+                DATE_FORMAT(an.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+             FROM ${empresa}.anuncios an
+             where an.id = ? 
+             `;
+
+            const params = [id ]
+            await conn.query( sqlAnuncios, params  ,(err:any, result:any )=>{
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(result);
+                    if( result.length > 0 ){
+
+                    }
+                }
+            })
+        })
+    }
 
 
-    async novaBusca(empresa: string, query:any):Promise<marca[]> {
+
+
+ async novaBusca(empresa: string, query:any):Promise<typeAnuncios[]> {
 
         let {
             codigo,
             id,
             descricao,
-            limit,
-            ativo
+            ativo,
+            limit  
         } = query;
 
         
@@ -129,7 +112,7 @@ export class Select_Marcas{
          SELECT *,
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.marcas 
+             FROM ${empresa}.categorias 
         `;  
 
         const conditions: string[] = [];
@@ -147,12 +130,12 @@ export class Select_Marcas{
             conditions.push("id = ?");
             params.push(Number(id));
         }
-
-         if (ativo) {
+    
+        if (ativo) {
             conditions.push("ativo = ?");
             params.push(ativo);
         }
-    
+
         if (descricao) {
             conditions.push("descricao LIKE ?");
             params.push(`%${descricao}%`);  
@@ -175,8 +158,8 @@ export class Select_Marcas{
 
         try {
        
-             return new Promise <marca[]> ( async ( resolve , reject ) =>{
-                await conn.query(finalSql, params,(err:any, result:marca[] )=>{
+             return new Promise <categoria[]> ( async ( resolve , reject ) =>{
+                await conn.query(finalSql, params,(err:any, result:categoria[] )=>{
                     if (err){
                         reject(err);
                     }else{
@@ -191,11 +174,9 @@ export class Select_Marcas{
         } catch (err) {
             console.error("Erro ao executar a query:", err);
             // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
-            throw new Error("Falha ao buscar marcas no banco de dados.");
+            throw new Error("Falha ao buscar categorias no banco de dados.");
             // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
         }
     }
-
-    
 
 }

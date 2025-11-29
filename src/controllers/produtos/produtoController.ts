@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { Select_produtos } from "../../models/produtos/select";
-import { ProdutoBanco, ProdutoCompleto } from "../../types/produto/produto";
+import { ProdutoBanco, ProdutoCompleto } from "../../types/produto/type-produto";
 import { InsertProdutos } from "../../models/produtos/insert";
 import { conn } from "../../database/databaseConfig";
 import { UpdateProdutos } from "../../models/produtos/update";
 import { Select_Marcas } from "../../models/marcas/select";
 import { Select_Categorias } from "../../models/categorias/select";
-import { marca } from "../../types/marcaProduto/marca";
-import { categoria } from "../../types/categoriaProduto/categoria";
+import { marca } from "../../types/marcaProduto/type-marca";
+import { categoria } from "../../types/categoriaProduto/type-categoria";
 import { DateService } from "../../services/date-service/dateService";
 import { Select_fotos } from "../../models/fotos/select";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";

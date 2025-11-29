@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig"
-import { ProdutoBanco } from "../../types/produto/produto"
+import { ProdutoBanco } from "../../types/produto/type-produto"
 
 
 export class InsertProdutos{

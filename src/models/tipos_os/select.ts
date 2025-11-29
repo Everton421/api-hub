@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig";
-import { tipo_os } from "../../types/tipo_os/tipo_os";
+import { tipo_os } from "../../types/tipo_os/type-tipo-os";
 
 export class SelectTipo_os{
 

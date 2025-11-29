@@ -1,7 +1,7 @@
 import { conn, db_api } from "../../database/databaseConfig"
-import { InsertUserMl } from "../../types/ml-account/ml-account";
+import { InsertUserMl } from "../../types/ml-account/type-ml-account";
  
-import { IUsersMlIntegrations } from "../../types/users_ml_integrations/users_ml_integrations";
+import { IUsersMlIntegrations } from "../../types/users_ml_integrations/type-users-ml-integrations";
 
 export class UpdateUsersMLIntegrations{
 

@@ -1,5 +1,10 @@
 import axios from "axios";
 import { getValidAccessToken } from "../integration/mercadolivre-integration/ml-auth-service"; 
+import { CreateTablesAnuncios } from "../../database/tables-structures/create-table-anuncios";
+import { delay } from "../delay-service/delay";
+import { InsertAnuncios } from "../../models/anuncios/insert";
+import { Select_produtos } from "../../models/produtos/select";
+import { InsertAtributosAnuncios } from "../../models/atributos-anuncios/insert";
  
 export interface PublishItem{
      title: string;
@@ -15,6 +20,7 @@ export interface PublishItem{
     ean?: string; 
     attributes:any
 }
+type typeFinalAttributes = { id: string , value_name:string }
 
 const ML_API_URL = 'https://api.mercadolibre.com';
 
@@ -22,19 +28,25 @@ export class PostMlItemsService {
 
     // ... seus métodos anteriores (getItemsFromSeller, predictCategory) ...
 
-    async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, data: PublishItem ) {
+    async publishItem(cnpj: string, systemUserCode: number, mlUserId: number,codigo_produto:number, integrationId:number, data: PublishItem ) {
+        const createTablesAnuncios = new  CreateTablesAnuncios();
+        const insertAnuncios = new InsertAnuncios();
+        const insertAtributosAnuncios  = new InsertAtributosAnuncios();
+
         let accessToken
         try {
             
-            try{
-                  accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
-            }catch(e){
-                if(e instanceof Error ) {
-                  throw new Error(e.message);
-                }
-            }   
- 
-               let finalAttributes = [];
+         //   try{
+         //         accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
+         //   }catch(e){
+         //       if(e instanceof Error ) {
+         //         throw new Error(e.message);
+         //       }
+         //   }   
+  
+
+
+               let finalAttributes:typeFinalAttributes[] = [];
 
         if (data.attributes && data.attributes.length > 0) {
             // Se vieram atributos dinâmicos, usamos eles!
@@ -71,23 +83,85 @@ export class PostMlItemsService {
                     free_shipping: false  
                 }
             };
+            const database = `\`${cnpj}\``;
 
-            // 4. Envia para o Mercado Livre
-            const response = await axios.post(`${ML_API_URL}/items`, mlPayload, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json"
+            delay(1);
+            const ean = data.ean || ''
+     
+    const resultInsert = await insertAnuncios.insert(database, 
+        {
+            ativo:'S',
+            codigo_produto:codigo_produto,
+            descricao: data.title,
+            estoque: data.quantity,
+            id_externo: '1',
+            integration_id:integrationId,
+            link:'',
+            num_fabricante: ean,
+            titulo: data.title,
+            preco: data.price,
+            plataforma: 'ML',
+            sku_externo:null,
+            unidade_medida: '',
+        }
+     )
+     if( resultInsert.sucess && resultInsert.insertId ){
+        if(finalAttributes.length > 0 ){
+                for(const atr of finalAttributes){
+                       await insertAtributosAnuncios.insert(database,
+                             {
+                                  id_anuncio:resultInsert.insertId,
+                                  id_atributo: atr.id,
+                                  id_valor_atributo:null,
+                                  nome_atributo: atr.id,
+                                  valor_atributo:atr.value_name
+                          } )
                 }
-            });
-
-            return {
-                success: true,
-                ml_id: response.data.id,
-                permalink: response.data.permalink,
-                msg: "Anúncio criado com sucesso!"
-            };
+                for( const img of data.pictures ){
+                     await insertAtributosAnuncios.insert(database,
+                             {
+                                  id_anuncio:resultInsert.insertId,
+                                  id_atributo: 'IMAGEM_ANUNCIO',
+                                  id_valor_atributo:null,
+                                  nome_atributo: 'IMAGEM_ANUNCIO',
+                                  valor_atributo: img
+                          } )
+                }
+        }
+     
+     }
+        if(resultInsert.sucess){
+             return {
+                 success: true,
+                 ml_id: ` id do ML  variavel:response.data.id `,
+                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
+                 msg: "Anúncio criado com sucesso!"
+             };
+        }else{
+                return {
+                 success: false,
+                 ml_id: ` id do ML  variavel:response.data.id `,
+                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
+                 msg: resultInsert.message
+             };
+        }
+            // 4. Envia para o Mercado Livre
+         //   const response = await axios.post(`${ML_API_URL}/items`, mlPayload, {
+         //       headers: {
+         //           Authorization: `Bearer ${accessToken}`,
+         //           "Content-Type": "application/json"
+         //       }
+         //   });
+//
+         //   return {
+         //       success: true,
+         //       ml_id: response.data.id,
+         //       permalink: response.data.permalink,
+         //       msg: "Anúncio criado com sucesso!"
+         //   };
 
         } catch (error: any) {
+            console.log(error)
             console.error("Erro ao publicar:", JSON.stringify(error.response?.data, null, 2));
 
             let errorMessage = "Erro ao publicar no Mercado Livre.";
@@ -104,6 +178,7 @@ export class PostMlItemsService {
             }
 
             throw new Error(errorMessage);
+            
         }
     }
 }
