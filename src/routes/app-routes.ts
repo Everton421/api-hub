@@ -1,36 +1,30 @@
 import { Router,Request,Response, NextFunction } from "express";
-import { conn  } from "./database/databaseConfig";
+import { conn  } from "../database/databaseConfig";
 import 'dotenv/config';
-import { ProdutoController } from "./controllers/produtos/produtoController";
-import { ClienteController } from "./controllers/cliente/clienteController";
-import { CreateEmpresa } from "./controllers/empresa/empresaController";
-import { Login } from "./controllers/login/login";
-import { UsuariosController } from "./controllers/usuariosController/usuariosController";
-import { pedidoController } from "./controllers/pedido/pedidoController";
-import { ServicosController } from "./controllers/servicos/servicosController";
-import { FormasController } from "./controllers/formas_pagamento/formasController";
-import { TipoOsController } from "./controllers/tipos_os/tipoOsController";
-import { VeiculoController } from "./controllers/veiculo/VeiculoController";
-import { EnvioCodigoValidador } from "./controllers/recuperarConta/EnvioCodigoValidador";  
-import { Alterar_senha } from "./controllers/recuperarConta/alterarSenha";
-import { CategoriaController } from "./controllers/categorias/categoriaController";
-import { MarcasController } from "./controllers/marcas/marcasController";
-import { fotosController } from "./controllers/fotos/fotosController";
-import { pedidoNextController } from "./controllers/pedidoNext/pedidoNextController";
-import { AuthMiddleware    } from "./middleware/AuthMiddlewate/AuthMiddleware"; 
-import { SelectPedido } from "./models/pedido/selectPedido";
-import { ProdutoSetorController } from "./controllers/produtos-setor/produto-setor-controller";
-import { SetorController } from "./controllers/setor/setor-controller";
-import { MovimentosProdutosController } from "./controllers/movimentos-produtos/movimentos-produtos-controller";
-import { LocaisController } from "./controllers/locais/locais-controller";
-import { InsertDistribuicaoLocaisSetor } from "./models/distribuicao_locais_setor/insert";
-import { DistribuicaoController } from "./controllers/distribuicao-locais/distribuicao-controller";
-import { MlIntegrationController } from "./controllers/integration/ml-controlller/ml-integration-controller";
-import { MlItensController } from "./controllers/ml/get-itens";
-import { MlAccountsController } from "./controllers/ml/get-accounts";
-import { AnunciosController } from "./controllers/ml/anuncios-controller";
-import { MlToolsController } from "./controllers/ml/ml-tools-controller";
-
+import { ProdutoController } from "../controllers/produtos/produtoController";
+import { ClienteController } from "../controllers/cliente/clienteController";
+import { CreateEmpresa } from "../controllers/empresa/empresaController";
+import { Login } from "../controllers/login/login";
+import { UsuariosController } from "../controllers/usuariosController/usuariosController";
+import { pedidoController } from "../controllers/pedido/pedidoController";
+import { ServicosController } from "../controllers/servicos/servicosController";
+import { FormasController } from "../controllers/formas_pagamento/formasController";
+import { TipoOsController } from "../controllers/tipos_os/tipoOsController";
+import { VeiculoController } from "../controllers/veiculo/VeiculoController";
+import { EnvioCodigoValidador } from "../controllers/recuperarConta/EnvioCodigoValidador";  
+import { Alterar_senha } from "../controllers/recuperarConta/alterarSenha";
+import { CategoriaController } from "../controllers/categorias/categoriaController";
+import { MarcasController } from "../controllers/marcas/marcasController";
+import { fotosController } from "../controllers/fotos/fotosController";
+import { pedidoNextController } from "../controllers/pedidoNext/pedidoNextController";
+import { AuthMiddleware    } from "../middleware/AuthMiddlewate/AuthMiddleware"; 
+import { SelectPedido } from "../models/pedido/selectPedido";
+import { ProdutoSetorController } from "../controllers/produtos-setor/produto-setor-controller";
+import { SetorController } from "../controllers/setor/setor-controller";
+import { MovimentosProdutosController } from "../controllers/movimentos-produtos/movimentos-produtos-controller";
+import { LocaisController } from "../controllers/locais/locais-controller";
+ import { DistribuicaoController } from "../controllers/distribuicao-locais/distribuicao-controller";
+ 
   const crypt = require('crypt');
   const router = Router();
   export const versao = '/v1'
@@ -50,21 +44,7 @@ import { MlToolsController } from "./controllers/ml/ml-tools-controller";
     router.get(`${versao}/teste`,AuthMiddleware,(req,res)=>{ 
       return  res.json({"ok":true});
     })
-
- router.post(`${versao}/ml/tools/predict-category`, AuthMiddleware, new MlToolsController().predictCategory);
- router.get(`${versao}/ml/integrations/notification`, new MlIntegrationController().callback);
-
- router.get(`${versao}/ml/integrations/callback`, new MlIntegrationController().callback );
-
- router.post(`${versao}/ml/integrations/finalizeIntegration` , AuthMiddleware , new MlIntegrationController().finalizeIntegration);
  
- router.post(`${versao}/ml/integrations/getCode` , AuthMiddleware , new MlIntegrationController().getCode);
-
-
- router.post(`${versao}/ml/anuncios/create`, AuthMiddleware, new AnunciosController().post);
- router.get(`${versao}/ml/anuncios`, AuthMiddleware, new MlItensController().getItems);
- router.get(`${versao}/ml/accounts/:codigo`, AuthMiddleware, new MlAccountsController().getAccounts);
-
  
  router.get(`${versao}/offline/produtos`,    AuthMiddleware,  new ProdutoController().findAll )//ok
  router.post(`${versao}/produto`,            AuthMiddleware, new ProdutoController().insert)//ok
@@ -170,19 +150,12 @@ import { MlToolsController } from "./controllers/ml/ml-tools-controller";
   router.post(`${versao}/enviar_codigo`,   new EnvioCodigoValidador().main);
   router.post(`${versao}/alterar_senha`,   new Alterar_senha().main);
 
-//
-
+ 
  router.post(`${versao}/login`,   new Login().login2)
 
  router.post(`${versao}/usuarios`,AuthMiddleware, new UsuariosController().cadastrar)
 
  router.get(`${versao}/usuarios`,AuthMiddleware, new UsuariosController().busca)
-
-
-/////
-//// 
-
-
  
  
  router.get(`${versao}/next/veiculos/:cliente`,          AuthMiddleware,  new VeiculoController().findByClient )

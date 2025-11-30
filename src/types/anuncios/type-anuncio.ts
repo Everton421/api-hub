@@ -1,4 +1,4 @@
-
+ 
 
 export type typeAnuncios ={
 id:number
@@ -15,6 +15,14 @@ ativo: 'S' | 'N'
 sku_externo:string | null
 id_externo:string | null
 link:string | null
+thumbnail:string | null
 data_cadastro:string
 data_recadastro:string
 }
+
+
+ 
+
+  
+ 
+

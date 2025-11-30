@@ -34,8 +34,10 @@ export class InsertAnuncios{
                         ativo = ?,
                         sku_externo = ?,
                         id_externo = ?,
-                        link = ? ; `
-       const values = [ anuncio.codigo_produto, anuncio.integration_id, anuncio.plataforma, anuncio.estoque, anuncio.preco, anuncio.unidade_medida, anuncio.descricao, anuncio.titulo, anuncio.num_fabricante, anuncio.ativo, anuncio.sku_externo, anuncio.id_externo, anuncio.link ]  
+                        link = ? ,
+                        thumbnail = ? 
+                        ; `
+       const values = [ anuncio.codigo_produto, anuncio.integration_id, anuncio.plataforma, anuncio.estoque, anuncio.preco, anuncio.unidade_medida, anuncio.descricao, anuncio.titulo, anuncio.num_fabricante, anuncio.ativo, anuncio.sku_externo, anuncio.id_externo, anuncio.link, anuncio.thumbnail ]  
  
         return new Promise( ( resolve, reject )=>{
               conn.query( sql ,values, ( err, result )=>{

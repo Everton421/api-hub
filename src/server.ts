@@ -1,16 +1,15 @@
 import express,{NextFunction, Request,Response} from 'express';
 import swaggerUi from 'swagger-ui-express';
-
 import "express-async-errors";
 import cors from 'cors';
-const https = require('https');
-const fs = require('fs');
+ 
 import 'dotenv/config';
 import swaggerDocs from './swagger.json';
 
-import { router, versao } from './routes';
-import { conn } from './database/databaseConfig';
+import { router, versao } from './routes/app-routes';
+ import { mlRouter } from './routes/ml-routes';
 
+ 
         const app = express();
 
         // Configuração do CORS
@@ -37,8 +36,8 @@ import { conn } from './database/databaseConfig';
                  app.use(`${versao}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerDocs, optionsSwagger))
 
         app.use(express.json());
-        app.use(router)
-
+        app.use(router);
+        app.use(mlRouter);
 
         app.use(
                 (err:Error, req:Request, res:Response, next:NextFunction)=>{

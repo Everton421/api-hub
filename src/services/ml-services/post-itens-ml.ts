@@ -19,6 +19,7 @@ export interface PublishItem{
     model?: string;
     ean?: string; 
     attributes:any
+    thumbnail?:string 
 }
 type typeFinalAttributes = { id: string , value_name:string }
 
@@ -61,7 +62,7 @@ export class PostMlItemsService {
                 finalAttributes.push({ id: "GTIN", value_name: data.ean });
             }
         }
-
+         
             const mlPayload = {
                 title: data.title,
                 category_id: data.category_id,
@@ -103,6 +104,7 @@ export class PostMlItemsService {
             plataforma: 'ML',
             sku_externo:null,
             unidade_medida: '',
+            thumbnail: data.thumbnail || ''
         }
      )
      if( resultInsert.sucess && resultInsert.insertId ){

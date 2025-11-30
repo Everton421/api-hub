@@ -1,4 +1,4 @@
-export type atributosAnuncios = {
+export type typeAtributosAnuncios = {
 id_anuncio:number
 id_atributo:string
 id:number

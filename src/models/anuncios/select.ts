@@ -2,18 +2,40 @@ import { conn } from "../../database/databaseConfig"
 import { typeAnuncios } from "../../types/anuncios/type-anuncio";
 import { categoria } from "../../types/categoriaProduto/type-categoria";
 
+ export type queryAnuncio = {
+    id?: number
+    link?: string
+    codigo_produto?: number
+    integration_id?: string
+    plataforma?: string
+    descricao?: string
+    titulo?: string
+    num_fabricante?: string
+    ativo?: 'S' | 'N'
+    sku_externo?: string
+    id_externo?: string
+    limit?: number
+}
+
+ 
 
 export class SelectAnuncios{
 
-    
-    async busca_geral(empresa:string , data_recadastro?:string, limit?:number): Promise<typeAnuncios[]>{
+    /**
+     * 
+     * @param empresa nome do banco de dados 
+     * @param data_recadastro atributo opcional, obtem anuncios alterados após esta data.
+     * @param limit atributo opcional, limita a quantidade de registros.
+     * @returns 
+     */
+    async findAll(empresa:string , data_recadastro?:string, limit?:number): Promise<typeAnuncios[]>{
 
         return new Promise( async (resolve, reject)=>{
 
              let sql = ` SELECT *,
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.anuncios  `
+             FROM ${empresa}.anuncios `
 
              let paramQuery =[];
              let valueQuery=[];
@@ -31,45 +53,28 @@ export class SelectAnuncios{
                  if( paramQuery.length > 0 ){
                      finalSql = sql + paramQuery;
                  }
+    
  
             await conn.query( finalSql ,valueQuery ,(err:any, result:any )=>{
                 if(err){
                     reject(err);
                 }else{
+                  
                     resolve(result);
                 }
             })
         })
     }
 
-    async buscaPorid(empresa:string , id:number, limit:number): Promise<typeAnuncios[]>{
-
-        return new Promise( async (resolve, reject)=>{
-
-             let sql = ` SELECT *,
-                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.anuncios
-            where id = ? limit ?
-             `
-            const params = [ id, limit ];
-            await conn.query( sql, params  ,(err:any, result:any )=>{
-                if(err){
-                    reject(err);
-                }else{
-                    resolve(result);
-                }
-            })
-        })
-    }
+    
 
     /**
      * 
-     * @param empresa 
+     * @param empresa nome do banco de dados
      * @param id id do anuncio
      * @returns 
      */
-    async buscaPorCodigoAnuncio(empresa:string , id:number  ){
+    async findById(empresa:string , id:number  ): Promise<typeAnuncios[]>{
 
         return new Promise( async (resolve, reject)=>{
 
@@ -96,15 +101,21 @@ export class SelectAnuncios{
 
 
 
-
- async novaBusca(empresa: string, query:any):Promise<typeAnuncios[]> {
-
+ 
+ async findByParams(empresa: string, query: queryAnuncio): Promise<typeAnuncios[]> {
+     
         let {
-            codigo,
             id,
+            codigo_produto,
+            integration_id,
+            plataforma,
             descricao,
+            titulo,
+            num_fabricante,
+            sku_externo,
+            id_externo,
             ativo,
-            limit  
+            limit
         } = query;
 
         
@@ -112,71 +123,89 @@ export class SelectAnuncios{
          SELECT *,
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.categorias 
-        `;  
+         FROM ${empresa}.anuncios 
+        `;
 
         const conditions: string[] = [];
         const params: any[] = [];
-
-        if(!limit || isNaN(limit)){
-            limit = 20;
-        }
-
-        if (codigo) {
-            conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
-            params.push(codigo);          // Adiciona o valor ao array de parâmetros
-        }
+ 
         if (id) {
             conditions.push("id = ?");
-            params.push(Number(id));
+            params.push(id);
         }
-    
+
+        if (codigo_produto) {
+            conditions.push("codigo_produto = ?");
+            params.push(codigo_produto);
+        }
+
+        if (integration_id) {
+            conditions.push("integration_id = ?");
+            params.push(integration_id);
+        }
+
+        if (plataforma) {
+            conditions.push("plataforma = ?");
+            params.push(plataforma);
+        }
+
         if (ativo) {
             conditions.push("ativo = ?");
             params.push(ativo);
         }
+        
+        if (id_externo) {
+            conditions.push("id_externo = ?");
+            params.push(id_externo);
+        }
 
+ 
+        
         if (descricao) {
             conditions.push("descricao LIKE ?");
-            params.push(`%${descricao}%`);  
+            params.push(`%${descricao}%`); 
         }
-        let whereClause = "";
-        
+
+        if (titulo) {
+            conditions.push("titulo LIKE ?");
+            params.push(`%${titulo}%`);
+        }
+
+        if (sku_externo) {
+         
+            conditions.push("sku_externo LIKE ?");
+            params.push(`%${sku_externo}%`);
+        }
+
+        if (num_fabricante) {
+            conditions.push("num_fabricante LIKE ?");
+            params.push(`%${num_fabricante}%`);
+        }
+
+     
         if (conditions.length > 0) {
-            whereClause = " WHERE " + conditions.join(" AND ");
+            baseSql += " WHERE " + conditions.join(" AND ");
         }
 
-        //conditions.join(" LIMIT ?");
-      let limitQuery = " LIMIT ? "
-
-        params.push( Number(limit));  
-
-        const finalSql = baseSql + whereClause + limitQuery;
-
-        // console.log("SQL Executado:", finalSql);  
-        // console.log("Parâmetros:", params);       
-
-        try {
        
-             return new Promise <categoria[]> ( async ( resolve , reject ) =>{
-                await conn.query(finalSql, params,(err:any, result:categoria[] )=>{
-                    if (err){
-                        reject(err);
-                    }else{
-                        resolve(result)
+        const limitValue = (limit && Number(limit) > 0) ? Number(limit) : 20;
+        
+        baseSql += " LIMIT ?";
+        params.push(limitValue);
 
-                    } 
-                })
+       
 
-             })
-
-
-        } catch (err) {
-            console.error("Erro ao executar a query:", err);
-            // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
-            throw new Error("Falha ao buscar categorias no banco de dados.");
-            // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
-        }
+        return new Promise<typeAnuncios[]>((resolve, reject) => {
+            conn.query(baseSql, params, (err: any, result: any) => {
+                if (err) {
+                    console.error("Erro na query findByParams:", err);
+                    reject(err);
+                } else {
+                    // O mysql retorna RowDataPacket[], forçamos o tipo para nosso array
+                    resolve(result as typeAnuncios[]);
+                }
+            });
+        });
     }
-
+ 
 }

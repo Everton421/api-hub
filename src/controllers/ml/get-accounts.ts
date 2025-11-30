@@ -9,11 +9,18 @@ export class MlAccountsController{
 
             if(!req.headers.token ){
                 return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
-            } 
+            }
+            
+            if(!req.params.codigo ){
+                return res.status(400).json({erro:true, msg:"É necessario informar o codigo do usuario!"});   
+            }
+            
+            
             const decodToken= DecodedToken(String(req.headers.token))
             const empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
             const  dbName = `\`${empresa}\``;
             const codigo = req.params.codigo ;
+
             try{
                 const resultAccount = await selectMLAccountClient.findByUserIdAndIntegration(dbName,Number(codigo))
                return res.status(200).json(resultAccount);
