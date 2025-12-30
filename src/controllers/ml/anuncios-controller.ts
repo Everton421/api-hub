@@ -58,6 +58,7 @@ export class AnunciosController{
                  const mlService = new PostMlItemsService();
                  const result = await mlService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto,integrationId ,itemData);
                  return res.status(201).json(result);
+                 
                 
         }catch(e){
             

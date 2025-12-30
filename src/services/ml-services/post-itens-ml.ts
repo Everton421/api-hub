@@ -37,13 +37,13 @@ export class PostMlItemsService {
         let accessToken
         try {
             
-         //   try{
-         //         accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
-         //   }catch(e){
-         //       if(e instanceof Error ) {
-         //         throw new Error(e.message);
-         //       }
-         //   }   
+             try{
+                   accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
+             }catch(e){
+                 if(e instanceof Error ) {
+                   throw new Error(e.message);
+                 }
+             }   
   
 
 
@@ -132,35 +132,35 @@ export class PostMlItemsService {
         }
      
      }
-        if(resultInsert.sucess){
+//        if(resultInsert.sucess){
+//             return {
+//                 success: true,
+//                 ml_id: ` id do ML  variavel:response.data.id `,
+//                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
+//                 msg: "Anúncio criado com sucesso!"
+//             };
+//        }else{
+//                return {
+//                 success: false,
+//                 ml_id: ` id do ML  variavel:response.data.id `,
+//                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
+//                 msg: resultInsert.message
+//             };
+//        }
+            // 4. Envia para o Mercado Livre
+             const response = await axios.post(`${ML_API_URL}/items`, mlPayload, {
+                 headers: {
+                     Authorization: `Bearer ${accessToken}`,
+                     "Content-Type": "application/json"
+                 }
+             });
+ 
              return {
                  success: true,
-                 ml_id: ` id do ML  variavel:response.data.id `,
-                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
+                 ml_id: response.data.id,
+                 permalink: response.data.permalink,
                  msg: "Anúncio criado com sucesso!"
              };
-        }else{
-                return {
-                 success: false,
-                 ml_id: ` id do ML  variavel:response.data.id `,
-                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
-                 msg: resultInsert.message
-             };
-        }
-            // 4. Envia para o Mercado Livre
-         //   const response = await axios.post(`${ML_API_URL}/items`, mlPayload, {
-         //       headers: {
-         //           Authorization: `Bearer ${accessToken}`,
-         //           "Content-Type": "application/json"
-         //       }
-         //   });
-//
-         //   return {
-         //       success: true,
-         //       ml_id: response.data.id,
-         //       permalink: response.data.permalink,
-         //       msg: "Anúncio criado com sucesso!"
-         //   };
 
         } catch (error: any) {
             console.log(error)
@@ -178,6 +178,12 @@ export class PostMlItemsService {
                      errorMessage += ". Verifique se a categoria exige atributos obrigatórios.";
                 }
             }
+        //    return {
+        //        sucess:false,
+        //        ml_id: '',
+        //        permalink: '',
+        //        msg: errorMessage
+        //    }
 
             throw new Error(errorMessage);
             
