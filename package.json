@@ -10,7 +10,9 @@
     "dev": "ts-node-dev --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "teste": "tsx src/__test__/test.ts"
+    "teste": "tsx src/__test__/test.ts",
+    "build:swagger": "tsx src/swagger/build-swagger.ts",
+    "swagger:watch": "tsx watch src/swagger/build-swagger.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

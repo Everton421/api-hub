@@ -1,3254 +1,1081 @@
-
 {
-    "openapi": "3.0.0",
-    "info":{
-     "title": "API", 
-    "contact":{
-        "email": "suporte@intersig.com.br"
-        }
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Template",
+    "description": "API REST para gerenciamento de produtos, clientes, pedidos e integrações",
+    "version": "1.0.0",
+    "contact": {
+      "email": "suporte@intersig.com.br"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/v1",
+      "description": "Servidor de desenvolvimento"
     },
-    "version":"1.0.0",
-    "servers":[
-        {
-            "url":"http://localhost:3000/v1" 
-        }
-    ],
-    "paths":{
-        "/offline/produtos":{
-            "get":{
-            "summary": "busca produtos",
-             "description":"rota responsavel por buscar todos os dados dos produtos.",
-             "tags":["produtos"],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "product":{
-                                    "value":[
-                                         {
-                                           "codigo": 2,
-                                            "estoque": 0,
-                                            "preco": 289.28,
-                                            "grupo": 2,
-                                            "descricao": "KIT ROLAMENTO CUBO TRASEIRO",
-                                            "num_fabricante": "7316573929277",
-                                            "num_original": "ALR399365L",
-                                            "sku": "6235145",
-                                            "marca": 148,
-                                            "ativo": "S",
-                                            "tipo": 8,
-                                            "class_fiscal": 24958,
-                                            "origem": "0",
-                                            "cst": "00",
-                                            "data_cadastro": "0000-00-00",
-                                            "data_recadastro": "2024-05-09T18:05:46.000Z",
-                                            "observacoes1": "",
-                                            "observacoes2": "",
-		                                    "observacoes3": ""
-                                         }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        } ,
-       
-          "/produtos": {
-            "get": {
-              "summary": "Obtém produtos.",
-              "description": " Obtém produtos.",
-              "tags": ["produtos"],
-              "parameters":[
-                {
-                    "name":"codigo",
-                    "in":"query",
-                    "description":"codigo do produto",
-                    "required":false, 
-                    "type": "integer"
-                } 
-              ,
-              {
-                "name": "limit",
-                "in": "query",
-                "description": "Número máximo de itens a retornar",
-                "required": false,
-                "type": "integer",  
-                "format": "int32",  
-                "default": 20       
-              },
-              {
-                "name": "marca",
-                "in": "query",
-                "description": "Código da Marca",
-                "required": false,
-                "type": "integer",  
-                "format": "int32"   
-              },
-              {
-                "name": "Grupo",
-                "in": "query",
-                "description": "Código da categoria ",
-                "required": false,
-                "type": "integer",  
-                "format": "int32"   
-              },
-              {
-                "name": "Descrição",
-                "in": "query",
-                "description": "Descrição do produto",
-                "required": false,
-                "type": "string",  
-                "format": "int32"   
-              } 
-             ],
-              "requestBody": {
-                "required": true,  
-                "content": {
-                  "application/json": {
-                  
-                    
-                  }
-                }
-              },
-              "responses": {
-                "200": {  
-                  "description": " ",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "produtos": {  
-                          "value": {
-                            "codigo": 242618,
-                            "id": 1,
-                            "estoque": 1,
-                            "preco": 222,
-                            "grupo": 1,
-                            "origem": "0",
-                            "descricao": "AMORTECEDOR TRASEIRO teste ",
-                            "num_fabricante": "L-12476.",
-                            "num_original": "1C45 18080 AA",
-                            "sku": "L-12476.",
-                            "marca": 908,
-                            "ativo": "S",
-                            "class_fiscal": "20687",
-                            "cst": "00",
-                            "data_recadastro": "2025-04-10 17:02:28",
-                            "data_cadastro": "0000-00-00",
-                            "observacoes1": "",
-                            "observacoes2": "",
-                            "observacoes3": "",
-                            "tipo": 0
-                  }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao buscar produtos.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "Erro ao buscar produtos."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-          },
-      "/produto/{codigo-produto}": {
-            "get": {
-              "summary": "Obtém produto pelo Código",
-              "description": " Obtém um produto com todos os dados.",
-              "tags": ["produtos"],
-              "requestBody": {
-                "required": true,  
-                "content": {
-                  "application/json": {
-                  }
-                }
-              },
-              "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "Produto": {  
-                          "summary": "Exemplo de resposta de produto obtido",  
-                          "value": [
-                            {
-                                "codigo": 242618,
-                                "id": 1,
-                                "estoque": 1,
-                                "preco": 222,
-                                "grupo": {
-                                    "codigo": 1,
-                                    "id": 1,
-                                    "data_cadastro": "1899-12-30",
-                                    "data_recadastro": "2024-08-26 16:31:16",
-                                    "descricao": "OUTROS 3"
-                                },
-                                "origem": "0",
-                                "descricao": "AMORTECEDOR TRASEIRO teste ",
-                                "num_fabricante": "L-12476.",
-                                "num_original": "1C45 18080 AA",
-                                "sku": "L-12476.",
-                                "marca": {
-                                    "codigo": 908,
-                                    "id": 0,
-                                    "data_cadastro": "2025-04-10",
-                                    "data_recadastro": "2025-04-10 17:01:40",
-                                    "descricao": "marca teste1"
-                                },
-                                "ativo": "S",
-                                "class_fiscal": "20687",
-                                "cst": "00",
-                                "data_recadastro": "2025-04-10 17:02:28",
-                                "data_cadastro": "0000-00-00",
-                                "observacoes1": "",
-                                "observacoes2": "",
-                                "observacoes3": "",
-                                "tipo": 0,
-                                "fotos": [
-                                    {
-                                        "produto": 242618,
-                                        "sequencia": 1,
-                                        "descricao": "ft",
-                                        "link": "https://i.ibb.co/H7grssp/RYZEN-5.png",
-                                        "foto": "ZnQw",
-                                        "data_cadastro": "0000-00-00",
-                                        "data_recadastro": "0000-00-00 00:00:00"
-                                    },
-                                    {
-                                        "produto": 242618,
-                                        "sequencia": 2,
-                                        "descricao": "ft",
-                                        "link": "https://i.ibb.co/Brqvtvj/Screenshot-6.png",
-                                        "foto": "IA==",
-                                        "data_cadastro": "0000-00-00",
-                                        "data_recadastro": "0000-00-00 00:00:00"
-                                    },
-                                    {
-                                        "produto": 242618,
-                                        "sequencia": 3,
-                                        "descricao": "ft",
-                                        "link": "https://i.ibb.co/hFyNBk2/Screenshot-5.png",
-                                        "foto": "IA==",
-                                        "data_cadastro": "0000-00-00",
-                                        "data_recadastro": "0000-00-00 00:00:00"
-                                    }
-                                ]
-                            }
-                        ]
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "Produto não encontrado.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "Nenhum produto encontrado."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-          },
-          "/produto put ": {
-            "put": {
-              "summary": "Atualizar produto",
-              "description": "Rota responsável por Atualizar um produto.",
-              "tags": ["produtos"],
-              "requestBody": {
-                "required": true,  
-                "content": {
-                  "application/json": {
-                  
-                    "examples": {
-                      "produto": {
-                        "summary": "Exemplo de produto para cadastro",  
-                        "value":{
-                            "codigo": 2,
-                            "id": 2,
-                            "estoque": 0,
-                            "preco": 289.28,
-                            "grupo": {"codigo": 2 },
-                            "origem": "0",
-                            "descricao": "KIT ROLAMENTO CUBO TRASEIRO",
-                            "num_fabricante": "7316573929277",
-                            "num_original": "ALR399365L",
-                            "sku": "",
-                            "marca": {"codigo":148 },
-                            "ativo": "S",
-                            "class_fiscal": "8482.10.90",
-                            "cst": "00",
-                            "data_recadastro": "2025-01-28 10:15:59",
-                            "data_cadastro": "0000-00-00",
-                            "observacoes1": "",
-                            "observacoes2": "",
-                            "observacoes3": "",
-                            "tipo": 8
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "responses": {
-                "200": {  
-                  "description": "Produto atualizado com sucesso. Retorna o objeto do produto atualizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "produtoCriado": {  
-                          "summary": "Exemplo de resposta de produto atualizado",  
-                          "value":{
-                            "codigo": 2,
-                            "id": 2,
-                            "estoque": 0,
-                            "preco": 289.28,
-                            "grupo": {
-                                "codigo": 2
-                            },
-                            "origem": "0",
-                            "descricao": "KIT ROLAMENTO CUBO TRASEIRO",
-                            "num_fabricante": "7316573929277",
-                            "num_original": "ALR399365L",
-                            "sku": "",
-                            "marca": {
-                                "codigo": 148
-                            },
-                            "ativo": "S",
-                            "class_fiscal": "8482.10.90",
-                            "cst": "00",
-                            "data_recadastro": "2025-01-28 10:15:59",
-                            "data_cadastro": "0000-00-00",
-                            "observacoes1": "",
-                            "observacoes2": "",
-                            "observacoes3": "",
-                            "tipo": 8
-                        }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao registrar o produto.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "Ocorreu um erro ao atualizar o produto!"
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-          },
-          "/produto post": {
-            "post": {
-              "summary": "Cadastrar produtos",
-              "description": "Rota responsável por cadastrar produto.",
-              "tags": ["produtos"],
-              "requestBody": {
-                "required": true,  
-                "content": {
-                  "application/json": {
-                  
-                    "examples": {
-                      "produto": {
-                        "summary": "Exemplo de produto para cadastro",  
-                        "value": {
-                          "id": 1,
-                          "estoque": 1,
-                          "preco": 222,
-                          "grupo": {
-                              "codigo": 1
-                          },
-                          "origem": "0",
-                          "descricao": " teste1 ",
-                          "num_fabricante": "L-12476.",
-                          "num_original": "1C45 18080 AA",
-                          "sku": "L-12476.",
-                          "marca": {
-                              "codigo": 0
-                          },
-                          "ativo": "S",
-                          "class_fiscal": "20687",
-                          "cst": "00",
-                          "data_recadastro": "2025-04-10 17:02:28",
-                          "data_cadastro": "0000-00-00",
-                          "observacoes1": "",
-                          "observacoes2": "",
-                          "observacoes3": "",
-                          "tipo": 0
-                      }
-                      }
-                    }
-                  }
-                }
-              },
-              "responses": {
-                "200": {  
-                  "description": "Produto cadastrado com sucesso. Retorna o objeto do produto criado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "produtoCriado": {  
-                          "summary": "Exemplo de resposta de produto criado",  
-                          "value":{
-                              "codigo": 239501,
-                              "id": 1,
-                              "estoque": 1,
-                              "preco": 222,
-                              "grupo": {
-                                  "codigo": 1
-                              },
-                              "origem": "0",
-                              "descricao": " teste1 ",
-                              "num_fabricante": "L-12476.",
-                              "num_original": "1C45 18080 AA",
-                              "sku": "L-12476.",
-                              "marca": {
-                                  "codigo": 0
-                              },
-                              "ativo": "S",
-                              "class_fiscal": "20687",
-                              "cst": "00",
-                              "data_recadastro": "2025-04-10 17:02:28",
-                              "data_cadastro": "0000-00-00",
-                              "observacoes1": "",
-                              "observacoes2": "",
-                              "observacoes3": "",
-                              "tipo": 0
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao registrar o produto.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "Erro ao tentar registrar o produto!"
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-          },
-          "/offline/clientes/?vendedor={codigo_vendedor}":{
-            "get":{
-            "summary": "busca clientes",
-             "description":"rota responsavel por buscar todos os dados dos clientes por vendedor, onde é feito os procedimentos de cadastro no aplicativo.",
-             "tags":["clientes"],
-             "parameters":[
-                {
-                    "vendedor":"codigo vendedor",
-                    "in":"query",
-                    "description":"Codigo do vendedor",
-                    "required":true
-                }
-             ],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "cliente":{
-                                    "value":[
-                                         {
-                                            "codigo": 1,
-                                            "nome": "JOAO FLAVIO FERNANDES",
-                                            "cnpj": "187.734.009-04",
-                                            "ie": "000000",
-                                            "celular": "(44) 99916-0504",
-                                            "cep": "11111-111",
-                                            "endereco": "1",
-                                            "cidade": "ANGULO",
-                                            "numero": "00",
-                                            "data_cadastro": "0000-00-00",
-                                            "data_recadastro": "2020-10-07T13:32:58.000Z",
-                                            "vendedor": 0
-                                         }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        } ,
-  
-        "/clientes":{
-            "get":{
-            "summary": "Obtém cliente",
-             "description":"Obtém cliente",
-             "tags":["clientes"],
-             "parameters":[
-                {
-                    "name":"codigo",
-                    "in":"query",
-                    "description":"codigo do cliente",
-                    "required":false, 
-                    "type": "integer"
-                } 
-              ,
-              {
-                "name": "limit",
-                "in": "query",
-                "description": "Número máximo de itens a retornar",
-                "required": false,
-                "type": "integer",  
-                "format": "int32",  
-                "default": 20       
-              },
-              {
-                "name": "cnpj",
-                "in": "query",
-                "description": "cnpj/cpf do cliente",
-                "required": false,
-                "type": "integer",  
-                "format": "int32"   
-              },
-           
-              {
-                "name": "nome",
-                "in": "query",
-                "description": "Nome do Cliente",
-                "required": false,
-                "type": "string",  
-                "format": "int32"   
-              } 
-             ],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                           
-                        }
-                    }
-               },
-               "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "cliente": {  
-                          "summary": "Exemplo de resposta de cliente criado",  
-                          "value": {
-                            "codigo": 257,
-                            "id": "257",
-                            "celular": "",
-                            "nome": "JOAO MATIAS DE OLIVEIRA",
-                            "cep": "00000-000",
-                            "endereco": "RUA TIRADENTES",
-                            "ie": "472914",
-                            "numero": "464",
-                            "cnpj": "000.000.000-00",
-                            "ativo": "S",
-                            "cidade": "MUNHOZ DE MELO",
-                            "data_cadastro": "0000-00-00",
-                            "data_recadastro": "2020-10-07 10:32:58",
-                            "vendedor": 0,
-                            "bairro": "CENTRO",
-                            "estado": "PR"
-                        }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                     "erro":true,
-                  "description": "erro ao buscar o Cliente.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "Erro ao buscar o Cliente!"
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } ,  
-         "/cliente":{
-            "post":{
-            "summary": "Cadastra cliente",
-             "description":"Cadastra cliente",
-             "tags":["clientes"],
-         
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "cliente":{
-                                    "value":[
-                                        {
-                                            "cep": "86750-000",
-                                            "cidade": "IGUARACU",
-                                            "estado": "PR",
-                                            "bairro": "2",
-                                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
-                                            "celular": "(44) 99972-2801",
-                                            "cnpj": "000.000.000-00",
-                                            "nome": "CESAR EDUARDO IVANTES",
-                                            "ativo": "S",
-                                            "data_cadastro": "2025-03-19",
-                                            "data_recadastro": "2025-03-19 8:40:34",
-                                            "id": 0
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               },
-               "responses": {
-                "200": {  
-                  "description": "Cliente cadastrado com sucesso. Retorna o objeto do cliente criado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "produtoCriado": {  
-                          "summary": "Exemplo de resposta de cliente criado",  
-                          "value":{
-                            "codigo": 2513,
-                            "id": "0",
-                            "celular": "(44) 99972-2801",
-                            "nome": "CESAR EDUARDO IVANTES",
-                            "cep": "86750-000",
-                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
-                            "ie": "",
-                            "numero": "",
-                            "cnpj": "000.000.000-50",
-                            "cidade": "IGUARACU",
-                            "data_cadastro": "2025-03-18",
-                            "data_recadastro": "2025-03-19 08:40:34"
-                        }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao registrar o Cliente.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "Erro ao tentar registrar o Cliente!"
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } ,
-        "/cliente put":{
-            "put":{
-            "summary": "Atualizar cliente",
-             "description":"Atualizar cliente",
-             "tags":["clientes"],
-         
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "cliente":{
-                                    "value":[
-                                        {
-                                            "cep": "86750-000",
-                                            "cidade": "IGUARACU",
-                                            "estado": "PR",
-                                            "bairro": "2",
-                                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
-                                            "celular": "(44) 99972-2801",
-                                            "cnpj": "000.000.000-00",
-                                            "nome": "CESAR EDUARDO IVANTES",
-                                            "ativo": "S",
-                                            "data_cadastro": "2025-03-19",
-                                            "data_recadastro": "2025-03-19 8:40:34",
-                                            "id": 0
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               },
-               "responses": {
-                "200": {  
-                  "description": "Cliente Atualizado com sucesso. Retorna o objeto do cliente Atualizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "produtoCriado": {  
-                          "summary": "Exemplo de resposta de cliente Atualizado",  
-                          "value":{
-                            "codigo": 2513,
-                            "id": "0",
-                            "celular": "(44) 99972-2801",
-                            "nome": "CESAR EDUARDO IVANTES",
-                            "cep": "86750-000",
-                            "endereco": "FAZENDA SANTA MARIA ROD PR 317 KM 15",
-                            "ie": "",
-                            "numero": "",
-                            "cnpj": "000.000.000-50",
-                            "cidade": "IGUARACU",
-                            "data_cadastro": "2025-03-18",
-                            "data_recadastro": "2025-03-19 08:40:34"
-                        }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao Atualizar o Cliente.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "Erro ao tentar Atualizar o Cliente!"
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } ,
-        "/categorias ":{
-            "get":{
-            "summary": "Obtém Categorias",
-             "description":"Obtém Categorias",
-             "tags":["categorias"],
-             "parameters":[
-                {
-                    "name":"codigo",
-                    "in":"query",
-                    "description":"codigo da categoria.",
-                    "required":false, 
-                    "type": "integer"
-                } 
-              ,
-              {
-                "name": "limit",
-                "in": "query",
-                "description": "Número máximo de itens a retornar",
-                "required": false,
-                "type": "integer",  
-                "format": "int32",  
-                "default": 20       
-              },
-              {
-                "name": "descricao",
-                "in": "query",
-                "description": "Descrição da categoria.",
-                "required": false,
-                "type": "integer",  
-                "format": "int32"   
-              } 
-           
-             ],
-         
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                         
-                        }
-                    }
-               },
-               "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "Categorias": {  
-                          "value":[
-                            {
-                                "codigo": 1,
-                                "id": 1,
-                                "data_cadastro": "1899-12-30",
-                                "data_recadastro": "2024-08-26 16:31:16",
-                                "descricao": "OUTROS 3"
-                            }
-                        ]
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao consultar as categorias.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "erro ao consultar as categorias."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } ,
-        "/offline/categorias":{
-            "get":{
-            "summary": "Obtém Categorias",
-             "description":"obtem todas as Categorias.",
-             "tags":["categorias"],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "categorias":{
-                                    "value":[
-                                        {
-                                            "codigo": 1,
-                                            "id": 1,
-                                            "data_cadastro": "1899-12-30",
-                                            "data_recadastro": "2024-08-26 16:31:16",
-                                            "descricao": "OUTROS 3"
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        },
-        "/categoria ":{
-            "post":{
-            "summary": "Cadastra Categoria",
-             "description":"Cadastra Categoria",
-             "tags":["categorias"],
-             "requestBody":{
-                "content":{
-                    "application/json":{
-                        "examples":{
-                            "cliente":{
-                                "value": 
-                                    {
-                                        "id": 1,
-                                        "data_cadastro": "0000-00-00",
-                                        "data_recadastro": "2023-12-07 16:38:37",
-                                        "descricao": "teste1"
-                                    }
-                            }
-                        }
-                    }
-                }
-           },
-            
-               "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "Categorias": {  
-                          "value": 
-                            {
-                                "codigo": 54,
-                                "descricao": "teste1",
-                                "data_cadastro": "0000-00-00",
-                                "data_recadastro": "2023-12-07 16:38:37"
-                            }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao cadastrar categoria.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "erro ao cadastrar categoria."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } , 
-        "/categoria put":{
-            "put":{
-            "summary": "Atualiza Categoria",
-             "description":"Atualiza Categoria",
-             "tags":["categorias"],
-             "requestBody":{
-                "content":{
-                    "application/json":{
-                        "examples":{
-                            "categoria":{
-                                "value": 
-                                    {
-                                        "codigo": 54,
-                                        "id": 1,
-                                        "data_cadastro": "0000-00-00",
-                                        "data_recadastro": "2023-12-07 16:38:37",
-                                        "descricao": "teste1"
-                                    }
-                            }
-                        }
-                    }
-                }
-           },
-            
-               "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "Categoria": {  
-                          "value": 
-                            {
-                                "codigo": 54,
-                                "descricao": "teste1",
-                                "data_cadastro": "0000-00-00",
-                                "data_recadastro": "2023-12-07 16:38:37"
-                            }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao atualizar categoria.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "erro ao atualizar categoria."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        },
-         "/offline/marcas":{
-            "get":{
-            "summary": "Obtém todas marcas",
-             "description":"obtem todas as marcas.",
-             "tags":["marcas"],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "marcas":{
-                                    "value":[
-                                        {
-                                            "codigo": 1,
-                                            "id": 1,
-                                            "data_cadastro": "1899-12-30",
-                                            "data_recadastro": "2024-08-26 16:31:16",
-                                            "descricao": "OUTROS 3"
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        },
-        "/marcas ":{
-            "get":{
-            "summary": "Obtém marcas",
-             "description":"Obtém marcas",
-             "tags":["marcas"],
-             "parameters":[
-                {
-                    "name":"codigo",
-                    "in":"query",
-                    "description":"codigo da marca.",
-                    "required":false, 
-                    "type": "integer"
-                } 
-              ,
-              {
-                "name": "limit",
-                "in": "query",
-                "description": "Número máximo de itens a retornar",
-                "required": false,
-                "type": "integer",  
-                "format": "int32",  
-                "default": 20       
-              },
-              {
-                "name": "descricao",
-                "in": "query",
-                "description": "Descrição da marca.",
-                "required": false,
-                "type": "integer",  
-                "format": "int32"   
-              } 
-           
-             ],
-         
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                         
-                        }
-                    }
-               },
-               "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "Categorias": {  
-                          "value":[
-                            {
-                                "codigo": 1,
-                                "id": 1,
-                                "data_cadastro": "1899-12-30",
-                                "data_recadastro": "2024-08-26 16:31:16",
-                                "descricao": "OUTROS 3"
-                            }
-                        ]
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao consultar as marcas.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "erro ao consultar as marcas."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } ,
-        "/marca ":{
-            "post":{
-            "summary": "Cadastra marca",
-             "description":"Cadastra marca",
-             "tags":["marcas"],
-             "requestBody":{
-                "content":{
-                    "application/json":{
-                        "examples":{
-                            "marca":{
-                                "value": 
-                                {
-                                    "id": 5,
-                                    "data_cadastro": "1899-12-30",
-                                    "data_recadastro": "2024-08-26 16:31:16",
-                                    "descricao": "teste1"
-                                }
-                            }
-                        }
-                    }
-                }
-           },
-            
-               "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "marca": {  
-                          "value": 
-                          {
-                            "codigo": 772,
-                            "descricao": "teste1",
-                            "data_cadastro": "1899-12-30",
-                            "data_recadastro": "2024-08-26 16:31:16"
-                        }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao cadastrar marca.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "erro ao cadastrar marca."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } ,
-        "/marca put":{
-            "put":{
-            "summary": "Atualizar marca",
-             "description":"Atualizar marca",
-             "tags":["marcas"],
-             "requestBody":{
-                "content":{
-                    "application/json":{
-                        "examples":{
-                            "marca":{
-                                "value": 
-                                {
-                                    "codigo": 772,
-                                    "id": 5,
-                                    "data_cadastro": "1899-12-30",
-                                    "data_recadastro": "2024-08-26 16:31:16",
-                                    "descricao": "teste1"
-                                }
-                            }
-                        }
-                    }
-                }
-           },
-            
-               "responses": {
-                "200": {  
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "marca": {  
-                          "value": 
-                          {
-                            "codigo": 772,
-                            "descricao": "teste1",
-                            "data_cadastro": "1899-12-30",
-                            "data_recadastro": "2024-08-26 16:31:16"
-                        }
-                        }
-                      }
-                    }
-                  }
-                },
-                "400":{
-                  "description": "erro ao Atualizar marca.",
-
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "erro": true,
-                                "msg": "erro ao Atualizar marca."
-                            }
-                         }
-                       }
-                     }
-                  }
-                },
-                "401":{
-                    "description": "não autorizado.",
-                    "content": {
-                      "application/json": {
-                        "schema": {  
-                        },
-                        "examples": {
-                          "erro":{
-                              "value":{
-                                  "msg": "Acesso negado, token não informado! "
-                              }
-                          }
-                        }
-                      }
-                  }
-  
-                  } 
-              }
-            }
-        } , 
-        "/servicos ":{
-          "get":{
-          "summary": "Obtém os Serviços",
-           "description":"Obtém os Serviços",
-           "tags":["servicos"],
-           "parameters":[
-              {
-                  "name":"codigo",
-                  "in":"query",
-                  "description":"codigo do serviço.",
-                  "required":false, 
-                  "type": "integer"
-              } ,
-              {
-                "name":"id",
-                "in":"query",
-                "description":"id do serviço.",
-                "required":false, 
-                "type": "integer"
-            } ,
-            {
-              "name":"tipo",
-              "in":"query",
-              "description":"codigo do tipo de serviço.",
-              "required":false, 
-              "type": "integer"
-          } ,
-            {
-              "name": "limit",
-              "in": "query",
-              "description": "Número máximo de itens a retornar",
-              "required": false,
-              "type": "integer",  
-              "format": "int32",  
-              "default": 20       
-            },
-            {
-              "name": "aplicacao",
-              "in": "query",
-              "description": "aplicacao/Descrição do serviço.",
-              "required": false,
-              "type": "string",  
-              "format": "int32"   
-            } 
-         
-           ],
-       
-           "requestBody":{
-                  "content":{
-                      "application/json":{
-                       
-                      }
-                  }
-             },
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "Serviços": {  
-                        "value":[
-                          {
-                              "codigo": 1,
-                              "id": 1,
-                              "data_cadastro": "1899-12-30",
-                              "data_recadastro": "2024-08-26 16:31:16",
-                              "descricao": "OUTROS 3"
-                          }
-                      ]
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao consultar os Serviços.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao consultar os Serviços."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        } , 
-        "/servico/:{codigo-servico} ":{
-        "get":{
-        "summary": "Obtém um Serviço consultando pelo codigo",
-         "description":"Obtém um Serviço consultando pelo codigo",
-         "tags":["servicos"],
- 
-         "requestBody":{
-                "content":{
-                    "application/json":{
-                     
-                    }
-                }
-           },
-           "responses": {
-            "200": {  
-              "content": {
-                "application/json": {
-                  "schema": {  
-                  },
-                  "examples": {
-                    "Serviços": {  
-                      "value": [
-                        {
-                          "codigo": 8544,
-                          "id": 8544,
-                          "valor": 90,
-                          "aplicacao": "SUBSTITUIR BRACO PITMAN",
-                          "tipo_serv": 3,
-                          "data_cadastro": "2023-01-16",
-                          "data_recadastro": "0000-00-00 00:00:00"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            },
-            "400":{
-              "description": "erro ao consultar os Serviços.",
-
-              "content": {
-                "application/json": {
-                  "schema": {  
-                  },
-                  "examples": {
-                    "erro":{
-                        "value":{
-                            "erro": true,
-                            "msg": "erro ao consultar os Serviços."
-                        }
-                     }
-                   }
-                 }
-              }
-            },
-            "401":{
-                "description": "não autorizado.",
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "msg": "Acesso negado, token não informado! "
-                          }
-                      }
-                    }
-                  }
-              }
-
-              } 
-          }
-        }
-        } , 
-        "/offline/servicos":{
-          "get":{
-          "summary": "busca servicos",
-           "description":"rota responsavel por buscar todos os dados dos servicos, onde é feito os procedimentos de cadastro no aplicativo.",
-           "tags":["servicos"],
-           "requestBody":{
-                  "content":{
-                      "application/json":{
-                          "examples":{
-                              "servicos":{
-                                  "value":[
-                                       {
-                                         "codigo": 2,
-                                          "tipo_serv": 3,
-                                          "valor": 40,
-                                          "aplicacao": "SUBSTITUIR CANO SAIDA ESCAPE"
-                                       }
-                                  ]
-                              }
-                          }
-                      }
-                  }
-             }
-          }
-         } ,
-         "/servico put":{
-          "put":{
-          "summary": "Atualizar Serviço",
-           "description":"Atualizar Serviço",
-           "tags":["servicos"],
-           "requestBody":{
-              "content":{
-                  "application/json":{
-                      "examples":{
-                          "marca":{
-                              "value": 
-                              {
-                                "codigo": 8542,
-                                "id": 8542,
-                                "valor": 50,
-                                "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1" ,
-                                "tipo_serv": 3,
-                                "data_cadastro": "2023-01-16",
-                                "data_recadastro": "0000-00-00 00:00:00"
-                              }
-                          }
-                      }
-                  }
-              }
-         },
-          
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "marca": {  
-                        "value": 
-                        {
-                          "codigo": 8542,
-                          "id": 8542,
-                          "valor": 50,
-                          "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1",
-                          "tipo_serv": 3,
-                          "data_cadastro": "2023-01-16",
-                          "data_recadastro": "0000-00-00 00:00:00"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao Atualizar Serviço.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao Atualizar Serviço."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        } ,
-        "/servico ":{
-          "post":{
-          "summary": "Cadastrar Serviço",
-           "description":"Cadastrar Serviço",
-           "tags":["servicos"],
-           "requestBody":{
-              "content":{
-                  "application/json":{
-                      "examples":{
-                          "marca":{
-                              "value": 
-                              {
-                                "id": 8542,
-                                "valor": 50,
-                                "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1" ,
-                                "tipo_serv": 3,
-                                "data_cadastro": "2023-01-16",
-                                "data_recadastro": "0000-00-00 00:00:00"
-                              }
-                          }
-                      }
-                  }
-              }
-         },
-          
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "marca": {  
-                        "value": 
-                        {
-                          "codigo": 8542,
-                          "id": 8542,
-                          "valor": 50,
-                          "aplicacao": "SUBSTITUIR PIVO DA SUSPENSAO 1",
-                          "tipo_serv": 3,
-                          "data_cadastro": "2023-01-16",
-                          "data_recadastro": "0000-00-00 00:00:00"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao Cadastrar Serviço.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao Cadastrar Serviço."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        } ,
-        
-        "/veiculos ":{
-          "get":{
-          "summary": "Obtém os veiculos",
-           "description":"Obtém os veiculos",
-           "tags":["veiculos"],
-           "parameters":[
-            {
-                "name":"codigo",
-                "in":"query",
-                "description":"codigo do veiculo.",
-                "required":false, 
-                "type": "integer"
-            } ,
-            {
-              "name":"id",
-              "in":"query",
-              "description":"id do veiculo.",
-              "required":false, 
-              "type": "integer"
-          } ,
+    {
+      "url": "https://api.example.com/v1",
+      "description": "Servidor de produção"
+    }
+  ],
+  "tags": [
+    {
+      "name": "produtos",
+      "description": "Operações relacionadas a produtos"
+    },
+    {
+      "name": "clientes",
+      "description": "Operações relacionadas a clientes"
+    },
+    {
+      "name": "categorias",
+      "description": "Operações relacionadas a categorias de produtos"
+    },
+    {
+      "name": "marcas",
+      "description": "Operações relacionadas a marcas de produtos"
+    },
+    {
+      "name": "servicos",
+      "description": "Operações relacionadas a serviços"
+    },
+    {
+      "name": "veiculos",
+      "description": "Operações relacionadas a veículos"
+    },
+    {
+      "name": "formas de pagamento",
+      "description": "Operações relacionadas a formas de pagamento"
+    },
+    {
+      "name": "tipos de os",
+      "description": "Operações relacionadas a tipos de ordem de serviço"
+    },
+    {
+      "name": "pedidos",
+      "description": "Operações relacionadas a pedidos"
+    },
+    {
+      "name": "empresa",
+      "description": "Operações relacionadas a empresas"
+    },
+    {
+      "name": "autenticacao",
+      "description": "Operações de autenticação e autorização"
+    },
+    {
+      "name": "usuarios",
+      "description": "Operações relacionadas a usuários"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/endpoint-exemplo": {
+      "get": {
+        "summary": "Resumo do endpoint",
+        "description": "Descrição detalhada do que o endpoint faz",
+        "tags": [
+          "tag-do-dominio"
+        ],
+        "security": [
           {
-            "name":"cliente",
-            "in":"query",
-            "description":"codigo do cliente vinculado ao veiculo.",
-            "required":false, 
-            "type": "integer"
-         } ,
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
           {
-            "name": "placa",
+            "name": "parametro",
             "in": "query",
-            "description": "placa do veiculo.",
+            "description": "Descrição do parâmetro",
             "required": false,
-            "type": "string",  
-            "format": "int32"   
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/LimitParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entidade"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar novo recurso",
+        "description": "Descrição do POST",
+        "tags": [
+          "tag-do-dominio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntidadeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Recurso criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entidade"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar recurso",
+        "description": "Descrição do PUT",
+        "tags": [
+          "tag-do-dominio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntidadeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recurso atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Entidade"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Excluir recurso",
+        "description": "Descrição do DELETE",
+        "tags": [
+          "tag-do-dominio"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do recurso",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recurso excluído com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Autenticar usuário",
+        "description": "Realiza autenticação e retorna token JWT",
+        "tags": [
+          "autenticacao"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email do usuário"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Senha do usuário"
+                  }
+                },
+                "required": [
+                  "email",
+                  "senha"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticação realizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "description": "Token JWT para autenticação"
+                    },
+                    "usuario": {
+                      "type": "object",
+                      "description": "Dados do usuário autenticado"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/enviar_codigo": {
+      "post": {
+        "summary": "Enviar código de validação",
+        "description": "Envia código de validação para recuperação de senha",
+        "tags": [
+          "autenticacao"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email para envio do código"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Código enviado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/alterar_senha": {
+      "post": {
+        "summary": "Alterar senha",
+        "description": "Altera a senha do usuário usando código de validação",
+        "tags": [
+          "autenticacao"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "codigo": {
+                    "type": "string",
+                    "description": "Código de validação recebido por email"
+                  },
+                  "nova_senha": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "email",
+                  "codigo",
+                  "nova_senha"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha alterada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/offline/produtos": {
+      "get": {
+        "summary": "Buscar todos os produtos (offline)",
+        "description": "Rota responsável por buscar todos os dados dos produtos para sincronização offline",
+        "tags": [
+          "produtos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de produtos retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Produto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/produtos": {
+      "get": {
+        "summary": "Buscar produtos com filtros",
+        "description": "Obtém produtos com base em parâmetros de busca",
+        "tags": [
+          "produtos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "query",
+            "description": "Código do produto",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           },
           {
             "name": "marca",
             "in": "query",
-            "description": "placa do veiculo.",
+            "description": "Código da marca",
             "required": false,
-            "type": "string",  
-            "format": "int32"   
-          } ,
-          {
-            "name": "modelo",
-            "in": "query",
-            "description": "modelo do veiculo.",
-            "required": false,
-            "type": "string",  
-            "format": "int32"   
-          } ,
-          {
-            "name": "ano",
-            "in": "query",
-            "description": "ano do veiculo.",
-            "required": false,
-            "type": "string",  
-            "format": "int32"   
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           },
           {
-            "name": "limit",
+            "name": "Grupo",
             "in": "query",
-            "description": "Número máximo de itens a retornar",
+            "description": "Código da categoria",
             "required": false,
-            "type": "integer",  
-            "format": "int32",  
-            "default": 20       
-          } 
-       
-         ],
-           "requestBody":{
-              "content":{
-                  "application/json":{
-                      "examples":{
-                          "veiculo":{
-                              "value": 
-                            [  {
-                                "id": 2,
-                                "cliente": 1,
-                                "placa": "12513",
-                                "marca": "teste",
-                                "modelo": "teste",
-                                "ano": "1233",
-                                "combustivel": "",
-                                "data_cadastro": "0000-00-00",
-                                "data_recadastro": "0000-00-00"
-                              }
-                            ]
-                          }
-                      }
-                  }
-              }
-         },
-          
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "veiculo": {  
-                        "value": 
-                        {
-                          "codigo": 2,
-                          "id": 2,
-                          "cliente": 1,
-                          "placa": "12513",
-                          "marca": "teste",
-                          "modelo": "teste",
-                          "ano": "1233",
-                          "combustivel": "",
-                          "data_cadastro": "0000-00-00",
-                          "data_recadastro": "0000-00-00"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao buscar veiculo.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao buscar veiculo."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
-          }
-        } , 
-
-        "/offline/veiculos":{
-            "get":{
-            "summary": "busca veiculos",
-             "description":"rota responsavel por buscar todos os dados dos veiculos, onde é feito os procedimentos de cadastro no aplicativo.",
-             "tags":["veiculos"],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "veiculos":{
-                                    "value":[
-                                         {
-                                            "codigo": 1,
-                                            "cliente": 843,
-                                            "placa": "ALG-1548",
-                                            "marca": 1,
-                                            "modelo": 1899,
-                                            "ano": "1900",
-                                            "cor": 16777215,
-                                            "combustivel": "OUTRO"
-                                         }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        },
-        "/veiculo ":{
-          "post":{
-          "summary": "Cadastrar veiculo",
-           "description":"Cadastrar veiculo",
-           "tags":["veiculos"],
-           "requestBody":{
-              "content":{
-                  "application/json":{
-                      "examples":{
-                          "veiculo":{
-                              "value": 
-                              {
-                                "id": 2,
-                                "cliente": 1,
-                                "placa": "12513",
-                                "marca": "teste",
-                                "modelo": "teste",
-                                "ano": "1233",
-                                "combustivel": "",
-                                "data_cadastro": "0000-00-00",
-                                "data_recadastro": "0000-00-00"
-                              }
-                          }
-                      }
-                  }
-              }
-         },
-          
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "veiculo": {  
-                        "value": 
-                        {
-                          "codigo": 2,
-                          "id": 2,
-                          "cliente": 1,
-                          "placa": "12513",
-                          "marca": "teste",
-                          "modelo": "teste",
-                          "ano": "1233",
-                          "combustivel": "",
-                          "data_cadastro": "0000-00-00",
-                          "data_recadastro": "0000-00-00"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao Cadastrar veiculo.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao Cadastrar veiculo."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        } , 
-        "/veiculo put":{
-          "put":{
-          "summary": "Atualizar veiculo",
-           "description":"Atualizar veiculo",
-           "tags":["veiculos"],
-           "requestBody":{
-              "content":{
-                  "application/json":{
-                      "examples":{
-                          "veiculo":{
-                              "value": 
-                              {
-                                "codigo": 2,
-                                "id": 2,
-                                "cliente": 1,
-                                "placa": "12513",
-                                "marca": "teste",
-                                "modelo": "teste",
-                                "ano": "1233",
-                                "combustivel": "",
-                                "data_cadastro": "0000-00-00",
-                                "data_recadastro": "0000-00-00"
-                              }
-                          }
-                      }
-                  }
-              }
-         },
-          
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "veiculo": {  
-                        "value": 
-                        {
-                          "codigo": 2,
-                          "id": 2,
-                          "cliente": 1,
-                          "placa": "12513",
-                          "marca": "teste",
-                          "modelo": "teste",
-                          "ano": "1233",
-                          "combustivel": "",
-                          "data_cadastro": "0000-00-00",
-                          "data_recadastro": "0000-00-00"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao Atualizar veiculo.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao Atualizar veiculo."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        } , 
-        "/formas_pagamento ":{
-          "get":{
-          "summary": "Obtém forma de pagamento",
-           "description":"  Obtém forma de pagamento.",
-           "tags":["formas de pagamento"],
-           "parameters":[
-                {
-                    "name":"codigo",
-                    "in":"query",
-                    "description":"codigo da forma de pagamento.",
-                    "required":false, 
-                    "type": "integer"
-                } ,
-                {
-                  "name":"id",
-                  "in":"query",
-                  "description":"id da forma de pagamento.",
-                  "required":false, 
-                  "type": "integer"
-              } ,
-              {
-                "name":"parcelas",
-                "in":"query",
-                "description":"quantidade de parcelas da forma de pagamento.",
-                "required":false, 
-                "type": "integer"
-            } ,
-              {
-                "name": "limit",
-                "in": "query",
-                "description": "Número máximo de itens a retornar",
-                "required": false,
-                "type": "integer",  
-                "format": "int32",  
-                "default": 20       
-              },
-              {
-                "name": "Descrição",
-                "in": "query",
-                "description": " Descrição da forma de pagamento.",
-                "required": false,
-                "type": "string",  
-                "format": "int32"   
-              } 
-          
-            ],
-     
-           "requestBody":{
-                  "content":{
-                      "application/json":{
-                          "examples":{
-                              "forma de pagamento":{
-                                  "value": 
-                                  {
-                                  "codigo": 1,
-                                "id": 1,
-                                "descricao": "A VISTA",
-                                "desc_maximo": 100,
-                                "parcelas": 1,
-                                "intervalo": 30,
-                                "recebimento": 0,
-                                "data_cadastro": "2003-02-04",
-                                "data_recadastro": "2023-11-06 07:40:33"
-                              }
-                              }
-                          }
-                      }
-                  }
-             },
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "veiculo": {  
-                        "value": 
-                        {
-                          "codigo": 1,
-                          "id": 1,
-                          "descricao": "A VISTA",
-                          "desc_maximo": 100,
-                          "parcelas": 1,
-                          "intervalo": 30,
-                          "recebimento": 0,
-                          "data_cadastro": "2003-02-04",
-                          "data_recadastro": "2023-11-06 07:40:33"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro atualizar forma de pagamento.",
-  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro atualizar forma de pagamento."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-  
-                } 
-            }
-          }
-          },
-        "/offline/formas_pagamento":{
-            "get":{
-            "summary": "busca formas de pagamento",
-             "description":"rota responsavel por buscar todos os dados das formas de pagamento, onde é feito os procedimentos de cadastro no aplicativo.",
-             "tags":["formas de pagamento"],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "formas de pagamento":{
-                                    "value":[
-                                         {
-                                            "codigo": 1,
-                                            "descricao": "A VISTA",
-                                            "desc_maximo": 100,
-                                            "parcelas": 1,
-                                            "intervalo": 30,
-                                            "recebimento": 0
-                                         }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        },
-        "/formas_pagamento":{
-          "post":{
-          "summary": "cadastra formas de pagamento",
-           "description":"  cadastra formas de pagamento.",
-           "tags":["formas de pagamento"],
-           "requestBody":{
-                  "content":{
-                      "application/json":{
-                          "examples":{
-                              "formas de pagamento":{
-                                  "value": 
-                                  {
-                                    "id": 1,
-                                    "descricao": "A VISTA",
-                                    "desc_maximo": 100,
-                                    "parcelas": 1,
-                                    "intervalo": 30,
-                                    "recebimento": 0,
-                                    "data_cadastro": "2003-02-04",
-                                    "data_recadastro": "2023-11-06 07:40:33"
-                                  }
-                              }
-                          }
-                      }
-                  }
-             },
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "veiculo": {  
-                        "value": 
-                        {
-                          "codigo": 69,
-                          "id": 1,
-                          "descricao": "A VISTA",
-                          "desc_maximo": 100,
-                          "parcelas": 1,
-                          "intervalo": 30,
-                          "recebimento": 0,
-                          "data_cadastro": "2003-02-04",
-                          "data_recadastro": "2023-11-06 07:40:33"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro obter formas de pagamento.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro obter formas de pagamento."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        },
-         "/formas_pagamento put ":{
-        "put":{
-        "summary": "Atualiza forma de pagamento",
-         "description":"  Atualiza forma de pagamento.",
-         "tags":["formas de pagamento"],
-         "requestBody":{
-                "content":{
-                    "application/json":{
-                        "examples":{
-                            "forma de pagamento":{
-                                "value": 
-                                {
-                                "codigo": 1,
-                              "id": 1,
-                              "descricao": "A VISTA",
-                              "desc_maximo": 100,
-                              "parcelas": 1,
-                              "intervalo": 30,
-                              "recebimento": 0,
-                              "data_cadastro": "2003-02-04",
-                              "data_recadastro": "2023-11-06 07:40:33"
-                            }
-                            }
-                        }
-                    }
-                }
-           },
-           "responses": {
-            "200": {  
-              "content": {
-                "application/json": {
-                  "schema": {  
-                  },
-                  "examples": {
-                    "veiculo": {  
-                      "value": 
-                      {
-                        "codigo": 1,
-                        "id": 1,
-                        "descricao": "A VISTA",
-                        "desc_maximo": 100,
-                        "parcelas": 1,
-                        "intervalo": 30,
-                        "recebimento": 0,
-                        "data_cadastro": "2003-02-04",
-                        "data_recadastro": "2023-11-06 07:40:33"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "400":{
-              "description": "erro atualizar forma de pagamento.",
-
-              "content": {
-                "application/json": {
-                  "schema": {  
-                  },
-                  "examples": {
-                    "erro":{
-                        "value":{
-                            "erro": true,
-                            "msg": "erro atualizar forma de pagamento."
-                        }
-                     }
-                   }
-                 }
-              }
-            },
-            "401":{
-                "description": "não autorizado.",
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "msg": "Acesso negado, token não informado! "
-                          }
-                      }
-                    }
-                  }
-              }
-
-              } 
-          }
-        }
-         },
-      
-        "/offline/tipos_os":{
-            "get":{
-              "summary": "Obtém tipos de ordem de serviços",
-              "description":"Obtém tipos de ordem de serviços.",
-
-              "tags":["tipos de os"],
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "tipos de os":{
-                                    "value":[
-                                        {
-                                            "codigo": 3,
-                                            "descricao": "MATERIAL PARA REVENDA",
-                                            "exigir_laudo": "N"
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        },
-         "/tipos_os":{
-          "get":{
-          "summary": "Obtém tipos de ordem de serviços",
-           "description":"Obtém tipos de ordem de serviços.",
-           "tags":["tipos de os"],
-           "parameters":[
-            {
-                "name":"codigo",
-                "in":"query",
-                "description":"codigo do tipo de os .",
-                "required":false, 
-                "type": "integer"
-            } ,
-            {
-              "name":"id",
-              "in":"query",
-              "description":"id do tipo de os .",
-              "required":false, 
-              "type": "integer"
-          } ,
-      
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Número máximo de itens a retornar",
-            "required": false,
-            "type": "integer",  
-            "format": "int32",  
-            "default": 20       
           },
           {
             "name": "Descrição",
             "in": "query",
-            "description": " Descrição do tipo de os .",
+            "description": "Descrição do produto (busca parcial)",
             "required": false,
-            "type": "string",  
-            "format": "int32"   
-          } 
-      
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/LimitParam"
+          }
         ],
-           "requestBody":{
-                  "content":{
-                      "application/json":{
-                      }
-                  }
-             },
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "tipo_os": {  
-                        "value": 
-                        [
-                          {
-                            "codigo": 1,
-                            "id": 1,
-                            "descricao": "SERVICOS",
-                            "data_cadastro": "0000-00-00",
-                            "data_recadastro": "0000-00-00 00:00:00"
-                          }
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro obter  tipos de os .",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro obter  tipos de os ."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        },
-        "/tipos_os post":{
-          "post":{
-          "summary": "Cadastra tipos de ordem de serviços",
-           "description":"Cadastra tipos de ordem de serviços.",
-           "tags":["tipos de os"],
-     
-           "requestBody":{
-            "content":{
-              "application/json":{
-                  "examples":{
-                      "tipos_os":{
-                          "value": 
-                          {
-                            "id": 1,
-                            "descricao": "SERVICOS 2",
-                            "data_cadastro": "0000-00-00",
-                            "data_recadastro": "0000-00-00 00:00:00"
-                          }
-                      }
-                  }
-              }
-          }
-             },
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "tipos_os": {  
-                        "value": 
-                        {
-                          "codigo": 4,
-                          "descricao": "SERVICOS 2",
-                          "data_cadastro": "0000-00-00",
-                          "data_recadastro": "0000-00-00 00:00:00"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao registrar tipos de os.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao registrar tipos de os."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        },
-        "/tipos_os put":{
-          "put":{
-          "summary": "Atualizar tipos de ordem de serviços",
-           "description":"Atualizar tipos de ordem de serviços.",
-           "tags":["tipos de os"],
-     
-           "requestBody":{
-            "content":{
-              "application/json":{
-                  "examples":{
-                      "tipos_os":{
-                          "value": 
-                          {
-                            "codigo": 4,
-                            "id": 1,
-                            "descricao": "SERVICOS 2",
-                            "data_cadastro": "0000-00-00",
-                            "data_recadastro": "0000-00-00 00:00:00"
-                          }
-                      }
-                  }
-              }
-          }
-             },
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "tipos_os": {  
-                        "value": 
-                        {
-                          "codigo": 4,
-                          "descricao": "SERVICOS 2",
-                          "data_cadastro": "0000-00-00",
-                          "data_recadastro": "0000-00-00 00:00:00"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao atualizar tipos de os.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao atualizar tipos de os."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-        },
-        "/pedidos":{
-            "get":{
-                "summary": "busca pedidos",
-                 "description":"rota responsavel por buscar pedidos do sistema com base na data de alteração e no vendedor informado.",
-                 
-                 "tags":["pedidos"],
-                 "parameters":[
-                    {
-                        "data":"data ",
-                        "in":"query",
-                        "name":"2024-09-30 15:00:00",
-                        "description":"data ultima alteracao",
-                        "required":true
-                    },
-                    {
-                        "vendedor":"vendedor ",
-                        "in":"query",
-                        "name":"vendedor",
-                        "description":"Codigo do vendedor",
-                        "required":true
-                    }
-                 ],
-                 "requestBody":{
-                        "content":{
-                            "application/json":{
-                                "examples":{
-                                    "pedidos":{
-                                        "value": [
-                                            {
-                                                "cliente": {
-                                                    "codigo": 1,
-                                                    "nome": "JOAO FLAVIO FERNANDES",
-                                                    "cnpj": "187.734.009-04",
-                                                    "celular": "(44) 99916-0504"
-                                                },
-                                                "codigo": 1,
-                                                "codigo_site": 2,
-                                                "situacao": "AI",
-                                                "total_geral": 339.26,
-                                                "total_produtos": 339.26,
-                                                "total_servicos": 0,
-                                                "quantidade_parcelas": 1,
-                                                "forma_pagamento": 0,
-                                                "contato": "REACT-NATIVE ",
-                                                "vendedor": 110,
-                                                "data_recadastro": "2024-10-03 13:31:01",
-                                                "data_cadastro": "2024-10-02",
-                                                "veiculo": 0,
-                                                "observacoes": "",
-                                                "tipo_os": 0,
-                                                "tipo": "1",
-                                                "descontos": 0,
-                                                "produtos": [
-                                                    {
-                                                        "pedido": 2,
-                                                        "codigo": 7,
-                                                        "descricao": "LUBRIFICANTE FREIO DOT4 500ML",
-                                                        "quantidade": 1,
-                                                        "preco": 26.76,
-                                                        "desconto": 0,
-                                                        "total": 26.76
-                                                    },
-                                                    {
-                                                        "pedido": 2,
-                                                        "codigo": 1657,
-                                                        "descricao": "ABRACADEIRA 3 TUBOS",
-                                                        "quantidade": 1,
-                                                        "preco": 20.73,
-                                                        "desconto": 0,
-                                                        "total": 20.73
-                                                    },
-                                                    {
-                                                        "pedido": 2,
-                                                        "codigo": 1677,
-                                                        "descricao": "ABRACADEIRA CRUZETA DO CARDAN",
-                                                        "quantidade": 1,
-                                                        "preco": 34.349998,
-                                                        "desconto": 0,
-                                                        "total": 34.35
-                                                    },
-                                                    {
-                                                        "pedido": 2,
-                                                        "codigo": 3315,
-                                                        "descricao": "ABRACADEIRA DA TURBINA",
-                                                        "quantidade": 1,
-                                                        "preco": 127.5,
-                                                        "desconto": 0,
-                                                        "total": 127.5
-                                                    }
-                                                ],
-                                                "parcelas": [
-                                                    {
-                                                        "pedido": 1,
-                                                        "parcela": 1,
-                                                        "valor": 339.26,
-                                                        "vencimento": "2024-10-03"
-                                                    }
-                                                ],
-                                                "servicos": []
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                   }
-                },
-            "post":{
-            "summary": "cria/atualiza um pedido",
-             "description":"rota responsavel por validar a existência de um pedido, caso exista é feita a atualização caso contrario é criado o pedido.",
-             
-             "tags":["pedidos"],
-         
-             "requestBody":{
-                    "content":{
-                        "application/json":{
-                            "examples":{
-                                "pedidos":{
-                                    "value": {
-                                             "cliente": {
-                                                "codigo": 3,
-                                                "nome": "ACP AUTO CABINES PARANA",
-                                                "cnpj": "11.556.583/0001-58",
-                                                "celular": ""
-                                            },
-                                            "codigo": 4,
-                                            "total_geral": 66.76,
-                                            "total_produtos": 26.76,
-                                            "quantidade_parcelas": 1,
-                                            "forma_pagamento": 0,
-                                            "contato": "react-native/mobile 4",
-                                            "data_recadastro": "2024-09-30T17:21:29.000Z",
-                                            "data_cadastro": "2024-09-30T03:00:00.000Z",
-                                            "produtos": [
-                                                {
-                                                    "pedido": 4,
-                                                    "codigo": 7,
-                                                    "descricao": "LUBRIFICANTE FREIO DOT4 500ML",
-                                                    "quantidade": 1,
-                                                    "preco": 26.76,
-                                                    "desconto": 0,
-                                                    "total": 26.76
-                                                }
-                                            ],
-                                            "parcelas": [
-                                                {
-                                                    "pedido": 4,
-                                                    "parcela": 1,
-                                                    "valor": 66.76,
-                                                    "vencimento": "2024-09-30"
-                                                }
-                                            ],
-                                            "servicos": [
-                                                {
-                                                    "pedido": 4,
-                                                    "aplicacao": "SUBSTITUIR LONA FREIO DIANTEIRO",
-                                                    "quantidade": 1,
-                                                    "desconto": 0,
-                                                    "valor": 40
-                                                }
-                                            ]
-                                        }
-                                    
-                                }
-                            }
-                        }
-                    }
-               }
-            }
-        },
-        "/empresa ":{
-          "post":{
-          "summary": "Cadastra empresa",
-           "description":"Cadastra empresa",
-           "tags":["empresa"],
-           "requestBody":{
-              "content":{
-                  "application/json":{
-                      "examples":{
-                          "empresa":{
-                              "value": 
-                              {
-                                "cnpj":"00.000.000/0000-00",
-                                "usuario":"teste",
-                                "email":"user@teste.com",
-                                "senha":"123",
-                                "email_empresa":"user@teste.com",
-                                "nome_empresa":"EMPR TESTE",
-                                "telefone_empresa":"44 999999999"
-                              }
-                              
-                          }
-                      }
-                  }
-              }
-         },
-          
-             "responses": {
-              "200": {  
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "empresa": {  
-                        "value": 
-                        {
-                          "status": {
-                            "ok": true,
-                            "msg": "Empresa registrada com sucesso!"
-                          },
-                          "data": 
-                          {
-                            "cnpj":"00.000.000/0000-00",
-                            "usuario":"teste",
-                            "email":"user@teste.com",
-                            "senha":"123",
-                            "email_empresa":"user@teste.com",
-                            "nome_empresa":"EMPR TESTE",
-                            "telefone_empresa":"44 999999999"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "400":{
-                "description": "erro ao cadastrar empresa.",
-
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "erro": true,
-                              "msg": "erro ao cadastrar empresa."
-                          }
-                       }
-                     }
-                   }
-                }
-              },
-              "401":{
-                  "description": "não autorizado.",
-                  "content": {
-                    "application/json": {
-                      "schema": {  
-                      },
-                      "examples": {
-                        "erro":{
-                            "value":{
-                                "msg": "Acesso negado, token não informado! "
-                            }
-                        }
-                      }
-                    }
-                }
-
-                } 
-            }
-          }
-       },
-       "/empresa/validacao ":{
-        "post":{
-        "summary": "Verifica se a empresa já foi cadastrada",
-         "description":"Verifica se a empresa já foi cadastrada",
-         "tags":["empresa"],
-         "requestBody":{
-            "content":{
-                "application/json":{
-                    "examples":{
-                        "empresa":{
-                            "value": 
-                            {
-                              "cnpj":"00.000.000/0000-00"
-                            }
-                            
-                        }
-                    }
-                }
-            }
-       },
-        
-           "responses": {
-            "200": {  
-              "description": "Empresa encontrada .",
-              "content": {
-                "application/json": {
-                  "schema": {  
-                  },
-                  "examples": {
-                    "empresa": {  
-                      "value": 
-                      {
-                        "status": {
-                          "cadastrada": true,
-                          "msg": "Já existe uma empresa cadastrada com este cnpj !"
-                        },
-                        "data": {
-                          "cnpj": "03038683000164",
-                          "email_empresa": "user@teste.com",
-                          "telefone_empresa": "44 999317550",
-                          "nome": "EMPR TESTE",
-                          "codigo": 4,
-                          "responsavel": 6
-                        }
-                      }
-                    }
+        "responses": {
+          "200": {
+            "description": "Produtos encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Produto"
                   }
                 }
               }
-            },
-            "400":{
-              "description": "Empresa não encontrada .",
-
-              "content": {
-                "application/json": {
-                  "schema": {  
-                  },
-                  "examples": {
-                    "erro":{
-                        "value": 
-                        {
-                          "status": {
-                            "cadastrada": false,
-                            "msg": "Não encontramos empresa cadastrada com este cnpj!"
-                          },
-                          "data": {}
-                        }
-                     }
-                   }
-                 }
-              }
-            },
-            "401":{
-                "description": "não autorizado.",
-                "content": {
-                  "application/json": {
-                    "schema": {  
-                    },
-                    "examples": {
-                      "erro":{
-                          "value":{
-                              "msg": "Acesso negado, token não informado! "
-                          }
-                      }
-                    }
-                  }
-              }
-
-              } 
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
-     } 
-    } 
- 
-
-       
+      }
+    },
+    "/produto/{codigo-produto}": {
+      "get": {
+        "summary": "Buscar produto por código",
+        "description": "Obtém um produto específico com todos os dados pelo código",
+        "tags": [
+          "produtos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "codigo-produto",
+            "in": "path",
+            "required": true,
+            "description": "Código do produto",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/produto": {
+      "post": {
+        "summary": "Cadastrar novo produto",
+        "description": "Cria um novo produto no sistema",
+        "tags": [
+          "produtos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Produto cadastrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar produto",
+        "description": "Atualiza os dados de um produto existente",
+        "tags": [
+          "produtos"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProdutoInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Produto atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Produto"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtido através do endpoint de login"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "erro": {
+            "type": "boolean",
+            "description": "Indica se houve erro"
+          },
+          "msg": {
+            "type": "string",
+            "description": "Mensagem de erro"
+          }
+        },
+        "required": [
+          "erro",
+          "msg"
+        ]
+      },
+      "UnauthorizedError": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string",
+            "example": "Acesso negado, token não informado!"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "erro": {
+            "type": "boolean",
+            "example": true
+          },
+          "msg": {
+            "type": "string",
+            "description": "Mensagem de validação"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "example": true
+          },
+          "msg": {
+            "type": "string",
+            "description": "Mensagem de sucesso"
+          }
+        }
+      },
+      "PaginationParams": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Número máximo de itens a retornar",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Número de itens a pular",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      },
+      "Entidade": {
+        "type": "object",
+        "description": "Descrição da entidade",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "ID único do recurso"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome do recurso",
+            "example": "Exemplo"
+          },
+          "ativo": {
+            "type": "boolean",
+            "description": "Status ativo/inativo",
+            "default": true
+          },
+          "data_cadastro": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de cadastro"
+          }
+        },
+        "required": [
+          "nome"
+        ]
+      },
+      "EntidadeInput": {
+        "type": "object",
+        "description": "Dados para criação/atualização da entidade",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome do recurso"
+          },
+          "ativo": {
+            "type": "boolean",
+            "description": "Status ativo/inativo"
+          }
+        },
+        "required": [
+          "nome"
+        ]
+      },
+      "EntidadeList": {
+        "type": "object",
+        "description": "Lista paginada de entidades",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entidade"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Total de registros"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Limite de registros por página"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Offset da paginação"
+          }
+        }
+      },
+      "Produto": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Código único do produto"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "ID interno do produto"
+          },
+          "estoque": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Quantidade em estoque"
+          },
+          "preco": {
+            "type": "number",
+            "format": "float",
+            "description": "Preço do produto"
+          },
+          "grupo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Código da categoria/grupo"
+          },
+          "descricao": {
+            "type": "string",
+            "description": "Descrição do produto"
+          },
+          "num_fabricante": {
+            "type": "string",
+            "description": "Número do fabricante"
+          },
+          "num_original": {
+            "type": "string",
+            "description": "Número original/OEM"
+          },
+          "sku": {
+            "type": "string",
+            "description": "SKU do produto"
+          },
+          "marca": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Código da marca"
+          },
+          "ativo": {
+            "type": "string",
+            "enum": [
+              "S",
+              "N"
+            ],
+            "description": "Status ativo (S) ou inativo (N)"
+          },
+          "tipo": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Tipo do produto"
+          },
+          "class_fiscal": {
+            "type": "string",
+            "description": "Classificação fiscal"
+          },
+          "origem": {
+            "type": "string",
+            "description": "Origem do produto"
+          },
+          "cst": {
+            "type": "string",
+            "description": "Código de situação tributária"
+          },
+          "data_cadastro": {
+            "type": "string",
+            "format": "date",
+            "description": "Data de cadastro"
+          },
+          "data_recadastro": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de recadastro"
+          },
+          "observacoes1": {
+            "type": "string",
+            "description": "Observações adicionais 1"
+          },
+          "observacoes2": {
+            "type": "string",
+            "description": "Observações adicionais 2"
+          },
+          "observacoes3": {
+            "type": "string",
+            "description": "Observações adicionais 3"
+          }
+        },
+        "required": [
+          "codigo",
+          "descricao"
+        ]
+      },
+      "ProdutoInput": {
+        "type": "object",
+        "properties": {
+          "codigo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "estoque": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "preco": {
+            "type": "number",
+            "format": "float"
+          },
+          "grupo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "num_fabricante": {
+            "type": "string"
+          },
+          "num_original": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "marca": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ativo": {
+            "type": "string",
+            "enum": [
+              "S",
+              "N"
+            ]
+          },
+          "tipo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "class_fiscal": {
+            "type": "string"
+          },
+          "origem": {
+            "type": "string"
+          },
+          "cst": {
+            "type": "string"
+          },
+          "observacoes1": {
+            "type": "string"
+          },
+          "observacoes2": {
+            "type": "string"
+          },
+          "observacoes3": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "descricao"
+        ]
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Não autorizado - Token inválido ou não fornecido",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UnauthorizedError"
+            },
+            "example": {
+              "msg": "Acesso negado, token não informado!"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Requisição inválida",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "erro": true,
+              "msg": "Erro ao processar requisição"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Recurso não encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "erro": true,
+              "msg": "Recurso não encontrado"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Erro interno do servidor",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "erro": true,
+              "msg": "Erro interno do servidor"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "LimitParam": {
+        "name": "limit",
+        "in": "query",
+        "description": "Número máximo de itens a retornar",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 20,
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "OffsetParam": {
+        "name": "offset",
+        "in": "query",
+        "description": "Número de itens a pular",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "default": 0,
+          "minimum": 0
+        }
+      }
+    }
+  }
 }

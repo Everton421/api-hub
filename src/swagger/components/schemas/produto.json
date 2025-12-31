@@ -1,0 +1,163 @@
+{
+  "Produto": {
+    "type": "object",
+    "properties": {
+      "codigo": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Código único do produto"
+      },
+      "id": {
+        "type": "integer",
+        "format": "int32",
+        "description": "ID interno do produto"
+      },
+      "estoque": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Quantidade em estoque"
+      },
+      "preco": {
+        "type": "number",
+        "format": "float",
+        "description": "Preço do produto"
+      },
+      "grupo": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Código da categoria/grupo"
+      },
+      "descricao": {
+        "type": "string",
+        "description": "Descrição do produto"
+      },
+      "num_fabricante": {
+        "type": "string",
+        "description": "Número do fabricante"
+      },
+      "num_original": {
+        "type": "string",
+        "description": "Número original/OEM"
+      },
+      "sku": {
+        "type": "string",
+        "description": "SKU do produto"
+      },
+      "marca": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Código da marca"
+      },
+      "ativo": {
+        "type": "string",
+        "enum": ["S", "N"],
+        "description": "Status ativo (S) ou inativo (N)"
+      },
+      "tipo": {
+        "type": "integer",
+        "format": "int32",
+        "description": "Tipo do produto"
+      },
+      "class_fiscal": {
+        "type": "string",
+        "description": "Classificação fiscal"
+      },
+      "origem": {
+        "type": "string",
+        "description": "Origem do produto"
+      },
+      "cst": {
+        "type": "string",
+        "description": "Código de situação tributária"
+      },
+      "data_cadastro": {
+        "type": "string",
+        "format": "date",
+        "description": "Data de cadastro"
+      },
+      "data_recadastro": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Data de recadastro"
+      },
+      "observacoes1": {
+        "type": "string",
+        "description": "Observações adicionais 1"
+      },
+      "observacoes2": {
+        "type": "string",
+        "description": "Observações adicionais 2"
+      },
+      "observacoes3": {
+        "type": "string",
+        "description": "Observações adicionais 3"
+      }
+    },
+    "required": ["codigo", "descricao"]
+  },
+  "ProdutoInput": {
+    "type": "object",
+    "properties": {
+      "codigo": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "estoque": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "preco": {
+        "type": "number",
+        "format": "float"
+      },
+      "grupo": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "descricao": {
+        "type": "string"
+      },
+      "num_fabricante": {
+        "type": "string"
+      },
+      "num_original": {
+        "type": "string"
+      },
+      "sku": {
+        "type": "string"
+      },
+      "marca": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "ativo": {
+        "type": "string",
+        "enum": ["S", "N"]
+      },
+      "tipo": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "class_fiscal": {
+        "type": "string"
+      },
+      "origem": {
+        "type": "string"
+      },
+      "cst": {
+        "type": "string"
+      },
+      "observacoes1": {
+        "type": "string"
+      },
+      "observacoes2": {
+        "type": "string"
+      },
+      "observacoes3": {
+        "type": "string"
+      }
+    },
+    "required": ["descricao"]
+  }
+}
+

@@ -1,0 +1,77 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Template",
+    "description": "API REST para gerenciamento de produtos, clientes, pedidos e integrações",
+    "version": "1.0.0",
+    "contact": {
+      "email": "suporte@intersig.com.br"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/v1",
+      "description": "Servidor de desenvolvimento"
+    },
+    {
+      "url": "https://api.example.com/v1",
+      "description": "Servidor de produção"
+    }
+  ],
+  "tags": [
+    {
+      "name": "produtos",
+      "description": "Operações relacionadas a produtos"
+    },
+    {
+      "name": "clientes",
+      "description": "Operações relacionadas a clientes"
+    },
+    {
+      "name": "categorias",
+      "description": "Operações relacionadas a categorias de produtos"
+    },
+    {
+      "name": "marcas",
+      "description": "Operações relacionadas a marcas de produtos"
+    },
+    {
+      "name": "servicos",
+      "description": "Operações relacionadas a serviços"
+    },
+    {
+      "name": "veiculos",
+      "description": "Operações relacionadas a veículos"
+    },
+    {
+      "name": "formas de pagamento",
+      "description": "Operações relacionadas a formas de pagamento"
+    },
+    {
+      "name": "tipos de os",
+      "description": "Operações relacionadas a tipos de ordem de serviço"
+    },
+    {
+      "name": "pedidos",
+      "description": "Operações relacionadas a pedidos"
+    },
+    {
+      "name": "empresa",
+      "description": "Operações relacionadas a empresas"
+    },
+    {
+      "name": "autenticacao",
+      "description": "Operações de autenticação e autorização"
+    },
+    {
+      "name": "usuarios",
+      "description": "Operações relacionadas a usuários"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
+

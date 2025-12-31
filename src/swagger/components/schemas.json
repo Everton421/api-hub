@@ -1,0 +1,164 @@
+{
+  "schemas": {
+    "Error": {
+      "type": "object",
+      "properties": {
+        "erro": {
+          "type": "boolean",
+          "description": "Indica se houve erro"
+        },
+        "msg": {
+          "type": "string",
+          "description": "Mensagem de erro"
+        }
+      },
+      "required": ["erro", "msg"]
+    },
+    "UnauthorizedError": {
+      "type": "object",
+      "properties": {
+        "msg": {
+          "type": "string",
+          "example": "Acesso negado, token não informado!"
+        }
+      }
+    },
+    "ValidationError": {
+      "type": "object",
+      "properties": {
+        "erro": {
+          "type": "boolean",
+          "example": true
+        },
+        "msg": {
+          "type": "string",
+          "description": "Mensagem de validação"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "example": true
+        },
+        "msg": {
+          "type": "string",
+          "description": "Mensagem de sucesso"
+        }
+      }
+    },
+    "PaginationParams": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Número máximo de itens a retornar",
+          "default": 20,
+          "minimum": 1,
+          "maximum": 100
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Número de itens a pular",
+          "default": 0,
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "responses": {
+    "Unauthorized": {
+      "description": "Não autorizado - Token inválido ou não fornecido",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/UnauthorizedError"
+          },
+          "example": {
+            "msg": "Acesso negado, token não informado!"
+          }
+        }
+      }
+    },
+    "BadRequest": {
+      "description": "Requisição inválida",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          },
+          "example": {
+            "erro": true,
+            "msg": "Erro ao processar requisição"
+          }
+        }
+      }
+    },
+    "NotFound": {
+      "description": "Recurso não encontrado",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          },
+          "example": {
+            "erro": true,
+            "msg": "Recurso não encontrado"
+          }
+        }
+      }
+    },
+    "InternalServerError": {
+      "description": "Erro interno do servidor",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          },
+          "example": {
+            "erro": true,
+            "msg": "Erro interno do servidor"
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "LimitParam": {
+      "name": "limit",
+      "in": "query",
+      "description": "Número máximo de itens a retornar",
+      "required": false,
+      "schema": {
+        "type": "integer",
+        "format": "int32",
+        "default": 20,
+        "minimum": 1,
+        "maximum": 100
+      }
+    },
+    "OffsetParam": {
+      "name": "offset",
+      "in": "query",
+      "description": "Número de itens a pular",
+      "required": false,
+      "schema": {
+        "type": "integer",
+        "format": "int32",
+        "default": 0,
+        "minimum": 0
+      }
+    }
+  }
+}
+
