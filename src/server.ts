@@ -2,7 +2,8 @@ import express,{NextFunction, Request,Response} from 'express';
 import swaggerUi from 'swagger-ui-express';
 import "express-async-errors";
 import cors from 'cors';
- 
+ import https from 'https'
+ import fs from 'fs'
 import 'dotenv/config';
 import swaggerDocs from './swagger.json';
 
@@ -52,12 +53,18 @@ import { router, versao } from './routes/app-routes';
                     })
                 })
 
-                const PORT_API = process.env.PORT_API;
-                 app.listen(PORT_API,()=> console.log('app rodando porta ',PORT_API))
-    //  https.createServer({
-    //     cert: fs.readFileSync('/etc/letsencrypt/live/intersig.com.br-0003/fullchain.pem', 'utf8'),
-    //     key: fs.readFileSync('/etc/letsencrypt/live/intersig.com.br-0003/privkey.pem', 'utf8'),
-    //    // ca: fs.readFileSync('/etc/letsencrypt/live/intersig.com.br-0003/chain.pem', 'utf8') // Certificado da autoridade certificadora, se necessário
-//
-    // }, app).listen(3000,()=> console.log('app rodando porta https 3000'))
+                const PORT_API = process.env.PORT_API || 3000; 
+              //   app.listen(PORT_API,()=> console.log('app rodando porta ',PORT_API))
 
+              const cert = process.env.PATH_CERT_CERT || ''
+              const key = process.env.PATH_CERT_KEY || ''
+       https.createServer({
+          cert: fs.readFileSync(cert, 'utf8'),
+          key: fs.readFileSync(key, 'utf8'),
+         // ca: fs.readFileSync('/etc/letsencrypt/live/intersig.com.br-0003/chain.pem', 'utf8') // Certificado da autoridade certificadora, se necessário
+ 
+      }, app).listen(PORT_API,()=> console.log('app rodando porta https 3000'))
+
+
+//PATH_CERT_KEY='C:\Users\usuario\key.pem'
+//PATH_CERT_CERT='C:\Users\usuario\cert.pem'

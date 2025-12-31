@@ -27,7 +27,6 @@ const ML_API_URL = 'https://api.mercadolibre.com';
 
 export class PostMlItemsService {
 
-    // ... seus métodos anteriores (getItemsFromSeller, predictCategory) ...
 
     async publishItem(cnpj: string, systemUserCode: number, mlUserId: number,codigo_produto:number, integrationId:number, data: PublishItem ) {
         const createTablesAnuncios = new  CreateTablesAnuncios();
@@ -45,7 +44,6 @@ export class PostMlItemsService {
                  }
              }   
   
-
 
                let finalAttributes:typeFinalAttributes[] = [];
 
@@ -88,65 +86,8 @@ export class PostMlItemsService {
 
             delay(1);
             const ean = data.ean || ''
-     
-    const resultInsert = await insertAnuncios.insert(database, 
-        {
-            ativo:'S',
-            codigo_produto:codigo_produto,
-            descricao: data.title,
-            estoque: data.quantity,
-            id_externo: '1',
-            integration_id:integrationId,
-            link:'',
-            num_fabricante: ean,
-            titulo: data.title,
-            preco: data.price,
-            plataforma: 'ML',
-            sku_externo:null,
-            unidade_medida: '',
-            thumbnail: data.thumbnail || ''
-        }
-     )
-     if( resultInsert.sucess && resultInsert.insertId ){
-        if(finalAttributes.length > 0 ){
-                for(const atr of finalAttributes){
-                       await insertAtributosAnuncios.insert(database,
-                             {
-                                  id_anuncio:resultInsert.insertId,
-                                  id_atributo: atr.id,
-                                  id_valor_atributo:null,
-                                  nome_atributo: atr.id,
-                                  valor_atributo:atr.value_name
-                          } )
-                }
-                for( const img of data.pictures ){
-                     await insertAtributosAnuncios.insert(database,
-                             {
-                                  id_anuncio:resultInsert.insertId,
-                                  id_atributo: 'IMAGEM_ANUNCIO',
-                                  id_valor_atributo:null,
-                                  nome_atributo: 'IMAGEM_ANUNCIO',
-                                  valor_atributo: img
-                          } )
-                }
-        }
-     
-     }
-//        if(resultInsert.sucess){
-//             return {
-//                 success: true,
-//                 ml_id: ` id do ML  variavel:response.data.id `,
-//                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
-//                 msg: "Anúncio criado com sucesso!"
-//             };
-//        }else{
-//                return {
-//                 success: false,
-//                 ml_id: ` id do ML  variavel:response.data.id `,
-//                 permalink:  `Link do Anuncio no ML varialvel:response.data.permalink`,
-//                 msg: resultInsert.message
-//             };
-//        }
+   
+ 
             // 4. Envia para o Mercado Livre
              const response = await axios.post(`${ML_API_URL}/items`, mlPayload, {
                  headers: {
@@ -155,6 +96,51 @@ export class PostMlItemsService {
                  }
              });
  
+           if(response.data.id){
+            const resultInsert = await insertAnuncios.insert(database, 
+                    {
+                        ativo:'S',
+                        codigo_produto:codigo_produto,
+                        descricao: data.title,
+                        estoque: data.quantity,
+                        id_externo: '1',
+                        integration_id:integrationId,
+                        link:'',
+                        num_fabricante: ean,
+                        titulo: data.title,
+                        preco: data.price,
+                        plataforma: 'ML',
+                        sku_externo:null,
+                        unidade_medida: '',
+                        thumbnail: data.thumbnail || ''
+                    }
+                )
+                if( resultInsert.sucess && resultInsert.insertId ){
+                    if(finalAttributes.length > 0 ){
+                            for(const atr of finalAttributes){
+                                await insertAtributosAnuncios.insert(database,
+                                        {
+                                            id_anuncio:resultInsert.insertId,
+                                            id_atributo: atr.id,
+                                            id_valor_atributo:null,
+                                            nome_atributo: atr.id,
+                                            valor_atributo:atr.value_name
+                                    } )
+                            }
+                            for( const img of data.pictures ){
+                                await insertAtributosAnuncios.insert(database,
+                                        {
+                                            id_anuncio:resultInsert.insertId,
+                                            id_atributo: 'IMAGEM_ANUNCIO',
+                                            id_valor_atributo:null,
+                                            nome_atributo: 'IMAGEM_ANUNCIO',
+                                            valor_atributo: img
+                                    } )
+                            }
+                     }
+                }
+            }
+
              return {
                  success: true,
                  ml_id: response.data.id,
@@ -178,12 +164,6 @@ export class PostMlItemsService {
                      errorMessage += ". Verifique se a categoria exige atributos obrigatórios.";
                 }
             }
-        //    return {
-        //        sucess:false,
-        //        ml_id: '',
-        //        permalink: '',
-        //        msg: errorMessage
-        //    }
 
             throw new Error(errorMessage);
             

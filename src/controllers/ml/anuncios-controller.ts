@@ -16,26 +16,27 @@ export class AnunciosController{
     async post(req: Request, res:Response ){
 
         try{
+                const mlService = new PostMlItemsService();
+                const selectUsersMl = new SelectUsersMlIntegrations();
             
             const { title, price, category_id,   ml_user_id, codigo_produto   } = req.body 
+            const decoded = DecodedToken(String(req.headers.token));
+
             if(!ml_user_id ) return res.status(400).json({ msg: "identificador ml_user_id nao fornecido." });
 
             if(!codigo_produto ) return res.status(400).json({ msg: "identificador codigo_produto nao fornecido." });
 
-            if(!title || !price || !category_id ){
-                    return res.status(400).json({ msg: "Campos obrigatórios: title, price, category_id." });
-            }
-            const decoded = DecodedToken(String(req.headers.token));
+            if(!title || !price || !category_id ) return res.status(400).json({ msg: "Campos obrigatórios: title, price, category_id." });
+             
             if (decoded.erro || !decoded.payload) return res.status(401).json({ msg: "Token inválido" });
             
                  const userCnpj = decoded.payload.cnpj;
                  const systemUserCode = decoded.payload.codigo;
 
-                const selectUsersMl = new SelectUsersMlIntegrations();
                 const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(systemUserCode,ml_user_id, userCnpj);
-                if (!integracoes || integracoes.length === 0) {
-                    return res.status(400).json({ msg: "Usuário não possui conta ML vinculada." });
-                }
+
+                if (!integracoes || integracoes.length === 0)  return res.status(400).json({ msg: "Usuário não possui conta ML vinculada." });
+                 
                 const mlUserId = integracoes[0].ml_user_id;
                 const integrationId = integracoes[0].id
 
@@ -54,14 +55,10 @@ export class AnunciosController{
                     thumbnail: req.body.thumbnail
                 };
 
-
-                 const mlService = new PostMlItemsService();
                  const result = await mlService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto,integrationId ,itemData);
                  return res.status(201).json(result);
-                 
                 
         }catch(e){
-            
             return res.status(500).json({ sucess:false, message:`${e} `})
         }   
     }
@@ -336,7 +333,5 @@ export class AnunciosController{
 
 
     }
-
-
 
 }
