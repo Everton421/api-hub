@@ -29,7 +29,7 @@ import { LocaisController } from "../controllers/locais/locais-controller";
   const router = Router();
   export const versao = '/v1'
 
-    router.get(`${versao}/`, AuthMiddleware,async (req:Request, res:Response)=>{
+    router.get(`${versao}/health`,async (req:Request, res:Response)=>{
    
        await conn.query("SELECT 1 ", (err ,result )=>{
          if(err){

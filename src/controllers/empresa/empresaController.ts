@@ -107,13 +107,12 @@ export class CreateEmpresa {
         ativo  char(1) NOT NULL DEFAULT 'S',
         class_fiscal  varchar(255) NOT NULL DEFAULT '',
         cst  char(3) DEFAULT '00',
-         data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+        data_cadastro  date NOT NULL DEFAULT '2000-01-01',
         data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
         observacoes1  blob DEFAULT NULL,
         observacoes2  blob DEFAULT NULL,
         observacoes3  blob DEFAULT NULL,
         tipo  int(10) NOT NULL DEFAULT 0,
-        caracteristica int(11) DEFAULT 0,
         PRIMARY KEY ( codigo )
       
     );`,
