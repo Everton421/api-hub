@@ -9,7 +9,7 @@ export class MlItensController {
     /**
      * Rota de Teste: Lista produtos do Mercado Livre
      * GET /ml/items
-     */
+   
     async getItems(req: Request, res: Response) {
         try {
             // 1. Identifica o Usuário do ERP pelo Token do Header
@@ -24,6 +24,7 @@ export class MlItensController {
                 return res.status(401).json({ msg: "Token inválido" });
             }
 
+             
             const userCnpj = decoded.payload.cnpj; // ex: "12.345.678/0001-00"
             const systemUserCode = decoded.payload.codigo;
 
@@ -54,5 +55,5 @@ export class MlItensController {
             console.error(error);
             return res.status(500).json({ msg: "Erro ao buscar produtos", error: error.message });
         }
-    }
+    }  */
 }
