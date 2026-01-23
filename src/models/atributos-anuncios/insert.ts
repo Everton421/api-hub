@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig";
-import { atributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios";
+import { typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios";
 
 
 type OkPacket = {
@@ -14,7 +14,7 @@ type OkPacket = {
 }
 type responseFunction = { sucess:boolean, message:string,  insertId?:number}
 
-type insertAtributo  = Omit<atributosAnuncios,'id'>;
+type insertAtributo  = Omit<typeAtributosAnuncios,'id'>;
 
 
 export class InsertAtributosAnuncios{

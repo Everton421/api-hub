@@ -139,11 +139,11 @@ async callback(req: Request, res: Response) {
 
         // 2. FINALMENTE insere na tabela principal
     const validuserMlIntegration = await selectUsersMlIntegration.fincByIdMLandCodeSystem(system_user_code , ml_user_id);
-             if (validuserMlIntegration.length > 0) {
-                 await updateUsersMlIntegration.update({ integration_name: integrationName, cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
-             } else {
-                 await insertUsersMlIntegration.cadastrar({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id, integration_name:integrationName });
-             }
+          //   if (validuserMlIntegration.length > 0) {
+          //       await updateUsersMlIntegration.update({ integration_name: integrationName, cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
+          //   } else {
+          //       await insertUsersMlIntegration.cadastrar({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id, integration_name:integrationName });
+          //   }
  
           
         return res.status(200).json({ msg: "Integração concluída com sucesso!" });
