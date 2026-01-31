@@ -4,11 +4,11 @@ import 'dotenv/config';
 
     let connectionRabbitMQ: ChannelModel | null = null;
     let channel: Channel | null = null
-        const exchange = 'template_api'
+        const exchange = process.env.EXCHANGE_NAME
 
         export async function connectRabbitMQ(){
             const broker_url = process.env.BROKER_URL;
-
+                if(!exchange ) throw new Error("process.env.EXCHANGE_NAME não configurada ");
                 if( !broker_url ) throw new Error("process.env.BROKER_URL não configurada ");
         
             try{
@@ -30,15 +30,23 @@ import 'dotenv/config';
                     }
 
                 }
+
+
 export async  function publishExchangeMessage(   routingKey: string, data: any): Promise<boolean> {
             if (!channel || !connectionRabbitMQ) {
                 console.warn("⚠️ [RabbitMQ] Sem conexão ativa. Mensagem não enviada.");
                 return false;
             }
+                if(!exchange ) throw new Error("process.env.EXCHANGE_NAME não configurada ");
+
             try {
                     const buffer = Buffer.from(JSON.stringify(data));
 
-                return  channel.publish(exchange, routingKey, buffer);
+                return  channel.publish(exchange, routingKey, buffer,
+                    {
+                        persistent: true
+                    }
+                );
 
             } catch (error) {
                 console.error("❌ [RabbitMQ] Erro ao tentar publicar:", error);
