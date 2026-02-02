@@ -5,6 +5,7 @@ import { DateService } from "../../services/date-service/dateService";
 import { update_formaPagamento } from "../../models/formas_pagamento/update";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { queryFpgt } from "../../types/formas_pagamento/type-formas-pagamento";
+import { publishMessage } from "../../services/broker/publish-message";
 
 export class FormasController{
  
@@ -45,6 +46,7 @@ export class FormasController{
         return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
      } 
      let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
    
        let dbName  = `\`${empresa}\``;
@@ -64,9 +66,8 @@ export class FormasController{
         let aux:any = await insert.cadastrar(dbName, req.body)
          if(aux.insertId > 0 ){
            req.body.codigo = aux.insertId 
-          
-           return res.status(200).json({ 
-               codigo:   req.body.codigo,
+         const item ={
+            codigo:   req.body.codigo,
                id: req.body.id,
                descricao: req.body.descricao,
                desc_maximo: req.body.desc_maximo,
@@ -76,7 +77,9 @@ export class FormasController{
                data_cadastro: req.body.data_cadastro,
                data_recadastro: req.body.data_recadastro,
                ativo: req.body.ativo
-             });
+             }
+               await publishMessage( empresa , 'formaspagamento.inserido', item)
+           return res.status(200).json(item);
          }
       }catch(e){
          console.log(e)
@@ -96,6 +99,8 @@ export class FormasController{
           return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
        } 
        let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
        let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
          let dbName  = `\`${empresa}\``;
 
@@ -121,8 +126,7 @@ export class FormasController{
             let aux:any = await update.update(dbName, req.body)
 
               if(aux.affectedRows > 0 ){
-              
-                return res.status(200).json({ 
+                const item =  {
                     codigo:   req.body.codigo,
                     id: req.body.id,
                     descricao: req.body.descricao,
@@ -134,7 +138,10 @@ export class FormasController{
                     data_recadastro: req.body.data_recadastro,
                     ativo: req.body.ativo
 
-                  });
+                  }
+               await publishMessage( empresa , 'formaspagamento.atualizado', item)
+
+                return res.status(200).json(item);
               }
          }else{
            return res.status(400).json({erro:true, msg:` Não foi encontrada Forma de pagamento codigo: ${req.body.codigo} `}); 

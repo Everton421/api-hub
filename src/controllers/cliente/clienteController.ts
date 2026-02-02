@@ -5,6 +5,7 @@ import { Cliente } from "../../models/cliente/interface_cliente";
 import { Update_clientes } from "../../models/cliente/update";
 import { DateService } from "../../services/date-service/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { publishMessage } from "../../services/broker/publish-message";
 
 export class ClienteController{
 
@@ -48,6 +49,8 @@ export class ClienteController{
         return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
      } 
      let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
         
@@ -119,8 +122,7 @@ export class ClienteController{
                                 itemInserido = await insert.cadastrar(dbName,postCliente )
                         postCliente.codigo = itemInserido.insertId;
 
-                                return res.status(200).json(
-                                    { 
+                                const item = { 
                                         codigo : postCliente.codigo,
                                         id : postCliente.id,
                                         celular : postCliente.celular,
@@ -133,7 +135,10 @@ export class ClienteController{
                                         cidade : postCliente.cidade,
                                         data_cadastro:postCliente.data_cadastro,
                                         data_recadastro:postCliente.data_recadastro
-                                    });        
+                                    }
+                                       await publishMessage( empresa , 'cliente.inserido', item)
+
+                                return res.status(200).json( item );        
 
                             }catch(err){
                                     console.log(`erro ao inserir o cliente`,err);
@@ -142,7 +147,6 @@ export class ClienteController{
                             }   
                 }
      }
-
 
      async findByParam(req:Request,res:Response){
     
@@ -168,7 +172,6 @@ export class ClienteController{
         }
      
     }
-
  
 
      async update(req:Request,res:Response){
@@ -184,6 +187,7 @@ export class ClienteController{
                 return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
              } 
              let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
              let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
             let  dbName = `\`${empresa}\``;
@@ -242,9 +246,8 @@ export class ClienteController{
                         try{
                                     itemInserido = await update.update(dbName,postCliente )
                             //postCliente.codigo = itemInserido.insertId;
-    
-                                    return res.status(200).json(
-                                        { 
+
+                                const item ={ 
                                             codigo : postCliente.codigo,
                                             ativo: postCliente.ativo,
                                             id : postCliente.id,
@@ -259,13 +262,19 @@ export class ClienteController{
                                             data_cadastro:postCliente.data_cadastro,
                                             data_recadastro:postCliente.data_recadastro
 
-                                        });        
+                                        }
+                                       await publishMessage( empresa , 'cliente.atualizado', item)
+
+                                    return res.status(200).json( item );        
     
                                 }catch(err){
                                         console.log(`erro ao inserir o cliente`,err);
                             return res.status(400).json({erro:true, msg:"erro ao inserir o cliente"});        
     
                                 }   
+                    }else{
+                            return res.status(400).json({erro:true, msg:"Cliente não foi encontrado"});        
+
                     }
           }
     

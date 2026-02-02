@@ -5,6 +5,7 @@ import { DateService } from "../../services/date-service/dateService";
 import { Insert_clientes } from "../../models/cliente/insert";
 import { Insert_Veiculos } from "../../models/veiculo/insert";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { publishMessage } from "../../services/broker/publish-message";
 
 export class VeiculoController{
 
@@ -69,6 +70,8 @@ async update(  req:Request,res:Response ){
         return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
      } 
      let decodToken= DecodedToken(String(req.headers.token))
+    if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+     
      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
      let  dbName = `\`${empresa}\``;
 
@@ -106,10 +109,9 @@ async update(  req:Request,res:Response ){
         if( verifyVeic.length > 0 ){
             try{
                 let result:any = await updateVeiculo.update(dbName, req.body);
-                console.log(result)
+ 
                 if( result.affectedRows > 0 ){
-        return res.status(200).json(
-            {
+            const item =  {
                 "codigo": req.body.codigo,
                 "id": req.body.id,
                 "cliente": req.body.cliente,
@@ -122,7 +124,8 @@ async update(  req:Request,res:Response ){
                 "data_recadastro":  req.body.data_recadastro ,
                 "ativo": req.body.ativo
             }
-        );   
+                 await publishMessage( empresa , 'veiculo.atualizado', item)
+                    return res.status(200).json(item);   
 
                 }
             }catch(e){
@@ -146,6 +149,8 @@ async insert(  req:Request,res:Response ){
         return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
      } 
      let decodToken= DecodedToken(String(req.headers.token))
+  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
      let  dbName = `\`${empresa}\``;
  
@@ -170,11 +175,8 @@ async insert(  req:Request,res:Response ){
    
             try{
                 let result:any = await insert.cadastrar(dbName, req.body);
-                console.log(result)
                 if( result.insertId > 0 ){
-
-                    return res.status(200).json(
-                        {
+                    const item ={
                             "codigo":result.insertId ,
                             "id": req.body.id,
                             "cliente": req.body.cliente,
@@ -187,7 +189,11 @@ async insert(  req:Request,res:Response ){
                             "data_cadastro": req.body.data_cadastro,
                             "data_recadastro": req.body.data_recadastro,
                             "ativo": req.body.ativo
-                        }
+                        } 
+                                    await publishMessage( empresa , 'veiculo.inserido', item)
+                        
+                    return res.status(200).json(
+                            item
                     );   
 
                     }

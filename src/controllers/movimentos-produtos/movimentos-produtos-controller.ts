@@ -6,6 +6,7 @@ import { IMovimentosProdutos } from "../../models/movimentos-produtos/types/movi
 import { InsertMovimentosProdutos } from "../../models/movimentos-produtos/insert";
 import { SelectSetor } from "../../models/setor/select";
 import { SelectLocais } from "../../models/locais/select";
+import { publishMessage } from "../../services/broker/publish-message";
  
 type newMoviment = Omit<IMovimentosProdutos ,'codigo'>
 export class MovimentosProdutosController{
@@ -84,6 +85,8 @@ async insert(req:Request,res:Response){
       return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
    } 
    let decodToken= DecodedToken(String(req.headers.token))
+  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
   let  dbName = `\`${empresa}\``;
@@ -118,8 +121,9 @@ if(!req.body.historico  ){
     
       try{
             let resultinsertId:any = await insert.insertMovimentos(dbName, movimento);
-              return res.status(200).json(
-                {
+
+        const item =    {
+                  id:resultinsertId.insertId,
                   codigo:resultinsertId.insertId,
                   setor: movimento.setor,
                   produto: movimento.produto,
@@ -128,7 +132,12 @@ if(!req.body.historico  ){
                   tipo: movimento.tipo,
                   historico: movimento.historico,
                   data_recadastro: movimento.data_recadastro,
-              })
+                  ent_sai: req.body.ent_sai,
+                  usuario: req.body.usuario
+              }
+           await publishMessage( empresa , 'movimentosprodutos.inserido', item)
+
+              return res.status(200).json(item)
             
               
           }catch(e){
@@ -145,6 +154,8 @@ if(!req.body.historico  ){
       return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
    } 
    let decodToken= DecodedToken(String(req.headers.token))
+  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
   let  dbName = `\`${empresa}\``;
@@ -177,7 +188,11 @@ if(!req.body.historico  ){
                            console.log(` o movimento: ${i.codigo} ja foi registrado  `)
                         } else{
                            let result  = await insert.insertMovimentos(dbName, i);
-                              if(result.insertId > 0 ) itensProcessados.push({movimento: result.insertId}) 
+
+                              if(result.insertId > 0 ) { 
+                                itensProcessados.push({movimento: result.insertId}) 
+                                            await publishMessage( empresa , 'movimentosprodutos.inserido', i)
+                              } 
                         }
                 }
                return res.status(200).json({ok:true, itens: itensProcessados})

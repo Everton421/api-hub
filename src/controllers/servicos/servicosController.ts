@@ -4,6 +4,7 @@ import { InsertServico } from "../../models/servicos/insert";
 import { updateServico } from "../../models/servicos/update";
 import { DateService } from "../../services/date-service/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { publishMessage } from "../../services/broker/publish-message";
 type service = {
   codigo : number,
   id: number,
@@ -88,7 +89,10 @@ export class ServicosController{
       return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
    } 
    let decodToken= DecodedToken(String(req.headers.token))
+  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+
    let  dbName = `\`${empresa}\``;
   
      let insert = new InsertServico();
@@ -111,21 +115,23 @@ export class ServicosController{
           "data_recadastro" :req.body.data_recadastro,
           "ativo"                : req.body.ativo
             
-        }
+             }
 
        try{
             let resultinsertId:any = await insert.insert(dbName, servico);
-              return res.status(200).json(
-                {
+
+            const item = {
                 "codigo"               : resultinsertId.insertId,
                 "valor"                : req.body.valor,
                 "aplicacao"            : req.body.aplicacao,
                 "tipo_serv"            : req.body.tipo_serv,
                 "data_cadastro"        : req.body.data_cadastro,
                 "data_recadastro"      : req.body.data_recadastro,
-                "ativo"                : req.body.ativo
-                      
-              })
+                "ativo"                : req.body.ativo 
+              }
+            await publishMessage( empresa , 'servico.inserido', item)
+
+              return res.status(200).json( item );
           }catch(e){
             console.log('Ocorreu um erro ao cadastrar o servico!', e );
             return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao cadastrar o servico!`});
@@ -195,6 +201,7 @@ async update(req:Request,res:Response){
     return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
  } 
  let decodToken= DecodedToken(String(req.headers.token))
+  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
  let empresa  = decodToken.payload?.cnpj.replace(/\D/g, ''); 
  let  dbName = `\`${empresa}\``;
 
@@ -225,17 +232,19 @@ async update(req:Request,res:Response){
 
      try{
           let resultinsertId:any = await update.update(dbName, servico);
-            return res.status(200).json(
-              {
-               "codigo": req.body.codigo,
-              "id": req.body.id,   
-              "valor"                : req.body.valor,
-              "aplicacao"            : req.body.aplicacao,
-              "tipo_serv"            : req.body.tipo_serv,
-              "data_cadastro"        : req.body.data_cadastro,
-              "data_recadastro"      : req.body.data_recadastro,
-              "ativo"                :  req.body.ativo
-            })
+      const item =     {
+                  "codigo": req.body.codigo,
+                  "id": req.body.id,   
+                  "valor"                : req.body.valor,
+                  "aplicacao"            : req.body.aplicacao,
+                  "tipo_serv"            : req.body.tipo_serv,
+                  "data_cadastro"        : req.body.data_cadastro,
+                  "data_recadastro"      : req.body.data_recadastro,
+                  "ativo"                :  req.body.ativo
+                }
+          await publishMessage( empresa , 'servico.atualizado', item)
+
+            return res.status(200).json(item)
         }catch(e){
           return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao atualizar o servico!`});
 

@@ -10,7 +10,7 @@
     "dev": "ts-node-dev --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "teste:consumer": "tsx src/__test__/test-consumer.ts",
+    "teste:consumer": "tsx --watch src/__test__/test-consumer.ts",
     "teste:producer": "tsx src/__test__/test-producer.ts",
     "build:swagger": "tsx src/swagger/build-swagger.ts",
     "swagger:watch": "tsx watch src/swagger/build-swagger.ts"

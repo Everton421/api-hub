@@ -18,8 +18,7 @@ export class Update_tipo_os{
             } = tipo_os
 
                 const sql =` UPDATE  ${empresa}.tipos_os SET  
-                                    codigo = ${codigo},
-                                    id= ${id},
+                                    id = ${id},
                                     data_cadastro = '${data_cadastro}',
                                     data_recadastro = '${data_recadastro}',
                                     descricao = '${descricao}',

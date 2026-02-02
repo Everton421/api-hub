@@ -6,6 +6,7 @@ import { Select_clientes } from "../../models/cliente/select";
 
 import { SelectItensPedido } from "../../models/pedido/selectItens";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { publishMessage } from "../../services/broker/publish-message";
 export class pedidoController{
 
 
@@ -56,6 +57,9 @@ export class pedidoController{
                                         if (  p.data_recadastro  > pedidoEncontrado.data_recadastro  ){
                                             console.log(`atualizando pedido ${p.codigo} ${ p.data_recadastro  } > ${   pedidoEncontrado.data_recadastro  } `)
                                             await updatePedido.update(empresa, p, p.codigo)
+
+                                              await publishMessage( empresa , 'pedido.atualizado', p)
+
                                             status = 'atualizado';
                                         } else{
                                             status = ` O pedido ${p.codigo} se encontra atualizado, data mobile: ${p.data_recadastro} data servidor: ${pedidoEncontrado.data_recadastro}`;
@@ -64,6 +68,8 @@ export class pedidoController{
                                         }
                                 }else{
                                     await insertPedido.create(empresa, p);
+                                              await publishMessage( empresa , 'pedido.inserido', p)
+
                                     status = 'inserido';
                                 }
                          

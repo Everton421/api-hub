@@ -8,6 +8,7 @@ import { DateService } from "../../services/date-service/dateService";
 import { updateCategoria } from "../../models/categorias/update";
 import { categoria } from "../../types/categoriaProduto/type-categoria";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { publishMessage } from "../../services/broker/publish-message";
 
 export class CategoriaController{
 
@@ -21,6 +22,8 @@ export class CategoriaController{
               return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
            } 
            let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
            let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
  
          let  dbName = `\`${empresa}\``;
@@ -190,6 +193,8 @@ export class CategoriaController{
         return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
      } 
      let decodToken= DecodedToken(String(req.headers.token))
+     if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
     let select = new Select_Categorias();
@@ -215,13 +220,16 @@ export class CategoriaController{
                            responseCategoria = await insert.cadastrar(dbName, postCategoria)
                     
                          if( responseCategoria.insertId > 0 ){
-                             return res.status(200).json({ 
+                            const item = { 
                                   "codigo":responseCategoria.insertId,
                                   "descricao":postCategoria.descricao,
                                   "data_cadastro":postCategoria.data_cadastro,
                                   "data_recadastro":postCategoria.data_recadastro,
                                   "ativo": postCategoria.ativo
-                                 })
+                                 }
+                                await publishMessage( empresa , 'categoria.inserido', item)
+                            
+                             return res.status(200).json(item)
                          }
                      }catch(e){
                              console.log(e);
@@ -236,7 +244,10 @@ export class CategoriaController{
         if(!req.headers.token ){
             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
+         
          let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
          let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
 
@@ -268,14 +279,15 @@ export class CategoriaController{
                                 responseCategoria = await update.update(dbName, postCategoria)
                         
                                 if( responseCategoria.affectedRows > 0    ){
-                                    console.log(responseCategoria)
-                                    return res.status(200).json({ 
+                                    const item = { 
                                         "codigo":postCategoria.codigo,
                                         "descricao":postCategoria.descricao,
                                         "data_cadastro":postCategoria.data_cadastro,
                                         "data_recadastro":postCategoria.data_recadastro,
                                         "ativo":postCategoria.ativo
-                                        })
+                                        }
+                                    await publishMessage( empresa , 'categoria.atualizado', item)
+                                    return res.status(200).json(item);
                                 }
                             }catch(e){
                                     console.log(e);

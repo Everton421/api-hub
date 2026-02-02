@@ -6,6 +6,7 @@ import { UpdateDistribuicaoSetor } from "../../models/distribuicao_locais_setor/
 import { InsertDistribuicaoLocaisSetor } from "../../models/distribuicao_locais_setor/insert";
 import { SelectSetor } from "../../models/setor/select";
 import { SelectLocais } from "../../models/locais/select";
+import { publishMessage } from "../../services/broker/publish-message";
 
 export class DistribuicaoController{
 
@@ -18,6 +19,7 @@ export class DistribuicaoController{
             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
         } 
         let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
         let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
         let  dbName = `\`${empresa}\``;
 
@@ -55,8 +57,12 @@ export class DistribuicaoController{
                                     /// update
                                     console.log("Atualizando distribuicao...")
                                      let resultUpdateDistribuicao = await update.updateDistribuicao(dbName, i);
-                                     if(resultUpdateDistribuicao.affectedRows > 0 ) itensProcessados.push({msg:`Distribuição do produto ${i.produto} atualizada no local ${i.local}  do setor ${i.setor} !`,produto: i.produto, local:i.local, setor:i.setor}) 
-                                   }else{
+                                     if(resultUpdateDistribuicao.affectedRows > 0 ) {
+                                                   await publishMessage( empresa , 'distribuicaolocais.atualizado', i)
+                                    
+                                        itensProcessados.push({msg:`Distribuição do produto ${i.produto} atualizada no local ${i.local}  do setor ${i.setor} !`,produto: i.produto, local:i.local, setor:i.setor}) 
+                                    }
+                                    }else{
                                         console.log(`A distribuição do produto ${i.produto} se encontra atualizada no local ${i.local} no setor ${i.setor}!`)
                                         itensProcessados.push({msg:`A distribuição do produto ${i.produto} se encontra atualizada no local ${i.local} do setor ${i.setor} !` ,produto: i.produto, local:i.local, setor:i.setor}) 
                                    }
@@ -64,10 +70,14 @@ export class DistribuicaoController{
                         }else{
                             // inserir distribuição 
                            let result =  await insert.insert(dbName,i);
-                              if(result.insertId > 0 ) itensProcessados.push({produto: i.produto, local:i.local, setor:i.setor}) 
+                              if(result.insertId > 0 ){
+
+                                                   await publishMessage( empresa , 'distribuicaolocais.inserido', i)
+                               
+                                itensProcessados.push({produto: i.produto, local:i.local, setor:i.setor}) 
                                         itensProcessados.push({msg:`Distribuição do produto ${i.produto} registrada no local ${i.local} do setor ${i.setor}!`
                                      ,produto: i.produto, local:i.local, setor:i.setor}) 
-
+                                        }
                         }
                 }
                         return res.status(200).json({ok:true, distribuicao:itensProcessados})

@@ -1,17 +1,12 @@
 import { Request, Response } from "express";
-import { Select_produtos } from "../../models/produtos/select";
-import { ProdutoBanco, ProdutoCompleto } from "../../types/produto/type-produto";
-import { InsertProdutos } from "../../models/produtos/insert";
-import { conn } from "../../database/databaseConfig";
-import { UpdateProdutos } from "../../models/produtos/update";
-import { marca } from "../../types/marcaProduto/type-marca";
-import { categoria } from "../../types/categoriaProduto/type-categoria";
 import { DateService } from "../../services/date-service/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { SelectProdutoSetor } from "../../models/produto-setor/select";
 import { IProdutoSetor } from "../../models/produto-setor/types/produto-setor";
 import { UpdateProdutoSetor } from "../../models/produto-setor/update";
 import { InsertProdutoSetor } from "../../models/produto-setor/insert";
+import { connectRabbitMQ } from "../../broker-connection/broker";
+import { publishMessage } from "../../services/broker/publish-message";
  
 
 export class ProdutoSetorController{
@@ -132,13 +127,19 @@ async findBysProdSector(req:Request,res:Response){
     return res.status(400).json({ erro: "Erro ao buscar produtos." });
 }
 }
+ 
 
 
 async updateSaldo(req:Request,res:Response){
   if(!req.headers.token ){
     return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
- } 
+ 
+  } 
+
  let decodToken= DecodedToken(String(req.headers.token))
+ 
+  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
  let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
  
  let  dbName = `\`${empresa}\``;
@@ -172,12 +173,17 @@ async updateSaldo(req:Request,res:Response){
      try{
       let result = await insert.insertUpateProdutoSetor(dbName, objInsert  );
           if( result.affectedRows > 0 ){
-        return res.status(200).json(
-              {
-               msg:'saldo atualizado com sucesso!'
-              })
+
+            await publishMessage( empresa , 'produtosetor.atualizado', objInsert)
+
+              return res.status(200).json(
+                {
+                 msg:'saldo atualizado com sucesso!'
+                })
+
           }
-            
+           
+          
         }catch(e){
           return res.status(400).json({ erro:true, msg: `Ocorreu um erro ao atualizar o  saldo do produto!`});
          }
@@ -189,7 +195,11 @@ async updateSaldo(req:Request,res:Response){
       if(!req.headers.token ){
           return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
       } 
+
+ 
       let decodToken= DecodedToken(String(req.headers.token))
+       if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
       let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
       
       let  dbName = `\`${empresa}\``;
@@ -223,14 +233,23 @@ async updateSaldo(req:Request,res:Response){
                                        console.log(`atualizando saldo do produto : ${i.produto} saldo: ${i.estoque} ` )
 
                                      let aux = await insert.upateProdutoSetor(dbName,i)
-                                    if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
-                                }  
+                                    if(aux.serverStatus > 0 ) { 
+                            
+                                          await publishMessage( empresa , 'produtosetor.atualizado', i)
+                                        updatedItens.push({produto:i.produto}) 
+  
+                                    }
+                                    }  
                               }else{
                                 console.log(`registrando produto : ${i.produto}`)
 
                                  let aux = await insert.cadastrarProdutoSetor(dbName,i)
-                                    if(aux.serverStatus > 0 ) updatedItens.push({produto:i.produto}) 
-                              }
+                                    if(aux.serverStatus > 0 ) {
+                                          await publishMessage( empresa , 'produtosetor.atualizado', i)
+                                    
+                                        updatedItens.push({produto:i.produto}) 
+                                     }
+                                    }
                               
                     }
                               return res.status(200).json({ok:true, itens: updatedItens})
@@ -242,5 +261,6 @@ async updateSaldo(req:Request,res:Response){
       }
 }
 
+ 
  
    

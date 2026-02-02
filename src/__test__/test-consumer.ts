@@ -29,7 +29,7 @@ export async function testeConsumercliente() {
         // O asterisco (*) diz: "Aceite qualquer coisa nesta posição"
         // Padrão: tenant.{QUALQUER_CNPJ}.estoque.atualizado
         
-        await channel.bindQueue(q.queue, EXCHANGE, 'tenant.*.estoque.atualizado');
+        await channel.bindQueue(q.queue, EXCHANGE, 'tenant.*.movimentosprodutos.inserido');
         
         // Se quiser escutar TUDO de estoque (criado, deletado, atualizado):
         // await channel.bindQueue(q.queue, EXCHANGE, 'tenant.*.estoque.*');
@@ -43,12 +43,13 @@ export async function testeConsumercliente() {
 
         channel.consume(q.queue, async (msg) => {
             if (msg) {
-                const conteudo = JSON.parse(msg.content.toString());
+                let conteudo = JSON.parse(msg.content.toString());
                 const routingKeyRecebida = msg.fields.routingKey;
 
                 console.log(`\n📥 [Recebido] Key: ${routingKeyRecebida}`);
-                console.log(`🏢 Tenant: ${conteudo.metadata.tenant_id}`); // O worker sabe qual banco conectar
-                console.log(`📦 Dados: SKU ${conteudo.data.sku} -> Nova Qtd: ${conteudo.data.new_qty}`);
+               //  console.log( JSON.parse(msg.content.toString() ));  // O worker sabe qual banco conectar
+                 console.log( conteudo.data);  // O worker sabe qual banco conectar
+
 
                 // AQUI ENTRARIA SUA LÓGICA:
                 // 1. Conectar no banco do cliente (usando conteudo.metadata.tenant_id)

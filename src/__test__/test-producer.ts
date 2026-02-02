@@ -1,4 +1,4 @@
-import { connectRabbitMQ, publishExchangeMessage } from "../broker/broker";
+import { connectRabbitMQ, publishExchangeMessage } from "../broker-connection/broker";
 
 
 

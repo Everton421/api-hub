@@ -5,6 +5,7 @@ import { DateService } from "../../services/date-service/dateService";
 import { ILocal } from "../../types/locais/type-local";
 import { InsertLocais,   } from "../../models/locais/insert";
 import { UpdateLocais } from "../../models/locais/update";
+import { publishMessage } from "../../services/broker/publish-message";
 
 
 type query = {
@@ -47,6 +48,8 @@ export class LocaisController{
                     return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
                  } 
                  let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
                  let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
         
                 const dateService = new DateService();
@@ -76,7 +79,8 @@ export class LocaisController{
                                   let  resultInsertLocal = await insert.insert(dbName, postLocal)
                                 
                                     if( resultInsertLocal.insertId > 0 ){
-                                        return res.status(200).json({ 
+
+                                        const item = { 
                                             "codigo":resultInsertLocal.insertId,
                                             "descricao":postLocal.descricao,
                                             "setor": postLocal.setor,
@@ -84,7 +88,10 @@ export class LocaisController{
                                             "data_recadastro":postLocal.data_recadastro,
                                             "ativo":postLocal.ativo,
                                             "id": postLocal.ativo
-                                            })
+                                            }
+                                                         await publishMessage( empresa , 'locais.inserido', item)
+                                        
+                                        return res.status(200).json(item)
                                     }
                                 }catch(e){
                                         console.log(e);
@@ -98,6 +105,7 @@ export class LocaisController{
                     return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
                  } 
                  let decodToken= DecodedToken(String(req.headers.token))
+                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
                  let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
         
                 const dateService = new DateService();
@@ -115,6 +123,7 @@ export class LocaisController{
                      if( !req.body.setor){
                         return res.status(400).json({erro:true, msg:"É necessario informar o codigo do setor associado ao local a ser atualizado !"});   
                     }
+                    
                     try{
                         let verifyLocal = await select.busca_por_codigo(dbName, req.body.codigo, 1 );
                         if( verifyLocal.length === 0 ){
@@ -125,10 +134,13 @@ export class LocaisController{
                     postLocal.data_recadastro = dateService.obterDataHoraAtual() 
 
                     try{
+                        const item =  {  codigo: postLocal.codigo,setor:postLocal.setor , descricao: req.body.descricao };
 
-                      let resultUpdateLocal = await update.updateByCondition(dbName, postLocal,
-                         {  codigo: postLocal.codigo,setor:postLocal.setor } )  
+                      let resultUpdateLocal = await update.updateByCondition(dbName, postLocal, item )  
                          if(resultUpdateLocal.affectedRows > 0 ){
+
+                                  await publishMessage( empresa , 'locais.atualizado', item)
+
                             return res.status(200).json( { 'msg':`local atualizado com sucesso! ` })
                          } 
                     }catch(e){

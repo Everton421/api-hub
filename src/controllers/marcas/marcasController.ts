@@ -5,6 +5,7 @@ import { DateService } from "../../services/date-service/dateService";
 import { UpdateMarca } from "../../models/marcas/update";
 import { marca } from "../../types/marcaProduto/type-marca";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { publishMessage } from "../../services/broker/publish-message";
 
 export class MarcasController{
 
@@ -17,6 +18,7 @@ export class MarcasController{
                return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
             } 
             let decodToken= DecodedToken(String(req.headers.token))
+          if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
             let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
     
          let  dbName = `\`${empresa}\``;
@@ -174,6 +176,8 @@ export class MarcasController{
             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
          } 
          let decodToken= DecodedToken(String(req.headers.token))
+    if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
          let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
         const dateService = new DateService();
@@ -202,13 +206,16 @@ export class MarcasController{
                             responseMarca = await insert.cadastrar(dbName, postMarca)
                         
                             if( responseMarca.insertId > 0 ){
-                                return res.status(200).json({ 
+                                const item = { 
                                     "codigo":responseMarca.insertId,
                                     "descricao":postMarca.descricao,
                                     "data_cadastro":postMarca.data_cadastro,
                                     "data_recadastro":postMarca.data_recadastro,
                                     "ativo":postMarca.ativo
-                                    })
+                                    }
+                                                 await publishMessage( empresa , 'marca.inserido', item)
+                                
+                                return res.status(200).json(item)
                             }
                         }catch(e){
                                 console.log(e);
@@ -228,6 +235,8 @@ export class MarcasController{
                             return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
                          } 
                          let decodToken= DecodedToken(String(req.headers.token))
+              if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+
                          let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
                           let  dbName = `\`${empresa}\``;
                       
@@ -258,13 +267,16 @@ export class MarcasController{
                                  
                                          if( responseMarca.affectedRows > 0    ){
                                              console.log(responseMarca)
-                                             return res.status(200).json({ 
+                                             const item = { 
                                                  "codigo":postMarca.codigo,
                                                  "descricao":postMarca.descricao,
                                                  "data_cadastro":postMarca.data_cadastro,
                                                  "data_recadastro":postMarca.data_recadastro,
                                                   "ativo": postMarca.ativo
-                                                 })
+                                                 }
+                                                 await publishMessage( empresa , 'marca.atualizado', item)
+
+                                             return res.status(200).json(item)
                                          }
                                      }catch(e){
                                              console.log(e);
