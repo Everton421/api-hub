@@ -12,9 +12,8 @@ import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection
   export async function  publishMessage ( cnpj: string, evento:string,  data:any ) {
     
     await  connectRabbitMQ();
-       
             const cnpjCliente = cnpj; 
-      
+
        // 2. Construção da Routing Key
        // Padrão: tenant.<CNPJ>.<DOMINIO>.<EVENTO>
        const routingKey = `tenant.${cnpjCliente}.${evento}`;

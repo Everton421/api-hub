@@ -159,7 +159,7 @@ async updateSaldo(req:Request,res:Response){
         if(!req.body.local4_produto) req.body.local4_produto ='';
 
       let objInsert = { 
-        produto:req.body.setor,
+        produto:req.body.produto,
         estoque:req.body.estoque,
         setor:req.body.setor,
         data_recadastro: dateService.obterDataHoraAtual() ,
