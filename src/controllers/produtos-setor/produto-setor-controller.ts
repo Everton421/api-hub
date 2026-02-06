@@ -143,6 +143,7 @@ async updateSaldo(req:Request,res:Response){
  let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
  
  let  dbName = `\`${empresa}\``;
+      const source = String(req.headers.source) || 'api_internal'  ;
 
   let update = new UpdateProdutoSetor();
    let insert = new InsertProdutoSetor();
@@ -174,7 +175,7 @@ async updateSaldo(req:Request,res:Response){
       let result = await insert.insertUpateProdutoSetor(dbName, objInsert  );
           if( result.affectedRows > 0 ){
 
-            await publishMessage( empresa , 'produtosetor.atualizado', objInsert)
+            await publishMessage( empresa , 'produtosetor.atualizado', objInsert, source)
 
               return res.status(200).json(
                 {
@@ -201,8 +202,11 @@ async updateSaldo(req:Request,res:Response){
        if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
 
       let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
-      
+
       let  dbName = `\`${empresa}\``;
+
+      const source = String(req.headers.source) || 'api_internal'  ;
+
 
         let update = new UpdateProdutoSetor();
         let insert = new InsertProdutoSetor();
@@ -235,7 +239,11 @@ async updateSaldo(req:Request,res:Response){
                                      let aux = await insert.upateProdutoSetor(dbName,i)
                                     if(aux.serverStatus > 0 ) { 
                             
-                                          await publishMessage( empresa , 'produtosetor.atualizado', i)
+                                        const message = {
+                                          metadata: {
+                                          }
+                                        }
+                                          await publishMessage( empresa , 'produtosetor.atualizado', i, source )
                                         updatedItens.push({produto:i.produto}) 
   
                                     }

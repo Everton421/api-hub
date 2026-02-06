@@ -7,13 +7,15 @@ import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection
  * @param cnpj cnpj do cliente
  * @param evento   'pedido.criado', 'produto.cadastrado' 
  * @param data  dados da mensagem enviada ao broker. Ex:  "{ codigo:1 , estoque:2 }"
+ * @param source identificador de onde veio a mensagem, opcional, caso nao informado o valor padrao  ['api_internal'] será aplicado.
  * @returns 
  */
-  export async function  publishMessage ( cnpj: string, evento:string,  data:any ) {
+  export async function  publishMessage ( cnpj: string, evento:string,  data:any, source?:string ) {
     
     await  connectRabbitMQ();
             const cnpjCliente = cnpj; 
 
+            const metadata_source = source || 'api_internal'; 
        // 2. Construção da Routing Key
        // Padrão: tenant.<CNPJ>.<DOMINIO>.<EVENTO>
        const routingKey = `tenant.${cnpjCliente}.${evento}`;
@@ -24,7 +26,8 @@ import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection
            metadata: {
                tenant_id: cnpjCliente,
                event: evento,
-               timestamp: new Date().toISOString()
+               timestamp: new Date().toISOString(),
+               origin: metadata_source
            },
            data :data
        };

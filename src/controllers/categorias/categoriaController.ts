@@ -200,6 +200,7 @@ export class CategoriaController{
     let select = new Select_Categorias();
     let insert = new Insert_Categorias();
         let dateService = new DateService();
+      const source = String(req.headers.source) || 'api_internal'  ;
 
             let postCategoria:any = req.body; 
            
@@ -227,7 +228,7 @@ export class CategoriaController{
                                   "data_recadastro":postCategoria.data_recadastro,
                                   "ativo": postCategoria.ativo
                                  }
-                                await publishMessage( empresa , 'categoria.inserido', item)
+                                await publishMessage( empresa , 'categoria.inserido', item, source)
                             
                              return res.status(200).json(item)
                          }
@@ -250,6 +251,7 @@ export class CategoriaController{
 
          let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
 
+      const source = String(req.headers.source) || 'api_internal'  ;
 
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
@@ -286,7 +288,7 @@ export class CategoriaController{
                                         "data_recadastro":postCategoria.data_recadastro,
                                         "ativo":postCategoria.ativo
                                         }
-                                    await publishMessage( empresa , 'categoria.atualizado', item)
+                                    await publishMessage( empresa , 'categoria.atualizado', item, source )
                                     return res.status(200).json(item);
                                 }
                             }catch(e){

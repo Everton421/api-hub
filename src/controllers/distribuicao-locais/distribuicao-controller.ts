@@ -27,6 +27,7 @@ export class DistribuicaoController{
         let update = new UpdateDistribuicaoSetor();
         let insert = new InsertDistribuicaoLocaisSetor();
 
+      const source = String(req.headers.source) || 'api_internal'  ;
 
       if(Array.isArray(req.body)   ){
 
@@ -58,7 +59,7 @@ export class DistribuicaoController{
                                     console.log("Atualizando distribuicao...")
                                      let resultUpdateDistribuicao = await update.updateDistribuicao(dbName, i);
                                      if(resultUpdateDistribuicao.affectedRows > 0 ) {
-                                                   await publishMessage( empresa , 'distribuicaolocais.atualizado', i)
+                                                   await publishMessage( empresa , 'distribuicaolocais.atualizado', i, source)
                                     
                                         itensProcessados.push({msg:`Distribuição do produto ${i.produto} atualizada no local ${i.local}  do setor ${i.setor} !`,produto: i.produto, local:i.local, setor:i.setor}) 
                                     }
@@ -72,7 +73,7 @@ export class DistribuicaoController{
                            let result =  await insert.insert(dbName,i);
                               if(result.insertId > 0 ){
 
-                                                   await publishMessage( empresa , 'distribuicaolocais.inserido', i)
+                                                   await publishMessage( empresa , 'distribuicaolocais.inserido', i, source)
                                
                                 itensProcessados.push({produto: i.produto, local:i.local, setor:i.setor}) 
                                         itensProcessados.push({msg:`Distribuição do produto ${i.produto} registrada no local ${i.local} do setor ${i.setor}!`

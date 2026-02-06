@@ -51,6 +51,7 @@ export class LocaisController{
                   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
 
                  let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+                const source = String(req.headers.source) || 'api_internal'  ;
         
                 const dateService = new DateService();
                  const select = new SelectLocais();
@@ -89,7 +90,7 @@ export class LocaisController{
                                             "ativo":postLocal.ativo,
                                             "id": postLocal.ativo
                                             }
-                                                         await publishMessage( empresa , 'locais.inserido', item)
+                                                         await publishMessage( empresa , 'locais.inserido', item, source)
                                         
                                         return res.status(200).json(item)
                                     }
@@ -107,6 +108,7 @@ export class LocaisController{
                  let decodToken= DecodedToken(String(req.headers.token))
                   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
                  let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+                     const source = String(req.headers.source) || 'api_internal'  ;
         
                 const dateService = new DateService();
                  const select = new SelectLocais();
@@ -139,7 +141,7 @@ export class LocaisController{
                       let resultUpdateLocal = await update.updateByCondition(dbName, postLocal, item )  
                          if(resultUpdateLocal.affectedRows > 0 ){
 
-                                  await publishMessage( empresa , 'locais.atualizado', item)
+                                  await publishMessage( empresa , 'locais.atualizado', item, source)
 
                             return res.status(200).json( { 'msg':`local atualizado com sucesso! ` })
                          } 

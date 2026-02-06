@@ -88,6 +88,7 @@ async insert(req:Request,res:Response){
   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
 
    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      const source = String(req.headers.source) || 'api_internal'  ;
 
   let  dbName = `\`${empresa}\``;
    let insert = new InsertMovimentosProdutos();
@@ -135,7 +136,7 @@ if(!req.body.historico  ){
                   ent_sai: req.body.ent_sai,
                   usuario: req.body.usuario
               }
-           await publishMessage( empresa , 'movimentosprodutos.inserido', item)
+           await publishMessage( empresa , 'movimentosprodutos.inserido', item ,source)
 
               return res.status(200).json(item)
             
@@ -157,6 +158,7 @@ if(!req.body.historico  ){
   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
 
    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      const source = String(req.headers.source) || 'api_internal'  ;
 
   let  dbName = `\`${empresa}\``;
    let insert = new InsertMovimentosProdutos();
@@ -191,7 +193,7 @@ if(!req.body.historico  ){
 
                               if(result.insertId > 0 ) { 
                                 itensProcessados.push({movimento: result.insertId}) 
-                                            await publishMessage( empresa , 'movimentosprodutos.inserido', i)
+                                            await publishMessage( empresa , 'movimentosprodutos.inserido', i, source)
                               } 
                         }
                 }

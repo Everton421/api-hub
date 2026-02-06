@@ -52,6 +52,7 @@ export class ClienteController{
                   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
 
      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      const source = String(req.headers.source) || 'api_internal'  ;
 
         
         let select = new Select_clientes();
@@ -136,7 +137,7 @@ export class ClienteController{
                                         data_cadastro:postCliente.data_cadastro,
                                         data_recadastro:postCliente.data_recadastro
                                     }
-                                       await publishMessage( empresa , 'cliente.inserido', item)
+                                       await publishMessage( empresa , 'cliente.inserido', item, source)
 
                                 return res.status(200).json( item );        
 
@@ -189,6 +190,7 @@ export class ClienteController{
              let decodToken= DecodedToken(String(req.headers.token))
                   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
              let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+            const source = String(req.headers.source) || 'api_internal'  ;
 
             let  dbName = `\`${empresa}\``;
                     let vCnpj = req.body.cnpj;
@@ -263,7 +265,7 @@ export class ClienteController{
                                             data_recadastro:postCliente.data_recadastro
 
                                         }
-                                       await publishMessage( empresa , 'cliente.atualizado', item)
+                                       await publishMessage( empresa , 'cliente.atualizado', item,source  )
 
                                     return res.status(200).json( item );        
     

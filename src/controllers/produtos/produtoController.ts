@@ -53,6 +53,7 @@ export class ProdutoController{
   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
 
    let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      const source = String(req.headers.source) || 'api_internal'  ;
 
   let  dbName = `\`${empresa}\``;
 
@@ -136,7 +137,7 @@ export class ProdutoController{
                 "observacoes3"    : req.body.observacoes3,
                 "tipo"            : req.body.tipo 
               }
-               await publishMessage( empresa , 'produto.inserido', item)
+               await publishMessage( empresa , 'produto.inserido', item, source)
 
               return res.status(200).json( item)
             
@@ -288,6 +289,7 @@ async update(req:Request,res:Response){
   let update = new UpdateProdutos();
   const dateService = new DateService();
   
+      const source = String(req.headers.source) || 'api_internal'  ;
  
         if(!req.body.codigo)      return res.status(400).json({ erro:true, msg: "É necessario informar o codigo para atualizar o produto!"});
         if(!req.body.id)    req.body.id = 0 
@@ -340,7 +342,7 @@ async update(req:Request,res:Response){
    
      try{
       await update.update(dbName, produto);
-               await publishMessage( empresa , 'produto.atualizado', produto)
+               await publishMessage( empresa , 'produto.atualizado', produto, source)
              
         return res.status(200).json(produto)
             

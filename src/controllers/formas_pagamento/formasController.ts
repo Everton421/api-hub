@@ -48,6 +48,7 @@ export class FormasController{
      let decodToken= DecodedToken(String(req.headers.token))
                   if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
      let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      const source = String(req.headers.source) || 'api_internal'  ;
    
        let dbName  = `\`${empresa}\``;
        
@@ -78,7 +79,7 @@ export class FormasController{
                data_recadastro: req.body.data_recadastro,
                ativo: req.body.ativo
              }
-               await publishMessage( empresa , 'formaspagamento.inserido', item)
+               await publishMessage( empresa , 'formaspagamento.inserido', item, source )
            return res.status(200).json(item);
          }
       }catch(e){
@@ -99,7 +100,8 @@ export class FormasController{
           return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
        } 
        let decodToken= DecodedToken(String(req.headers.token))
-                  if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+             if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
+       const source = String(req.headers.source) || 'api_internal'  ;
 
        let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
          let dbName  = `\`${empresa}\``;
@@ -139,7 +141,7 @@ export class FormasController{
                     ativo: req.body.ativo
 
                   }
-               await publishMessage( empresa , 'formaspagamento.atualizado', item)
+               await publishMessage( empresa , 'formaspagamento.atualizado', item, source)
 
                 return res.status(200).json(item);
               }

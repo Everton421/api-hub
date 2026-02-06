@@ -179,6 +179,7 @@ export class MarcasController{
     if( !decodToken.payload?.cnpj ) return res.status(400).json({erro:true, msg:"Identifiador unico da empresa nao foi informado"});    
 
          let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
+      const source = String(req.headers.source) || 'api_internal'  ;
 
         const dateService = new DateService();
 
@@ -213,7 +214,7 @@ export class MarcasController{
                                     "data_recadastro":postMarca.data_recadastro,
                                     "ativo":postMarca.ativo
                                     }
-                                                 await publishMessage( empresa , 'marca.inserido', item)
+                                                 await publishMessage( empresa , 'marca.inserido', item, source)
                                 
                                 return res.status(200).json(item)
                             }
