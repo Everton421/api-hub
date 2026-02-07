@@ -1,98 +1,98 @@
-import { conn, db_api } from "../../database/databaseConfig"
-import { newUser, UsuarioApi} from "./interface";
+import { conn, db_api } from "../../database/databaseConfig";
+import { newUser, UsuarioApi } from "./interface";
 
-export class UsuariosApi{
+export class UsuariosApi {
 
 
-        async insertUsuario(usuario:newUser){
+    async insertUsuario(usuario: newUser) {
 
-                return new Promise( async  (resolve, reject)=>{
-                    let sql = `
+        return new Promise(async (resolve, reject) => {
+            let sql = `
                         INSERT INTO ${db_api}.usuarios
                         (
                             nome, email, cnpj, senha, responsavel, telefone
                         ) values( ?, ?, ?, ? , ?, ? )
                     `;
-                    const values = [usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel, usuario.telefone]
-                    await conn.query(sql,values ,(err:any, result:any )=>{ 
-                        if(err) { 
-                            reject(err);
-                            console.log("ERRO: "+ err +" "+ sql +" "+values   )
-                        } else{
-                        resolve(result);
-                        } 
-                    })
+            const values = [usuario.nome, usuario.email, usuario.cnpj, usuario.senha, usuario.responsavel, usuario.telefone]
+            await conn.query(sql, values, (err: any, result: any) => {
+                if (err) {
+                    reject(err);
+                    console.log("ERRO: " + err + " " + sql + " " + values)
+                } else {
+                    resolve(result);
+                }
+            })
 
-                })
-        }
+        })
+    }
 
 
-        async selectPorNome(nome:string){
-            return new Promise( async  (resolve, reject)=>{
-                let sql = `
+    async selectPorNome(nome: string) {
+        return new Promise(async (resolve, reject) => {
+            let sql = `
                     select * from ${db_api}.usuarios where nome = ?
                 `;
 
-                await conn.query(sql, [ nome ],(err:any, result:any )=>{ 
-                    if(err) reject(err);
-                    else 
-                        resolve(result);
-                })
-
+            await conn.query(sql, [nome], (err: any, result: any) => {
+                if (err) reject(err);
+                else
+                    resolve(result);
             })
+
+        })
     }
 
-    async selectPorEmail(email:string){
-        return new Promise< UsuarioApi[]>( async  (resolve, reject)=>{
+    async selectPorEmail(email: string) {
+        return new Promise<UsuarioApi[]>(async (resolve, reject) => {
 
             let sql = `
                 select * from ${db_api}.usuarios where email ='${email}'
             `;
 
-            await conn.query(sql,  (err:any, result:any )=>{ 
-                if(err){
-                    console.log(err); 
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) {
+                    console.log(err);
                     reject(err);
-                }else{ 
+                } else {
                     resolve(result);
                 }
-             })
+            })
 
         })
     }
- 
-    async selectPorEmailCodigoValidador(email:string, codigoRecuperador:any){
-        return new Promise< UsuarioApi[]>( async  (resolve, reject)=>{
+
+    async selectPorEmailCodigoValidador(email: string, codigoRecuperador: any) {
+        return new Promise<UsuarioApi[]>(async (resolve, reject) => {
             let sql = `
                 select * from ${db_api}.usuarios where email = ? and cod_recuperador = ? 
             `;
 
-            await conn.query(sql, [ email, codigoRecuperador  ],(err:any, result:any )=>{ 
-                if(err) reject(err);
-                else 
+            await conn.query(sql, [email, codigoRecuperador], (err: any, result: any) => {
+                if (err) reject(err);
+                else
                     resolve(result);
             })
 
         })
     }
 
-    async selectPorEmailSenha(email:string, senha:any){
-        return new Promise< UsuarioApi[]>( async  (resolve, reject)=>{
+    async selectPorEmailSenha(email: string, senha: any) {
+        return new Promise<UsuarioApi[]>(async (resolve, reject) => {
             let sql = `
                 select * from ${db_api}.usuarios where email = ? and senha = ? 
             `;
 
-            await conn.query(sql, [ email, senha  ],(err:any, result:any )=>{ 
-                if(err) reject(err);
-                else 
+            await conn.query(sql, [email, senha], (err: any, result: any) => {
+                if (err) reject(err);
+                else
                     resolve(result);
             })
 
         })
     }
 
-    async updateCodigoValidador( codigo:number, data:any, email:any ){
-        return new Promise ( async  (resolve, reject)=>{
+    async updateCodigoValidador(codigo: number, data: any, email: any) {
+        return new Promise(async (resolve, reject) => {
 
             let sql = `
                   update ${db_api}.usuarios
@@ -101,17 +101,17 @@ export class UsuariosApi{
                   where email = '${email}'   
             `;
 
-            await conn.query(sql,  (err:any, result:any )=>{ 
-                if(err) reject(err);
-                else 
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) reject(err);
+                else
                     resolve(result);
             })
 
         })
     }
 
-    async updateSenha( senha:any,  email:any ){
-        return new Promise ( async  (resolve, reject)=>{
+    async updateSenha(senha: any, email: any) {
+        return new Promise(async (resolve, reject) => {
 
             let sql = `
                   update ${db_api}.usuarios
@@ -119,9 +119,9 @@ export class UsuariosApi{
                   where email = '${email}'   
             `;
 
-            await conn.query(sql,  (err:any, result:any )=>{ 
-                if(err) reject(err);
-                else 
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) reject(err);
+                else
                     resolve(result);
             })
 

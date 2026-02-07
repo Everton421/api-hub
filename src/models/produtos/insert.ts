@@ -1,12 +1,12 @@
-import { conn } from "../../database/databaseConfig"
-import { ProdutoBanco } from "../../types/produto/type-produto"
+import { conn } from "../../database/databaseConfig";
+import { ProdutoBanco } from "../../types/produto/type-produto";
 
 
-export class InsertProdutos{
+export class InsertProdutos {
 
-    async insert ( empresa:any, produto:ProdutoBanco){
+    async insert(empresa: any, produto: ProdutoBanco) {
 
-       return new Promise( async ( resolve, reject)=>{
+        return new Promise(async (resolve, reject) => {
             let {
                 ativo,
                 class_fiscal,
@@ -27,11 +27,11 @@ export class InsertProdutos{
                 num_fabricante,
                 observacoes1,
                 observacoes2,
-                observacoes3 
-            
+                observacoes3
+
             } = produto
 
-                const sql =` INSERT INTO  ${empresa}.produtos  
+            const sql = ` INSERT INTO  ${empresa}.produtos  
                              (
                             estoque ,
                             preco ,
@@ -71,17 +71,16 @@ export class InsertProdutos{
                                   )
                             `;
 
-                            await conn.query(sql,   (err:any, result:any )=>{
-                                if(err){
-                                     console.log(err)
-                                     reject(err);
-                                }else{
-                                    console.log(`produto cadastrado com sucesso `)
-                                     resolve(result);
-                                }
-                            })
-                        })
-        }
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) {
+                    console.log(err)
+                    reject(err);
+                } else {
+                    console.log(`produto cadastrado com sucesso `)
+                    resolve(result);
+                }
+            })
+        })
+    }
 
 }
- 

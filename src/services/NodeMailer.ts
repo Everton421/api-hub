@@ -1,48 +1,48 @@
- const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 
-export function NodeMailerService(){
+export function NodeMailerService() {
 
-const mail = process.env.MAIL;
-const passwordMail = process.env.PASSWORD_MAIL;
-const host_mail  = process.env.HOST_MAIL;
+    const mail = process.env.MAIL;
+    const passwordMail = process.env.PASSWORD_MAIL;
+    const host_mail = process.env.HOST_MAIL;
 
-                // Criar um objeto de transporte
-                const transporter = nodemailer.createTransport({
-                    host:  host_mail,
-                    port: 465,
-                    secure: true, // usa SSL
-                    auth: {
-                    user: mail,
-                    pass: passwordMail,
-                    },
-                    tls: {
-                    rejectUnauthorized: false  // Ignora erros de certificado
-                    }
-                });
-        
-
-          transporter.verify(function(error:any, success:any) {
-            if (error) {
-                  console.log('Erro de conexão:', error);
-            } else {
-                  console.log('O servidor está pronto para receber nossas mensagens');
-            }
-          });
-
-          function gerarNumeroAleatorio() {
-            return Math.floor(100000 + Math.random() * 900000);
-          }
-          
-          
-          let aux =gerarNumeroAleatorio();
-        // Enviar o email
+    // Criar um objeto de transporte
+    const transporter = nodemailer.createTransport({
+        host: host_mail,
+        port: 465,
+        secure: true, // usa SSL
+        auth: {
+            user: mail,
+            pass: passwordMail,
+        },
+        tls: {
+            rejectUnauthorized: false  // Ignora erros de certificado
+        }
+    });
 
 
-        
-        async function main(destinatario:string, codigo:number) {
+    transporter.verify(function (error: any, success: any) {
+        if (error) {
+            console.log('Erro de conexão:', error);
+        } else {
+            console.log('O servidor está pronto para receber nossas mensagens');
+        }
+    });
 
-            const info = await transporter.sendMail({
-              from: mail,
+    function gerarNumeroAleatorio() {
+        return Math.floor(100000 + Math.random() * 900000);
+    }
+
+
+    let aux = gerarNumeroAleatorio();
+    // Enviar o email
+
+
+
+    async function main(destinatario: string, codigo: number) {
+
+        const info = await transporter.sendMail({
+            from: mail,
             to: destinatario,
             subject: "INTERSIG ✔", // Subject line
             text: "Recuperação de Senha", // plain text body
@@ -122,12 +122,12 @@ const host_mail  = process.env.HOST_MAIL;
                 </div>
             </body>
             </html>
-            `,  
-          });
-    
-          console.log("Message sent: %s", info.messageId);
-        }
+            `,
+        });
 
-      return {main   }
+        console.log("Message sent: %s", info.messageId);
+    }
+
+    return { main }
 
 }

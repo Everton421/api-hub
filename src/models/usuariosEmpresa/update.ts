@@ -1,9 +1,9 @@
-import { conn, db_api } from "../../database/databaseConfig";
+import { conn } from "../../database/databaseConfig";
 
-export class Update_UsuarioEmpresa{
+export class Update_UsuarioEmpresa {
 
-    async updateSenha( empresa:any, senha:any, email:string ){
-        return new Promise ( async  (resolve, reject)=>{
+    async updateSenha(empresa: any, senha: any, email: string) {
+        return new Promise(async (resolve, reject) => {
 
             let sql = `
                   update ${empresa}.usuarios
@@ -11,11 +11,11 @@ export class Update_UsuarioEmpresa{
                   where email = '${email}'   
             `;
 
-            await conn.query(sql,  (err:any, result:any )=>{ 
-                if(err){ 
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) {
                     console.log(err)
                     reject(err);
-                }else{ 
+                } else {
                     resolve(result);
                 }
             })

@@ -1,13 +1,13 @@
- 
+
+import { conn } from '../../database/databaseConfig';
 import { Cliente } from "./interface_cliente";
-import {conn} from '../../database/databaseConfig'
 
-export class Update_clientes{
+export class Update_clientes {
 
-    async   update(empresa:any, cliente:Cliente )   {
-        return new Promise  ( async ( resolve , reject ) =>{
-        let sql =
-         `  
+  async update(empresa: any, cliente: Cliente) {
+    return new Promise(async (resolve, reject) => {
+      let sql =
+        `  
          UPDATE ${empresa}.clientes SET
                  
                 celular = '${cliente.celular}', 
@@ -27,14 +27,14 @@ export class Update_clientes{
                   where codigo = ${cliente.codigo}
         
                   ;
-            `   
+            `
 
-             await conn.query(sql, (err:any, result:Cliente[] )=>{
-                if (err)  reject(err); 
-                  resolve(result)
-            })
-         })
-    }
-  
+      await conn.query(sql, (err: any, result: Cliente[]) => {
+        if (err) reject(err);
+        resolve(result)
+      })
+    })
+  }
+
 }
 

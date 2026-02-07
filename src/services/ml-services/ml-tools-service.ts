@@ -21,14 +21,14 @@ export class MlToolsService {
             // 2. Busca os atributos dessa categoria
             // Endpoint: /categories/{CATEGORY_ID}/attributes
             const attrResponse = await axios.get(`${ML_API_URL}/categories/${categoryId}/attributes`);
-            
+
             // 3. Filtra apenas os OBRIGATÓRIOS
             // Ignoramos BRAND e MODEL porque já tratamos eles manualmente no seu código
             const requiredAttributes = attrResponse.data
-                .filter((attr: any) => 
-                    attr.tags && 
-                    attr.tags.required === true && 
-                    attr.id !== 'BRAND' && 
+                .filter((attr: any) =>
+                    attr.tags &&
+                    attr.tags.required === true &&
+                    attr.id !== 'BRAND' &&
                     attr.id !== 'MODEL'
                 )
                 .map((attr: any) => ({
@@ -43,7 +43,7 @@ export class MlToolsService {
                 category_id: categoryId,
                 category_name: bestMatch.category_name,
                 // Retorna a lista para o front desenhar os campos
-                required_attributes: requiredAttributes 
+                required_attributes: requiredAttributes
             };
 
         } catch (error: any) {

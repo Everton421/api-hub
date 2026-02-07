@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getValidAccessToken } from "../integration/mercadolivre-integration/ml-auth-service";  // Importe do arquivo que criamos antes
+import { getValidAccessToken } from "../integration/mercadolivre-integration/ml-auth-service"; // Importe do arquivo que criamos antes
 
 const ML_API_URL = 'https://api.mercadolibre.com';
 
@@ -13,8 +13,8 @@ export class GetMlItemsService {
             // 2. Busca os IDs dos itens do vendedor
             // Endpoint: /users/{id}/items/search
             const searchResponse = await axios.get(`${ML_API_URL}/users/${mlUserId}/items/search`, {
-                 headers: { Authorization: `Bearer ${accessToken}` },
-              
+                headers: { Authorization: `Bearer ${accessToken}` },
+
                 params: {
                     limit: 5, // Vamos pegar só 5 para testar
                     status: 'active' // Opcional: pegar só os ativos
@@ -46,10 +46,10 @@ export class GetMlItemsService {
                 thumbnail: i.body.thumbnail
             }));
 
-            return { 
-                seller_id: mlUserId, 
+            return {
+                seller_id: mlUserId,
                 total_found: searchResponse.data.paging.total,
-                items: itemsDetails 
+                items: itemsDetails
             };
 
         } catch (error: any) {

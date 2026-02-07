@@ -1,12 +1,12 @@
-import { conn } from "../../database/databaseConfig"
+import { conn } from "../../database/databaseConfig";
 
-export class Insert_fotos{
+export class Insert_fotos {
 
-    async   cadastrar( empresa:string, foto:IFoto):Promise<{ sucess:boolean, message:string } | number>  {
+    async cadastrar(empresa: string, foto: IFoto): Promise<{ sucess: boolean, message: string } | number> {
 
-        return new Promise( async (resolve, reject ) =>{
-let sql = 
-        `
+        return new Promise(async (resolve, reject) => {
+            let sql =
+                `
         INSERT INTO ${empresa}.fotos_produtos
         (
       produto, 
@@ -27,16 +27,16 @@ let sql =
     )
         `
 
-            await conn.query(sql,(err, result)=>{
-                    if(err){
-                        console.log(`Erro ao tentar registrar a foto `,err);
-                        reject({ sucess: false, message: `Erro ao tentar registrar a foto ${err}` });
+            await conn.query(sql, (err, result) => {
+                if (err) {
+                    console.log(`Erro ao tentar registrar a foto `, err);
+                    reject({ sucess: false, message: `Erro ao tentar registrar a foto ${err}` });
 
-                    }else{
-                      //  console.log("foto registradaa com sucesso  ",result)
-                        resolve( result.affectedRows  )
-                    }
-                })
+                } else {
+                    //  console.log("foto registradaa com sucesso  ",result)
+                    resolve(result.affectedRows)
+                }
+            })
         })
     }
 }

@@ -1,6 +1,6 @@
 import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection/broker";
 
-  
+
 
 /**
  * 
@@ -10,34 +10,34 @@ import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection
  * @param source identificador de onde veio a mensagem, opcional, caso nao informado o valor padrao  ['api_internal'] será aplicado.
  * @returns 
  */
-  export async function  publishMessage ( cnpj: string, evento:string,  data:any, source?:string ) {
-    
-    await  connectRabbitMQ();
-            const cnpjCliente = cnpj; 
+export async function publishMessage(cnpj: string, evento: string, data: any, source?: string) {
 
-            const metadata_source = source || 'api_internal'; 
-       // 2. Construção da Routing Key
-       // Padrão: tenant.<CNPJ>.<DOMINIO>.<EVENTO>
-       const routingKey = `tenant.${cnpjCliente}.${evento}`;
-   
-       // 3. Payload (O que o consumidor precisa saber)
-       // IMPORTANTE: Mande o tenant_id dentro do JSON também para facilitar o uso no consumer
-       const mensagem = {
-           metadata: {
-               tenant_id: cnpjCliente,
-               event: evento,
-               timestamp: new Date().toISOString(),
-               origin: metadata_source
-           },
-           data :data
-       };
-   
-       console.log(`📤 Enviando para: ${routingKey}`);
-   
-       const enviado = await publishExchangeMessage(routingKey, mensagem);
-       
-       if(enviado) console.log("✅ Mensagem enviada com sucesso!");
-       else console.error("❌ Falha no envio.");
-   
-       return enviado;
-   }
+    await connectRabbitMQ();
+    const cnpjCliente = cnpj;
+
+    const metadata_source = source || 'api_internal';
+    // 2. Construção da Routing Key
+    // Padrão: tenant.<CNPJ>.<DOMINIO>.<EVENTO>
+    const routingKey = `tenant.${cnpjCliente}.${evento}`;
+
+    // 3. Payload (O que o consumidor precisa saber)
+    // IMPORTANTE: Mande o tenant_id dentro do JSON também para facilitar o uso no consumer
+    const mensagem = {
+        metadata: {
+            tenant_id: cnpjCliente,
+            event: evento,
+            timestamp: new Date().toISOString(),
+            origin: metadata_source
+        },
+        data: data
+    };
+
+    console.log(`📤 Enviando para: ${routingKey}`);
+
+    const enviado = await publishExchangeMessage(routingKey, mensagem);
+
+    if (enviado) console.log("✅ Mensagem enviada com sucesso!");
+    else console.error("❌ Falha no envio.");
+
+    return enviado;
+}

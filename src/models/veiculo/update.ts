@@ -1,29 +1,28 @@
-import { conn } from "../../database/databaseConfig"
-import { marca } from "../../types/marcaProduto/type-marca";
+import { conn } from "../../database/databaseConfig";
 import { VeiculoBanco } from "../../types/veiculo/type-veiculo";
 
-export class update_veiculo{
+export class update_veiculo {
 
 
-    async update ( empresa:any, veiculo:VeiculoBanco){
+    async update(empresa: any, veiculo: VeiculoBanco) {
 
-       return new Promise( async ( resolve, reject)=>{
-        const {
-            codigo,
-            id,
-            cliente,
-            placa,
-            marca,
-            modelo,
-            ano,
-            cor,
-            combustivel,
-            data_cadastro,
-            data_recadastro,
-            ativo 
-        } = veiculo;
+        return new Promise(async (resolve, reject) => {
+            const {
+                codigo,
+                id,
+                cliente,
+                placa,
+                marca,
+                modelo,
+                ano,
+                cor,
+                combustivel,
+                data_cadastro,
+                data_recadastro,
+                ativo
+            } = veiculo;
 
-                const sql =` UPDATE  ${empresa}.veiculos SET  
+            const sql = ` UPDATE  ${empresa}.veiculos SET  
                                     id = ${id},
                                     cliente = ${cliente},
                                     placa = '${placa}',
@@ -38,17 +37,16 @@ export class update_veiculo{
                                     where codigo = ${codigo}
                             `;
 
-                            await conn.query(sql,   (err:any, result:any )=>{
-                                if(err){
-                                     console.log(err)
-                                     reject(err);
-                                }else{
-                                    console.log(`veiculo atualizado com sucesso `)
-                                     resolve(result);
-                                }
-                            })
-                        })
-        }
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) {
+                    console.log(err)
+                    reject(err);
+                } else {
+                    console.log(`veiculo atualizado com sucesso `)
+                    resolve(result);
+                }
+            })
+        })
+    }
 
 }
- 

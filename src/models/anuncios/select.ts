@@ -1,8 +1,7 @@
-import { conn } from "../../database/databaseConfig"
+import { conn } from "../../database/databaseConfig";
 import { typeAnuncios } from "../../types/anuncios/type-anuncio";
-import { categoria } from "../../types/categoriaProduto/type-categoria";
 
- export type queryAnuncio = {
+export type queryAnuncio = {
     id?: number
     link?: string
     codigo_produto?: number
@@ -17,9 +16,9 @@ import { categoria } from "../../types/categoriaProduto/type-categoria";
     limit?: number
 }
 
- 
 
-export class SelectAnuncios{
+
+export class SelectAnuncios {
 
     /**
      * 
@@ -28,45 +27,45 @@ export class SelectAnuncios{
      * @param limit atributo opcional, limita a quantidade de registros.
      * @returns 
      */
-    async findAll(empresa:string , data_recadastro?:string, limit?:number): Promise<typeAnuncios[]>{
+    async findAll(empresa: string, data_recadastro?: string, limit?: number): Promise<typeAnuncios[]> {
 
-        return new Promise( async (resolve, reject)=>{
+        return new Promise(async (resolve, reject) => {
 
-             let sql = ` SELECT *,
+            let sql = ` SELECT *,
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
              FROM ${empresa}.anuncios `
 
-             let paramQuery =[];
-             let valueQuery=[];
+            let paramQuery = [];
+            let valueQuery = [];
 
-         if(data_recadastro){
-             paramQuery.push( ' WHERE data_recadastro >  ? ')
-             valueQuery.push(data_recadastro);
-         }
-         if(limit && limit > 0 ){
-            paramQuery.push( ' LIMIT ? ')
-            valueQuery.push(limit);
-         }
- 
-             let finalSql = sql;
-                 if( paramQuery.length > 0 ){
-                     finalSql = sql + paramQuery;
-                 }
-    
- 
-            await conn.query( finalSql ,valueQuery ,(err:any, result:any )=>{
-                if(err){
+            if (data_recadastro) {
+                paramQuery.push(' WHERE data_recadastro >  ? ')
+                valueQuery.push(data_recadastro);
+            }
+            if (limit && limit > 0) {
+                paramQuery.push(' LIMIT ? ')
+                valueQuery.push(limit);
+            }
+
+            let finalSql = sql;
+            if (paramQuery.length > 0) {
+                finalSql = sql + paramQuery;
+            }
+
+
+            await conn.query(finalSql, valueQuery, (err: any, result: any) => {
+                if (err) {
                     reject(err);
-                }else{
-                  
+                } else {
+
                     resolve(result);
                 }
             })
         })
     }
 
-    
+
 
     /**
      * 
@@ -74,24 +73,24 @@ export class SelectAnuncios{
      * @param id id do anuncio
      * @returns 
      */
-    async findById(empresa:string , id:number  ): Promise<typeAnuncios[]>{
+    async findById(empresa: string, id: number): Promise<typeAnuncios[]> {
 
-        return new Promise( async (resolve, reject)=>{
+        return new Promise(async (resolve, reject) => {
 
-             let sqlAnuncios = ` SELECT an.*,
+            let sqlAnuncios = ` SELECT an.*,
                 DATE_FORMAT(an.data_cadastro, '%Y-%m-%d') AS data_cadastro,
                 DATE_FORMAT(an.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
              FROM ${empresa}.anuncios an
              where an.id = ? 
              `;
 
-            const params = [id ]
-            await conn.query( sqlAnuncios, params  ,(err:any, result:any )=>{
-                if(err){
+            const params = [id]
+            await conn.query(sqlAnuncios, params, (err: any, result: any) => {
+                if (err) {
                     reject(err);
-                }else{
+                } else {
                     resolve(result);
-                    if( result.length > 0 ){
+                    if (result.length > 0) {
 
                     }
                 }
@@ -101,9 +100,9 @@ export class SelectAnuncios{
 
 
 
- 
- async findByParams(empresa: string, query: queryAnuncio): Promise<typeAnuncios[]> {
-     
+
+    async findByParams(empresa: string, query: queryAnuncio): Promise<typeAnuncios[]> {
+
         let {
             id,
             codigo_produto,
@@ -118,7 +117,7 @@ export class SelectAnuncios{
             limit
         } = query;
 
-        
+
         let baseSql = `
          SELECT *,
                 DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -128,7 +127,7 @@ export class SelectAnuncios{
 
         const conditions: string[] = [];
         const params: any[] = [];
- 
+
         if (id) {
             conditions.push("id = ?");
             params.push(id);
@@ -153,17 +152,17 @@ export class SelectAnuncios{
             conditions.push("ativo = ?");
             params.push(ativo);
         }
-        
+
         if (id_externo) {
             conditions.push("id_externo = ?");
             params.push(id_externo);
         }
 
- 
-        
+
+
         if (descricao) {
             conditions.push("descricao LIKE ?");
-            params.push(`%${descricao}%`); 
+            params.push(`%${descricao}%`);
         }
 
         if (titulo) {
@@ -172,7 +171,7 @@ export class SelectAnuncios{
         }
 
         if (sku_externo) {
-         
+
             conditions.push("sku_externo LIKE ?");
             params.push(`%${sku_externo}%`);
         }
@@ -182,18 +181,18 @@ export class SelectAnuncios{
             params.push(`%${num_fabricante}%`);
         }
 
-     
+
         if (conditions.length > 0) {
             baseSql += " WHERE " + conditions.join(" AND ");
         }
 
-       
+
         const limitValue = (limit && Number(limit) > 0) ? Number(limit) : 20;
-        
+
         baseSql += " LIMIT ?";
         params.push(limitValue);
 
-       
+
 
         return new Promise<typeAnuncios[]>((resolve, reject) => {
             conn.query(baseSql, params, (err: any, result: any) => {
@@ -207,5 +206,5 @@ export class SelectAnuncios{
             });
         });
     }
- 
+
 }

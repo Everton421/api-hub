@@ -1,12 +1,10 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
+import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { Insert_UsuarioEmpresa } from "../../models/usuariosEmpresa/insert";
 import { Select_UsuarioEmpresa } from "../../models/usuariosEmpresa/select";
-import { newUserEmpresa } from "../../models/usuariosEmpresa/interface";
-import { UsuariosApi } from "../../models/usuariosApi/usuarios";
-import { newUser, UsuarioApi } from "../../models/usuariosApi/interface";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
-export class UsuariosController{
+export class UsuariosController {
 
 
 
@@ -71,26 +69,26 @@ export class UsuariosController{
 
 
 
-    async busca(req:Request ,res:Response){
-       let selectUserEmpresa   = new Select_UsuarioEmpresa();
-         if(!req.headers.token )  return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
-        
-                let decodToken= DecodedToken(String(req.headers.token))
-                                 let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
-                   let  dbName = `\`${empresa}\``;
-         try{
+    async busca(req: Request, res: Response) {
+        let selectUserEmpresa = new Select_UsuarioEmpresa();
+        if (!req.headers.token) return res.status(400).json({ erro: true, msg: "É necessario informar o token!" });
 
-            let resultado:any = await selectUserEmpresa.buscaGeral(dbName)
+        let decodToken = DecodedToken(String(req.headers.token))
+        let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
+        let dbName = `\`${empresa}\``;
+        try {
+
+            let resultado: any = await selectUserEmpresa.buscaGeral(dbName)
             console.log(resultado)
-            if( resultado.length > 0 ){
+            if (resultado.length > 0) {
                 return res.status(200).json(resultado)
-            }else{
+            } else {
                 return res.status(404).json({ erro: "Nenhum usuario encontrado." });
             }
 
-     }catch(e){
-        console.log("ocorreu um erro ao consultar os usuarios", e)
-        return res.status(400).json({erro:true, msg:"ocorreu um erro ao consultar os usuarios"})
-     }
+        } catch (e) {
+            console.log("ocorreu um erro ao consultar os usuarios", e)
+            return res.status(400).json({ erro: true, msg: "ocorreu um erro ao consultar os usuarios" })
+        }
     }
 }

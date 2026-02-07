@@ -2,11 +2,11 @@ import { conn } from "../../database/databaseConfig";
 import { Cliente } from "./interface_cliente";
 
 
-export class Select_clientes{
+export class Select_clientes {
 
-    async   buscaGeral(empresa:any, vendedor:any, data_recadastro:string )   {
-        return new Promise <Cliente[]> ( async ( resolve , reject ) =>{
-       let sql = ` select *,
+  async buscaGeral(empresa: any, vendedor: any, data_recadastro: string) {
+    return new Promise<Cliente[]>(async (resolve, reject) => {
+      let sql = ` select *,
              DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
             from ${empresa}.clientes c
@@ -14,95 +14,95 @@ export class Select_clientes{
                        ( c.vendedor = ${vendedor} OR c.vendedor = 0 or c.vendedor = null)
                           `
 
-                       let paramQuery =[];
-                       let valueQuery=[];
-                   if(data_recadastro){
-                       paramQuery.push( ' AND data_recadastro >  ? ')
-                       valueQuery.push(data_recadastro);
-                   }
-           
-                       let finalSql = sql;
-           
-                           if( paramQuery.length > 0 ){
-                               finalSql = sql + paramQuery;
-                           }
-                        
+      let paramQuery = [];
+      let valueQuery = [];
+      if (data_recadastro) {
+        paramQuery.push(' AND data_recadastro >  ? ')
+        valueQuery.push(data_recadastro);
+      }
 
-            await conn.query(finalSql, data_recadastro, (err:any, result:Cliente[] )=>{
-                if (err)  reject(err); 
-                  resolve(result)
-            })
-         })
-    }
-    
-    async   buscaPorVendedor(empresa:any, vendedor:number )   {
-        return new Promise <Cliente[]> ( async ( resolve , reject ) =>{
-        let sql = ` SELECT *,
+      let finalSql = sql;
+
+      if (paramQuery.length > 0) {
+        finalSql = sql + paramQuery;
+      }
+
+
+      await conn.query(finalSql, data_recadastro, (err: any, result: Cliente[]) => {
+        if (err) reject(err);
+        resolve(result)
+      })
+    })
+  }
+
+  async buscaPorVendedor(empresa: any, vendedor: number) {
+    return new Promise<Cliente[]>(async (resolve, reject) => {
+      let sql = ` SELECT *,
              DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
            FROM ${empresa}.clientes WHERE vendedor = ?  `
-            await conn.query(sql, [ vendedor], (err:any, result:Cliente[] )=>{
-                if (err)  reject(err); 
-                  resolve(result)
-            })
-         })
-    }
+      await conn.query(sql, [vendedor], (err: any, result: Cliente[]) => {
+        if (err) reject(err);
+        resolve(result)
+      })
+    })
+  }
 
-    async   buscaPorcodigo(empresa:any, codigo:number )   {
-        return new Promise <Cliente[]> ( async ( resolve , reject ) =>{
-        let sql = ` SELECT   *,
+  async buscaPorcodigo(empresa: any, codigo: number) {
+    return new Promise<Cliente[]>(async (resolve, reject) => {
+      let sql = ` SELECT   *,
           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
         FROM ${empresa}.clientes WHERE codigo = ?  `
-            await conn.query(sql, [ codigo], (err:any, result:Cliente[] )=>{
-                if (err)  reject(err); 
-                  resolve(result)
-            })
-         })
-    }
+      await conn.query(sql, [codigo], (err: any, result: Cliente[]) => {
+        if (err) reject(err);
+        resolve(result)
+      })
+    })
+  }
 
-    async   buscaPorCnpj(empresa:any, cnpj:any )   {
-      return new Promise <Cliente[]> ( async ( resolve , reject ) =>{
+  async buscaPorCnpj(empresa: any, cnpj: any) {
+    return new Promise<Cliente[]>(async (resolve, reject) => {
       let sql = ` SELECT  *,
         DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
           DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
       FROM ${empresa}.clientes WHERE cnpj = ?  `
-          await conn.query(sql, [ cnpj], (err:any, result:Cliente[] )=>{
-              if (err)  reject(err); 
-                resolve(result)
-          })
-       })
+      await conn.query(sql, [cnpj], (err: any, result: Cliente[]) => {
+        if (err) reject(err);
+        resolve(result)
+      })
+    })
   }
-  
-  async   buscaUltimoIdInserido(empresa:any,   )   {
-    return new Promise <any> ( async ( resolve , reject ) =>{
-    let sql = ` SELECT MAX(codigo) as codigo FROM ${empresa}.clientes `
-        await conn.query(sql,   (err:any, result:any )=>{
-            if (err)  reject(err); 
-              resolve(result)
-        })
-     })
-}
 
-async   buscaPorCodigoOuDescricaoOuCnpj(empresa:any, param:string  )   {
-  return new Promise <any> ( async ( resolve , reject ) =>{
-    let parametro = `%${param}%`
-    let sql = ` SELECT  *,
+  async buscaUltimoIdInserido(empresa: any,) {
+    return new Promise<any>(async (resolve, reject) => {
+      let sql = ` SELECT MAX(codigo) as codigo FROM ${empresa}.clientes `
+      await conn.query(sql, (err: any, result: any) => {
+        if (err) reject(err);
+        resolve(result)
+      })
+    })
+  }
+
+  async buscaPorCodigoOuDescricaoOuCnpj(empresa: any, param: string) {
+    return new Promise<any>(async (resolve, reject) => {
+      let parametro = `%${param}%`
+      let sql = ` SELECT  *,
     DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
       DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
   FROM ${empresa}.clientes   where nome like ? or codigo like ? or cnpj like ? limit 50`
-      await conn.query(sql,  [parametro, parametro, parametro ] ,(err:any, result:any )=>{
-          if (err)  reject(err); 
-            resolve(result)
+      await conn.query(sql, [parametro, parametro, parametro], (err: any, result: any) => {
+        if (err) reject(err);
+        resolve(result)
       })
-   })
-}
+    })
+  }
 
 
 
-async novaBusca(empresa:any, query:any ){
+  async novaBusca(empresa: any, query: any) {
 
-let { nome, cnpj, codigo, limit, ativo } = query 
+    let { nome, cnpj, codigo, limit, ativo } = query
 
     let baseSql = ` select *,
               DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -111,71 +111,71 @@ let { nome, cnpj, codigo, limit, ativo } = query
               `;
 
 
-              const conditions: string[] = [];
-              const params: any[] = [];
-      
-        if(!limit || isNaN(limit) ){
-                limit = 20;
-            }
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    if (!limit || isNaN(limit)) {
+      limit = 20;
+    }
 
 
-            if (codigo) {
-              conditions.push("codigo = ?");  
-              params.push(Number(codigo));      
+    if (codigo) {
+      conditions.push("codigo = ?");
+      params.push(Number(codigo));
+    }
+
+    if (cnpj) {
+      conditions.push("cnpj = ?");
+      params.push(cnpj);
+    }
+
+    if (ativo) {
+      conditions.push("ativo = ?");
+      params.push(ativo);
+    }
+
+    if (nome) {
+      conditions.push("nome LIKE ?");
+      params.push(`%${nome}%`);
+    }
+
+    let whereClause = "";
+
+    if (conditions.length > 0) {
+      whereClause = " WHERE " + conditions.join(" AND ");
+    }
+
+
+    let limitQuery = " LIMIT ? "
+
+
+
+    params.push(Number(limit));
+
+    const finalSql = baseSql + whereClause + limitQuery;
+
+
+    // console.log('sql ',finalSql);
+    // console.log('params ',params);
+
+    console.log(query)
+    try {
+      return new Promise<any[]>(async (resolve, reject) => {
+        await conn.query(finalSql, params, (err: any, result: any[]) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result)
           }
-
-          if (cnpj) {
-            conditions.push("cnpj = ?");  
-            params.push(cnpj );           
-         }
-
-         if (ativo) {
-          conditions.push("ativo = ?");  
-          params.push(ativo );           
-       }
-
-          if (nome) {
-            conditions.push("nome LIKE ?");
-            params.push(`%${nome}%`);  
-        }
-
-      let whereClause = "";
-
-        if (conditions.length > 0) {
-          whereClause = " WHERE " + conditions.join(" AND ");
-      }
-
-
-      let limitQuery = " LIMIT ? "
-
-       
-
-       params.push( Number(limit));  
-      
-      const finalSql = baseSql + whereClause + limitQuery;
-
-
-       // console.log('sql ',finalSql);
-       // console.log('params ',params);
-
-          console.log(query)
-      try{
-        return new Promise <any[]> ( async ( resolve , reject ) =>{
-        await conn.query(finalSql, params,(err:any, result: any[] )=>{
-          if (err){
-              reject(err);
-          }else{
-              resolve(result)
-            } 
-          })
+        })
       })
 
-      }catch(e){
-        console.error("Erro ao executar a query:", e);
-        // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
-        throw new Error("Falha ao buscar produtos no banco de dados.");
-        // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
-      }
+    } catch (e) {
+      console.error("Erro ao executar a query:", e);
+      // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
+      throw new Error("Falha ao buscar produtos no banco de dados.");
+      // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
+    }
 
   }
 

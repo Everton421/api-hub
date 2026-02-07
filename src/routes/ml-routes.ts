@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { versao } from "./app-routes";
-import { AuthMiddleware } from "../middleware/AuthMiddlewate/AuthMiddleware";
 import { MlIntegrationController } from "../controllers/integration/ml-controlller/ml-integration-controller";
-import { MlToolsController } from "../controllers/ml/ml-tools-controller";
 import { AnunciosController } from "../controllers/ml/anuncios-controller";
-import { MlItensController } from "../controllers/ml/get-itens";
 import { MlAccountsController } from "../controllers/ml/get-accounts";
+import { MlToolsController } from "../controllers/ml/ml-tools-controller";
+import { AuthMiddleware } from "../middleware/AuthMiddlewate/AuthMiddleware";
+import { versao } from "./app-routes";
 
 const mlRouter = Router();
  
@@ -34,4 +33,4 @@ const mlRouter = Router();
  //
  mlRouter.get(`${versao}/ml/accounts/:codigo`, AuthMiddleware, new MlAccountsController().getAccounts);
 
- export { mlRouter }
+ export { mlRouter };

@@ -1,29 +1,28 @@
-import { parse } from 'dotenv';
 import 'dotenv/config';
 import mysql from 'mysql';
 
 /**----------------------------------------------------------------------- */
-        const hostname = process.env.HOST ;
-        const portdb = process.env.PORT_DB;
-        const username = process.env.USER;
-        const dbpassword = process.env.PASSWORD;
-        
-        export const db_api = process.env.DB_API
+const hostname = process.env.HOST;
+const portdb = process.env.PORT_DB;
+const username = process.env.USER;
+const dbpassword = process.env.PASSWORD;
 
-        let port:any | undefined;
+export const db_api = process.env.DB_API
 
-        if(portdb !== undefined){
-            port  = parseInt(portdb);
-        }
+let port: any | undefined;
 
-       export const conn =   mysql.createPool({
-            connectionLimit : 10,
-            host: hostname,
-            user: username,
-            port: port,
-            password: dbpassword,
-        })
-	
+if (portdb !== undefined) {
+    port = parseInt(portdb);
+}
+
+export const conn = mysql.createPool({
+    connectionLimit: 10,
+    host: hostname,
+    user: username,
+    port: port,
+    password: dbpassword,
+})
+
 console.log(hostname)
 console.log(portdb)
 console.log(dbpassword)

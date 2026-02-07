@@ -1,29 +1,29 @@
 import { conn } from "../../database/databaseConfig"
 
-type queryUltimoPedido ={ 
-    id_externo:boolean   
-    id:boolean
-    codigo:boolean 
-    total:boolean
+type queryUltimoPedido = {
+    id_externo: boolean
+    id: boolean
+    codigo: boolean
+    total: boolean
 }
 
-export class SelectPedido{
-    
-    async validaExistencia(empresa:any,codigo:number   ){
+export class SelectPedido {
+
+    async validaExistencia(empresa: any, codigo: number) {
         return new Promise(async (resolve, reject) => {
-            const code =  codigo 
+            const code = codigo
             const sql = ` select *,
             DATE_FORMAT( data_cadastro, '%Y-%m-%d') AS data_cadastro,
              DATE_FORMAT( data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(observacoes USING utf8) as observacoes 
              from ${empresa}.pedidos where codigo =  ?  `;
-           await conn.query(sql, [ code ],(err:any, result:any) => {
+            await conn.query(sql, [code], (err: any, result: any) => {
                 if (err) {
                     console.log(err)
                     reject(err)
                 } else {
                     // console.log(result)
-              
+
                     resolve(result);
                 }
             })
@@ -32,20 +32,20 @@ export class SelectPedido{
     }
 
 
-    async buscaPordata(empresa:any ,queryData:any, vendedor:number){
+    async buscaPordata(empresa: any, queryData: any, vendedor: number) {
 
 
-        let objSelect = new  SelectPedido();
-        let param_data:any;
-         if (!queryData) {
+        let objSelect = new SelectPedido();
+        let param_data: any;
+        if (!queryData) {
             param_data = objSelect.obterDataAtualSemHoras();
-         } else {
-             param_data = objSelect.formatarData(queryData);
-             if (!param_data) {
-                 return
-             }
-         }
-        return new Promise( async ( resolve, reject )=>{
+        } else {
+            param_data = objSelect.formatarData(queryData);
+            if (!param_data) {
+                return
+            }
+        }
+        return new Promise(async (resolve, reject) => {
 
             const sql = `select co.*, c.nome  ,
              DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -55,15 +55,15 @@ export class SelectPedido{
             join ${empresa}.clientes c on c.codigo = co.cliente
                 where   co.data_recadastro >= '${param_data}' and co.vendedor = ${vendedor} 
             `;
-            await conn.query(sql,   async (err:any, result:any) => {
+            await conn.query(sql, async (err: any, result: any) => {
                 if (err) {
                     console.log(err);
                     reject(err)
                 } else {
-            resolve(result)
+                    resolve(result)
                 }
             })
-    }) 
+        })
     }
 
     /**
@@ -73,11 +73,11 @@ export class SelectPedido{
      * @param vendedor 
      * @returns 
      */
- 
 
-    async buscaPorDataInicialFinal(empresa:any ,dataInicial:string, dataFinal:string ,filter:string | null, vendedor:number ){
-        let objSelect = new  SelectPedido();
-        return new Promise( async ( resolve, reject )=>{
+
+    async buscaPorDataInicialFinal(empresa: any, dataInicial: string, dataFinal: string, filter: string | null, vendedor: number) {
+        let objSelect = new SelectPedido();
+        return new Promise(async (resolve, reject) => {
 
             const sql = `
             SELECT co.*, c.nome,
@@ -92,49 +92,49 @@ export class SelectPedido{
             ${filter !== '' ? ` OR c.cnpj LIKE  ? ` : ''}
 
         `;
-        
-      
-      
-    const params = [vendedor, dataInicial, dataFinal];
-        if (filter) {
-            params.push(`%${filter}%`); // Adiciona o filtro com wildcards
-            params.push(`%${filter}%`); // Adiciona o filtro com wildcards
 
-        }
 
-           // console.log(params)
-           // console.log(sql)
-          
-            await conn.query(sql, params,  async (err:any, result:any) => {
+
+            const params = [vendedor, dataInicial, dataFinal];
+            if (filter) {
+                params.push(`%${filter}%`); // Adiciona o filtro com wildcards
+                params.push(`%${filter}%`); // Adiciona o filtro com wildcards
+
+            }
+
+            // console.log(params)
+            // console.log(sql)
+
+            await conn.query(sql, params, async (err: any, result: any) => {
                 if (err) {
                     console.log(err);
                     reject(err)
                 } else {
-            resolve(result)
+                    resolve(result)
                 }
-            })  
-            
-    }) 
+            })
+
+        })
     }
 
 
 
-    async novaBusca(empresa:any ,  query:any ){
+    async novaBusca(empresa: any, query: any) {
 
         let {
-            dataInicial , 
-            dataFinal ,
-            vendedor, 
+            dataInicial,
+            dataFinal,
+            vendedor,
             cliente,
             cnpj,
             limit,
             nome,
             tipo
-        } = query 
+        } = query
 
-        let objSelect = new  SelectPedido();
-        
-        return new Promise( async ( resolve, reject )=>{
+        let objSelect = new SelectPedido();
+
+        return new Promise(async (resolve, reject) => {
 
             const baseSql = `
             SELECT pe.*, c.nome,
@@ -146,69 +146,69 @@ export class SelectPedido{
 
         `;
 
-        const conditions: string[] = [];
-        const params: any[] = [];
-            
+            const conditions: string[] = [];
+            const params: any[] = [];
 
-        if(!limit || isNaN(limit)){
-            limit = 20;
-        }
 
-       if( dataInicial && dataFinal){
-        conditions.push(`pe.data_cadastro BETWEEN '${dataInicial}' AND '${dataFinal}'  `);
-        }
-
-        if (cliente) {
-            conditions.push("pe.cliente = ?");
-            params.push(Number(cliente));
-        }
-         
-        if (vendedor) {
-            conditions.push("pe.vendedor = ?");
-            params.push(Number(vendedor));
-        }
-          
-        if (cnpj) {
-            conditions.push("c.cnpj = ?");
-            params.push(Number(cnpj));
-        }
-
-        if (tipo) {
-            conditions.push("pe.tipo = ?");
-            params.push(Number(tipo));
-        }
-
-        if (nome) {
-            conditions.push("c.nome like  ?");
-            params.push(`%${nome}%`);  
-        }
-         
-        let whereClause = "";
-        
-        if (conditions.length > 0) {
-            whereClause = " WHERE " + conditions.join(" AND ");
+            if (!limit || isNaN(limit)) {
+                limit = 20;
             }
 
-        let limitQuery = " LIMIT ? "
+            if (dataInicial && dataFinal) {
+                conditions.push(`pe.data_cadastro BETWEEN '${dataInicial}' AND '${dataFinal}'  `);
+            }
 
-        params.push( Number(limit));  
+            if (cliente) {
+                conditions.push("pe.cliente = ?");
+                params.push(Number(cliente));
+            }
 
-        const finalSql = baseSql + whereClause  + " order by pe.data_recadastro "+ limitQuery  ;
-          
-            await conn.query(finalSql, params,  async (err:any, result:any) => {
+            if (vendedor) {
+                conditions.push("pe.vendedor = ?");
+                params.push(Number(vendedor));
+            }
+
+            if (cnpj) {
+                conditions.push("c.cnpj = ?");
+                params.push(Number(cnpj));
+            }
+
+            if (tipo) {
+                conditions.push("pe.tipo = ?");
+                params.push(Number(tipo));
+            }
+
+            if (nome) {
+                conditions.push("c.nome like  ?");
+                params.push(`%${nome}%`);
+            }
+
+            let whereClause = "";
+
+            if (conditions.length > 0) {
+                whereClause = " WHERE " + conditions.join(" AND ");
+            }
+
+            let limitQuery = " LIMIT ? "
+
+            params.push(Number(limit));
+
+            const finalSql = baseSql + whereClause + " order by pe.data_recadastro " + limitQuery;
+
+            await conn.query(finalSql, params, async (err: any, result: any) => {
                 if (err) {
                     console.log(err);
                     reject(err)
                 } else {
-            resolve(result)
+                    resolve(result)
                 }
-            })  
-            
-    }) 
+            })
+
+        })
     }
 
 
-      obterDataAtualSemHoras() {
+    obterDataAtualSemHoras() {
         const dataAtual = new Date();
         const dia = String(dataAtual.getDate()).padStart(2, '0');
         const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
@@ -216,16 +216,16 @@ export class SelectPedido{
         return `${ano}-${mes}-${dia} 00:00:00`;
     }
 
-      formatarData(data: string): string | null {
+    formatarData(data: string): string | null {
         const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
         if (!regex.test(data)) {
             return null;
-          }
-         return data;
-         }
+        }
+        return data;
+    }
 
 
-    async buscaCompleta(){
+    async buscaCompleta() {
 
     }
 
@@ -235,26 +235,26 @@ export class SelectPedido{
      * @param vendedor 
      * @returns 
      */
-    async totalPedidosAgrupData(empresa:any , vendedor:number){
-        return new Promise( async ( resolve, reject )=>{
+    async totalPedidosAgrupData(empresa: any, vendedor: number) {
+        return new Promise(async (resolve, reject) => {
 
-        let sqL =  ` SELECT 
+            let sqL = ` SELECT 
                        SUM(total_geral ) as total,
                        DATE_FORMAT(data_cadastro, '%Y-%d-%m') as data_cadastro
                   FROM
                    ${empresa}.pedidos 
                  WHERE  vendedor =  ?   
                  GROUP BY  data_cadastro;   `
-                 await conn.query(sqL, vendedor,  async (err:any, result:any) => {
+            await conn.query(sqL, vendedor, async (err: any, result: any) => {
                 if (err) {
                     console.log(err);
                     reject(err)
                 } else {
-            resolve(result)
+                    resolve(result)
                 }
-            })  
-            
-    }) 
+            })
+
+        })
 
     }
 
@@ -265,10 +265,10 @@ export class SelectPedido{
      * @param limit 
      * @returns 
      */
-   async ultimosInseridos(empresa:any , vendedor:number, limit:number  ){
-        return new Promise( async ( resolve, reject )=>{
+    async ultimosInseridos(empresa: any, vendedor: number, limit: number) {
+        return new Promise(async (resolve, reject) => {
 
-            let sql =   `
+            let sql = `
                       SELECT
                               p.id, COALESCE(p.id_externo,0) AS id_externo  , p.total_geral, p.situacao, c.nome, DATE_FORMAT(p.data_cadastro,'%Y-%m-%d') AS data_cadastro
                           FROM ${empresa}.pedidos AS p 
@@ -277,16 +277,16 @@ export class SelectPedido{
                               order by p.data_cadastro DESC
                           LIMIT ?; `
 
-        await conn.query(sql, [ vendedor, limit ],  async (err:any, result:any) => {
+            await conn.query(sql, [vendedor, limit], async (err: any, result: any) => {
                 if (err) {
                     console.log(err);
                     reject(err)
                 } else {
-            resolve(result)
+                    resolve(result)
                 }
-            })  
-            
-    }) 
+            })
+
+        })
     }
 
 
@@ -296,10 +296,10 @@ export class SelectPedido{
      * @param vendedor 
      * @returns 
      */
-    async totaisMedia(empresa:any, vendedor:any){
-        
-        return new Promise( async ( resolve, reject )=>{
-    let sql =   `  SELECT  
+    async totaisMedia(empresa: any, vendedor: any) {
+
+        return new Promise(async (resolve, reject) => {
+            let sql = `  SELECT  
                 (
                     SELECT SUM( pf.total_geral  ) AS  total_faturado 
                     FROM ${empresa}.pedidos pf WHERE pf.situacao = 'FI' 
@@ -340,15 +340,15 @@ export class SelectPedido{
                 FROM ${empresa}.pedidos as p 
                 WHERE p.vendedor = ${vendedor} 
                     GROUP BY 1; `
-                await conn.query(sql,  vendedor ,  async (err:any, result:any) => {
+            await conn.query(sql, vendedor, async (err: any, result: any) => {
                 if (err) {
                     console.log(err);
                     reject(err)
                 } else {
-                   resolve(result)
+                    resolve(result)
                 }
-            })  
-       })
+            })
+        })
     }
 
 }

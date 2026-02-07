@@ -1,13 +1,13 @@
- 
+
+import { conn } from '../../database/databaseConfig';
 import { Cliente } from "./interface_cliente";
-import {conn} from '../../database/databaseConfig'
 
-export class Insert_clientes{
+export class Insert_clientes {
 
-    async   cadastrar(empresa:any, cliente:Cliente )   {
-        return new Promise  ( async ( resolve , reject ) =>{
-        let sql =
-         `  
+    async cadastrar(empresa: any, cliente: Cliente) {
+        return new Promise(async (resolve, reject) => {
+            let sql =
+                `  
          INSERT INTO 
          ${empresa}.clientes
               (   
@@ -27,16 +27,16 @@ export class Insert_clientes{
                ) values
                 (
                   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
-            `   
-                const dados = [  cliente.celular, cliente.nome, cliente.cep, cliente.endereco, cliente.ie, cliente.numero, 
-                    cliente.cnpj, cliente.cidade, cliente.data_cadastro, cliente.data_recadastro, cliente.vendedor, cliente.bairro, cliente.estado  ]
+            `
+            const dados = [cliente.celular, cliente.nome, cliente.cep, cliente.endereco, cliente.ie, cliente.numero,
+            cliente.cnpj, cliente.cidade, cliente.data_cadastro, cliente.data_recadastro, cliente.vendedor, cliente.bairro, cliente.estado]
 
-             await conn.query(sql, dados, (err:any, result:Cliente[] )=>{
-                if (err)  reject(err); 
-                  resolve(result)
+            await conn.query(sql, dados, (err: any, result: Cliente[]) => {
+                if (err) reject(err);
+                resolve(result)
             })
-         })
+        })
     }
-  
+
 }
 

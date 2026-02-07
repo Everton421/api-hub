@@ -3,25 +3,25 @@ import { formaPagamentoBanco } from "../../types/formas_pagamento/type-formas-pa
 
 
 
-export class update_formaPagamento{
+export class update_formaPagamento {
 
-    async update(empresa:string, fpgt:formaPagamentoBanco){
-       return new Promise( async ( resolve, reject)=>{
+    async update(empresa: string, fpgt: formaPagamentoBanco) {
+        return new Promise(async (resolve, reject) => {
 
-        const { 
-        codigo,
-        id,
-        descricao,
-        desc_maximo,
-        intervalo,
-        parcelas,
-        recebimento,
-        data_cadastro,
-        data_recadastro,
-        ativo
-        }= fpgt;
+            const {
+                codigo,
+                id,
+                descricao,
+                desc_maximo,
+                intervalo,
+                parcelas,
+                recebimento,
+                data_cadastro,
+                data_recadastro,
+                ativo
+            } = fpgt;
 
-        const sql = `
+            const sql = `
         UPDATE ${empresa}.forma_pagamento SET
                 id ='${id}',
                 descricao ='${descricao}',
@@ -34,18 +34,18 @@ export class update_formaPagamento{
                 ativo ='${ativo}'
 
                 where codigo = ${codigo}
-        ` 
+        `
 
-          await conn.query(sql,   (err:any, result:any )=>{
-                                        if(err){
-                                             console.log(err)
-                                             reject(err);
-                                        }else{
-                                            console.log(`forma de pagamento atualizada com sucesso! `)
-                                             resolve(result);
-                                        }
-                                    })
-                                })
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) {
+                    console.log(err)
+                    reject(err);
+                } else {
+                    console.log(`forma de pagamento atualizada com sucesso! `)
+                    resolve(result);
+                }
+            })
+        })
 
 
     }

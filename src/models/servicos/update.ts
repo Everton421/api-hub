@@ -1,10 +1,10 @@
-import { conn } from "../../database/databaseConfig"
+import { conn } from "../../database/databaseConfig";
 
-export class updateServico{
+export class updateServico {
 
-    async update( empresa:any, servico:any ){
-  
-  
+    async update(empresa: any, servico: any) {
+
+
         const {
             codigo,
             id,
@@ -15,10 +15,10 @@ export class updateServico{
             data_recadastro,
             ativo
         } = servico;
-  
-        return new Promise( async( resolve, reject)=>{
-            let sql = 
-            `
+
+        return new Promise(async (resolve, reject) => {
+            let sql =
+                `
             UPDATE ${empresa}.servicos SET 
               id = ${id},
               valor = ${valor},
@@ -29,17 +29,17 @@ export class updateServico{
               ativo = '${ativo}'
                 where codigo = ${codigo}
               `
-       
-            await conn.query(sql, (err:any, result:any )=>{
-                if(err){
+
+            await conn.query(sql, (err: any, result: any) => {
+                if (err) {
                     console.log(err)
                     reject(err);
-               }else{
-                   console.log(`servico atualizado com sucesso `)
+                } else {
+                    console.log(`servico atualizado com sucesso `)
                     resolve(result);
-               }
+                }
             })
-       
-            })
+
+        })
     }
 }

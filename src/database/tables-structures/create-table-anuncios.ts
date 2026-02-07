@@ -1,27 +1,27 @@
 import { conn } from "../databaseConfig"
 
- type resultDatabase =
-   {
-  fieldCount: number,
-  affectedRows: number,
-  insertId: number,
-  serverStatus: number,
-  warningCount: number,
-  message: string,
-  protocol41: boolean,
-  changedRows: number
-}  
-type resulFunction= {
-    sucess:boolean
-    message:string | number 
+type resultDatabase =
+    {
+        fieldCount: number,
+        affectedRows: number,
+        insertId: number,
+        serverStatus: number,
+        warningCount: number,
+        message: string,
+        protocol41: boolean,
+        changedRows: number
+    }
+type resulFunction = {
+    sucess: boolean
+    message: string | number
 }
 
 export class CreateTablesAnuncios {
 
 
-    async createTable(databaseName: string)   {
+    async createTable(databaseName: string) {
 
-const atributosAnunciosTable   = `CREATE TABLE IF NOT EXISTS  ${databaseName}.atributos_anuncios  (
+        const atributosAnunciosTable = `CREATE TABLE IF NOT EXISTS  ${databaseName}.atributos_anuncios  (
                                      id  int(11) unsigned NOT NULL AUTO_INCREMENT,
                                      id_anuncio  int(11) NOT NULL comment 'id referente ao anuncio',
                                      id_atributo  varchar(255) NOT NULL comment 'ID do atributo ( ex:  BRAND ,  MODEL , VOLTAGE )',
@@ -32,8 +32,8 @@ const atributosAnunciosTable   = `CREATE TABLE IF NOT EXISTS  ${databaseName}.at
                                         data_recadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
                                     PRIMARY KEY ( id )
                                     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`;
-                                     
-                const anunciosTable =  ` CREATE TABLE IF NOT EXISTS ${databaseName}.anuncios  (
+
+        const anunciosTable = ` CREATE TABLE IF NOT EXISTS ${databaseName}.anuncios  (
                                         id  int(11) unsigned NOT NULL AUTO_INCREMENT,
                                         codigo_produto  int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'codigo do produto vindo da tabela de produtos.',
                                         integration_id  int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'id da integracao',
@@ -52,30 +52,29 @@ const atributosAnunciosTable   = `CREATE TABLE IF NOT EXISTS  ${databaseName}.at
                                         data_cadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
                                         data_recadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
                                         PRIMARY KEY ( id )
-                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci`; 
+                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci`;
 
-        
-          const  results= Promise.all( [ this.execQuery(atributosAnunciosTable) ,this.execQuery(anunciosTable) ] );
-          console.log(results)
 
-     
+        const results = Promise.all([this.execQuery(atributosAnunciosTable), this.execQuery(anunciosTable)]);
+        console.log(results)
+
+
     }
 
 
-    async execQuery(sql:string):Promise<resulFunction>{
-        return new Promise( ( resolve , reject ) =>{
+    async execQuery(sql: string): Promise<resulFunction> {
+        return new Promise((resolve, reject) => {
 
-            conn.query(sql, (err:any | string, result:resultDatabase)=>{
-                if(err){
+            conn.query(sql, (err: any | string, result: resultDatabase) => {
+                if (err) {
                     console.log(err)
-                    reject( { sucess:false, message: `[Erro ao registrar tabelas dos anuncios]| ${err}` } as resulFunction);
-                }else{
+                    reject({ sucess: false, message: `[Erro ao registrar tabelas dos anuncios]| ${err}` } as resulFunction);
+                } else {
                     console.log(result)
-                    resolve({ sucess:true, message:"Tabelas registradas com sucesso"} as resulFunction)
+                    resolve({ sucess: true, message: "Tabelas registradas com sucesso" } as resulFunction)
                 }
             })
         })
     }
 }
 
-  
