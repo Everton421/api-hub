@@ -1,23 +1,23 @@
-   HOST=0.0.0.0
+   HOST=100.74.166.88
    PORT_DB= 3306
-   USER='root'
-  PASSWORD= 
+   USER='intersig'
+  PASSWORD='Nileduz'
   DB_API='database_api_mobile '
         
- SECRET ='111111111111111111111111111'
+ SECRET ='h43895jt9858094bun6098grubn48u59dsgfg234543tf'
  PORT_API = 3000 
 
- MAIL='@.com.br'
- HOST_MAIL='.com.br'
- PASSWORD_MAIL=''
+ MAIL='integracao@intersig.com.br'
+ HOST_MAIL='mail.intersig.com.br'
+ PASSWORD_MAIL='Intersig@9227'
 
 #-----------------------
 BROKER_URL='amqp://localhost:5672'
 EXCHANGE_NAME='template_api'
 #-----------------------
 
-APP_ID_ML='111111111111'
-SECRET_ML='1111111111111111111'
+APP_ID_ML='3882231483552747'
+SECRET_ML='TYswIiUKweak2uo1YZGACmKqIVHGv46n'
 
 PATH_CERT_KEY='C:\Users\usuario\key.pem'
 PATH_CERT_CERT='C:\Users\usuario\cert.pem'
