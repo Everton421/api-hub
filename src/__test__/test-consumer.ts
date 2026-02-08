@@ -29,7 +29,7 @@ export async function testeConsumercliente() {
         // O asterisco (*) diz: "Aceite qualquer coisa nesta posição"
         // Padrão: tenant.{QUALQUER_CNPJ}.estoque.atualizado
         
-        await channel.bindQueue(q.queue, EXCHANGE, 'tenant.*.movimentosprodutos.inserido');
+        await channel.bindQueue(q.queue, EXCHANGE, 'tenant.*.produtosetor.atualizado');
         
         // Se quiser escutar TUDO de estoque (criado, deletado, atualizado):
         // await channel.bindQueue(q.queue, EXCHANGE, 'tenant.*.estoque.*');

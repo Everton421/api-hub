@@ -1,5 +1,7 @@
 import 'dotenv/config';
-import mysql from 'mysql';
+//import mysql from 'mysql';
+
+import   mysql  from 'mysql'
 
 /**----------------------------------------------------------------------- */
 const hostname = process.env.HOST;
@@ -22,9 +24,11 @@ export const conn = mysql.createPool({
     port: port,
     password: dbpassword,
 })
+/**----------------------------------------------------------------------- */
 
-console.log(hostname)
-console.log(portdb)
-console.log(dbpassword)
-console.log(db_api)
-console.log(username)
+
+//console.log(hostname)
+//console.log(portdb)
+//console.log(dbpassword)
+//console.log(db_api)
+//console.log(username)

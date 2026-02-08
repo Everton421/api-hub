@@ -56,7 +56,7 @@ export class CreateEmpresa {
 
     let responsavel: string = "S";
 
-    let tipo_contrato = request.body.empresa.tipo_contrato
+    let tipo_contrato = request.body.empresa.tipo_contrato  || 'T'
     let data_contrato = dateService.obterDataAtual();
     let dias_contrato = 30;
     let inicio_contrato = dateService.obterDataAtual();

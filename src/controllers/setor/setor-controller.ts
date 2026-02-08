@@ -124,8 +124,7 @@ export class SetorController {
       }
       await publishMessage(empresa, 'setor.inserido', item, source)
 
-      return res.status(200).json(
-      )
+      return res.status(200).json( item)
 
     } catch (e) {
       return res.status(400).json({ erro: true, msg: `Ocorreu um erro ao cadastrar setor !` });
