@@ -48,7 +48,6 @@ export class UpdateProdutos {
                                    observacoes3 = '${observacoes3}'  
                                    where codigo = ${codigo}
                             `;
-                console.log(sql);
                 
             await conn.query(sql, (err: any, result: any) => {
                 if (err) {
