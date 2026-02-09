@@ -28,9 +28,9 @@ export class UpdateProdutos {
                 observacoes3 } = produto
 
             const sql = ` UPDATE  ${empresa}.produtos SET  
-                                   estoque = ${estoque} ,
+                                   estoque = ${estoque},
                                    ativo = '${ativo}',
-                                   preco = ${preco} ,
+                                   preco = '${preco}' ,
                                    unidade_medida='${unidade_medida}',
                                    grupo = ${grupo} ,
                                    origem = ${origem} ,
