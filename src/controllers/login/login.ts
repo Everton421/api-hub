@@ -121,6 +121,7 @@ export class Login {
                     let resultUserEmpr = await selectUserEmpresa.buscaPorEmail(empresa, email);
                     if(resultUserEmpr.length === 0 ){
                         console.log(`Não foi encontrado usuario com o email :${email} no banco de dados da empresa ` );
+                        
                         return res.status(500).json({ msg: "Erro interno do servidor durante a autenticação!" })
                     }
 
