@@ -92,8 +92,9 @@ export class Login {
         if (!req.body.senha || req.body.senha === '') return res.status(400).json({ erro: true, msg: `É Necessario Informar a Senha` });
 
         let { email, senha } = req.body
+    
+        let validUserEmail =  await selectUserApi.selectPorEmail(email);
 
-        let validUserEmail = await selectUserApi.selectPorEmail(email);
 
         if (validUserEmail.length > 0) {
             let validPassword = validUserEmail[0].senha
@@ -103,7 +104,6 @@ export class Login {
 
         } else {
             return res.status(400).json({ erro: true, msg: `Usuário não Encontrado!` });
-
         }
 
         try {
@@ -114,16 +114,18 @@ export class Login {
 
                 let cnpj = validUserApi[0].cnpj;
                 nomeUsuario = validUserApi[0].nome
-                let empresa = validUserApi[0].cnpj.replace(/\D/g, '');
-                empresa = `\`${empresa}\``;
-                try {
-                    let resultUserEmpr = await selectUserEmpresa.buscaPorEmail(empresa, email);
-                    codigoUsuario = resultUserEmpr[0].codigo
-                } catch (e) {
-                    console.log(`Erro ao tentar acessar o usuario da empresa `, e)
-                    return res.status(500).json({ msg: "Erro interno do servidor durante a autenticação!" })
+                let databaseName = validUserApi[0].cnpj.replace(/\D/g, '');
 
-                }
+               let empresa = `\`${databaseName}\``;
+                
+                    let resultUserEmpr = await selectUserEmpresa.buscaPorEmail(empresa, email);
+                    if(resultUserEmpr.length === 0 ){
+                        console.log(`Não foi encontrado usuario com o email :${email} no banco de dados da empresa ` );
+                        return res.status(500).json({ msg: "Erro interno do servidor durante a autenticação!" })
+                    }
+
+                    codigoUsuario = resultUserEmpr[0].codigo
+
                 let resultValidContrato = await validaContratoLogin(validUserApi[0].cnpj)
 
                 if (resultValidContrato.valido === false) {
@@ -159,6 +161,8 @@ export class Login {
                     codigo: codigoUsuario
                 })
 
+            }else{
+                console.log("Usuario não encontrado.")
             }
         } catch (e) {
             console.log('ocorreu um erro ao tentar fazer o login!');
