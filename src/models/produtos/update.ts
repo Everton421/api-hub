@@ -30,7 +30,7 @@ export class UpdateProdutos {
             const sql = ` UPDATE  ${empresa}.produtos SET  
                                    estoque = ${estoque},
                                    ativo = '${ativo}',
-                                   preco = '${preco}' ,
+                                   preco = '${preco}',
                                    unidade_medida='${unidade_medida}',
                                    grupo = ${grupo} ,
                                    origem = ${origem} ,
@@ -48,7 +48,8 @@ export class UpdateProdutos {
                                    observacoes3 = '${observacoes3}'  
                                    where codigo = ${codigo}
                             `;
-
+                console.log(sql);
+                
             await conn.query(sql, (err: any, result: any) => {
                 if (err) {
                     console.log(err)
