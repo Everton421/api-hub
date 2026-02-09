@@ -7,6 +7,8 @@ import { DateService } from "../../services/date-service/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 type newMoviment = Omit<IMovimentosProdutos, 'codigo'>
+
+type mobileMoviment = IMovimentosProdutos & { id:number }
 export class MovimentosProdutosController {
 
 
@@ -190,6 +192,8 @@ export class MovimentosProdutosController {
             let result = await insert.insertMovimentos(dbName, i);
 
             if (result.insertId > 0) {
+                let message =  i as mobileMoviment
+                message.id = result.insertId
               itensProcessados.push({ movimento: result.insertId })
               await publishMessage(empresa, 'movimentosprodutos.inserido', i, source)
             }
