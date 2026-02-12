@@ -11,6 +11,10 @@ import 'dotenv/config';
                 if(!exchange ) throw new Error("process.env.EXCHANGE_NAME não configurada ");
                 if( !broker_url ) throw new Error("process.env.BROKER_URL não configurada ");
         
+                if( connectionRabbitMQ && channel){
+                    return;
+                }
+
             try{
                  
                  connectionRabbitMQ = await amqp.connect( broker_url);
@@ -25,6 +29,8 @@ import 'dotenv/config';
                                 console.error("[ RabbitMQ ] Erro na Conexão: ", err);
                             })
                    }catch(e){
+                    connectionRabbitMQ = null;
+                    channel = null;
                     console.log(" [ RabbitMQ] Falha ao conectar. Tentando novamente...")
                         setTimeout(connectRabbitMQ, 5000)
                     }

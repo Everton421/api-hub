@@ -340,6 +340,7 @@ export class ProdutoController {
     }
 
     try {
+      
       await update.update(dbName, produto);
       await publishMessage(empresa, 'produto.atualizado', produto, source)
 
