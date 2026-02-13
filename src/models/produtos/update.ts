@@ -29,23 +29,23 @@ export class UpdateProdutos {
 
             const sql = ` UPDATE  ${empresa}.produtos SET  
                                    estoque          =  ?,
-                                   ativo            = ?,
-                                   preco            = ?,
-                                   unidade_medida   = ?,
+                                   ativo            =  ?,
+                                   preco            =  ?,
+                                   unidade_medida   =  ?,
                                    grupo            =  ?,
                                    origem           =  ?,
-                                   descricao        = ?,
-                                   num_fabricante   = ? ,
-                                   num_original     = ? ,
-                                   sku              = ? ,
+                                   descricao        =  ?,
+                                   num_fabricante   =  ?,
+                                   num_original     =  ?,
+                                   sku              =  ?,
                                    marca            =  ?,
-                                   class_fiscal     = ?,
-                                   data_cadastro    = ?,
-                                   data_recadastro  = ?,  
-                                   tipo             =  ? 
-                                   observacoes1     = ?,
-                                   observacoes2     = ?,
-                                   observacoes3     = ?  
+                                   class_fiscal     =  ?,
+                                   data_cadastro    =  ?,
+                                   data_recadastro  =  ?,  
+                                   tipo             =  ?,
+                                   observacoes1     =  ?,
+                                   observacoes2     =  ?,
+                                   observacoes3     =  ?  
                                    where codigo = ${codigo}
                             `;
                 
