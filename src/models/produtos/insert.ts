@@ -56,7 +56,7 @@ export class InsertProdutos {
                                     '${unidade_medida}',
                                     ${grupo} ,
                                     ${origem} ,
-                                    '${descricao}',
+                                    "${descricao}",
                                     '${num_fabricante}' ,
                                     '${num_original}' ,
                                     '${sku}' ,
@@ -65,9 +65,9 @@ export class InsertProdutos {
                                     '${data_cadastro}',
                                     '${data_recadastro}',  
                                     ${tipo}, 
-                                    '${observacoes1}',
-                                    '${observacoes2}',
-                                    '${observacoes3}'  
+                                    "${observacoes1}",
+                                   "${observacoes2}",
+                                    "${observacoes3}"  
                                   )
                             `;
 
