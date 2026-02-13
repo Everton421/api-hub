@@ -52,7 +52,7 @@ export class UpdateProdutos {
                 const values = [
                                 estoque,
                                 ativo,
-                                preco,
+                                String(preco),
                                 unidade_medida,
                                 grupo,
                                 origem,
