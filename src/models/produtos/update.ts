@@ -28,28 +28,49 @@ export class UpdateProdutos {
                 observacoes3 } = produto
 
             const sql = ` UPDATE  ${empresa}.produtos SET  
-                                   estoque = ${estoque},
-                                   ativo = '${ativo}',
-                                   preco = '${preco}',
-                                   unidade_medida='${unidade_medida}',
-                                   grupo = ${grupo} ,
-                                   origem = ${origem} ,
-                                   descricao = '${descricao}',
-                                   num_fabricante = '${num_fabricante}' ,
-                                   num_original = '${num_original}' ,
-                                   sku = '${sku}' ,
-                                   marca = ${marca} ,
-                                   class_fiscal = '${class_fiscal}',
-                                   data_cadastro = '${data_cadastro}',
-                                   data_recadastro = '${data_recadastro}',  
-                                   tipo = ${tipo}, 
-                                   observacoes1 = '${observacoes1}',
-                                   observacoes2 = '${observacoes2}',
-                                   observacoes3 = '${observacoes3}'  
+                                   estoque          =  ?
+                                   ativo            = ?,
+                                   preco            = ?,
+                                   unidade_medida   = ?,
+                                   grupo            =  ?,
+                                   origem           =  ?,
+                                   descricao        = ?,
+                                   num_fabricante   = ? ,
+                                   num_original     = ? ,
+                                   sku              = ? ,
+                                   marca            =  ?,
+                                   class_fiscal     = ?,
+                                   data_cadastro    = ?,
+                                   data_recadastro  = ?,  
+                                   tipo             =  ? 
+                                   observacoes1     = ?,
+                                   observacoes2     = ?,
+                                   observacoes3     = ?  
                                    where codigo = ${codigo}
                             `;
                 
-            await conn.query(sql, (err: any, result: any) => {
+                const values = [
+                                estoque,
+                                ativo,
+                                preco,
+                                unidade_medida,
+                                grupo,
+                                origem,
+                                descricao,
+                                num_fabricante,
+                                num_original,
+                                sku,
+                                marca,
+                                class_fiscal,
+                                data_cadastro,
+                                data_recadastro,
+                                tipo,
+                                observacoes1,
+                                observacoes2,
+                                observacoes3,
+                ]
+
+            await conn.query(sql, values, (err: any, result: any) => {
                 if (err) {
                     console.log(err)
                     reject(err);

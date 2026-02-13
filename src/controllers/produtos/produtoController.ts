@@ -104,9 +104,9 @@ export class ProdutoController {
       "cst": req.body.cst,
       "data_recadastro": req.body.data_recadastro,
       "data_cadastro": req.body.data_cadastro,
-      "observacoes1": formatString.replaceAspasDuplas(req.body.observacoes1),
-      "observacoes2": formatString.replaceAspasDuplas(req.body.observacoes2),
-      "observacoes3": formatString.replaceAspasDuplas(req.body.observacoes3),
+      "observacoes1":    req.body.observacoes1,
+      "observacoes2":    req.body.observacoes2,
+      "observacoes3":    req.body.observacoes3,
       "tipo": req.body.tipo
     } as ProdutoBanco
 
@@ -121,7 +121,7 @@ export class ProdutoController {
         "unidade_medida": req.body.unidade_medida,
         "grupo": req.body.grupo,
         "origem": req.body.origem,
-        "descricao": formatString.replaceAspasDuplas(req.body.descricao),
+        "descricao":  req.body.descricao ,
         "caracteristica": req.body.caracteristica,
         "num_fabricante": req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
         "num_original": req.body.num_original,   //referencia 
@@ -132,9 +132,9 @@ export class ProdutoController {
         "cst": req.body.cst,
         "data_recadastro": req.body.data_recadastro,
         "data_cadastro": req.body.data_cadastro,
-        "observacoes1": formatString.replaceAspasDuplas(req.body.observacoes1),
-        "observacoes2": formatString.replaceAspasDuplas(req.body.observacoes2),
-        "observacoes3": formatString.replaceAspasDuplas(req.body.observacoes3),
+        "observacoes1":  req.body.observacoes1,
+        "observacoes2":  req.body.observacoes2,
+        "observacoes3":  req.body.observacoes3,
         "tipo": req.body.tipo
       }
       await publishMessage(empresa, 'produto.inserido', item, source)
@@ -326,7 +326,7 @@ export class ProdutoController {
       "unidade_medida": req.body.unidade_medida,
       "grupo": req.body.grupo.codigo,
       "origem": req.body.origem,
-      "descricao": formatString.replaceAspasDuplas(req.body.descricao),
+      "descricao":  req.body.descricao ,
       "num_fabricante": req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
       "num_original": req.body.num_original,   //referencia 
       "sku": req.body.sku,
@@ -336,9 +336,9 @@ export class ProdutoController {
       "cst": req.body.cst,
       "data_recadastro": req.body.data_recadastro,
       "data_cadastro": req.body.data_cadastro,
-      "observacoes1": formatString.replaceAspasDuplas(req.body.observacoes1),
-      "observacoes2": formatString.replaceAspasDuplas(req.body.observacoes2),
-      "observacoes3": formatString.replaceAspasDuplas(req.body.observacoes3),
+      "observacoes1":  req.body.observacoes1 ,
+      "observacoes2":  req.body.observacoes2 ,
+      "observacoes3":  req.body.observacoes3 ,
       "tipo": req.body.tipo
     }
 
