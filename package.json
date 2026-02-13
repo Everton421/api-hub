@@ -13,6 +13,7 @@
     "teste:consumer": "tsx --watch src/__test__/test-consumer.ts",
     "teste:producer": "tsx src/__test__/test-producer.ts",
     "build:swagger": "tsx src/swagger/build-swagger.ts",
+    "teste:string": "tsx src/__test__/test-replace-string.ts",
     "swagger:watch": "tsx watch src/swagger/build-swagger.ts"
   },
   "devDependencies": {
