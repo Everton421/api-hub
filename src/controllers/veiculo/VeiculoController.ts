@@ -3,7 +3,7 @@ import { Insert_Veiculos } from "../../models/veiculo/insert";
 import { Select_veiculos } from "../../models/veiculo/select";
 import { update_veiculo } from "../../models/veiculo/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class VeiculoController {

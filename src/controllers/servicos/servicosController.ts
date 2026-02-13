@@ -3,7 +3,7 @@ import { InsertServico } from "../../models/servicos/insert";
 import { Select_servicos } from "../../models/servicos/select";
 import { updateServico } from "../../models/servicos/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 type service = {
   codigo: number,

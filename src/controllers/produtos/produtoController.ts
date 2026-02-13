@@ -6,11 +6,12 @@ import { InsertProdutos } from "../../models/produtos/insert";
 import { Select_produtos } from "../../models/produtos/select";
 import { UpdateProdutos } from "../../models/produtos/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { categoria } from "../../types/categoriaProduto/type-categoria";
 import { marca } from "../../types/marcaProduto/type-marca";
 import { ProdutoBanco, ProdutoCompleto } from "../../types/produto/type-produto";
+import { FormatString } from "../../utils/format-string";
 
 
 export class ProdutoController {
@@ -59,7 +60,7 @@ export class ProdutoController {
     let select = new Select_produtos();
     let insert = new InsertProdutos();
     let dateService = new DateService();
-
+    const formatString = new FormatString();
 
     if (!req.body.id) req.body.id = 0
     if (!req.body.preco) req.body.preco = 0
@@ -103,9 +104,9 @@ export class ProdutoController {
       "cst": req.body.cst,
       "data_recadastro": req.body.data_recadastro,
       "data_cadastro": req.body.data_cadastro,
-      "observacoes1": req.body.observacoes1,
-      "observacoes2": req.body.observacoes2,
-      "observacoes3": req.body.observacoes3,
+      "observacoes1": formatString.replaceAspasDuplas(req.body.observacoes1),
+      "observacoes2": formatString.replaceAspasDuplas(req.body.observacoes2),
+      "observacoes3": formatString.replaceAspasDuplas(req.body.observacoes3),
       "tipo": req.body.tipo
     } as ProdutoBanco
 
@@ -120,7 +121,7 @@ export class ProdutoController {
         "unidade_medida": req.body.unidade_medida,
         "grupo": req.body.grupo,
         "origem": req.body.origem,
-        "descricao": req.body.descricao,
+        "descricao": formatString.replaceAspasDuplas(req.body.descricao),
         "caracteristica": req.body.caracteristica,
         "num_fabricante": req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
         "num_original": req.body.num_original,   //referencia 
@@ -131,9 +132,9 @@ export class ProdutoController {
         "cst": req.body.cst,
         "data_recadastro": req.body.data_recadastro,
         "data_cadastro": req.body.data_cadastro,
-        "observacoes1": req.body.observacoes1,
-        "observacoes2": req.body.observacoes2,
-        "observacoes3": req.body.observacoes3,
+        "observacoes1": formatString.replaceAspasDuplas(req.body.observacoes1),
+        "observacoes2": formatString.replaceAspasDuplas(req.body.observacoes2),
+        "observacoes3": formatString.replaceAspasDuplas(req.body.observacoes3),
         "tipo": req.body.tipo
       }
       await publishMessage(empresa, 'produto.inserido', item, source)
@@ -287,6 +288,8 @@ export class ProdutoController {
     let dbName = `\`${empresa}\``;
     let update = new UpdateProdutos();
     const dateService = new DateService();
+    const formatString = new FormatString();
+
 
     const source = String(req.headers.source) || 'api_internal';
 
@@ -323,7 +326,7 @@ export class ProdutoController {
       "unidade_medida": req.body.unidade_medida,
       "grupo": req.body.grupo.codigo,
       "origem": req.body.origem,
-      "descricao": req.body.descricao,
+      "descricao": formatString.replaceAspasDuplas(req.body.descricao),
       "num_fabricante": req.body.num_fabricante, // num-fabricante gtim/codigo de barros 
       "num_original": req.body.num_original,   //referencia 
       "sku": req.body.sku,
@@ -333,9 +336,9 @@ export class ProdutoController {
       "cst": req.body.cst,
       "data_recadastro": req.body.data_recadastro,
       "data_cadastro": req.body.data_cadastro,
-      "observacoes1": req.body.observacoes1,
-      "observacoes2": req.body.observacoes2,
-      "observacoes3": req.body.observacoes3,
+      "observacoes1": formatString.replaceAspasDuplas(req.body.observacoes1),
+      "observacoes2": formatString.replaceAspasDuplas(req.body.observacoes2),
+      "observacoes3": formatString.replaceAspasDuplas(req.body.observacoes3),
       "tipo": req.body.tipo
     }
 

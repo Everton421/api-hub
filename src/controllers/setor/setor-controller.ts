@@ -4,7 +4,7 @@ import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { ISetor } from "../../models/setor/types/setor";
 import { UpdateSetor } from "../../models/setor/update";
 import { InsertSetor } from "../../models/setor/insert";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { publishMessage } from "../../services/broker/publish-message";
 
 type query = {

@@ -4,7 +4,7 @@ import { SelectProdutoSetor } from "../../models/produto-setor/select";
 import { IProdutoSetor } from "../../models/produto-setor/types/produto-setor";
 import { UpdateProdutoSetor } from "../../models/produto-setor/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 

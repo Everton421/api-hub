@@ -3,7 +3,7 @@ import { Insert_tipos_os } from "../../models/tipos_os/insert";
 import { SelectTipo_os } from "../../models/tipos_os/select";
 import { Update_tipo_os } from "../../models/tipos_os/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { tipo_os } from "../../types/tipo_os/type-tipo-os";
 

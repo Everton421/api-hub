@@ -4,7 +4,7 @@ import { Cliente } from "../../models/cliente/interface_cliente";
 import { Select_clientes } from "../../models/cliente/select";
 import { Update_clientes } from "../../models/cliente/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class ClienteController {

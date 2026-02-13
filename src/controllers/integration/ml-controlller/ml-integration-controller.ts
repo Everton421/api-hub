@@ -4,7 +4,7 @@ import { CreateTableMLAccounts } from "../../../database/tables-structures/creat
 import { InsertUsersMlintegration } from "../../../models/users-ml-integration/insert-users-ml-integration";
 import { SelectUsersMlIntegrations } from "../../../models/users-ml-integration/select-users-ml-integration";
 import { UpdateUsersMLIntegrations } from "../../../models/users-ml-integration/update-users-ml-integration";
-import { DateService } from "../../../services/date-service/dateService";
+import { DateService } from "../../../utils/dateService";
 import { DecodedToken } from "../../../services/decoded-token/decodedToken";
 import { DecodedStateToken, exchangeCodeForToken } from "../../../services/integration/mercadolivre-integration/ml-auth-service";
 

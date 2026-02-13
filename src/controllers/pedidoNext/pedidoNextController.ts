@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Select_clientes } from "../../models/cliente/select";
 import { SelectItensPedido } from "../../models/pedido/selectItens";
 import { SelectPedido } from "../../models/pedido/selectPedido";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class pedidoNextController {

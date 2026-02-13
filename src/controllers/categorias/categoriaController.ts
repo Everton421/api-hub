@@ -3,7 +3,7 @@ import { Insert_Categorias } from "../../models/categorias/insert";
 import { Select_Categorias } from "../../models/categorias/select";
 import { updateCategoria } from "../../models/categorias/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { categoria } from "../../types/categoriaProduto/type-categoria";
 

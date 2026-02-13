@@ -3,7 +3,7 @@ import { InsertLocais, } from "../../models/locais/insert";
 import { SelectLocais } from "../../models/locais/select";
 import { UpdateLocais } from "../../models/locais/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { ILocal } from "../../types/locais/type-local";
 

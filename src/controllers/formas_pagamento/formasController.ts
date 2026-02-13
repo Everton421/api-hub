@@ -3,7 +3,7 @@ import { Insert_formaPagamento } from "../../models/formas_pagamento/insert";
 import { SelectForma_pagamento } from "../../models/formas_pagamento/select";
 import { update_formaPagamento } from "../../models/formas_pagamento/update";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 import { queryFpgt } from "../../types/formas_pagamento/type-formas-pagamento";
 

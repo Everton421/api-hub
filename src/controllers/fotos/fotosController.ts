@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Delete_fotos } from "../../models/fotos/delete";
 import { Insert_fotos } from "../../models/fotos/insert";
 import { Select_fotos } from "../../models/fotos/select";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class fotosController {

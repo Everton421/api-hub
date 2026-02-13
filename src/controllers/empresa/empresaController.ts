@@ -6,7 +6,7 @@ import { Insert_empresa } from "../../models/empresa/insert";
 import { UsuarioApi } from "../../models/usuariosApi/interface";
 import { UsuariosApi } from "../../models/usuariosApi/usuarios";
 import { Insert_UsuarioEmpresa } from "../../models/usuariosEmpresa/insert";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 export class CreateEmpresa {

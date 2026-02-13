@@ -3,7 +3,7 @@ import { InsertMovimentosProdutos } from "../../models/movimentos-produtos/inser
 import { SelectMovimentosProdutos } from "../../models/movimentos-produtos/select";
 import { IMovimentosProdutos } from "../../models/movimentos-produtos/types/movimentos_produtos";
 import { publishMessage } from "../../services/broker/publish-message";
-import { DateService } from "../../services/date-service/dateService";
+import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
 
 type newMoviment = Omit<IMovimentosProdutos, 'codigo'>
