@@ -10,26 +10,42 @@ export class Update_clientes {
         `  
          UPDATE ${empresa}.clientes SET
                  
-                celular = '${cliente.celular}', 
-                nome = '${cliente.nome}' ,
-                ativo = '${cliente.ativo}' ,
-                cep = '${cliente.cep}' ,
-                endereco = '${cliente.endereco}' ,
-                ie = '${cliente.ie}' ,
-                numero = '${cliente.numero}' ,
-                cnpj = '${cliente.cnpj}' ,
-                cidade = '${cliente.cidade}' ,
-                data_cadastro = '${cliente.data_cadastro}' ,
-                data_recadastro = '${cliente.data_recadastro}' ,
-                vendedor =  ${cliente.vendedor},
-                bairro = '${cliente.bairro}',
-                estado = '${cliente.estado}' 
-                  where codigo = ${cliente.codigo}
+                celular         =  ?, 
+                nome            =  ?,
+                ativo           =  ?,
+                cep             =  ?,
+                endereco        =  ?,
+                ie              =  ?,
+                numero          =  ?,
+                cnpj            =  ?,
+                cidade          =  ?,
+                data_cadastro   =  ?,
+                data_recadastro =  ?,
+                vendedor        =  ?,
+                bairro          =  ?,
+                estado          =  ? 
+                where codigo    =  ?
         
                   ;
             `
-
-      await conn.query(sql, (err: any, result: Cliente[]) => {
+      const values = [
+        cliente.celular,
+        cliente.nome,
+        cliente.ativo,
+        cliente.cep,
+        cliente.endereco,
+        cliente.ie,
+        cliente.numero,
+        cliente.cnpj,
+        cliente.cidade,
+        cliente.data_cadastro,
+        cliente.data_recadastro,
+        cliente.vendedor,
+        cliente.bairro,
+        cliente.estado,
+        cliente.codigo
+      ]
+      await conn.query(sql,values, (err: any, result: Cliente[]) => {
         if (err) reject(err);
         resolve(result)
       })

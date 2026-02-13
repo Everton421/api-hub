@@ -3,10 +3,9 @@ import { VeiculoBanco } from "../../types/veiculo/type-veiculo";
 
 export class update_veiculo {
 
-
     async update(empresa: any, veiculo: VeiculoBanco) {
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const {
                 codigo,
                 id,
@@ -22,31 +21,48 @@ export class update_veiculo {
                 ativo
             } = veiculo;
 
-            const sql = ` UPDATE  ${empresa}.veiculos SET  
-                                    id = ${id},
-                                    cliente = ${cliente},
-                                    placa = '${placa}',
-                                    marca = '${marca}',
-                                    modelo = '${modelo}',
-                                    ano = '${ano}',
-                                    cor = '${cor}',
-                                    combustivel = '${combustivel}',
-                                    data_cadastro = '${data_cadastro}',
-                                    data_recadastro = '${data_recadastro}',
-                                    ativo = '${ativo}'
-                                    where codigo = ${codigo}
-                            `;
+            // Mantido ${empresa} direto e usado ? para todos os valores
+            const sql = ` 
+                UPDATE ${empresa}.veiculos SET  
+                    id = ?,
+                    cliente = ?,
+                    placa = ?,
+                    marca = ?,
+                    modelo = ?,
+                    ano = ?,
+                    cor = ?,
+                    combustivel = ?,
+                    data_cadastro = ?,
+                    data_recadastro = ?,
+                    ativo = ?
+                WHERE codigo = ?
+            `;
 
-            await conn.query(sql, (err: any, result: any) => {
+            // Array com os valores na ordem exata dos '?' no SQL
+            const values = [
+                id,
+                cliente,
+                placa,
+                marca,
+                modelo,
+                ano,
+                cor,
+                combustivel,
+                data_cadastro,
+                data_recadastro,
+                ativo,
+                codigo // Onde o código é o último parâmetro (do WHERE)
+            ];
+
+            conn.query(sql, values, (err: any, result: any) => {
                 if (err) {
-                    console.log(err)
+                    console.log("Erro ao atualizar veículo:", err);
                     reject(err);
                 } else {
-                    console.log(`veiculo atualizado com sucesso `)
+                    console.log(`veiculo atualizado com sucesso`);
                     resolve(result);
                 }
-            })
-        })
+            });
+        });
     }
-
 }

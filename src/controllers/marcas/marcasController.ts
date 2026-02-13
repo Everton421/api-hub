@@ -186,10 +186,8 @@ export class MarcasController {
 
         let select = new Select_Marcas();
         let insert = new Insert_Marcas();
-        const formatString = new FormatString();
 
         let postMarca: any = req.body;
-        postMarca.descricao = formatString.replaceAspasDuplas(req.body.descricao);
 
         let dbName = `\`${empresa}\``;
         if (!postMarca.ativo) postMarca.ativo = 'S';
@@ -233,7 +231,6 @@ export class MarcasController {
         let select = new Select_Marcas();
         let dateService = new DateService();
         let update = new UpdateMarca();
-        const formatString = new FormatString();
 
         let postMarca: any = req.body;
         if (!req.headers.token) {
@@ -252,7 +249,6 @@ export class MarcasController {
         if (!postMarca.descricao) return res.status(400).json({ erro: true, msg: `E necessario informar a descricao da marca!` })
         if (!postMarca.data_cadastro) postMarca.data_cadastro = dateService.obterDataAtual();
         postMarca.data_recadastro = dateService.obterDataHoraAtual();
-        postMarca.descricao = formatString.replaceAspasDuplas(postMarca.descricao);
         let resultMarca: marca[] = []
 
         if (postMarca.codigo > 0) {

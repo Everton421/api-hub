@@ -46,7 +46,7 @@ export class UpdateProdutos {
                                    observacoes1     =  ?,
                                    observacoes2     =  ?,
                                    observacoes3     =  ?  
-                                   where codigo = ${codigo}
+                                   where codigo = ?
                             `;
                 
                 const values = [
@@ -68,6 +68,7 @@ export class UpdateProdutos {
                                 observacoes1,
                                 observacoes2,
                                 observacoes3,
+                                codigo
                 ]
 
             await conn.query(sql, values, (err: any, result: any) => {

@@ -4,7 +4,6 @@ export class updateServico {
 
     async update(empresa: any, servico: any) {
 
-
         const {
             codigo,
             id,
@@ -16,30 +15,39 @@ export class updateServico {
             ativo
         } = servico;
 
-        return new Promise(async (resolve, reject) => {
-            let sql =
-                `
-            UPDATE ${empresa}.servicos SET 
-              id = ${id},
-              valor = ${valor},
-              aplicacao = '${aplicacao}',
-              tipo_serv = ${tipo_serv},
-              data_cadastro = '${data_cadastro}',
-              data_recadastro = '${data_recadastro}',
-              ativo = '${ativo}'
-                where codigo = ${codigo}
-              `
+        return new Promise((resolve, reject) => {
+            const sql = `
+                UPDATE \`${empresa}\`.servicos SET 
+                    id = ?,
+                    valor = ?,
+                    aplicacao = ?,
+                    tipo_serv = ?,
+                    data_cadastro = ?,
+                    data_recadastro = ?,
+                    ativo = ?
+                WHERE codigo = ?
+            `;
 
-            await conn.query(sql, (err: any, result: any) => {
+            const values = [
+                id,
+                valor,
+                aplicacao,      // O driver vai tratar as aspas aqui automaticamente
+                tipo_serv,
+                data_cadastro,
+                data_recadastro,
+                ativo,
+                codigo          // O último '?' é o do WHERE
+            ];
+
+            conn.query(sql, values, (err: any, result: any) => {
                 if (err) {
-                    console.log(err)
+                    console.error("Erro ao atualizar serviço:", err);
                     reject(err);
                 } else {
-                    console.log(`servico atualizado com sucesso `)
+                    console.log(`serviço atualizado com sucesso`);
                     resolve(result);
                 }
-            })
-
-        })
+            });
+        });
     }
 }

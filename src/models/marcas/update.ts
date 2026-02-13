@@ -16,14 +16,23 @@ export class UpdateMarca {
             } = marca
 
             const sql = ` UPDATE  ${empresa}.marcas SET  
-                                    codigo = ${codigo},
-                                    data_cadastro = '${data_cadastro}',
-                                    data_recadastro = '${data_recadastro}',
-                                    descricao = '${descricao}',
-                                    ativo = '${ativo}'
-                                   where codigo = ${codigo}
+                                    codigo          =  ?,
+                                    data_cadastro   =  ?,
+                                    data_recadastro =  ?,
+                                    descricao       =  ?,
+                                    ativo           =  ?
+                                    where codigo = ?
                             `;
 
+                            const values = [
+                                codigo,
+                                data_cadastro,
+                                data_recadastro,
+                                descricao,
+                                ativo,
+                                codigo,
+
+                                ]
             await conn.query(sql, (err: any, result: any) => {
                 if (err) {
                     console.log(err)

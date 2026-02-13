@@ -7,11 +7,12 @@ export class Update_UsuarioEmpresa {
 
             let sql = `
                   update ${empresa}.usuarios
-                    set senha= '${senha}' 
-                  where email = '${email}'   
+                    set senha= ? 
+                  where email = ?   
             `;
+            const values = [ senha ,email ]
 
-            await conn.query(sql, (err: any, result: any) => {
+            await conn.query(sql,values,  (err: any, result: any) => {
                 if (err) {
                     console.log(err)
                     reject(err);

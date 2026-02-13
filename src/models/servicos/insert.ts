@@ -3,47 +3,46 @@ import { conn } from "../../database/databaseConfig";
 export class InsertServico {
 
     async insert(empresa: any, servico: any) {
-
-        return new Promise(async (resolve, reject) => {
-            let {
-                codigo,
+        return new Promise((resolve, reject) => {
+            const {
                 valor,
                 aplicacao,
                 tipo_serv,
                 data_cadastro,
                 data_recadastro,
                 ativo
-            } = servico
+            } = servico;
 
-            const sql = ` INSERT INTO  ${empresa}.servicos  
-                             (
-                            valor ,
-                            aplicacao,
-                            tipo_serv,
-                            data_cadastro,
-                            data_recadastro, 
-                            ativo
-                                ) VALUES (
-                                     ${valor},
-                                    '${aplicacao}',
-                                    ${tipo_serv},
-                                   '${data_cadastro}',
-                                   '${data_recadastro}', 
-                                  '${ativo}'
-                                   )
-                            `;
+            const sql = ` 
+                INSERT INTO \`${empresa}\`.servicos  
+                (
+                    valor,
+                    aplicacao,
+                    tipo_serv,
+                    data_cadastro,
+                    data_recadastro, 
+                    ativo
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            `;
 
-            let dados = [valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo]
-            await conn.query(sql, (err: any, result: any) => {
+            const dados = [
+                valor, 
+                aplicacao, 
+                tipo_serv, 
+                data_cadastro, 
+                data_recadastro, 
+                ativo
+            ];
+
+            conn.query(sql, dados, (err: any, result: any) => {
                 if (err) {
-                    console.log(err)
+                    console.error("Erro ao inserir serviço:", err);
                     reject(err);
                 } else {
-                    console.log(`servico cadastrado com sucesso `)
+                    console.log(`Serviço cadastrado com sucesso`);
                     resolve(result);
                 }
-            })
-        })
+            });
+        });
     }
-
 }

@@ -11,36 +11,46 @@ type OkPacket = {
     protocol41: boolean,
     changedRows: number
 }
+
 export class UpdateSetor {
 
-
     async update(empresa: any, tipo_os: ISetor): Promise<OkPacket> {
-
-        return new Promise(async (resolve, reject) => {
-            let {
+        return new Promise((resolve, reject) => {
+            const {
                 codigo,
                 data_cadastro,
                 data_recadastro,
                 descricao,
-            } = tipo_os
+            } = tipo_os;
 
-            const sql = ` UPDATE  ${empresa}.setores SET  
-                                    data_cadastro = '${data_cadastro}',
-                                    data_recadastro = '${data_recadastro}',
-                                    descricao = '${descricao}' 
-                                   where codigo = ${codigo}
-                            `;
-            console.log(sql)
-            await conn.query(sql, (err: any, result: any) => {
+            // 1. Substituímos as variáveis e aspas por '?'
+            // 2. Usamos crases (backticks) no nome do banco para evitar erros de sintaxe
+            const sql = ` 
+                UPDATE ${empresa}.setores SET  
+                    data_cadastro = ?,
+                    data_recadastro = ?,
+                    descricao = ? 
+                WHERE codigo = ?
+            `;
+
+            // 3. Criamos o array de valores na ordem exata dos '?'
+            const values = [
+                data_cadastro,
+                data_recadastro,
+                descricao, // Se aqui vier "Setor d'Água", o driver tratará a aspa sozinho
+                codigo
+            ];
+
+            // 4. Passamos o array 'values' como segundo parâmetro
+            conn.query(sql, values, (err: any, result: any) => {
                 if (err) {
-                    console.log(err)
+                    console.error("Erro ao atualizar setor:", err);
                     reject(err);
                 } else {
-                    console.log(`setor atualizadao com sucesso `)
+                    console.log(`Setor atualizado com sucesso`);
                     resolve(result);
                 }
-            })
-        })
+            });
+        });
     }
-
 }
