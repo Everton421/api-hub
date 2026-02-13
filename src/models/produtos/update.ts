@@ -28,7 +28,7 @@ export class UpdateProdutos {
                 observacoes3 } = produto
 
             const sql = ` UPDATE  ${empresa}.produtos SET  
-                                   estoque          =  ?
+                                   estoque          =  ?,
                                    ativo            = ?,
                                    preco            = ?,
                                    unidade_medida   = ?,
