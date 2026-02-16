@@ -19,7 +19,7 @@ export class InsertProdutoSetor {
             // Nota: O nome do banco/tabela (${empresa}) não aceita "?". 
             // Certifique-se que a variável 'empresa' venha de uma fonte segura (token/sessão).
             let sql = `
-                    INSERT INTO \`${empresa}\`.produto_setor (  
+                    INSERT INTO  ${empresa}.produto_setor (  
                     setor, produto, estoque, local_produto, local1_produto,
                     local2_produto, local3_produto, local4_produto, data_recadastro 
                     ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ); `;
@@ -47,7 +47,7 @@ export class InsertProdutoSetor {
         return new Promise((resolve, reject) => {
             // Removidas as aspas simples e substituído por "?"
             let sql = `
-                INSERT INTO \`${empresa}\`.produto_setor (
+                INSERT INTO ${empresa}.produto_setor (
                     setor, produto, estoque, local_produto, local1_produto, 
                     local2_produto, local3_produto, local4_produto, data_recadastro
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -87,7 +87,7 @@ export class InsertProdutoSetor {
     async upateProdutoSetor(empresa: string, produtoSetor: IProdutoSetor): Promise<OkPacket> {
         return new Promise((resolve, reject) => {
             let sql = `
-                UPDATE \`${empresa}\`.produto_setor SET
+                UPDATE ${empresa}.produto_setor SET
                     estoque = ?,
                     local_produto = ?,
                     local1_produto = ?,

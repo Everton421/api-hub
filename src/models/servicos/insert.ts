@@ -14,7 +14,7 @@ export class InsertServico {
             } = servico;
 
             const sql = ` 
-                INSERT INTO \`${empresa}\`.servicos  
+                INSERT INTO  ${empresa}.servicos  
                 (
                     valor,
                     aplicacao,

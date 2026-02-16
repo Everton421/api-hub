@@ -25,7 +25,7 @@ export class UpdateProdutoSetor {
             // 1. Usamos '?' para os valores. 
             // 2. Usamos crases (backticks) para o nome do banco/tabela por segurança.
             const sql = ` 
-                UPDATE \`${empresa}\`.produto_setor 
+                UPDATE  ${empresa}.produto_setor 
                 SET estoque = ?, data_recadastro = ?
                 WHERE produto = ? AND setor = ? 
             `;

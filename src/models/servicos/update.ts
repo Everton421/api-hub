@@ -17,7 +17,7 @@ export class updateServico {
 
         return new Promise((resolve, reject) => {
             const sql = `
-                UPDATE \`${empresa}\`.servicos SET 
+                UPDATE ${empresa}.servicos SET 
                     id = ?,
                     valor = ?,
                     aplicacao = ?,
