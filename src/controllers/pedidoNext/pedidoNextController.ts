@@ -4,6 +4,8 @@ import { SelectItensPedido } from "../../models/pedido/selectItens";
 import { SelectPedido } from "../../models/pedido/selectPedido";
 import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { SelectTipo_os } from "../../models/tipos_os/select";
+import { Select_veiculos } from "../../models/veiculo/select";
 
 export class pedidoNextController {
 
@@ -78,6 +80,8 @@ export class pedidoNextController {
     let selectOrcamento = new SelectPedido();
     let select_clientes = new Select_clientes();
     const selectItensPedido = new SelectItensPedido();
+    const selectTipoOs = new SelectTipo_os();
+    const select_veiculos = new Select_veiculos();
 
     try {
 
@@ -90,8 +94,8 @@ export class pedidoNextController {
         let servicos: any = [];
         let parcelas: any = [];
         let cliente: any;
-
-
+        let tipo_os:any;
+        let veiculo:any
         try {
           const resultCliente = await select_clientes.buscaPorcodigo(empresa, i.cliente);
           cliente = resultCliente.length > 0 ? resultCliente[0] : {};
@@ -108,13 +112,20 @@ export class pedidoNextController {
         try {
           parcelas = await selectItensPedido.buscaParcelasDoOrcamento(empresa, i.codigo);
         } catch (e) { console.log(`erro ao buscar as parcelas do pedido ${i.codigo}`) }
-
+        
+        try{
+            tipo_os = await selectTipoOs.buscaPorCodigo(empresa,i.tipo_os)
+        }catch(e){}
+      try{
+            veiculo = await select_veiculos.buscaPorCodigo(empresa,i.veiculo)
+        }catch(e){}
         return {
           ...i,
           produtos,
           servicos,
           parcelas,
-          cliente
+          cliente,
+          tipo_os
         }
       }))
 
