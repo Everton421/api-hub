@@ -114,11 +114,13 @@ export class pedidoNextController {
         } catch (e) { console.log(`erro ao buscar as parcelas do pedido ${i.codigo}`) }
         
         try{
-            tipo_os = await selectTipoOs.buscaPorCodigo(empresa,i.tipo_os)
-        }catch(e){console.log(`erro ao buscar o tipo de os  do pedido ${i.codigo}`)}
+            const resultTipo_os = await selectTipoOs.buscaPorCodigo(empresa,i.tipo_os)
+              tipo_os = resultTipo_os[0];
+          }catch(e){console.log(`erro ao buscar o tipo de os  do pedido ${i.codigo}`)}
 
         try{
-           veiculo = await select_veiculos.buscaPorCodigo(empresa,i.veiculo)
+           const resultVeiculo = await select_veiculos.buscaPorCodigo(empresa,i.veiculo)
+            veiculo = resultVeiculo[0];
         }catch(e){console.log(`erro ao buscar veiculo do pedido ${i.codigo}`)}
 
 

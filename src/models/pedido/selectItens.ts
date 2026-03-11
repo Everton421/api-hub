@@ -21,7 +21,10 @@ export class SelectItensPedido {
     async buscaServicosDoOrcamento(empresa: any, codigo: number) {
         return new Promise(async (resolve, reject) => {
             const sql = ` select 
-                sp.*, s.aplicacao, s.id  from ${empresa}.servicos_pedido sp 
+                 sp.*, 
+                 s.aplicacao,
+                 s.id
+                   from ${empresa}.servicos_pedido sp 
                 join ${empresa}.servicos s on s.codigo = sp.codigo
                 where sp.pedido = ? `
             await conn.query(sql, [codigo], async (err: any, result: any) => {
