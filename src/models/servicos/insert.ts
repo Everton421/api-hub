@@ -5,6 +5,7 @@ export class InsertServico {
     async insert(empresa: any, servico: any) {
         return new Promise((resolve, reject) => {
             const {
+                id,
                 valor,
                 aplicacao,
                 tipo_serv,
@@ -16,16 +17,18 @@ export class InsertServico {
             const sql = ` 
                 INSERT INTO  ${empresa}.servicos  
                 (
+                    id,
                     valor,
                     aplicacao,
                     tipo_serv,
                     data_cadastro,
                     data_recadastro, 
                     ativo
-                ) VALUES (?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
 
             const dados = [
+                id,
                 valor, 
                 aplicacao, 
                 tipo_serv, 
