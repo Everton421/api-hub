@@ -38,9 +38,9 @@ export class pedidoController {
         let decodToken = DecodedToken(String(req.headers.token))
         if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
-        let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
+        let cnpj = decodToken.payload?.cnpj.replace(/\D/g, '');
 
-        empresa = `\`${empresa}\``;
+        const empresa = `\`${cnpj}\``;
 
 
         if (!req.body || req.body.length === 0) return res.status(400).json({ erro: "É necessario informar os pedidos! " })
@@ -71,7 +71,7 @@ export class pedidoController {
                 }
             } else {
                 await insertPedido.create(empresa, p);
-                await publishMessage(empresa, 'pedido.inserido', p)
+                await publishMessage(cnpj, 'pedido.inserido', p)
 
                 status = 'inserido';
             }
