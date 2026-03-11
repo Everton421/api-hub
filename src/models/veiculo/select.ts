@@ -60,7 +60,7 @@ export class Select_veiculos {
         })
     }
 
-    async buscaPorCodigo(dbName: string, codigo: number) {
+    async buscaPorCodigo(dbName: any, codigo: number) {
         return new Promise<VeiculoBanco[]>(async (resolve, reject) => {
 
             let sql = `select *,

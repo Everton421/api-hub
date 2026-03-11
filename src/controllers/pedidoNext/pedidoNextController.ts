@@ -70,7 +70,7 @@ export class pedidoNextController {
     }
     let decodToken = DecodedToken(String(req.headers.token))
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-    empresa = `\`${empresa}\``;
+    empresa = `\`${empresa}\`` as string;
 
     if (!req.query.codigo) {
       return res.status(400).json({ erro: true, msg: "É necessario informar o codigo do Pedido!" });
@@ -115,17 +115,21 @@ export class pedidoNextController {
         
         try{
             tipo_os = await selectTipoOs.buscaPorCodigo(empresa,i.tipo_os)
-        }catch(e){}
-      try{
-            veiculo = await select_veiculos.buscaPorCodigo(empresa,i.veiculo)
-        }catch(e){}
+        }catch(e){console.log(`erro ao buscar o tipo de os  do pedido ${i.codigo}`)}
+
+        try{
+           veiculo = await select_veiculos.buscaPorCodigo(empresa,i.veiculo)
+        }catch(e){console.log(`erro ao buscar veiculo do pedido ${i.codigo}`)}
+
+
         return {
           ...i,
           produtos,
           servicos,
           parcelas,
           cliente,
-          tipo_os
+          tipo_os,
+          veiculo
         }
       }))
 
