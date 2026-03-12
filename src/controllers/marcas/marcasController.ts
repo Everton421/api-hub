@@ -254,12 +254,12 @@ export class MarcasController {
         if (postMarca.codigo > 0) {
             resultMarca = await select.busca_por_codigo(dbName, postMarca.codigo, 1);
         }
-        let result2: marca[] = [];
-
-        if (postMarca.codigo > 0) {
-            result2 = await select.busca_por_descricao(dbName, postMarca.descricao, 1);
-        }
-        if (result2.length > 0) return res.status(400).json({ erro: true, msg: `A marca ${postMarca.descricao} ja foi cadastrada!` })
+        //let result2: marca[] = [];
+//
+        //if (postMarca.codigo > 0) {
+        //    result2 = await select.busca_por_descricao(dbName, postMarca.descricao, 1);
+        //}
+        //if (result2.length > 0) return res.status(400).json({ erro: true, msg: `A marca ${postMarca.descricao} ja foi cadastrada!` })
 
         if (resultMarca.length > 0) {
             let responseMarca: any;
