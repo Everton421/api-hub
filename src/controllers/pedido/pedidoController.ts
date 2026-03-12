@@ -61,7 +61,7 @@ export class pedidoController {
                     console.log(`atualizando pedido ${p.codigo} ${p.data_recadastro} > ${pedidoEncontrado.data_recadastro} `)
                     await updatePedido.update(empresa, p, p.codigo)
 
-                    await publishMessage(empresa, 'pedido.atualizado', p)
+                    await publishMessage(cnpj, 'pedido.atualizado', p)
 
                     status = 'atualizado';
                 } else {
