@@ -109,6 +109,7 @@ export class ServicosController {
     if (!req.body.data_recadastro) req.body.data_recadastro = dateService.obterDataHoraAtual();
 
     let servico = {
+        "id": req.body.id,
       "valor": req.body.valor,
       "aplicacao": req.body.aplicacao,
       "tipo_serv": req.body.tipo_serv,
@@ -122,7 +123,9 @@ export class ServicosController {
       let resultinsertId: any = await insert.insert(dbName, servico);
 
       const item = {
+
         "codigo": resultinsertId.insertId,
+        "id": req.body.id,
         "valor": req.body.valor,
         "aplicacao": req.body.aplicacao,
         "tipo_serv": req.body.tipo_serv,
