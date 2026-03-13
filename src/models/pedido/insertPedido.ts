@@ -37,6 +37,7 @@ export class InsertPedido {
                 total_servicos,
                 totalSemDesconto,
                 situacao,
+                situacao_separacao,
                 tipo,
                 vendedor,
                 data_cadastro,
@@ -49,7 +50,8 @@ export class InsertPedido {
                 just_subst,
                 enviado,
                 id,
-                id_externo
+                id_externo,
+                id_interno
             } = orcamento;
 
             enviado = 'S';
@@ -83,12 +85,12 @@ export class InsertPedido {
 
             let sql = `INSERT INTO 
       ${empresa}.pedidos 
-      ( codigo ,  id , id_externo, vendedor , situacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )  
+      ( codigo ,  id , id_externo, id_interno,  vendedor , situacao, situacao_separacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)  
         `
             await conn.query(
                 sql,
-                [codigo, id, id_externo, vendedor, situacao, contato, descontos, forma_pagamento, quantidade_parcelas, total_geral, total_produtos, total_servicos, cliente.codigo, veiculo, data_cadastro, data_recadastro, tipo_os, enviado, tipo, observacoes],
+                [codigo, id, id_externo, id_interno, vendedor, situacao,situacao_separacao, contato, descontos, forma_pagamento, quantidade_parcelas, total_geral, total_produtos, total_servicos, cliente.codigo, veiculo, data_cadastro, data_recadastro, tipo_os, enviado, tipo, observacoes],
                 async (err: any, result: any) => {
                     if (err) {
                         console.log(err)

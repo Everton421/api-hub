@@ -18,6 +18,22 @@ export class SelectItensPedido {
             })
         })
     }
+
+       async validaProdutosPedido(empresa: any, codigo: number) {
+        return new Promise(async (resolve, reject) => {
+            const sql = ` select pp.* 
+                from ${empresa}.produtos_pedido pp 
+                where pp.pedido = ? `
+            await conn.query(sql, [codigo], async (err: any, result: any) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            })
+        })
+    }
+
     async buscaServicosDoOrcamento(empresa: any, codigo: number) {
         return new Promise(async (resolve, reject) => {
             const sql = ` select 

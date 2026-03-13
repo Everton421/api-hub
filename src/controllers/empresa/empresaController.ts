@@ -164,8 +164,10 @@ export class CreateEmpresa {
         codigo bigint(20)  unsigned NOT NULL DEFAULT 0,
          id  varchar(255) NOT NULL DEFAULT '0',
          id_externo  varchar(255) DEFAULT NULL,
+         id_interno  varchar(255) DEFAULT NULL,
          vendedor  int(11) NOT NULL DEFAULT 0,
          situacao  char(2) NOT NULL DEFAULT 'EA',
+         situacao_separacao  enum('N','P','I') NOT NULL DEFAULT 'N', -- COMMENT 'N = Não Separado; P = Separado Parcialmente; I = Separado Integralmente',
          contato  varchar(255) DEFAULT NULL,
          descontos  double DEFAULT 0,
          forma_pagamento  int(11) DEFAULT 0,
@@ -176,8 +178,8 @@ export class CreateEmpresa {
          total_servicos  double DEFAULT 0,
          cliente  int(11) NOT NULL DEFAULT 0,
          veiculo  int(11) NOT NULL DEFAULT 0,
-           data_cadastro  date NOT NULL DEFAULT '2000-01-01',
-        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+         data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+         data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
          tipo_os  int(11) DEFAULT 0,
          enviado  enum('N','S') NOT NULL DEFAULT 'S',
          tipo  int(11) NOT NULL DEFAULT 1, 
@@ -187,10 +189,12 @@ export class CreateEmpresa {
       `CREATE TABLE IF NOT EXISTS ${dbName}.produtos_pedido (
         pedido bigint(20) unsigned NOT NULL DEFAULT 0,
         codigo INTEGER NOT NULL,
-        desconto REAL DEFAULT 0.00,
-        quantidade REAL DEFAULT 0.00,
-        preco REAL DEFAULT 0.00,
-        total REAL DEFAULT 0.00 
+        desconto decimal(10,2) NOT NULL DEFAULT 0.00,
+        quantidade decimal(10,2) NOT NULL DEFAULT 0.00,
+        preco decimal(10,2) NOT NULL DEFAULT 0.00,
+        total decimal(10,2) NOT NULL DEFAULT 0.00,
+        quantidade_separada decimal(10,2) NOT NULL DEFAULT 0.00,
+        quantidade_faturada decimal(10,2) NOT NULL DEFAULT 0.00
     );`,
       `CREATE TABLE IF NOT EXISTS ${dbName}.servicos_pedido (
         pedido bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -372,6 +376,7 @@ export class CreateEmpresa {
         erro: true,
         msg: ` a empresa com o cnpj ${cnpj} ja foi cadastrada!`,
       });
+      
     } else {
       await conn.query(sql, async (err, result) => {
         if (err) console.log(err);

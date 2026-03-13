@@ -6,7 +6,7 @@ export class DeleteItensPedido {
         return new Promise(async (resolve, reject) => {
 
             let sql2 = ` delete from ${empresa}.produtos_pedido
-                                        where pedido = ${codigo}
+                                        where pedido = ${codigo};
                                     `
             await conn.query(sql2, (err: any, result: any) => {
                 if (err) {

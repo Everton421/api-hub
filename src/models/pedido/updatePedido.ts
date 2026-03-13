@@ -20,6 +20,7 @@ type orderReceived =
         data_cadastro: string
         data_recadastro: string
         situacao: string
+        situacao_separacao: 'N' | 'P' | 'I'
     }
 
 export class UpdatePedido {
@@ -44,7 +45,8 @@ export class UpdatePedido {
                 data_cadastro       = '${orcamento.data_cadastro}',
                 data_recadastro     = '${orcamento.data_recadastro}',
                 enviado             = 'S',
-                situacao            = '${orcamento.situacao}'
+                situacao            = '${orcamento.situacao}',
+                situacao_separacao  = '${orcamento.situacao_separacao}'
                 where codigo = ${codigo}
             `
             conn.query(sql, (err: any, result: any) => {
@@ -112,7 +114,7 @@ export class UpdatePedido {
 
             let validaProdutos: any
             try {
-                validaProdutos = await selectItensPedido.buscaProdutosDoOrcamento(empresa, codigoOrcamento)
+                validaProdutos = await selectItensPedido.validaProdutosPedido(empresa, codigoOrcamento)
             } catch (e) { console.log(e) }
 
             if (validaProdutos.length > 0) {

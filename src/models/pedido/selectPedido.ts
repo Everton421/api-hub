@@ -17,6 +17,7 @@ export class SelectPedido {
              DATE_FORMAT( data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(observacoes USING utf8) as observacoes 
              from ${empresa}.pedidos where codigo =  ?  `;
+             console.log(sql)
             await conn.query(sql, [code], (err: any, result: any) => {
                 if (err) {
                     console.log(err)
@@ -32,19 +33,12 @@ export class SelectPedido {
     }
 
 
-    async buscaPordata(empresa: any, queryData: any, vendedor: number) {
+    async buscaPordata(empresa: any, queryData?: any, vendedor?: number) {
 
 
         let objSelect = new SelectPedido();
-        let param_data: any;
-        if (!queryData) {
-            param_data = objSelect.obterDataAtualSemHoras();
-        } else {
-            param_data = objSelect.formatarData(queryData);
-            if (!param_data) {
-                return
-            }
-        }
+        let param_data = objSelect.formatarData(queryData);
+
         return new Promise(async (resolve, reject) => {
 
             const sql = `select co.*, c.nome  ,
@@ -53,9 +47,25 @@ export class SelectPedido {
             CONVERT(observacoes USING utf8) as observacoes 
             from ${empresa}.pedidos as co
             join ${empresa}.clientes c on c.codigo = co.cliente
-                where   co.data_recadastro >= '${param_data}' and co.vendedor = ${vendedor} 
+                     
             `;
-            await conn.query(sql, async (err: any, result: any) => {
+
+                const whereClause = " WHERE "
+            const params = [ ]
+            const values =[];
+            if(param_data){
+                params.push(" co.data_recadastro >= ? ");
+                values.push(param_data)
+            }
+            if(vendedor){
+                params.push(" co.vendedor = ?  ");
+                values.push(vendedor)
+            }
+
+
+            const finalSql = sql + whereClause + params.join(" AND ");
+
+            await conn.query( finalSql,values,  async (err: any, result: any) => {
                 if (err) {
                     console.log(err);
                     reject(err)

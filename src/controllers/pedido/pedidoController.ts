@@ -98,7 +98,7 @@ export class pedidoController {
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
 
         if (!req.query.data) return res.status(400).json({ erro: `é necessario informar uma data` });
-        if (!req.query.vendedor) return res.status(400).json({ erro: `é necessario informar o vendedor` });
+        //if (!req.query.vendedor) return res.status(400).json({ erro: `é necessario informar o vendedor` });
 
 
         empresa = `\`${empresa}\``;
