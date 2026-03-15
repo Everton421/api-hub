@@ -3,7 +3,7 @@ import { conn } from "../../database/databaseConfig";
 export class InsertitensPedido {
 
 
-    async cadastraProdutosDoPedido(produtos: any, empresa: any, codigoPedido: any) {
+    async cadastraProdutosDoPedido(produtos: any, empresa: any, codigoPedido: any, total_produtos:number, total_frete:number) {
         return new Promise(async (resolve, reject) => {
 
             let i = 1;
@@ -14,6 +14,7 @@ export class InsertitensPedido {
                     quantidade,
                     desconto,
                     total,
+                    frete,
                     quantidade_separada,
                     quantidade_faturada
                 } = p
@@ -21,12 +22,16 @@ export class InsertitensPedido {
                 if (!preco) preco = 0;
                 if (!quantidade) quantidade = 0;
                 if (!desconto) desconto = 0;
+                if(!frete) frete = 0;
 
+                const valorProduto  = quantidade * preco;
+                const fator  = valorProduto / total_produtos;
+                frete = fator * total_frete;
                 if (!total) total = 0;
                 if(!quantidade_separada ) quantidade_separada = 0; 
                 if(!quantidade_faturada ) quantidade_faturada = 0; 
-                const sql = ` INSERT INTO ${empresa}.produtos_pedido ( pedido ,  codigo ,  desconto ,  quantidade ,  preco ,  total, quantidade_separada, quantidade_faturada ) VALUES (? , ?, ?, ?, ?, ?, ?, ? ) `;
-                let dados = [codigoPedido, codigo, desconto, quantidade, preco, total, quantidade_separada, quantidade_faturada ]
+                const sql = ` INSERT INTO ${empresa}.produtos_pedido ( pedido ,  codigo ,  desconto ,  quantidade ,  preco , frete,  total, quantidade_separada, quantidade_faturada ) VALUES (? ,? , ?, ?, ?, ?, ?, ?, ? ) `;
+                let dados = [codigoPedido, codigo, desconto, quantidade, preco,frete, total, quantidade_separada, quantidade_faturada ]
                 await conn.query(sql, dados, (error: any, resultado: any) => {
                     if (error) {
                         reject(" erro ao inserir produto do orcamento " + error);

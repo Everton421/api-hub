@@ -169,13 +169,14 @@ export class CreateEmpresa {
          situacao  char(2) NOT NULL DEFAULT 'EA',
          situacao_separacao  enum('N','P','I') NOT NULL DEFAULT 'N', -- COMMENT 'N = Não Separado; P = Separado Parcialmente; I = Separado Integralmente',
          contato  varchar(255) DEFAULT NULL,
-         descontos  double DEFAULT 0,
+         descontos decimal(10,2) NOT NULL DEFAULT 0.00,
+         frete decimal(10,2) DEFAULT 0.00,
          forma_pagamento  int(11) DEFAULT 0,
          observacoes  blob DEFAULT NULL,
          quantidade_parcelas  int(11) DEFAULT 0,
-         total_geral  double DEFAULT 0,
-         total_produtos  double DEFAULT 0,
-         total_servicos  double DEFAULT 0,
+         total_geral  decimal(10,2) DEFAULT 0.00,
+         total_produtos  decimal(10,2) DEFAULT 0.00,,
+         total_servicos  decimal(10,2) DEFAULT 0.00,,
          cliente  int(11) NOT NULL DEFAULT 0,
          veiculo  int(11) NOT NULL DEFAULT 0,
          data_cadastro  date NOT NULL DEFAULT '2000-01-01',
@@ -189,25 +190,26 @@ export class CreateEmpresa {
       `CREATE TABLE IF NOT EXISTS ${dbName}.produtos_pedido (
         pedido bigint(20) unsigned NOT NULL DEFAULT 0,
         codigo INTEGER NOT NULL,
-        desconto decimal(10,2) NOT NULL DEFAULT 0.00,
+        desconto decimal(10,2) DEFAULT 0.00,
         quantidade decimal(10,2) NOT NULL DEFAULT 0.00,
-        preco decimal(10,2) NOT NULL DEFAULT 0.00,
-        total decimal(10,2) NOT NULL DEFAULT 0.00,
-        quantidade_separada decimal(10,2) NOT NULL DEFAULT 0.00,
-        quantidade_faturada decimal(10,2) NOT NULL DEFAULT 0.00
+        preco decimal(10,2) decimal(10,2) DEFAULT 0.00,,
+        frete decimal(10,2) decimal(10,2) DEFAULT 0.00,,
+        total decimal(10,2) decimal(10,2) DEFAULT 0.00,,
+        quantidade_separada decimal(10,2) DEFAULT 0.00,
+        quantidade_faturada decimal(10,2) DEFAULT 0.00
     );`,
       `CREATE TABLE IF NOT EXISTS ${dbName}.servicos_pedido (
         pedido bigint(20) unsigned NOT NULL DEFAULT 0,
         codigo INTEGER NOT NULL,
-        desconto REAL DEFAULT 0.00,
-        quantidade REAL DEFAULT 0.00,
-        valor REAL DEFAULT 0.00,
-        total REAL DEFAULT 0.00  
+        desconto decimal(10,2) DEFAULT 0.00,,
+        quantidade decimal(10,2) NOT NULL DEFAULT 0.00,,
+        valor decimal(10,2) DEFAULT 0.00,,
+        total decimal(10,2) DEFAULT 0.00,  
     );`,
       `CREATE TABLE IF NOT EXISTS ${dbName}.parcelas (
         pedido bigint(20) unsigned NOT NULL DEFAULT 0,
         parcela INTEGER NOT NULL,
-        valor REAL NOT NULL DEFAULT 0.00,
+        valor decimal(10,2) NOT NULL DEFAULT 0.00,,
         vencimento date NOT NULL DEFAULT '0000-00-00' 
 
     );`,
@@ -225,9 +227,9 @@ export class CreateEmpresa {
           codigo  int(11) NOT NULL AUTO_INCREMENT,
           id  int(10) unsigned NOT NULL DEFAULT 0,
           descricao TEXT NOT NULL,
-        data_cadastro  date NOT NULL DEFAULT '2000-01-01',
-        data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
-        ativo  char(1) NOT NULL DEFAULT 'S',
+          data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+          data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+          ativo  char(1) NOT NULL DEFAULT 'S',
          PRIMARY KEY ( codigo )
     );`,
 

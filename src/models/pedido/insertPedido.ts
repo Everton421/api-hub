@@ -51,7 +51,8 @@ export class InsertPedido {
                 enviado,
                 id,
                 id_externo,
-                id_interno
+                id_interno,
+                frete
             } = orcamento;
 
             enviado = 'S';
@@ -81,16 +82,16 @@ export class InsertPedido {
             if (!forma_pagamento) forma_pagamento = 0
             if (!descontos) descontos = 0
             if (!quantidade_parcelas) quantidade_parcelas = 0;
-
+            if(!frete) frete = 0;
 
             let sql = `INSERT INTO 
       ${empresa}.pedidos 
-      ( codigo ,  id , id_externo, id_interno,  vendedor , situacao, situacao_separacao, contato ,  descontos ,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)  
+      ( codigo ,  id , id_externo, id_interno,  vendedor , situacao, situacao_separacao, contato ,  descontos ,frete,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?)  
         `
             await conn.query(
                 sql,
-                [codigo, id, id_externo, id_interno, vendedor, situacao,situacao_separacao, contato, descontos, forma_pagamento, quantidade_parcelas, total_geral, total_produtos, total_servicos, cliente.codigo, veiculo, data_cadastro, data_recadastro, tipo_os, enviado, tipo, observacoes],
+                [codigo, id, id_externo, id_interno, vendedor, situacao,situacao_separacao, contato, descontos, frete, forma_pagamento, quantidade_parcelas, total_geral, total_produtos, total_servicos, cliente.codigo, veiculo, data_cadastro, data_recadastro, tipo_os, enviado, tipo, observacoes],
                 async (err: any, result: any) => {
                     if (err) {
                         console.log(err)
@@ -107,7 +108,7 @@ export class InsertPedido {
                         }
                         if (produtos.length > 0) {
                             try {
-                                await insertitensPedido.cadastraProdutosDoPedido(produtos, empresa, codigo,);
+                                await insertitensPedido.cadastraProdutosDoPedido(produtos, empresa, codigo, total_produtos , frete);
                                 status = true
                             } catch (e) { console.log(e) }
                         }

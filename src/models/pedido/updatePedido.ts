@@ -16,6 +16,7 @@ type orderReceived =
         contato: string
         veiculo: number
         forma_pagamento: number
+        frete:number 
         observacoes: string
         data_cadastro: string
         data_recadastro: string
@@ -40,6 +41,7 @@ export class UpdatePedido {
                 quantidade_parcelas =  ${orcamento.quantidade_parcelas} ,
                 contato             = '${orcamento.contato}',
                 veiculo             =  ${orcamento.veiculo},
+                frete               = ${orcamento.frete},
                 forma_pagamento     =  ${orcamento.forma_pagamento},
                 observacoes         = '${orcamento.observacoes}',
                 data_cadastro       = '${orcamento.data_cadastro}',
@@ -129,7 +131,7 @@ export class UpdatePedido {
 
             if (produtos.length > 0) {
                 try {
-                    await insertitensPedido.cadastraProdutosDoPedido(produtos, empresa, codigoOrcamento);
+                    await insertitensPedido.cadastraProdutosDoPedido(produtos, empresa, codigoOrcamento, orcamento.total_produtos, orcamento.frete);
                 } catch (err) {
                     console.log(err)
                     reject(err)
