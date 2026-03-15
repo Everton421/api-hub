@@ -31,7 +31,7 @@ export class InsertitensPedido {
                 if(!quantidade_separada ) quantidade_separada = 0; 
                 if(!quantidade_faturada ) quantidade_faturada = 0; 
                 const sql = ` INSERT INTO ${empresa}.produtos_pedido ( pedido ,  codigo ,  desconto ,  quantidade ,  preco , frete,  total, quantidade_separada, quantidade_faturada ) VALUES (? ,? , ?, ?, ?, ?, ?, ?, ? ) `;
-                let dados = [codigoPedido, codigo, desconto, quantidade, preco,frete, total, quantidade_separada, quantidade_faturada ]
+                let dados = [codigoPedido, codigo, desconto, quantidade, preco, frete, total, quantidade_separada, quantidade_faturada ]
                 await conn.query(sql, dados, (error: any, resultado: any) => {
                     if (error) {
                         reject(" erro ao inserir produto do orcamento " + error);
