@@ -83,7 +83,7 @@ export class InsertPedido {
             if (!descontos) descontos = 0
             if (!quantidade_parcelas) quantidade_parcelas = 0;
             if(!frete) frete = 0;
-
+            if(!situacao_separacao) situacao_separacao = 'N';
             let sql = `INSERT INTO 
       ${empresa}.pedidos 
       ( codigo ,  id , id_externo, id_interno,  vendedor , situacao, situacao_separacao, contato ,  descontos ,frete,  forma_pagamento ,  quantidade_parcelas ,  total_geral ,  total_produtos ,  total_servicos ,  cliente ,  veiculo ,  data_cadastro ,  data_recadastro ,  tipo_os ,  enviado, tipo, observacoes)
