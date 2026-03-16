@@ -209,9 +209,8 @@ export class CategoriaController {
         if (!postCategoria.data_cadastro) postCategoria.data_cadastro = dateService.obterDataAtual();
         if (!postCategoria.data_recadastro) postCategoria.data_recadastro = dateService.obterDataHoraAtual();
 
-        let validCategor: any = await select.busca_por_descricao(dbName, postCategoria.descricao)
-
-        if (validCategor.length > 0) return res.status(400).json({ erro: true, msg: `A categoria ${postCategoria.descricao} ja foi cadastrada!` })
+        //let validCategor: any = await select.busca_por_descricao(dbName, postCategoria.descricao)
+        //if (validCategor.length > 0) return res.status(400).json({ erro: true, msg: `A categoria ${postCategoria.descricao} ja foi cadastrada!` })
 
         let responseCategoria: any;
         try {

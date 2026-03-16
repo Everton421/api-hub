@@ -199,9 +199,8 @@ export class MarcasController {
 
         let limit = 1;
 
-        let validMarca: any = await select.busca_por_descricao(dbName, postMarca.descricao, limit)
-
-        if (validMarca.length > 0) return res.status(400).json({ erro: true, msg: `A marca ${postMarca.descricao} ja foi cadastrada!` })
+        //let validMarca: any = await select.busca_por_descricao(dbName, postMarca.descricao, limit)
+        //if (validMarca.length > 0) return res.status(400).json({ erro: true, msg: `A marca ${postMarca.descricao} ja foi cadastrada!` })
 
         let responseMarca: any;
         try {
