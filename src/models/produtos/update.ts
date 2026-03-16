@@ -25,9 +25,12 @@ export class UpdateProdutos {
                 num_fabricante,
                 observacoes1,
                 observacoes2,
-                observacoes3 } = produto
+                observacoes3 ,
+                id
+            } = produto
 
             const sql = ` UPDATE  ${empresa}.produtos SET  
+                                    id              = ? ,
                                    estoque          =  ?,
                                    ativo            =  ?,
                                    preco            =  ?,
@@ -50,6 +53,7 @@ export class UpdateProdutos {
                             `;
                 
                 const values = [
+                                id ,
                                 estoque,
                                 ativo,
                                 String(preco),

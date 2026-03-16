@@ -27,12 +27,13 @@ export class InsertProdutos {
                 num_fabricante,
                 observacoes1,
                 observacoes2,
-                observacoes3
-
+                observacoes3,
+                    id,
             } = produto
 
             const sql = ` INSERT INTO  ${empresa}.produtos  
                              (
+                            id,
                             estoque ,
                             preco ,
                             unidade_medida,
@@ -67,11 +68,14 @@ export class InsertProdutos {
                                      ?, 
                                      ?,
                                      ?,
-                                     ?  
+                                     ? ,
+                                     ?
                                   )
                             `;
 
-                            const values = [ estoque,
+                            const values = [ 
+                                                id,
+                                                estoque,
                                                 preco,
                                                 unidade_medida,
                                                 grupo,
