@@ -15,9 +15,9 @@ export class InsertSetor {
         return new Promise(async (resolve, reject) => {
 
             let sql = `
-                    INSERT INTO ${empresa}.setores (   data_cadastro, data_recadastro, descricao ) VALUES
-                                                      (   ? , ? , ? ); `;
-            const values = [setor.data_cadastro, setor.data_recadastro, setor.descricao,]
+                    INSERT INTO ${empresa}.setores (  id, data_cadastro, data_recadastro, descricao ) VALUES
+                                                      (   ? ,? , ? , ? ); `;
+            const values = [setor.id, setor.data_cadastro, setor.data_recadastro, setor.descricao,]
 
             await conn.query(sql, values, (err: any, result: any) => {
                 if (err) {

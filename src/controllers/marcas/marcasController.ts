@@ -192,7 +192,7 @@ export class MarcasController {
         let dbName = `\`${empresa}\``;
         if (!postMarca.ativo) postMarca.ativo = 'S';
 
-        if (!postMarca.id) postMarca.id = "0";
+        if (!postMarca.id) return res.status(400).json({ erro: true, msg: `E necessario informar o id da marca!` })
         if (!postMarca.descricao) return res.status(400).json({ erro: true, msg: `E necessario informar a descricao da marca!` })
         if (!postMarca.data_cadastro) postMarca.data_cadastro = dateService.obterDataAtual();
         if (!postMarca.data_recadastro) postMarca.data_recadastro = dateService.obterDataHoraAtual();
@@ -267,8 +267,8 @@ export class MarcasController {
                 responseMarca = await update.update(dbName, postMarca)
 
                 if (responseMarca.affectedRows > 0) {
-                    console.log(responseMarca)
                     const item = {
+                        "id":postMarca.id,
                         "codigo": postMarca.codigo,
                         "descricao": postMarca.descricao,
                         "data_cadastro": postMarca.data_cadastro,

@@ -21,12 +21,14 @@ export class UpdateSetor {
                 data_cadastro,
                 data_recadastro,
                 descricao,
+                id,
             } = tipo_os;
 
             // 1. Substituímos as variáveis e aspas por '?'
             // 2. Usamos crases (backticks) no nome do banco para evitar erros de sintaxe
             const sql = ` 
                 UPDATE ${empresa}.setores SET  
+                    id = ?,
                     data_cadastro = ?,
                     data_recadastro = ?,
                     descricao = ? 
@@ -35,6 +37,7 @@ export class UpdateSetor {
 
             // 3. Criamos o array de valores na ordem exata dos '?'
             const values = [
+                id,
                 data_cadastro,
                 data_recadastro,
                 descricao, // Se aqui vier "Setor d'Água", o driver tratará a aspa sozinho

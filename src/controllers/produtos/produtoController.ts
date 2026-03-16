@@ -62,7 +62,7 @@ export class ProdutoController {
     let dateService = new DateService();
     const formatString = new FormatString();
 
-    if (!req.body.id) req.body.id = 0
+    if (!req.body.id) return res.status(400).json({ erro: true, msg: "É necessario informar id para registrar o produto!" });
     if (!req.body.preco) req.body.preco = 0
     if (!req.body.estoque) req.body.estoque = 0
     if (!req.body.unidade_medida) req.body.unidade_medida = 'UND'

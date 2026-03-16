@@ -72,7 +72,7 @@ export class SetorController {
       descricao: req.body.descricao,
       data_cadastro: req.body.data_cadastro,
       data_recadastro: dateService.obterDataHoraAtual(),
-
+      id: req.body.id
     }
 
     try {
@@ -110,6 +110,7 @@ export class SetorController {
 
     if (!req.body.descricao) return res.status(400).json({ erro: true, msg: "É necessario informar a descrição para registrar o setor!" });
     if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual();
+    if (!req.body.id) return res.status(400).json({ erro: true, msg: "É necessario informar o id  para registrar o setor!" });
 
     req.body.data_recadastro = dateService.obterDataHoraAtual();
 

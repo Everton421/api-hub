@@ -155,12 +155,17 @@ export class VeiculoController {
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
         let dbName = `\`${empresa}\``;
 
+         if (!req.body.id) {
+            return res.status(400).json({ erro: true, msg: "É necessario informar o id do veiculo " });
+        }
 
         if (!req.body.cliente) {
             return res.status(400).json({ erro: true, msg: "É necessario informar o cliente vinculado ao veiculo " });
         }
+   
+
+
         if (!req.body.ativo) req.body.ativo = 'S';
-        if (!req.body.id) req.body.id = 0;
         if (!req.body.placa) req.body.placa = '';
         if (!req.body.marca) req.body.marca = '';
         if (!req.body.modelo) req.body.modelo = '';

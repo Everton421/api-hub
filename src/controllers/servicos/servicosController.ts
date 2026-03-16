@@ -103,6 +103,7 @@ export class ServicosController {
     if (!req.body.tipo_serv) req.body.tipo_serv = 0
     if (!req.body.valor) req.body.valor = 0
     if (!req.body.ativo) req.body.ativo = 'S'
+    if (!req.body.id) return res.status(400).json({ erro: true, msg: "É necessario informar o id registrar o servico!" });
 
     if (!req.body.aplicacao) return res.status(400).json({ erro: true, msg: "É necessario informar a descrição para registrar o servico!" });
     if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual();
