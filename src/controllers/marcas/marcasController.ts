@@ -210,6 +210,7 @@ export class MarcasController {
             if (responseMarca.insertId > 0) {
                 const item = {
                     "codigo": responseMarca.insertId,
+                    "id": postMarca.id,
                     "descricao": postMarca.descricao,
                     "data_cadastro": postMarca.data_cadastro,
                     "data_recadastro": postMarca.data_recadastro,
