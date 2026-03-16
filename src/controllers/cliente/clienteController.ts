@@ -67,7 +67,8 @@ export class ClienteController {
         let postCliente: Cliente = req.body;
         let cnpjFormat;
 
-        if (!postCliente.id) postCliente.id = "0";
+        if (!postCliente.id) return res.status(400).json({ erro: true, msg: " é necessario informar o id do cliente" });
+
         if (!postCliente.celular) postCliente.celular = "(00) 0000-0000";
         if (!postCliente.nome) postCliente.nome = "teste";
         if (!postCliente.cep) postCliente.cep = "00000-000";
@@ -197,7 +198,6 @@ export class ClienteController {
         let postCliente: Cliente = req.body;
         let cnpjFormat;
         if (!postCliente.codigo) return res.status(400).json({ erro: true, msg: " é necessario informar o codigo do cliente" });
-        if (!postCliente.id) postCliente.id = "0";
         if (!postCliente.celular) postCliente.celular = "(00) 0000-0000";
         if (!postCliente.nome) postCliente.nome = "teste";
         if (!postCliente.cep) postCliente.cep = "00000-000";

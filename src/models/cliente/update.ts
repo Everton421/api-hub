@@ -9,7 +9,7 @@ export class Update_clientes {
       let sql =
         `  
          UPDATE ${empresa}.clientes SET
-                 
+                id              =  ?, 
                 celular         =  ?, 
                 nome            =  ?,
                 ativo           =  ?,
@@ -29,6 +29,7 @@ export class Update_clientes {
                   ;
             `
       const values = [
+        cliente.id,
         cliente.celular,
         cliente.nome,
         cliente.ativo,

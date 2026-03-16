@@ -11,6 +11,7 @@ export class Insert_clientes {
          INSERT INTO 
          ${empresa}.clientes
               (   
+              id,
                 celular, 
                 nome ,
                 cep ,
@@ -26,9 +27,9 @@ export class Insert_clientes {
                 estado 
                ) values
                 (
-                  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
+                  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );
             `
-            const dados = [cliente.celular, cliente.nome, cliente.cep, cliente.endereco, cliente.ie, cliente.numero,
+            const dados = [cliente.id, cliente.celular, cliente.nome, cliente.cep, cliente.endereco, cliente.ie, cliente.numero,
             cliente.cnpj, cliente.cidade, cliente.data_cadastro, cliente.data_recadastro, cliente.vendedor, cliente.bairro, cliente.estado]
 
             await conn.query(sql, dados, (err: any, result: Cliente[]) => {
