@@ -42,6 +42,7 @@ export class pedidoController {
 
         const empresa = `\`${cnpj}\``;
 
+        const source = req.headers.source || 'api_internal' as string;
 
         if (!req.body || req.body.length === 0) return res.status(400).json({ erro: "É necessario informar os pedidos! " })
 
@@ -61,7 +62,7 @@ export class pedidoController {
                     console.log(`atualizando pedido ${p.codigo} ${p.data_recadastro} > ${pedidoEncontrado.data_recadastro} `)
                     await updatePedido.update(empresa, p, p.codigo)
 
-                    await publishMessage(cnpj, 'pedido.atualizado', p)
+                    await publishMessage(cnpj, 'pedido.atualizado', p, source as string)
 
                     status = 'atualizado';
                 } else {
@@ -71,7 +72,7 @@ export class pedidoController {
                 }
             } else {
                 await insertPedido.create(empresa, p);
-                await publishMessage(cnpj, 'pedido.inserido', p)
+                await publishMessage(cnpj, 'pedido.inserido', p,  source as string)
 
                 status = 'inserido';
             }
