@@ -96,11 +96,10 @@ export class ClienteController {
         if (!postCliente.cnpj) return res.status(400).json({ erro: true, msg: " é necessario informar o cnpj/cpf do cliente" });
         if (!postCliente.cidade) postCliente.cidade = "";
 
-        if (!postCliente.data_cadastro || postCliente.data_cadastro === "0000-00-00") {
+        if (!postCliente.data_cadastro){
             postCliente.data_cadastro = dateService.obterDataAtual();
-        } else {
+        }  
             postCliente.data_cadastro = dateService.formatarData(postCliente.data_cadastro);
-        }
 
         if (!postCliente.data_recadastro) {
             postCliente.data_recadastro = dateService.obterDataHoraAtual()
@@ -224,6 +223,7 @@ export class ClienteController {
         if (!postCliente.cnpj) return res.status(400).json({ erro: true, msg: " é necessario informar o cnpj/cpf do cliente" });
         if (!postCliente.cidade) postCliente.cidade = "";
         if (!postCliente.ativo) postCliente.ativo = "S";
+
         postCliente.data_cadastro = dateService.obterDataAtual();
 
 
