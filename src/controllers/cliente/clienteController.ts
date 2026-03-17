@@ -102,11 +102,10 @@ export class ClienteController {
             postCliente.data_cadastro = dateService.formatarData(postCliente.data_cadastro);
         }
 
-        if (!postCliente.data_recadastro || postCliente.data_recadastro === "0000-00-00 00:00:00") {
+        if (!postCliente.data_recadastro) {
             postCliente.data_recadastro = dateService.obterDataHoraAtual()
-        } else {
-            postCliente.data_recadastro = dateService.formatarDataHora(postCliente.data_recadastro)
-        };
+        }  
+        postCliente.data_recadastro = dateService.formatarDataHora(postCliente.data_recadastro);
 
         if (!postCliente.vendedor) postCliente.vendedor = 0;
         if (!postCliente.bairro) postCliente.bairro = "";
