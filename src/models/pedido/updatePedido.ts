@@ -52,6 +52,7 @@ export class UpdatePedido {
                 situacao_separacao  = '${orcamento.situacao_separacao}'
                 where codigo = ${codigo}
             `
+            console.log(sql)
             conn.query(sql, (err: any, result: any) => {
                 if (err) {
                     reject(err);
