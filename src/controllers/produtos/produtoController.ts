@@ -71,7 +71,7 @@ export class ProdutoController {
     if (!req.body.num_original) req.body.num_original = ''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
 
     if (!req.body.grupo || !req.body.grupo.codigo) req.body.grupo = { "codigo": 0 };
-    if (!req.body.marca || !req.body.marca.codigo) req.body.marca = { "codigo": 0 };
+    if (!req.body.marca || !req.body.marca.codigo || req.body.marca.codigo === undefined  || req.body.marca.codigo === 0)  req.body.marca.codigo = 0;
 
     if (!req.body.origem) req.body.origem = 0;
     if (!req.body.sku) req.body.sku = ''  //return res.status(200).json({ erro:true, msg: "É necessario informar o sku  para registrar o produto!"});
@@ -299,9 +299,9 @@ export class ProdutoController {
     if (!req.body.estoque) req.body.estoque = 0
     if (!req.body.grupo) return res.status(400).json({ erro: true, msg: "É necessario informar o grupo para registrar o produto!" });
     if (!req.body.grupo.codigo) return res.status(400).json({ erro: true, msg: "É necessario informar o codigo do grupo para registrar o produto!" });
-    if (!req.body.marca) return res.status(400).json({ erro: true, msg: "É necessario informar a marca para registrar o produto!" });
-    if (!req.body.marca.codigo) return res.status(400).json({ erro: true, msg: "É necessario informar o codigo da marca para registrar o produto!" });
-    if (!req.body.descricao) return res.status(400).json({ erro: true, msg: "É necessario informar a descrição para registrar o produto!" });
+    if (!req.body.marca || !req.body.marca.codigo || req.body.marca.codigo === undefined  || req.body.marca.codigo === 0)  req.body.marca.codigo = 0;
+   
+      if (!req.body.descricao) return res.status(400).json({ erro: true, msg: "É necessario informar a descrição para registrar o produto!" });
     if (!req.body.num_fabricante) req.body.num_fabricante = ''  //return res.status(200).json({ erro:true, msg: "É necessario informar o codigo de barras para registrar o produto!"});
     if (!req.body.num_original) req.body.num_original = ''  //return res.status(200).json({ erro:true, msg: "É necessario informar a referência  para registrar o produto!"});
     if (!req.body.unidade_medida) req.body.unidade_medida = 'UND';
