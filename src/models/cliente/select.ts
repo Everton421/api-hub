@@ -4,36 +4,42 @@ import { Cliente } from "./interface_cliente";
 
 export class Select_clientes {
 
-  async buscaGeral(empresa: any, vendedor: any, data_recadastro: string) {
-    return new Promise<Cliente[]>(async (resolve, reject) => {
-      let sql = ` select *,
-             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-            from ${empresa}.clientes c
-            WHERE c.ativo = 'S' and 
-                       ( c.vendedor = ${vendedor} OR c.vendedor = 0 or c.vendedor = null)
-                          `
+    async buscaGeral(empresa: any, vendedor: any, data_recadastro: string) {
+      return new Promise<Cliente[]>(async (resolve, reject) => {
+        let sql = ` select *,
+              DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+              DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+              from ${empresa}.clientes c
+              WHERE c.ativo = 'S'   
+                        `
 
-      let paramQuery = [];
-      let valueQuery = [];
-      if (data_recadastro) {
-        paramQuery.push(' AND data_recadastro >  ? ')
-        valueQuery.push(data_recadastro);
-      }
+                        let paramVendedor ='';
+        let paramQuery = [];
+        let valueQuery = [];
 
-      let finalSql = sql;
+          if(vendedor && vendedor !== undefined){
+              paramVendedor = ' and  ( c.vendedor =  ? OR c.vendedor = 0 or c.vendedor = null)';
+            valueQuery.push(vendedor);
+          }
 
-      if (paramQuery.length > 0) {
-        finalSql = sql + paramQuery;
-      }
+        
+        if (data_recadastro) {
+          paramQuery.push(' AND data_recadastro >  ? ')
+          valueQuery.push(data_recadastro);
+        }
 
+        let finalSql = sql;
 
-      await conn.query(finalSql, data_recadastro, (err: any, result: Cliente[]) => {
-        if (err) reject(err);
-        resolve(result)
+        if (paramQuery.length > 0) {
+          finalSql = sql + paramVendedor + paramQuery;
+        }
+
+        await conn.query(finalSql, valueQuery, (err: any, result: Cliente[]) => {
+          if (err) reject(err);
+          resolve(result)
+        })
       })
-    })
-  }
+    }
 
   async buscaPorVendedor(empresa: any, vendedor: number) {
     return new Promise<Cliente[]>(async (resolve, reject) => {

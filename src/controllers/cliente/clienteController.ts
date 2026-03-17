@@ -6,30 +6,48 @@ import { Update_clientes } from "../../models/cliente/update";
 import { publishMessage } from "../../services/broker/publish-message";
 import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import dayjs from 'dayjs';
 
 export class ClienteController {
 
-
+     
     async findAll(req: Request, res: Response) {
 
-        if (!req.headers.token) {
+    
+        const dateService = new DateService();
+   if (!req.headers.token) {
             return res.status(400).json({ erro: true, msg: "É necessario informar o token!" });
         }
         let decodToken = DecodedToken(String(req.headers.token))
+        if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Ocorreu um erro na validação da empresa. " });
+
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
 
         let dbName = `\`${empresa}\``;
 
-        const queryVendedor = req.query.vendedor;
+            if(req.query.vendedor && isNaN(req.query.vendedor as any)){
+                return res.status(400).json({
+                    erro: true,
+                    msg: "Formato invalido para o codigo do vendedor."
+                });
+            }
+        
+            const queryVendedor = req.query.vendedor;
 
         let data_recadastro: string = '';
         if (req.query.data_recadastro) {
+
+            if (! dateService.isValidDate(req.query.data_recadastro as string)) {
+                return res.status(400).json({
+                    erro: true,
+                    msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
+                });
+                }
+
             data_recadastro = String(req.query.data_recadastro);
         }
 
-        if (!queryVendedor) {
-            return res.json(400).json({ erro: true, msg: "É necessario informar a o vendedor  " });
-        }
+
 
         let select = new Select_clientes();
         try {

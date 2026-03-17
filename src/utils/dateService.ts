@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 
 export class DateService {
 
@@ -70,6 +71,7 @@ export class DateService {
 
   isValidDateFormat(dateString: string): boolean {
     if (!dateString) return false; // Evita erros com strings vazias/nulas
+    
     const regex = /^\d{4}-\d{2}-\d{2}$/;
     if (!regex.test(dateString)) return false;
 
@@ -83,4 +85,18 @@ export class DateService {
     return date.toISOString().slice(0, 10) === dateString;
   }
 
+isValidDateTime(dateString: string): boolean {
+  // valida o formato
+  const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+  if (!regex.test(dateString)) return false;
+
+  // valida se a data existe de verdade
+  const date = new Date(dateString.replace(' ', 'T'));
+  return !isNaN(date.getTime());
+}
+     isValidDate(dateString: string): boolean {
+          return dayjs(dateString, 'YYYY-MM-DD HH:mm:ss', true).isValid();
+     }
+
+ 
 }
