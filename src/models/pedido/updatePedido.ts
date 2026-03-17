@@ -7,6 +7,7 @@ import { SelectItensPedido } from "./selectItens";
 type orderReceived =
     {
         codigo_cliente: number
+            cliente: { codigo:number}
         total_geral: number
         total_produtos: number
         total_servicos: number
@@ -32,7 +33,7 @@ export class UpdatePedido {
             let sql = `
                 UPDATE ${empresa}.pedidos  
                 set 
-                cliente             =  ${orcamento.codigo_cliente},
+                cliente             =  ${orcamento.cliente.codigo},
                 total_geral         =  ${orcamento.total_geral} ,
                 total_produtos      =  ${orcamento.total_produtos} ,
                 total_servicos      =  ${orcamento.total_servicos} ,
