@@ -23,6 +23,8 @@ type orderReceived =
         data_recadastro: string
         situacao: string
         situacao_separacao: 'N' | 'P' | 'I'
+        id_interno:string
+        id_externo:string
     }
 
 export class UpdatePedido {
@@ -49,7 +51,9 @@ export class UpdatePedido {
                 data_recadastro     = '${orcamento.data_recadastro}',
                 enviado             = 'S',
                 situacao            = '${orcamento.situacao}',
-                situacao_separacao  = '${orcamento.situacao_separacao}'
+                situacao_separacao  = '${orcamento.situacao_separacao}',
+                id_interno = '${orcamento.id_interno}',
+                id_externo = '${orcamento.id_externo}' 
                 where codigo = ${codigo}
             `
             console.log(sql)
