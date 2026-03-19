@@ -17,9 +17,13 @@ export class SelectProdutoSetor {
 
             let sql = ` select 
             ps.*,
+            s.id  as id_setor,
+            p.id as id_produto,
                coalesce( DATE_FORMAT(ps.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
             from ${empresa}.produto_setor ps
             join ${empresa}.setores s on s.codigo = ps.setor  
+            join ${empresa}.produtos p on p.codigo = ps.produto
+
             `
 
             let paramQuery = [];
@@ -153,7 +157,7 @@ export class SelectProdutoSetor {
         return new Promise<IProdutoSetor[]>(async (resolve, reject) => {
             let sql = ` select 
             ps.*,
-            ps.id  as id_setor,
+            s.id  as id_setor,
             p.id as id_produto
                  coalesce( DATE_FORMAT(ps.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
             from ${empresa}.produto_setor ps 

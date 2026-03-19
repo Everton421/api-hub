@@ -23,6 +23,7 @@ export class ServicosController {
 
     let select = new Select_servicos();
 
+    const dateService = new DateService();
 
     if (!req.headers.token) {
       return res.status(400).json({ erro: true, msg: "É necessario informar o token!" });
@@ -32,13 +33,20 @@ export class ServicosController {
     let dbName = `\`${empresa}\``;
 
     let servicos: any
-    let data_recadastro: string = '';
-    if (req.query.data_recadastro) {
-      data_recadastro = String(req.query.data_recadastro);
-    }
+  
+  let data = req.query.data_recadastro
+            if (req.query.data) {
+                if (!dateService.isValidDate(req.query.data as string)) {
+                    return res.status(400).json({
+                        erro: true,
+                        msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
+                    });
+                    }
 
+                data = String(req.query.data);
+            }
     try {
-      servicos = await select.buscaGeral(dbName, data_recadastro)
+      servicos = await select.buscaGeral(dbName, data as any)
       return res.status(200).json(servicos);
     } catch (e) {
       console.error(e);

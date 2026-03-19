@@ -9,7 +9,7 @@ export class CompanyStructure {
     const sqlTables = [
       `CREATE TABLE IF NOT EXISTS ??.produtos (
                   codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
-                  id  int(10) unsigned NOT NULL DEFAULT 0,
+                  id  varchar(255) NOT NULL DEFAULT 0,
                   estoque  double DEFAULT 0,
                   preco  decimal(10,2) DEFAULT 0.00,
                   unidade_medida  varchar(255) DEFAULT 'UND',

@@ -14,7 +14,8 @@ export class CategoriaController {
     async findAll(req: Request, res: Response) {
 
         let select = new Select_Categorias();
-        let insert = new Insert_Categorias();
+        const dateService = new DateService();
+        
         if (!req.headers.token) {
             return res.status(400).json({ erro: true, msg: "É necessario informar o token!" });
         }
@@ -30,10 +31,18 @@ export class CategoriaController {
         if (req.query.limit) {
             limit = Number(req.query.limit)
         }
-        let data_recadastro: string = '';
-        if (req.query.data_recadastro) {
-            data_recadastro = String(req.query.data_recadastro);
-        }
+          let data_recadastro: string = '';
+            if (req.query.data_recadastro) {
+
+                if (!dateService.isValidDate(req.query.data_recadastro as string)) {
+                    return res.status(400).json({
+                        erro: true,
+                        msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
+                    });
+                    }
+
+                data_recadastro = String(req.query.data_recadastro);
+            }
         try {
 
             let resultado: any = await select.busca_geral(dbName, limit, data_recadastro);

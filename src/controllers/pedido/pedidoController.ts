@@ -7,6 +7,7 @@ import { UpdatePedido } from "../../models/pedido/updatePedido";
 import { SelectItensPedido } from "../../models/pedido/selectItens";
 import { publishMessage } from "../../services/broker/publish-message";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { DateService } from "../../utils/dateService";
 export class pedidoController {
 
 
@@ -100,12 +101,26 @@ export class pedidoController {
 
         if (!req.query.data) return res.status(400).json({ erro: `é necessario informar uma data` });
         //if (!req.query.vendedor) return res.status(400).json({ erro: `é necessario informar o vendedor` });
+        const dateService = new DateService();
 
 
         empresa = `\`${empresa}\``;
 
         let vendedor = Number(req.query.vendedor);
         let data = req.query.data
+
+            if (req.query.data) {
+
+                if (!dateService.isValidDate(req.query.data as string)) {
+                    return res.status(400).json({
+                        erro: true,
+                        msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
+                    });
+                    }
+
+                data = String(req.query.data);
+            }
+
 
         let selectOrcamento = new SelectPedido();
         let select_clientes = new Select_clientes();
