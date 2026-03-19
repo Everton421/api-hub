@@ -17,14 +17,22 @@ export class VeiculoController {
         let decodToken = DecodedToken(String(req.headers.token))
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
         let dbName = `\`${empresa}\``;
+        const  dateService = new DateService();
 
-        let data_recadastro: string = '';
-        if (req.query.data_recadastro) {
-            data_recadastro = String(req.query.data_recadastro);
-        }
+        let data = req.query.data_recadastro
+            if (req.query.data) {
+                if (!dateService.isValidDate(req.query.data as string)) {
+                    return res.status(400).json({
+                        erro: true,
+                        msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
+                    });
+                    }
+
+                data = String(req.query.data);
+            }
 
         try {
-            let dados: any[] = await selectVeiculos.buscaGeral(dbName, data_recadastro);
+            let dados: any[] = await selectVeiculos.buscaGeral(dbName, data as any);
             return res.status(200).json(dados);
         } catch (err) {
             return res.status(500).json({ erro: "Erro ao buscar veiculos." });
