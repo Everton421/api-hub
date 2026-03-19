@@ -92,9 +92,10 @@ export class MovimentosProdutosController {
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
         let source ;
         if(!req.headers.source){
-          source =   req.headers.source ;
-        } else{
             source = 'api_internal' 
+          
+        } else{
+          source =   req.headers.source ;
         }
 
     let dbName = `\`${empresa}\``;
@@ -185,9 +186,11 @@ export class MovimentosProdutosController {
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
     let source ;
         if(!req.headers.source){
-          source =   req.headers.source ;
-        } else{
             source = 'api_internal' 
+
+        } else{
+          source =   req.headers.source ;
+ 
         }
 
     let dbName = `\`${empresa}\``;
