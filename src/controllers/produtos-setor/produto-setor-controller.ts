@@ -46,38 +46,7 @@ export class ProdutoSetorController {
       return res.status(500).json({ erro: "Erro ao buscar os produtos no setor." });
     }
   }
-
-  /*
-  async findByParam(req:Request,res:Response){
-  
-    if(!req.headers.token ){
-      return res.status(400).json({erro:true, msg:"É necessario informar o token!"});   
-   } 
-   let decodToken= DecodedToken(String(req.headers.token))
-   let empresa  = decodToken.payload?.cnpj.replace(/\D/g, '');
-   let  dbName = `\`${empresa}\``;
-  
-   
-      let select = new SelectProdutoSetor();
-      let responseProdutos;
-  
-    try{
-    
-      if( req.query   ){
-        let aux   = req.query 
-        responseProdutos =   await   select.findByDescription(dbName,  aux );
-          return res.status(200).json( responseProdutos );
-  
-      }
-    }catch(e){ 
-      console.error(e);
-      return res.status(400).json({ erro: true, msg: "Erro ao buscar produtos." });
-    }
-  
-  
-  }
-  */
-
+ 
   async findByCode(req: Request, res: Response) {
 
     if (!req.headers.token) {

@@ -5,6 +5,8 @@ import { IMovimentosProdutos } from "../../models/movimentos-produtos/types/movi
 import { publishMessage } from "../../services/broker/publish-message";
 import { DateService } from "../../utils/dateService";
 import { DecodedToken } from "../../services/decoded-token/decodedToken";
+import { Select_produtos } from "../../models/produtos/select";
+import { SelectSetor } from "../../models/setor/select";
 
 type newMoviment = Omit<IMovimentosProdutos, 'codigo'>
 
@@ -93,6 +95,9 @@ export class MovimentosProdutosController {
     let dbName = `\`${empresa}\``;
     let insert = new InsertMovimentosProdutos();
     let dateService = new DateService();
+    const select_produtos = new Select_produtos();
+    const selectSetor = new SelectSetor();
+    let selectMovimentos = new SelectMovimentosProdutos();
 
     if (!req.body.codigo) return res.status(400).json({ erro: true, msg: "é necessario informar o codigo para registrar  movimento!" });
     if (!req.body.setor) return res.status(400).json({ erro: true, msg: "é necessario informar um setor para registrar o movimento!" });
@@ -106,24 +111,39 @@ export class MovimentosProdutosController {
     if (!req.body.historico) {
       req.body.historico = ''
     }
-    let movimento: IMovimentosProdutos =
-    {
-      codigo: req.body.codigo,
-      setor: req.body.setor,
-      produto: Number(req.body.produto),
-      unidade_medida: req.body.unidade_medida,
-      quantidade: String(req.body.quantidade),
-      tipo: String(req.body.tipo),
-      historico: String(req.body.historico),
-      data_recadastro: dateService.obterDataHoraAtual(),
-      ent_sai: req.body.ent_sai,
-      usuario: req.body.usuario
-    }
+
+      const arrProduct = await select_produtos.buscaPorCodigo(dbName, Number(req.body.produto));
+      const arrSetor = await selectSetor.findByCode(dbName, req.body.setor);
+
+      if( arrProduct.length === 0 ) return res.status(400).json({ erro: true, msg: `produto ${req.body.produto} não foi encontrado.`})
+        const product =arrProduct[0]; 
+        const setor = arrSetor[0];
+
+          const  verifyMov = await selectMovimentos.findByParam(dbName, { codigo: req.body.codigo, usuario: req.body.usuario });
+      if( verifyMov.length > 0 ) return res.status(400).json({ erro: true, msg: `já foi registrado movimento de produto codigo ${req.body.codigo} para o usuario ${req.body.usuario}.`})
+
+
+        let movimento: IMovimentosProdutos =
+              {
+                codigo: req.body.codigo,
+                setor: req.body.setor,
+                produto: Number(req.body.produto),
+                unidade_medida: req.body.unidade_medida,
+                quantidade: String(req.body.quantidade),
+                tipo: String(req.body.tipo),
+                historico: String(req.body.historico),
+                data_recadastro: dateService.obterDataHoraAtual(),
+                ent_sai: req.body.ent_sai,
+                usuario: req.body.usuario
+              }
+
 
     try {
       let resultinsertId: any = await insert.insertMovimentos(dbName, movimento);
 
       const item = {
+        id_produto: product.id,
+        id_setor: setor.id,
         id: resultinsertId.insertId,
         codigo: resultinsertId.insertId,
         setor: movimento.setor,

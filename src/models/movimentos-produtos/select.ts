@@ -38,20 +38,25 @@ export class SelectMovimentosProdutos {
         return new Promise<IMovimentosProdutos[]>(async (resolve, reject) => {
 
             let sql = ` select 
-            *,
-               coalesce( DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
-            from ${empresa}.movimentos_produtos  `
+            mp.*,
+            p.id as id_produto,
+            s.id as id_setor,
+               coalesce( DATE_FORMAT(mp.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+            from ${empresa}.movimentos_produtos as mp 
+              join ${empresa}.produtos p on mp.produto = p.codigo
+                join ${empresa}.setores s on s.codigo = s.codigo
+            `
 
             let paramQuery = [];
             let valueQuery = [];
             if (query.usuario && query.usuario !== 0) {
-                paramQuery.push(' usuario = ? ')
+                paramQuery.push(' mp.usuario = ? ')
                 valueQuery.push(query.usuario)
             }
 
 
             if (query.data_recadastro && query.data_recadastro !== '') {
-                paramQuery.push(' data_recadastro >  ? ')
+                paramQuery.push(' mp.data_recadastro >  ? ')
                 valueQuery.push(query.data_recadastro);
             }
             let whereClause = ` WHERE `;
@@ -85,52 +90,57 @@ export class SelectMovimentosProdutos {
 
         let baseSql = `
                 SELECT
-                    *,
-                 coalesce( DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
-                FROM  ${empresa}.movimentos_produtos
+                    mp.*,
+                    s.id as id_setor,
+                    p.id as id_produto,
+                 coalesce( DATE_FORMAT(mp.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+                FROM  ${empresa}.movimentos_produtos as  mp
+                join ${empresa}.produtos as p on mp.produto = p.codigo
+                join ${empresa}.setores s on s.codigo = mp.setor
+                
             `;
 
         const conditions: string[] = [];
         const params: any[] = [];
 
         if (codigo) {
-            conditions.push(" codigo = ?"); // Placeholder (?) para o parâmetro
+            conditions.push(" mp.codigo = ?"); // Placeholder (?) para o parâmetro
             params.push(codigo);          // Adiciona o valor ao array de parâmetros
         }
 
-        if (setor) {
-            conditions.push(" setor = ?"); // Placeholder (?) para o parâmetro
+        if (setor != undefined) {
+            conditions.push(" mp.setor = ?"); // Placeholder (?) para o parâmetro
             params.push(setor);          // Adiciona o valor ao array de parâmetros
         }
 
-        if (produto) {
-            conditions.push(" produto = ?");
+        if (produto != undefined) {
+            conditions.push(" mp.produto = ?");
             params.push(produto);
         }
 
-        if (quantidade) {
-            conditions.push(' quantidade = ? ');
+        if (quantidade != undefined) {
+            conditions.push(' mp.quantidade = ? ');
             params.push(`${quantidade}`)
         }
         if (tipo) {
-            conditions.push(' tipo = ? ');
+            conditions.push(' mp.tipo = ? ');
             params.push(`${tipo}`)
         }
-        if (usuario) {
-            conditions.push(' usuario = ? ');
+        if (usuario != undefined) {
+            conditions.push(' mp.usuario = ? ');
             params.push(usuario)
         }
         if (ent_sai) {
-            conditions.push(' ent_sai = ? ');
+            conditions.push(' mp.ent_sai = ? ');
             params.push(`${ent_sai}`)
         }
         if (historico) {
-            conditions.push(' historico  like  ? ');
+            conditions.push(' mp.historico  like  ? ');
             params.push(`%${historico}%`)
         }
 
         if (data_recadastro) {
-            conditions.push(' WHERE data_recadastro >  ? ')
+            conditions.push(' WHERE mp.data_recadastro >  ? ')
             params.push(data_recadastro);
         }
 
@@ -144,7 +154,6 @@ export class SelectMovimentosProdutos {
 
 
         const finalSql = baseSql + whereClause
-
         try {
 
             return new Promise<IMovimentosProdutos[]>(async (resolve, reject) => {
