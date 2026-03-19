@@ -90,7 +90,12 @@ export class MovimentosProdutosController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-    const source = String(req.headers.source) || 'api_internal';
+        let source ;
+        if(req.headers.source){
+          source =  'api_internal';
+        } else{
+            source = req.headers.source 
+        }
 
     let dbName = `\`${empresa}\``;
     let insert = new InsertMovimentosProdutos();
@@ -156,7 +161,7 @@ export class MovimentosProdutosController {
         ent_sai: req.body.ent_sai,
         usuario: req.body.usuario
       }
-      await publishMessage(empresa, 'movimentosprodutos.inserido', item, source)
+      await publishMessage(empresa, 'movimentosprodutos.inserido', item, source as any)
 
       return res.status(200).json(item)
 
@@ -178,7 +183,7 @@ export class MovimentosProdutosController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-    const source = String(req.headers.source) || 'api_internal';
+        const source = req.headers.source || 'api_internal' as string;
 
     let dbName = `\`${empresa}\``;
     let insert = new InsertMovimentosProdutos();
@@ -215,7 +220,7 @@ export class MovimentosProdutosController {
                 let message =  i as mobileMoviment
                 message.id = result.insertId
               itensProcessados.push({ movimento: result.insertId })
-              await publishMessage(empresa, 'movimentosprodutos.inserido', i, source)
+              await publishMessage(empresa, 'movimentosprodutos.inserido', i, source as any)
             }
           }
         }
