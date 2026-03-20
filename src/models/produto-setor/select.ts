@@ -166,7 +166,6 @@ export class SelectProdutoSetor {
             where ps.produto = ${produto}  and ps.setor = ${setor} 
             and s.ativo = 'S';
             `
-
             await conn.query(sql, (err: any, result: IProdutoSetor[]) => {
                 if (err) reject(err);
                 resolve(result)

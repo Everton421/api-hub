@@ -148,16 +148,13 @@ export class ProdutoSetorController {
       local3_produto: req.body.local3_produto,
       local4_produto: req.body.local4_produto
     }
-
-    try {
+        const  arrVerifyItem  = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
+      if(arrVerifyItem.length === 0 ) return res.status(400).json({ erro: true, msg: `O produto ou setor informado nao existe!` });
+    try { 
       let result = await insert.insertUpateProdutoSetor(dbName, objInsert);
       if (result.affectedRows > 0) {
-        const verifyItem = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
-
-          let prodSector = verifyItem[0];
-
-        await publishMessage(empresa, 'produtosetor.atualizado', prodSector, source)
-
+        const  [resultProdSetor]  = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
+                await publishMessage(empresa, 'produtosetor.atualizado', resultProdSetor, source)
         return res.status(200).json(
           {
             msg: 'saldo atualizado com sucesso!'
@@ -188,8 +185,8 @@ export class ProdutoSetorController {
 
     const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
-    let insert = new InsertProdutoSetor();
-    let select = new SelectProdutoSetor();
+    const insert = new InsertProdutoSetor();
+    const select = new SelectProdutoSetor();
 
     const dateService = new DateService();
     if (Array.isArray(req.body)) {
@@ -198,18 +195,22 @@ export class ProdutoSetorController {
         let dados: IProdutoSetor[] = req.body;
         //console.log(req.body)
 
-        let updatedItens = []
+        const updatedItens = []
 
         for (let i of dados) {
-          let verifyItem: IProdutoSetor[] = [];
-
+          
           if (!i.setor) return res.status(400).json({ erro: true, msg: "Não foi informado o setor " })
           if (!i.produto) return res.status(400).json({ erro: true, msg: "Não foi informado o produto " })
           if (!i.estoque) return res.status(400).json({ erro: true, msg: "Não foi informado o estoque " })
+     
+            const  arrVerifyItem : IProdutoSetor[]  = await select.findByProdSector(dbName, i.produto, i.setor) ;
+              
+        let resultInsert = await insert.insertUpateProdutoSetor(dbName, i);
+              if (resultInsert.serverStatus > 0) {
 
-      let aux = await insert.insertUpateProdutoSetor(dbName, i)
-              if (aux.serverStatus > 0) {
-                await publishMessage(empresa, 'produtosetor.atualizado', i, source)
+            const  [resultProdSetor] : IProdutoSetor[]  = await select.findByProdSector(dbName, i.produto, i.setor) ;
+                await publishMessage(empresa, 'produtosetor.atualizado', resultProdSetor, source)
+                
                 updatedItens.push({ produto: i.produto })
               }
         }
