@@ -27,7 +27,7 @@ export class DistribuicaoController {
         let update = new UpdateDistribuicaoSetor();
         let insert = new InsertDistribuicaoLocaisSetor();
 
-        const source = String(req.headers.source) || 'api_internal';
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
         if (Array.isArray(req.body)) {
 

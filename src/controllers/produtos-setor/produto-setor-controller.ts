@@ -121,10 +121,10 @@ export class ProdutoSetorController {
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
 
     let dbName = `\`${empresa}\``;
-    const source = String(req.headers.source) || 'api_internal';
+    const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
-    let update = new UpdateProdutoSetor();
     let insert = new InsertProdutoSetor();
+    let select = new SelectProdutoSetor();
 
     const dateService = new DateService();
 
@@ -152,8 +152,11 @@ export class ProdutoSetorController {
     try {
       let result = await insert.insertUpateProdutoSetor(dbName, objInsert);
       if (result.affectedRows > 0) {
+        const verifyItem = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
 
-        await publishMessage(empresa, 'produtosetor.atualizado', objInsert, source)
+          let prodSector = verifyItem[0];
+
+        await publishMessage(empresa, 'produtosetor.atualizado', prodSector, source)
 
         return res.status(200).json(
           {
@@ -183,10 +186,8 @@ export class ProdutoSetorController {
 
     let dbName = `\`${empresa}\``;
 
-    const source = String(req.headers.source) || 'api_internal';
+    const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
-
-    let update = new UpdateProdutoSetor();
     let insert = new InsertProdutoSetor();
     let select = new SelectProdutoSetor();
 
@@ -206,37 +207,11 @@ export class ProdutoSetorController {
           if (!i.produto) return res.status(400).json({ erro: true, msg: "Não foi informado o produto " })
           if (!i.estoque) return res.status(400).json({ erro: true, msg: "Não foi informado o estoque " })
 
-          verifyItem = await select.findByProdSector(dbName, i.produto, i.setor);
-
-          let prodSector = verifyItem[0];
-          if (verifyItem.length > 0) {
-            if (new Date(i.data_recadastro) > new Date(prodSector.data_recadastro)) {
-              console.log(new Date(i.data_recadastro), ' > ', new Date(prodSector.data_recadastro))
-              console.log(`atualizando saldo do produto : ${i.produto} saldo: ${i.estoque} `)
-
-              let aux = await insert.upateProdutoSetor(dbName, i)
+      let aux = await insert.insertUpateProdutoSetor(dbName, i)
               if (aux.serverStatus > 0) {
-
-                const message = {
-                  metadata: {
-                  }
-                }
                 await publishMessage(empresa, 'produtosetor.atualizado', i, source)
                 updatedItens.push({ produto: i.produto })
-
               }
-            }
-          } else {
-            console.log(`registrando produto : ${i.produto}`)
-
-            let aux = await insert.cadastrarProdutoSetor(dbName, i)
-            if (aux.serverStatus > 0) {
-              await publishMessage(empresa, 'produtosetor.atualizado', i)
-
-              updatedItens.push({ produto: i.produto })
-            }
-          }
-
         }
         return res.status(200).json({ ok: true, itens: updatedItens })
 

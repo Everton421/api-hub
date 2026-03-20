@@ -14,7 +14,7 @@ type OkPacket = {
 
 export class InsertProdutoSetor {
 
-    async cadastrarProdutoSetor(empresa: string, produtoSetor: IProdutoSetor): Promise<OkPacket> {
+    async cadastrarProdutoSetor(empresa: string, produtoSetor: Omit<IProdutoSetor, 'id_produto' | 'id_setor'>): Promise<OkPacket> {
         return new Promise((resolve, reject) => {
             // Nota: O nome do banco/tabela (${empresa}) não aceita "?". 
             // Certifique-se que a variável 'empresa' venha de uma fonte segura (token/sessão).
@@ -25,7 +25,7 @@ export class InsertProdutoSetor {
                     ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ); `;
             
             const values = [
-                produtoSetor.setor,
+                produtoSetor.setor,  
                 produtoSetor.produto,
                 produtoSetor.estoque,
                 produtoSetor.local_produto,
@@ -43,7 +43,7 @@ export class InsertProdutoSetor {
         });
     }
 
-    async insertUpateProdutoSetor(empresa: string, produtoSetor: IProdutoSetor): Promise<OkPacket> {
+    async insertUpateProdutoSetor(empresa: string, produtoSetor:  Omit<IProdutoSetor, 'id_produto' | 'id_setor'>): Promise<OkPacket> {
         return new Promise((resolve, reject) => {
             // Removidas as aspas simples e substituído por "?"
             let sql = `

@@ -58,8 +58,8 @@ export class SetorController {
     let update = new UpdateSetor();
 
     const dateService = new DateService();
-    const source = String(req.headers.source) || 'api_internal';
-
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+   
     if (!req.body.codigo) return res.status(400).json({ erro: true, msg: "É necessario informar o codigo para atualizar o setor!" });
     if (!req.body.data_recadastro) {
       req.body.data_recadastro = dateService.obterDataHoraAtual();
@@ -105,8 +105,8 @@ export class SetorController {
 
     let insert = new InsertSetor();
     let dateService = new DateService();
-    const source = String(req.headers.source) || 'api_internal';
-
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+ 
 
     if (!req.body.descricao) return res.status(400).json({ erro: true, msg: "É necessario informar a descrição para registrar o setor!" });
     if (!req.body.data_cadastro) req.body.data_cadastro = dateService.obterDataAtual();

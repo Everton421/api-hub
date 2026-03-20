@@ -100,8 +100,8 @@ export class ServicosController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-    const source = String(req.headers.source) || 'api_internal';
-
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+  
     let dbName = `\`${empresa}\``;
 
     let insert = new InsertServico();
@@ -217,8 +217,8 @@ export class ServicosController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
     let dbName = `\`${empresa}\``;
-    const source = String(req.headers.source) || 'api_internal';
-
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+ 
     let update = new updateServico();
     let dateService = new DateService();
 

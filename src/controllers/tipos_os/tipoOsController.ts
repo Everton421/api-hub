@@ -71,7 +71,7 @@ export class TipoOsController {
 
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
     let dbName = `\`${empresa}\``;
-    const source = String(req.headers.source) || 'api_internal';
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
     let insert = new Insert_tipos_os();
     let dateService = new DateService();
@@ -113,7 +113,7 @@ export class TipoOsController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
     let dbName = `\`${empresa}\``;
-    const source = String(req.headers.source) || 'api_internal';
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
     let select = new SelectTipo_os();
     let dateService = new DateService();

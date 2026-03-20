@@ -51,8 +51,8 @@ export class LocaisController {
         if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-        const source = String(req.headers.source) || 'api_internal';
-
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+    
         const dateService = new DateService();
         const select = new SelectLocais();
         const insert = new InsertLocais();
@@ -108,8 +108,8 @@ export class LocaisController {
         let decodToken = DecodedToken(String(req.headers.token))
         if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-        const source = String(req.headers.source) || 'api_internal';
-
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+     
         const dateService = new DateService();
         const select = new SelectLocais();
         const insert = new InsertLocais();

@@ -82,7 +82,7 @@ export class VeiculoController {
 
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
         let dbName = `\`${empresa}\``;
-        const source = String(req.headers.source) || 'api_internal';
+              const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
         if (!req.body.codigo) {
             return res.status(400).json({ erro: true, msg: "É necessario informar o codigo do veiculo " });
@@ -153,6 +153,7 @@ export class VeiculoController {
 
         let dateService = new DateService();
         let insert = new Insert_Veiculos();
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
         if (!req.headers.token) {
             return res.status(400).json({ erro: true, msg: "É necessario informar o token!" });
@@ -204,7 +205,7 @@ export class VeiculoController {
                     "data_recadastro": req.body.data_recadastro,
                     "ativo": req.body.ativo
                 }
-                await publishMessage(empresa, 'veiculo.inserido', item)
+                await publishMessage(empresa, 'veiculo.inserido', item, source)
 
                 return res.status(200).json(
                     item

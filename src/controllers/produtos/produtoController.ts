@@ -62,7 +62,7 @@ export class ProdutoController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-    const source = String(req.headers.source) || 'api_internal';
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
     let dbName = `\`${empresa}\``;
 
@@ -300,7 +300,7 @@ export class ProdutoController {
     const formatString = new FormatString();
 
 
-    const source = String(req.headers.source) || 'api_internal';
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
     if (!req.body.codigo) return res.status(400).json({ erro: true, msg: "É necessario informar o codigo para atualizar o produto!" });
     if (!req.body.id) req.body.id = 0

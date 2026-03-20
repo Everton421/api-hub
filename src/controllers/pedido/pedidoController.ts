@@ -43,7 +43,7 @@ export class pedidoController {
 
         const empresa = `\`${cnpj}\``;
 
-        const source = req.headers.source || 'api_internal' as string;
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
         if (!req.body || req.body.length === 0) return res.status(400).json({ erro: "É necessario informar os pedidos! " })
 

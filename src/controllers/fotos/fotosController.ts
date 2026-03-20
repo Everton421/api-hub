@@ -45,6 +45,7 @@ export class fotosController {
       }
       let decodToken = DecodedToken(String(req.headers.token))
       let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
+        const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
       let dbName = `\`${empresa}\``;
 

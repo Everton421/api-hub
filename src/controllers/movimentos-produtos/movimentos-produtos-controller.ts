@@ -90,13 +90,8 @@ export class MovimentosProdutosController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-        let source ;
-        if(!req.headers.source){
-            source = 'api_internal' 
-          
-        } else{
-          source =   req.headers.source ;
-        }
+     const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+
 
     let dbName = `\`${empresa}\``;
     let insert = new InsertMovimentosProdutos();
@@ -184,14 +179,8 @@ export class MovimentosProdutosController {
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
-    let source ;
-        if(!req.headers.source){
-            source = 'api_internal' 
-
-        } else{
-          source =   req.headers.source ;
- 
-        }
+    const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+  
 
     let dbName = `\`${empresa}\``;
     let insert = new InsertMovimentosProdutos();

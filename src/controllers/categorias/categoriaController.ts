@@ -206,7 +206,7 @@ export class CategoriaController {
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
         let dateService = new DateService();
-        const source = String(req.headers.source) || 'api_internal';
+    const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
         let postCategoria: any = req.body;
 
@@ -256,7 +256,7 @@ export class CategoriaController {
 
         let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
 
-        const source = String(req.headers.source) || 'api_internal';
+    const source = req.headers.source ? String(req.headers.source) :  'api_internal';
 
         let select = new Select_Categorias();
         let insert = new Insert_Categorias();
