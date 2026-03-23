@@ -148,9 +148,8 @@ export class ProdutoSetorController {
       local3_produto: req.body.local3_produto,
       local4_produto: req.body.local4_produto
     }
-        const  arrVerifyItem  = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
-      if(arrVerifyItem.length === 0 ) return res.status(400).json({ erro: true, msg: `O produto ou setor informado nao existe!` });
-    try { 
+      
+     try { 
       let result = await insert.insertUpateProdutoSetor(dbName, objInsert);
       if (result.affectedRows > 0) {
         const  [resultProdSetor]  = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
@@ -203,7 +202,6 @@ export class ProdutoSetorController {
           if (!i.produto) return res.status(400).json({ erro: true, msg: "Não foi informado o produto " })
           if (!i.estoque) return res.status(400).json({ erro: true, msg: "Não foi informado o estoque " })
      
-            const  arrVerifyItem : IProdutoSetor[]  = await select.findByProdSector(dbName, i.produto, i.setor) ;
               
         let resultInsert = await insert.insertUpateProdutoSetor(dbName, i);
               if (resultInsert.serverStatus > 0) {
