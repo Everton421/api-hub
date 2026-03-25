@@ -22,18 +22,18 @@ export class ProdutoSetorController {
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
 
 
-        let data_recadastro: string = '';
-            if (req.query.data_recadastro) {
+    let data_recadastro: string = '';
+    if (req.query.data_recadastro) {
 
-                if (!dateService.isValidDate(req.query.data_recadastro as string)) {
-                    return res.status(400).json({
-                        erro: true,
-                        msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
-                    });
-                    }
+      if (!dateService.isValidDate(req.query.data_recadastro as string)) {
+        return res.status(400).json({
+          erro: true,
+          msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
+        });
+      }
 
-                data_recadastro = String(req.query.data_recadastro);
-            }
+      data_recadastro = String(req.query.data_recadastro);
+    }
 
 
     let dbName = `\`${empresa}\``;
@@ -46,7 +46,7 @@ export class ProdutoSetorController {
       return res.status(500).json({ erro: "Erro ao buscar os produtos no setor." });
     }
   }
- 
+
   async findByCode(req: Request, res: Response) {
 
     if (!req.headers.token) {
@@ -121,7 +121,7 @@ export class ProdutoSetorController {
     let empresa = decodToken.payload?.cnpj.replace(/\D/g, '');
 
     let dbName = `\`${empresa}\``;
-    const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+    const source = req.headers.source ? String(req.headers.source) : 'api_internal';
 
     let insert = new InsertProdutoSetor();
     let select = new SelectProdutoSetor();
@@ -148,24 +148,51 @@ export class ProdutoSetorController {
       local3_produto: req.body.local3_produto,
       local4_produto: req.body.local4_produto
     }
-      
-     try { 
-      let result = await insert.insertUpateProdutoSetor(dbName, objInsert);
-      if (result.affectedRows > 0) {
-        const  [resultProdSetor]  = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
-                await publishMessage(empresa, 'produtosetor.atualizado', resultProdSetor, source)
-        return res.status(200).json(
-          {
-            msg: 'saldo atualizado com sucesso!'
-          })
 
-      }
+    try {
 
+      const arrVerifyProdSetor = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
+      if (arrVerifyProdSetor.length > 0) {
+
+        const resultVerifyProdSetor = arrVerifyProdSetor[0];
+
+        if (new Date(objInsert.data_recadastro) > new Date(resultVerifyProdSetor.data_recadastro)) {
+          let result = await insert.insertUpateProdutoSetor(dbName, objInsert);
+          if (result.affectedRows > 0) {
+            const [resultProdSetor] = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
+            await publishMessage(empresa, 'produtosetor.atualizado', resultProdSetor, source)
+            return res.status(200).json(
+              {
+                msg: 'saldo atualizado com sucesso!'
+              })
+          } else {
+            return res.status(200).json(
+              {
+                msg: ` Não ouve alteração no produto ${objInsert.produto} no setor ${objInsert.setor}. `
+              })
+          }
+        } else {
+          return res.status(200).json(
+            {
+              msg: ` data do estoque < ou =  data enviada. `
+            })
+        }
+      } else{
+                  let resultInsert = await insert.insertUpateProdutoSetor(dbName, objInsert);
+                  const [newResultProdSetor]: IProdutoSetor[] = await select.findByProdSector(dbName, objInsert.produto, objInsert.setor);
+                if (resultInsert.serverStatus > 0) {
+                    await publishMessage(empresa, 'produtosetor.atualizado', newResultProdSetor, source)
+                  return res.status(200).json(
+                      {
+                        msg: 'saldo atualizado com sucesso!'
+                      })
+                  } 
+
+          }
 
     } catch (e) {
       return res.status(400).json({ erro: true, msg: `Ocorreu um erro ao atualizar o  saldo do produto!` });
     }
-
 
   }
 
@@ -174,7 +201,6 @@ export class ProdutoSetorController {
       return res.status(400).json({ erro: true, msg: "É necessario informar o token!" });
     }
 
-
     let decodToken = DecodedToken(String(req.headers.token))
     if (!decodToken.payload?.cnpj) return res.status(400).json({ erro: true, msg: "Identifiador unico da empresa nao foi informado" });
 
@@ -182,7 +208,7 @@ export class ProdutoSetorController {
 
     let dbName = `\`${empresa}\``;
 
-    const source = req.headers.source ? String(req.headers.source) :  'api_internal';
+    const source = req.headers.source ? String(req.headers.source) : 'api_internal';
 
     const insert = new InsertProdutoSetor();
     const select = new SelectProdutoSetor();
@@ -197,20 +223,37 @@ export class ProdutoSetorController {
         const updatedItens = []
 
         for (let i of dados) {
-          
+
           if (!i.setor) return res.status(400).json({ erro: true, msg: "Não foi informado o setor " })
           if (!i.produto) return res.status(400).json({ erro: true, msg: "Não foi informado o produto " })
           if (!i.estoque) return res.status(400).json({ erro: true, msg: "Não foi informado o estoque " })
-     
-              
-        let resultInsert = await insert.insertUpateProdutoSetor(dbName, i);
-              if (resultInsert.serverStatus > 0) {
 
-            const  [resultProdSetor] : IProdutoSetor[]  = await select.findByProdSector(dbName, i.produto, i.setor) ;
-                await publishMessage(empresa, 'produtosetor.atualizado', resultProdSetor, source)
-                
-                updatedItens.push({ produto: i.produto })
-              }
+          const  arrVerifyProdSetor : IProdutoSetor[] = await select.findByProdSector(dbName, i.produto, i.setor);
+
+          if(arrVerifyProdSetor.length > 0  ){
+            
+            const  resultVerifyProdSetor = arrVerifyProdSetor[0];
+
+            if (  new Date(i.data_recadastro) > new Date(resultVerifyProdSetor.data_recadastro)) {
+                let resultInsert = await insert.insertUpateProdutoSetor(dbName, i);
+                  const [newResultProdSetor]: IProdutoSetor[] = await select.findByProdSector(dbName, i.produto, i.setor);
+                if (resultInsert.serverStatus > 0) {
+                    await publishMessage(empresa, 'produtosetor.atualizado', newResultProdSetor, source)
+                  updatedItens.push({ produto: i.produto })
+                } 
+            }else{
+                console.log(` data do estoque < ou =  data enviada. `);
+            }
+          }else{
+
+                  let resultInsert = await insert.insertUpateProdutoSetor(dbName, i);
+                  const [newResultProdSetor]: IProdutoSetor[] = await select.findByProdSector(dbName, i.produto, i.setor);
+                if (resultInsert.serverStatus > 0) {
+                    await publishMessage(empresa, 'produtosetor.atualizado', newResultProdSetor, source)
+                  updatedItens.push({ produto: i.produto })
+                } 
+
+          }
         }
         return res.status(200).json({ ok: true, itens: updatedItens })
 
