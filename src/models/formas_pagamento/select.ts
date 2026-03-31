@@ -3,40 +3,36 @@ import { formaPagamentoBanco, queryFpgt } from "../../types/formas_pagamento/typ
 
 
 
-
 export class SelectForma_pagamento {
 
 
-    async buscaGeral(empresa: any, data_recadastro: string) {
-        return new Promise(async (resolve, reject) => {
-            let sql = ` select *,
-         DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-        from ${empresa}.forma_pagamento  `
+    async buscaGeral(empresa: any, data_recadastro?: string): Promise<formaPagamentoBanco[]> {
+        let sql = ` select *,
+     DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+        DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+    from ${empresa}.forma_pagamento  `;
 
 
-            let paramQuery = [];
-            let valueQuery = [];
-            if (data_recadastro) {
-                paramQuery.push(' WHERE data_recadastro >  ? ')
-                valueQuery.push(data_recadastro);
-            }
+        let paramQuery: string[] = [];
+        let valueQuery: any[] = [];
+        
+        if (data_recadastro) {
+            paramQuery.push(' WHERE data_recadastro >  ? ');
+            valueQuery.push(data_recadastro);
+        }
 
-            let finalSql = sql;
+        let finalSql = sql;
 
-            if (paramQuery.length > 0) {
-                finalSql = sql + paramQuery;
-            }
-            await conn.query(finalSql, data_recadastro, (err: any, result: any) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        if (paramQuery.length > 0) {
+            finalSql = sql + paramQuery.join('');
+        }
+        
+        const [result] = await conn.query(finalSql, valueQuery);
+        return result as formaPagamentoBanco[];
     }
 
 
     async novaBusca(empresa: string, query: Partial<queryFpgt>): Promise<formaPagamentoBanco[]> {
-
         let {
             codigo,
             id,
@@ -44,7 +40,7 @@ export class SelectForma_pagamento {
             descricao,
             parcelas,
             ativo,
-        } = query
+        } = query;
 
         let baseSql = `
          SELECT *,
@@ -62,8 +58,8 @@ export class SelectForma_pagamento {
         }
 
         if (codigo) {
-            conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
-            params.push(codigo);          // Adiciona o valor ao array de parâmetros
+            conditions.push("codigo = ?");
+            params.push(codigo);
         }
         if (id) {
             conditions.push("id = ?");
@@ -89,32 +85,13 @@ export class SelectForma_pagamento {
             whereClause = " WHERE " + conditions.join(" AND ");
         }
 
-        let limitQuery = " LIMIT ? "
-
+        let limitQuery = " LIMIT ? ";
         params.push(Number(limit));
 
         const finalSql = baseSql + whereClause + limitQuery;
 
-
-        try {
-
-            return new Promise(async (resolve, reject) => {
-                await conn.query(finalSql, params, (err: any, result) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result)
-
-                    }
-                })
-
-            })
-
-
-        } catch (err) {
-            console.error("Erro ao executar a query:", err);
-            throw new Error("Falha ao buscar formas de pagamento no banco de dados.");
-        }
+        const [result] = await conn.query(finalSql, params);
+        return result as formaPagamentoBanco[];
     }
 
 

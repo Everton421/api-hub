@@ -1,11 +1,13 @@
+import 'dotenv/config';
+//import mysql from 'mysql';
 
-import   mysql  from 'mysql2/promise'
+import   mysql  from 'mysql'
 
 /**----------------------------------------------------------------------- */
-const hostname = process.env.DB_HOST;
-const portdb = process.env.DB_PORT;
-const username = process.env.DB_USER;
-const dbpassword = process.env.DB_PASSWORD;
+const hostname = process.env.HOST;
+const portdb = process.env.PORT_DB;
+const username = process.env.USER;
+const dbpassword = process.env.PASSWORD;
 
 export const db_api = process.env.DB_API
 
@@ -15,7 +17,7 @@ if (portdb !== undefined) {
     port = parseInt(portdb);
 }
 
-export const conn = await mysql.createPool({
+export const conn = mysql.createPool({
     connectionLimit: 10,
     host: hostname,
     user: username,

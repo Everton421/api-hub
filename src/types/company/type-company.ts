@@ -1,6 +1,6 @@
 
 
-  type IEmpresasBanco = 
+  export type company = 
   {
 codigo:number,
 id:number

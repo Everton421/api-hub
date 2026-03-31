@@ -4,6 +4,7 @@ import { Select_produtos } from "../produtos/select";
 import { SelectSetor } from "../setor/select";
 import { ISetor } from "../setor/types/setor";
 import { IMovimentosProdutos } from "./types/movimentos_produtos";
+
 type query = {
     setor: number
     produto: number
@@ -28,16 +29,16 @@ type resutlCompleteMovment =
     [
         completeMoviment
     ]
+
 type queryAll = {
-    data_recadastro: string
+    data_recadastro?: string
     usuario?: number
 }
+
 export class SelectMovimentosProdutos {
 
-    async findAll(empresa: any, query: queryAll) {
-        return new Promise<IMovimentosProdutos[]>(async (resolve, reject) => {
-
-            let sql = ` select 
+    async findAll(empresa: any, query: queryAll): Promise<IMovimentosProdutos[]> {
+        let sql = ` select 
             mp.*,
             p.id as id_produto,
             s.id as id_setor,
@@ -45,37 +46,33 @@ export class SelectMovimentosProdutos {
             from ${empresa}.movimentos_produtos as mp 
               join ${empresa}.produtos p on mp.produto = p.codigo
                 join ${empresa}.setores s on s.codigo = s.codigo
-            `
+            `;
 
-            let paramQuery = [];
-            let valueQuery = [];
-            if (query.usuario && query.usuario !== 0) {
-                paramQuery.push(' mp.usuario = ? ')
-                valueQuery.push(query.usuario)
-            }
+        let paramQuery: string[] = [];
+        let valueQuery: any[] = [];
+        
+        if (query.usuario && query.usuario !== 0) {
+            paramQuery.push(' mp.usuario = ? ');
+            valueQuery.push(query.usuario);
+        }
 
+        if (query.data_recadastro && query.data_recadastro !== '') {
+            paramQuery.push(' mp.data_recadastro >  ? ');
+            valueQuery.push(query.data_recadastro);
+        }
+        
+        let whereClause = ` WHERE `;
+        let finalSql = sql;
 
-            if (query.data_recadastro && query.data_recadastro !== '') {
-                paramQuery.push(' mp.data_recadastro >  ? ')
-                valueQuery.push(query.data_recadastro);
-            }
-            let whereClause = ` WHERE `;
+        if (paramQuery.length > 0) {
+            finalSql = sql + whereClause + paramQuery.join(' AND ');
+        }
 
-            let finalSql = sql;
-
-            if (paramQuery.length > 0) {
-                finalSql = sql + whereClause + paramQuery.join(' AND ')
-            }
-
-            await conn.query(finalSql, valueQuery, (err: any, result: IMovimentosProdutos[]) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        const [result] = await conn.query(finalSql, valueQuery);
+        return result as IMovimentosProdutos[];
     }
 
     async findByParam(empresa: string, query: Partial<query>): Promise<IMovimentosProdutos[]> {
-
         let {
             setor,
             produto,
@@ -104,13 +101,13 @@ export class SelectMovimentosProdutos {
         const params: any[] = [];
 
         if (codigo) {
-            conditions.push(" mp.codigo = ?"); // Placeholder (?) para o parâmetro
-            params.push(codigo);          // Adiciona o valor ao array de parâmetros
+            conditions.push(" mp.codigo = ?");
+            params.push(codigo);
         }
 
         if (setor != undefined) {
-            conditions.push(" mp.setor = ?"); // Placeholder (?) para o parâmetro
-            params.push(setor);          // Adiciona o valor ao array de parâmetros
+            conditions.push(" mp.setor = ?");
+            params.push(setor);
         }
 
         if (produto != undefined) {
@@ -120,27 +117,27 @@ export class SelectMovimentosProdutos {
 
         if (quantidade != undefined) {
             conditions.push(' mp.quantidade = ? ');
-            params.push(`${quantidade}`)
+            params.push(`${quantidade}`);
         }
         if (tipo) {
             conditions.push(' mp.tipo = ? ');
-            params.push(`${tipo}`)
+            params.push(`${tipo}`);
         }
         if (usuario != undefined) {
             conditions.push(' mp.usuario = ? ');
-            params.push(usuario)
+            params.push(usuario);
         }
         if (ent_sai) {
             conditions.push(' mp.ent_sai = ? ');
-            params.push(`${ent_sai}`)
+            params.push(`${ent_sai}`);
         }
         if (historico) {
             conditions.push(' mp.historico  like  ? ');
-            params.push(`%${historico}%`)
+            params.push(`%${historico}%`);
         }
 
         if (data_recadastro) {
-            conditions.push(' WHERE mp.data_recadastro >  ? ')
+            conditions.push(' mp.data_recadastro >  ? ');
             params.push(data_recadastro);
         }
 
@@ -150,63 +147,31 @@ export class SelectMovimentosProdutos {
             whereClause = " WHERE " + conditions.join(" AND ");
         }
 
-        //conditions.join(" LIMIT ?");
+        const finalSql = baseSql + whereClause;
 
-
-        const finalSql = baseSql + whereClause
-        try {
-
-            return new Promise<IMovimentosProdutos[]>(async (resolve, reject) => {
-                await conn.query(finalSql, params, (err: any, result: IMovimentosProdutos[]) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result)
-
-                    }
-                })
-
-            })
-
-
-        } catch (err) {
-            console.error("Erro ao executar a query:", err);
-            throw new Error("Falha ao buscar setorres no banco de dados.");
-            // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
-        }
+        const [result] = await conn.query(finalSql, params);
+        return result as IMovimentosProdutos[];
     }
 
-    async findByCodeProduct(empresa: any, produto: number) {
-        return new Promise<IMovimentosProdutos[]>(async (resolve, reject) => {
-
-            let sql = ` select 
+    async findByCodeProduct(empresa: any, produto: number): Promise<IMovimentosProdutos[]> {
+        let sql = ` select 
             *,
                  coalesce( DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
-            from ${empresa}.movimentos_produtos where produto = ?  `
+            from ${empresa}.movimentos_produtos where produto = ?  `;
 
-
-            await conn.query(sql, produto, (err: any, result: IMovimentosProdutos[]) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        const [result] = await conn.query(sql, [produto]);
+        return result as IMovimentosProdutos[];
     }
-    async findByProdSector(empresa: any, produto: number, setor: number) {
-        return new Promise<IMovimentosProdutos[]>(async (resolve, reject) => {
 
-            let sql = ` select 
+    async findByProdSector(empresa: any, produto: number, setor: number): Promise<IMovimentosProdutos[]> {
+        let sql = ` select 
             *,
                  coalesce( DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
-            from ${empresa}.movimentos_produtos where produto = ?  and setor = ? `
+            from ${empresa}.movimentos_produtos where produto = ?  and setor = ? `;
 
-
-            await conn.query(sql, [produto, setor], (err: any, result: IMovimentosProdutos[]) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        const [result] = await conn.query(sql, [produto, setor]);
+        return result as IMovimentosProdutos[];
     }
-
 
     async findCompleteByParam(empresa: string, query: Partial<query>): Promise<resutlCompleteMovment | {}> {
         const selectProduto = new Select_produtos();
@@ -235,13 +200,13 @@ export class SelectMovimentosProdutos {
         const params: any[] = [];
 
         if (codigo) {
-            conditions.push(" codigo = ?"); // Placeholder (?) para o parâmetro
-            params.push(codigo);          // Adiciona o valor ao array de parâmetros
+            conditions.push(" codigo = ?");
+            params.push(codigo);
         }
 
         if (setor) {
-            conditions.push(" setor = ?"); // Placeholder (?) para o parâmetro
-            params.push(setor);          // Adiciona o valor ao array de parâmetros
+            conditions.push(" setor = ?");
+            params.push(setor);
         }
 
         if (produto) {
@@ -251,27 +216,27 @@ export class SelectMovimentosProdutos {
 
         if (quantidade) {
             conditions.push(' quantidade = ? ');
-            params.push(`${quantidade}`)
+            params.push(`${quantidade}`);
         }
         if (tipo) {
             conditions.push(' tipo = ? ');
-            params.push(`${tipo}`)
+            params.push(`${tipo}`);
         }
         if (usuario) {
             conditions.push(' usuario = ? ');
-            params.push(usuario)
+            params.push(usuario);
         }
         if (ent_sai) {
             conditions.push(' ent_sai = ? ');
-            params.push(`${ent_sai}`)
+            params.push(`${ent_sai}`);
         }
         if (historico) {
             conditions.push(' historico  like  ? ');
-            params.push(`%${historico}%`)
+            params.push(`%${historico}%`);
         }
 
         if (data_recadastro) {
-            conditions.push(' WHERE data_recadastro >  ? ')
+            conditions.push(' data_recadastro >  ? ');
             params.push(data_recadastro);
         }
 
@@ -281,60 +246,39 @@ export class SelectMovimentosProdutos {
             whereClause = " WHERE " + conditions.join(" AND ");
         }
 
-        //conditions.join(" LIMIT ?");
-
-
-        const finalSql = baseSql + whereClause
+        const finalSql = baseSql + whereClause;
 
         try {
+            const [result] = await conn.query(finalSql, params) as [IMovimentosProdutos[]];
+            
+            let arrResult: resutlCompleteMovment | any = [];
 
-            return new Promise(async (resolve, reject) => {
-                await conn.query(finalSql, params, async (err: any, result: IMovimentosProdutos[]) => {
+            if (result && result.length > 0) {
+                for (let mov of result) {
+                    let obj: completeMoviment = { produto: {}, movimento: {}, setor: {} };
 
-                    let resultDataMoviment
-
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resultDataMoviment = result
-
-                        let arrResult: resutlCompleteMovment | any = []
-
-                        if (resultDataMoviment && resultDataMoviment.length > 0) {
-                            for (let mov of resultDataMoviment) {
-                                let obj: completeMoviment = { produto: {}, movimento: {}, setor: {} }
-
-                                let produto: ProdutoBanco | {} = {}
-                                let setor: ISetor
-                                let resultProduto = await selectProduto.buscaPorCodigo(empresa, mov.produto)
-                                if (resultProduto.length > 0) {
-                                    produto = resultProduto[0]
-                                    obj.produto = produto
-                                }
-
-                                let resultSetor = await selectSetor.findByCode(empresa, mov.setor)
-                                if (resultSetor.length > 0) {
-                                    setor = resultSetor[0]
-                                    obj.setor = setor
-                                }
-
-                                obj.movimento = resultDataMoviment[0]
-                                arrResult.push(obj)
-
-                            }
-                        }
-                        resolve(arrResult)
+                    let produtoResult: ProdutoBanco | {} = {};
+                    let setorResult: ISetor;
+                    let resultProduto = await selectProduto.buscaPorCodigo(empresa, mov.produto);
+                    if (resultProduto.length > 0) {
+                        produtoResult = resultProduto[0];
+                        obj.produto = produtoResult;
                     }
 
-                })
+                    let resultSetor = await selectSetor.findByCode(empresa, mov.setor);
+                    if (resultSetor.length > 0) {
+                        setorResult = resultSetor[0];
+                        obj.setor = setorResult;
+                    }
 
-            })
-
-
+                    obj.movimento = result[0];
+                    arrResult.push(obj);
+                }
+            }
+            return arrResult;
         } catch (err) {
             console.error("Erro ao executar a query:", err);
-            throw new Error("Falha ao buscar setorres no banco de dados.");
-            // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
+            throw new Error("Falha ao buscar movimentos no banco de dados.");
         }
     }
 

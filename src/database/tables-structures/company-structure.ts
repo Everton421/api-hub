@@ -1,4 +1,4 @@
-import { conn } from "../databaseConfig";
+import { conn , db_api} from "../databaseConfig.ts";
 
 export class CompanyStructure {
 
@@ -7,6 +7,8 @@ export class CompanyStructure {
     // O driver (mysql/mysql2) fará isso automaticamente e de forma segura ao usar "??".
     
     const sqlTables = [
+      `CREATE DATABASE IF NOT EXISTS ??;`
+      ,
       `CREATE TABLE IF NOT EXISTS ??.produtos (
                   codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
                   id  varchar(255) NOT NULL DEFAULT 0,
@@ -275,35 +277,17 @@ export class CompanyStructure {
             `
     ];
 
-    let sqlCreateDB = "CREATE DATABASE IF NOT EXISTS ??;";
+   
 
-    return new Promise((resolve, reject) => {
-      conn.query(sqlCreateDB, [database_name], async (err, result) => {
-        if (err) {
-          console.log(`[X] Erro ao criar banco de dados ${database_name}:`, err);
-          return reject(`[X] Erro ao criar banco de dados ${database_name}: ${err.message}`);
-        }
 
         try {
-          const tablePromises = sqlTables.map((query) => {
-            return new Promise((res, rej) => {
-              conn.query(query, [database_name], (tableErr, tableResult) => {
-                if (tableErr) rej(tableErr);
-                else res(tableResult);
-              });
-            });
+          const tablePromises = sqlTables.map(async (query) => {
+              await conn.query(query, [database_name]);
           });
 
-          await Promise.all(tablePromises);
-
-          console.log(`[V] Banco e tabelas registradas com sucesso para a empresa ${database_name}!`);
-          resolve(`[V] Estrutura da empresa ${database_name} criada/verificada com sucesso!`);
-
         } catch (tableErr) {
-          console.log(`[X] Um erro ocorreu ao criar as tabelas da empresa ${database_name}:`, tableErr);
-          reject(`[X] Um erro ocorreu ao criar as tabelas da empresa ${database_name}: ${tableErr}`);
+          console.log("[X] Erro ao tentar registrar o banco de dados da empresa.")
         }
-      });
-    });
+     
   }
 }

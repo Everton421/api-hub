@@ -1,15 +1,15 @@
-import { SelectEmpresa } from "../../models/empresa/select";
+import { SelectCompany } from "../../models/company/select.ts";
 
 
 export async function validaContratoLogin(cnpj: string) {
 
 
 
-    const select = new SelectEmpresa();
+    const selectCompany = new SelectCompany();
     // const dateService = new DateService(); // Removido se não usado aqui
 
     try {
-        const resultEmpresaValid = await select.selectPorCnpj(cnpj);
+        const resultEmpresaValid = await selectCompany.findByCnpj(cnpj);
 
         if (resultEmpresaValid.length > 0) {
             const emrpr = resultEmpresaValid[0];

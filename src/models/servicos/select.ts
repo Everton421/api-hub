@@ -13,71 +13,55 @@ type service = {
 
 export class Select_servicos {
 
-    async buscaPorCodigo(empresa: any, codigo: number) {
-        return new Promise(async (resolve, reject) => {
-
-            let sql = ` select *,
+    async buscaPorCodigo(empresa: any, codigo: number): Promise<service[]> {
+        let sql = ` select *,
           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-        from ${empresa}.servicos where codigo = ? `
-            await conn.query(sql, [codigo], (err: any, result: any) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        from ${empresa}.servicos where codigo = ? `;
+        
+        const [result] = await conn.query(sql, [codigo]);
+        return result as service[];
     }
 
-    async buscaPorCodigoDescricao(empresa: any, param: string) {
-
-        let parametro = `%${param}%`
+    async buscaPorCodigoDescricao(empresa: any, param: string): Promise<service[]> {
+        let parametro = `%${param}%`;
 
         const sql = `SELECT *,
        DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
       DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
     FROM ${empresa}.servicos
     WHERE  codigo like ? OR aplicacao like ?  limit  20  `;
-
-        return new Promise<service[]>(async (resolve, reject) => {
-            await conn.query(sql, [parametro, parametro], (err: any, result: any) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(result)
-                }
-            })
-        })
+        
+        const [result] = await conn.query(sql, [parametro, parametro]);
+        return result as service[];
     }
 
 
-    async buscaGeral(empresa: any, data_recadastro: string) {
-        return new Promise<service[]>(async (resolve, reject) => {
-            let sql = ` select *,
+    async buscaGeral(empresa: any, data_recadastro?: string): Promise<service[]> {
+        let sql = ` select *,
       DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-    from ${empresa}.servicos  `
-            let paramQuery = [];
-            let valueQuery = [];
+    from ${empresa}.servicos  `;
+        
+        let paramQuery: string[] = [];
+        let valueQuery: any[] = [];
 
+        if (data_recadastro) {
+            paramQuery.push(' WHERE data_recadastro >  ? ');
+            valueQuery.push(data_recadastro);
+        }
+        
+        let finalSql = sql;
+        if (paramQuery.length > 0) {
+            finalSql = sql + paramQuery.join('');
+        }
 
-            if (data_recadastro) {
-                paramQuery.push(' WHERE data_recadastro >  ? ')
-                valueQuery.push(data_recadastro);
-            }
-            let finalSql = sql;
-            if (paramQuery.length > 0) {
-                finalSql = sql + paramQuery;
-            }
-
-            await conn.query(finalSql, valueQuery, (err: any, result: any) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        const [result] = await conn.query(finalSql, valueQuery);
+        return result as service[];
     }
 
 
-    async novaBusca(empresa: string, query: any) {
-
+    async novaBusca(empresa: string, query: any): Promise<service[]> {
         let {
             codigo,
             id,
@@ -103,8 +87,8 @@ export class Select_servicos {
         }
 
         if (codigo) {
-            conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
-            params.push(codigo);          // Adiciona o valor ao array de parâmetros
+            conditions.push("codigo = ?");
+            params.push(codigo);
         }
         if (id) {
             conditions.push("id = ?");
@@ -123,45 +107,19 @@ export class Select_servicos {
             conditions.push("aplicacao LIKE ?");
             params.push(`%${aplicacao}%`);
         }
+        
         let whereClause = "";
-
         if (conditions.length > 0) {
             whereClause = " WHERE " + conditions.join(" AND ");
         }
 
-        //conditions.join(" LIMIT ?");
-        let limitQuery = " LIMIT ? "
-
+        let limitQuery = " LIMIT ? ";
         params.push(Number(limit));
 
         const finalSql = baseSql + whereClause + limitQuery;
 
-        // console.log("SQL Executado:", finalSql);  
-        // console.log("Parâmetros:", params);       
-
-        try {
-
-            return new Promise(async (resolve, reject) => {
-                await conn.query(finalSql, params, (err: any, result) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result)
-
-                    }
-                })
-
-            })
-
-
-        } catch (err) {
-            console.error("Erro ao executar a query:", err);
-            // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
-            throw new Error("Falha ao buscar marcas no banco de dados.");
-            // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
-        }
+        const [result] = await conn.query(finalSql, params);
+        return result as service[];
     }
-
-
 
 }

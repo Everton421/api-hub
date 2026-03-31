@@ -11,10 +11,8 @@ type queryProd = {
 
 export class Select_produtos {
 
-    async buscaPorCodigo(empresa: any, codigo: number) {
-        return new Promise<ProdutoBanco[]>(async (resolve, reject) => {
-
-            let sql = `
+    async buscaPorCodigo(empresa: any, codigo: number): Promise<ProdutoBanco[]> {
+        let sql = `
          select 
             *,
                  DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -22,19 +20,15 @@ export class Select_produtos {
              CONVERT(observacoes1 USING utf8) as observacoes1,
              CONVERT(observacoes2 USING utf8) as observacoes2,
              CONVERT(observacoes3 USING utf8) as observacoes3
-        from ${empresa}.produtos where codigo = ? `
-            await conn.query(sql, [codigo], (err: any, result: ProdutoBanco[]) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        from ${empresa}.produtos where codigo = ? `;
+        
+        const [result] = await conn.query(sql, [codigo]);
+        return result as ProdutoBanco[];
     }
 
-    async buscaPorCodigoDescricao(empresa: any, codigo: number, descricao: string) {
-
+    async buscaPorCodigoDescricao(empresa: any, codigo: number, descricao: string): Promise<ProdutoBanco[]> {
         if (!codigo) codigo = 0;
         if (!descricao) descricao = '';
-
 
         const sql = `SELECT *, 
           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -45,19 +39,12 @@ export class Select_produtos {
 
             FROM ${empresa}.produtos 
             WHERE  codigo like ? OR descricao = ?  limit  20  `;
-        return new Promise<ProdutoBanco[]>(async (resolve, reject) => {
-            await conn.query(sql, [codigo, descricao], (err: any, result: any) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(result)
-                }
-            })
-        })
+        
+        const [result] = await conn.query(sql, [codigo, descricao]);
+        return result as ProdutoBanco[];
     }
 
-    async buscaPorCodigoOuDescricao(empresa: any, parametro: string) {
-
+    async buscaPorCodigoOuDescricao(empresa: any, parametro: string): Promise<ProdutoBanco[]> {
         const sql = `SELECT *, 
           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
         DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
@@ -67,19 +54,12 @@ export class Select_produtos {
 
             FROM ${empresa}.produtos 
             WHERE  codigo like ? OR descricao = ?    `;
-        return new Promise<ProdutoBanco[]>(async (resolve, reject) => {
-            await conn.query(sql, [parametro, parametro], (err: any, result: any) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(result)
-                }
-            })
-        })
+        
+        const [result] = await conn.query(sql, [parametro, parametro]);
+        return result as ProdutoBanco[];
     }
 
-    async buscaPorCodigoOuDescricaoLimit(empresa: any, parametro: string) {
-
+    async buscaPorCodigoOuDescricaoLimit(empresa: any, parametro: string): Promise<ProdutoBanco[]> {
         const sql = `SELECT *, 
           DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
         DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
@@ -89,65 +69,45 @@ export class Select_produtos {
 
             FROM ${empresa}.produtos 
             WHERE  codigo like ? OR descricao like ?   limit 15 `;
-        return new Promise<ProdutoBanco[]>(async (resolve, reject) => {
-            await conn.query(sql, [parametro, parametro], (err: any, result: any) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(result)
-                }
-            })
-        })
+        
+        const [result] = await conn.query(sql, [parametro, parametro]);
+        return result as ProdutoBanco[];
     }
 
-    async buscaGeral(empresa: any, data_recadastro: string) {
-        return new Promise<ProdutoBanco[]>(async (resolve, reject) => {
-
-            let sql = ` select 
+    async buscaGeral(empresa: any, data_recadastro?: string): Promise<ProdutoBanco[]> {
+        let sql = ` select 
         *,
         DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
         DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro, 
              CONVERT(observacoes1 USING utf8) as observacoes1,
              CONVERT(observacoes2 USING utf8) as observacoes2,
              CONVERT(observacoes3 USING utf8) as observacoes3
-        from ${empresa}.produtos  `
+        from ${empresa}.produtos  `;
 
-            let paramQuery = [];
-            let valueQuery = [];
-            if (data_recadastro) {
-                paramQuery.push(' WHERE data_recadastro >  ? ')
-                valueQuery.push(data_recadastro);
-            }
+        let paramQuery: string[] = [];
+        let valueQuery: any[] = [];
+        
+        if (data_recadastro) {
+            paramQuery.push(' WHERE data_recadastro >  ? ');
+            valueQuery.push(data_recadastro);
+        }
 
-            let finalSql = sql;
+        let finalSql = sql;
+        if (paramQuery.length > 0) {
+            finalSql = sql + paramQuery.join('');
+        }
 
-            if (paramQuery.length > 0) {
-                finalSql = sql + paramQuery;
-            }
-
-
-            await conn.query(finalSql, valueQuery, (err: any, result: ProdutoBanco[]) => {
-                if (err) reject(err);
-                resolve(result)
-            })
-        })
+        const [result] = await conn.query(finalSql, valueQuery);
+        return result as ProdutoBanco[];
     }
 
-    async buscaUltimoCodigoInserido(empresa: any) {
-        return new Promise<any>(async (resolve, reject) => {
-
-            let sql = ` select MAX(codigo) as codigo  from ${empresa}.produtos `
-            await conn.query(sql, (err: any, result: any[]) => {
-                if (err) reject(err);
-                resolve(result[0])
-            })
-        })
+    async buscaUltimoCodigoInserido(empresa: any): Promise<{ codigo: number }> {
+        let sql = ` select MAX(codigo) as codigo  from ${empresa}.produtos `;
+        const [result] = await conn.query(sql);
+        return (result as any)[0];
     }
-
-
 
     async novaBusca(empresa: string, query: any): Promise<ProdutoBanco[]> {
-
         let {
             codigo,
             marca,
@@ -176,8 +136,8 @@ export class Select_produtos {
         }
 
         if (codigo) {
-            conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
-            params.push(codigo);          // Adiciona o valor ao array de parâmetros
+            conditions.push("codigo = ?");
+            params.push(codigo);
         }
         if (marca) {
             conditions.push("marca = ?");
@@ -197,43 +157,19 @@ export class Select_produtos {
             conditions.push("descricao LIKE ?");
             params.push(`%${descricao}%`);
         }
-        let whereClause = "";
 
+        let whereClause = "";
         if (conditions.length > 0) {
             whereClause = " WHERE " + conditions.join(" AND ");
         }
 
-        //conditions.join(" LIMIT ?");
-        let limitQuery = " LIMIT ? "
-
+        let limitQuery = " LIMIT ? ";
         params.push(Number(limit));
 
         const finalSql = baseSql + whereClause + limitQuery;
 
-        // console.log("SQL Executado:", finalSql);  
-        // console.log("Parâmetros:", params);       
-
-        try {
-
-            return new Promise<ProdutoBanco[]>(async (resolve, reject) => {
-                await conn.query(finalSql, params, (err: any, result: ProdutoBanco[]) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result)
-
-                    }
-                })
-
-            })
-
-
-        } catch (err) {
-            console.error("Erro ao executar a query:", err);
-            // É importante tratar o erro adequadamente. Lançar ou retornar um erro específico.
-            throw new Error("Falha ao buscar produtos no banco de dados.");
-            // Ou `reject(err)` se estivesse dentro do `new Promise` original, mas com async/await é melhor lançar.
-        }
+        const [result] = await conn.query(finalSql, params);
+        return result as ProdutoBanco[];
     }
 
 }

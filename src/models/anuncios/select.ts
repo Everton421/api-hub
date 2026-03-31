@@ -20,89 +20,47 @@ export type queryAnuncio = {
 
 export class SelectAnuncios {
 
-    /**
-     * 
-     * @param empresa nome do banco de dados 
-     * @param data_recadastro atributo opcional, obtem anuncios alterados após esta data.
-     * @param limit atributo opcional, limita a quantidade de registros.
-     * @returns 
-     */
     async findAll(empresa: string, data_recadastro?: string, limit?: number): Promise<typeAnuncios[]> {
+        let sql = ` SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${empresa}.anuncios `;
 
-        return new Promise(async (resolve, reject) => {
+        let paramQuery: string[] = [];
+        let valueQuery: any[] = [];
 
-            let sql = ` SELECT *,
-                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.anuncios `
+        if (data_recadastro) {
+            paramQuery.push(' WHERE data_recadastro >  ? ');
+            valueQuery.push(data_recadastro);
+        }
+        if (limit && limit > 0) {
+            paramQuery.push(' LIMIT ? ');
+            valueQuery.push(limit);
+        }
 
-            let paramQuery = [];
-            let valueQuery = [];
+        let finalSql = sql;
+        if (paramQuery.length > 0) {
+            finalSql = sql + paramQuery.join('');
+        }
 
-            if (data_recadastro) {
-                paramQuery.push(' WHERE data_recadastro >  ? ')
-                valueQuery.push(data_recadastro);
-            }
-            if (limit && limit > 0) {
-                paramQuery.push(' LIMIT ? ')
-                valueQuery.push(limit);
-            }
-
-            let finalSql = sql;
-            if (paramQuery.length > 0) {
-                finalSql = sql + paramQuery;
-            }
-
-
-            await conn.query(finalSql, valueQuery, (err: any, result: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-
-                    resolve(result);
-                }
-            })
-        })
+        const [result] = await conn.query(finalSql, valueQuery);
+        return result as typeAnuncios[];
     }
 
-
-
-    /**
-     * 
-     * @param empresa nome do banco de dados
-     * @param id id do anuncio
-     * @returns 
-     */
     async findById(empresa: string, id: number): Promise<typeAnuncios[]> {
+        let sqlAnuncios = ` SELECT an.*,
+            DATE_FORMAT(an.data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(an.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${empresa}.anuncios an
+         where an.id = ? 
+         `;
 
-        return new Promise(async (resolve, reject) => {
-
-            let sqlAnuncios = ` SELECT an.*,
-                DATE_FORMAT(an.data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                DATE_FORMAT(an.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
-             FROM ${empresa}.anuncios an
-             where an.id = ? 
-             `;
-
-            const params = [id]
-            await conn.query(sqlAnuncios, params, (err: any, result: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                    if (result.length > 0) {
-
-                    }
-                }
-            })
-        })
+        const params = [id];
+        const [result] = await conn.query(sqlAnuncios, params);
+        return result as typeAnuncios[];
     }
-
-
-
 
     async findByParams(empresa: string, query: queryAnuncio): Promise<typeAnuncios[]> {
-
         let {
             id,
             codigo_produto,
@@ -158,8 +116,6 @@ export class SelectAnuncios {
             params.push(id_externo);
         }
 
-
-
         if (descricao) {
             conditions.push("descricao LIKE ?");
             params.push(`%${descricao}%`);
@@ -171,7 +127,6 @@ export class SelectAnuncios {
         }
 
         if (sku_externo) {
-
             conditions.push("sku_externo LIKE ?");
             params.push(`%${sku_externo}%`);
         }
@@ -181,30 +136,16 @@ export class SelectAnuncios {
             params.push(`%${num_fabricante}%`);
         }
 
-
         if (conditions.length > 0) {
             baseSql += " WHERE " + conditions.join(" AND ");
         }
 
-
         const limitValue = (limit && Number(limit) > 0) ? Number(limit) : 20;
-
         baseSql += " LIMIT ?";
         params.push(limitValue);
 
-
-
-        return new Promise<typeAnuncios[]>((resolve, reject) => {
-            conn.query(baseSql, params, (err: any, result: any) => {
-                if (err) {
-                    console.error("Erro na query findByParams:", err);
-                    reject(err);
-                } else {
-                    // O mysql retorna RowDataPacket[], forçamos o tipo para nosso array
-                    resolve(result as typeAnuncios[]);
-                }
-            });
-        });
+        const [result] = await conn.query(baseSql, params);
+        return result as typeAnuncios[];
     }
 
 }

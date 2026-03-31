@@ -3,88 +3,56 @@ import { VeiculoBanco } from "../../types/veiculo/type-veiculo";
 
 export class Select_veiculos {
 
-    async buscaGeral(dbName: string, data_recadastro: string) {
-        return new Promise<any[]>(async (resolve, reject) => {
+    async buscaGeral(dbName: string, data_recadastro?: string): Promise<VeiculoBanco[]> {
+        let sql = `select *,
+              DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+        DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+        from ${dbName}.veiculos
+            `;
 
-            let sql = `select *,
-                  DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-            from ${dbName}.veiculos
-                `
+        let paramQuery: string[] = [];
+        let valueQuery: any[] = [];
 
-            let paramQuery = [];
-            let valueQuery = [];
+        if (data_recadastro) {
+            paramQuery.push(' WHERE data_recadastro >  ? ');
+            valueQuery.push(data_recadastro);
+        }
 
-            if (data_recadastro) {
-                paramQuery.push(' WHERE data_recadastro >  ? ')
-                valueQuery.push(data_recadastro);
-            }
+        let finalSql = sql;
+        if (paramQuery.length > 0) {
+            finalSql = sql + paramQuery.join('');
+        }
+        
+        const [result] = await conn.query(finalSql, valueQuery);
+        return result as VeiculoBanco[];
+    }
 
-            let finalSql = sql;
-            if (paramQuery.length > 0) {
-                finalSql = sql + paramQuery;
-            }
-            await conn.query(finalSql, valueQuery, (err: any, result: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result)
-                }
+    async buscaPorCliente(dbName: string, cliente: number): Promise<VeiculoBanco[]> {
+        let sql = `select *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+                from ${dbName}.veiculos
+                where cliente = ?
+                ;  `;
 
-            })
-        })
+        const [result] = await conn.query(sql, [cliente]);
+        return result as VeiculoBanco[];
+    }
+
+    async buscaPorCodigo(dbName: any, codigo: number): Promise<VeiculoBanco[]> {
+        let sql = `select *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+                DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+                from ${dbName}.veiculos
+                where codigo = ?
+                ;  `;
+
+        const [result] = await conn.query(sql, [codigo]);
+        return result as VeiculoBanco[];
     }
 
 
-
-
-    async buscaPorCliente(dbName: string, cliente: number) {
-        return new Promise<any[]>(async (resolve, reject) => {
-
-            let sql = `select *,
-                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                    DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-                    from ${dbName}.veiculos
-                    where cliente = ${cliente}
-                    ;  `
-
-            await conn.query(sql, (err: any, result: any) => {
-                if (err) {
-
-                    reject(err);
-                } else {
-                    resolve(result)
-                }
-
-            })
-        })
-    }
-
-    async buscaPorCodigo(dbName: any, codigo: number) {
-        return new Promise<VeiculoBanco[]>(async (resolve, reject) => {
-
-            let sql = `select *,
-                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-                    DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
-                    from ${dbName}.veiculos
-                    where codigo = ${codigo}
-                    ;  `
-
-            await conn.query(sql, (err: any, result: any) => {
-                if (err) {
-                    console.log(`erro ao tentar consultar o veiculo codigo ${codigo}`)
-                    reject(err);
-                } else {
-                    resolve(result)
-                }
-
-            })
-        })
-    }
-
-
-    async novaBusca(empresa: string, query: any) {
-
+    async novaBusca(empresa: string, query: any): Promise<VeiculoBanco[]> {
         let {
             codigo,
             cliente,
@@ -113,8 +81,8 @@ export class Select_veiculos {
         }
 
         if (codigo) {
-            conditions.push("codigo = ?"); // Placeholder (?) para o parâmetro
-            params.push(codigo);          // Adiciona o valor ao array de parâmetros
+            conditions.push("codigo = ?");
+            params.push(codigo);
         }
         if (id) {
             conditions.push("id = ?");
@@ -154,38 +122,13 @@ export class Select_veiculos {
             whereClause = " WHERE " + conditions.join(" AND ");
         }
 
-        //conditions.join(" LIMIT ?");
-        let limitQuery = " LIMIT ? "
-
+        let limitQuery = " LIMIT ? ";
         params.push(Number(limit));
 
         const finalSql = baseSql + whereClause + limitQuery;
 
-        // console.log("SQL Executado:", finalSql);  
-        // console.log("Parâmetros:", params);       
-
-        try {
-
-            return new Promise(async (resolve, reject) => {
-                await conn.query(finalSql, params, (err: any, result) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result)
-
-                    }
-                })
-
-            })
-
-
-        } catch (err) {
-            console.error("Erro ao executar a query:", err);
-            throw new Error("Falha ao buscar os veiculos no banco de dados.");
-        }
+        const [result] = await conn.query(finalSql, params);
+        return result as VeiculoBanco[];
     }
-
-
-
 
 }
