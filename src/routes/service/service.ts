@@ -1,0 +1,241 @@
+import { type FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import z from 'zod';
+import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
+import { SelectService } from '../../models/service/select.ts';
+import { InsertService } from '../../models/service/insert.ts';
+import { UpdateService } from '../../models/service/update.ts';
+import { DateService } from '../../utils/dateService.ts';
+import { publishMessage } from '../../services/broker/publish-message.ts';
+
+const getServicesRoute: FastifyPluginAsyncZod = async (server) => {
+    server.get('/offline/services', {
+        schema: {
+            tags: ['services'],
+            headers: z.object({
+                token: z.string()
+            }),
+            querystring: z.object({
+                data_recadastro: z.string().optional(),
+                limit: z.coerce.number().optional()
+            }),
+            response: {
+                200: z.array(z.object({
+                    codigo: z.number(),
+                    id: z.number(),
+                    valor: z.number(),
+                    aplicacao: z.string(),
+                    tipo_serv: z.number(),
+                    data_cadastro: z.string(),
+                    data_recadastro: z.string(),
+                    ativo: z.string()
+                })),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const select = new SelectService();
+        const decodedToken = DecodedToken(String(request.headers.token));
+        const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const { data_recadastro, limit } = request.query;
+
+        try {
+            const result = await select.findAll(dbName, data_recadastro);
+            return reply.status(200).send(result);
+        } catch (e) {
+            console.error('Error fetching services:', e);
+            return reply.status(500).send({ success: false, message: 'Error fetching services' });
+        }
+    });
+
+    server.get('/offline/services/search', {
+        schema: {
+            tags: ['services'],
+            headers: z.object({
+                token: z.string()
+            }),
+            querystring: z.object({
+                codigo: z.coerce.number().optional(),
+                id: z.coerce.number().optional(),
+                aplicacao: z.string().optional(),
+                tipo: z.coerce.number().optional(),
+                ativo: z.string().optional(),
+                limit: z.coerce.number().optional()
+            }),
+            response: {
+                200: z.array(z.object({
+                    codigo: z.number(),
+                    id: z.number(),
+                    valor: z.number(),
+                    aplicacao: z.string(),
+                    tipo_serv: z.number(),
+                    data_cadastro: z.string(),
+                    data_recadastro: z.string(),
+                    ativo: z.string()
+                })),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const select = new SelectService();
+        const decodedToken = DecodedToken(String(request.headers.token));
+        const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+
+        try {
+            const result = await select.findByParams(dbName, request.query);
+            return reply.status(200).send(result);
+        } catch (e) {
+            console.error('Error searching services:', e);
+            return reply.status(400).send({ success: false, message: 'Error searching services' });
+        }
+    });
+
+    server.post('/offline/services', {
+        schema: {
+            tags: ['services'],
+            headers: z.object({
+                token: z.string(),
+                source: z.string().optional()
+            }),
+            body: z.object({
+                id: z.number(),
+                valor: z.number(),
+                aplicacao: z.string(),
+                tipo_serv: z.number(),
+                ativo: z.enum(['S', 'N']).default('S')
+            }),
+            response: {
+                200: z.object({
+                    codigo: z.number(),
+                    id: z.number(),
+                    valor: z.number(),
+                    aplicacao: z.string(),
+                    tipo_serv: z.number(),
+                    data_cadastro: z.string(),
+                    data_recadastro: z.string(),
+                    ativo: z.string()
+                }),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const dateService = new DateService();
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const source = request.headers.source as string || 'api_internal';
+        const { id, valor, aplicacao, tipo_serv, ativo } = request.body;
+
+        const data_cadastro = dateService.obterDataAtual();
+        const data_recadastro = dateService.obterDataHoraAtual();
+
+        const insert = new InsertService();
+
+        try {
+            const result = await insert.insert(dbName, { codigo: 0, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
+            const item = { codigo: result.insertId, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo };
+            await publishMessage(empresa, 'service.inserted', item, source);
+            return reply.status(200).send(item);
+        } catch (e) {
+            console.error('Error inserting service:', e);
+            return reply.status(400).send({ success: false, message: 'Error inserting service' });
+        }
+    });
+
+    server.put('/offline/services', {
+        schema: {
+            tags: ['services'],
+            headers: z.object({
+                token: z.string(),
+                source: z.string().optional()
+            }),
+            body: z.object({
+                codigo: z.number(),
+                id: z.number(),
+                valor: z.number(),
+                aplicacao: z.string(),
+                tipo_serv: z.number(),
+                ativo: z.enum(['S', 'N']).default('S')
+            }),
+            response: {
+                200: z.object({
+                    codigo: z.number(),
+                    id: z.number(),
+                    valor: z.number(),
+                    aplicacao: z.string(),
+                    tipo_serv: z.number(),
+                    data_cadastro: z.string(),
+                    data_recadastro: z.string(),
+                    ativo: z.string()
+                }),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const dateService = new DateService();
+        const select = new SelectService();
+        const update = new UpdateService();
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const source = request.headers.source as string || 'api_internal';
+        const { codigo, id, valor, aplicacao, tipo_serv, ativo } = request.body;
+
+        if (!codigo) {
+            return reply.status(400).send({ success: false, message: 'Code is required' });
+        }
+
+        const existing = await select.findByCode(dbName, codigo);
+        if (existing.length === 0) {
+            return reply.status(400).send({ success: false, message: 'Service not found' });
+        }
+
+        const data_cadastro = existing[0].data_cadastro;
+        const data_recadastro = dateService.obterDataHoraAtual();
+
+        try {
+            const result = await update.update(dbName, { codigo, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
+
+            if (result.affectedRows > 0) {
+                const item = { codigo, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo };
+                await publishMessage(empresa, 'service.updated', item, source);
+                return reply.status(200).send(item);
+            }
+
+            return reply.status(400).send({ success: false, message: 'No rows affected' });
+        } catch (e) {
+            console.error('Error updating service:', e);
+            return reply.status(400).send({ success: false, message: 'Error updating service' });
+        }
+    });
+};
+
+export { getServicesRoute };
+export default getServicesRoute;

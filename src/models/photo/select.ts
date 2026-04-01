@@ -1,0 +1,46 @@
+import { conn } from "../../database/databaseConfig";
+import { PhotoType } from "./types/photo-type";
+
+export class SelectPhoto {
+    async findAll(dbName: string, dataRecadastro?: string): Promise<PhotoType[]> {
+        let sql = ` SELECT *,
+            TO_BASE64(foto) AS foto,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.fotos_produtos `;
+
+        const params: any[] = [];
+
+        if (dataRecadastro) {
+            sql += ' WHERE data_recadastro > ?';
+            params.push(dataRecadastro);
+        }
+
+        const [result] = await conn.query(sql, params);
+        return result as PhotoType[];
+    }
+
+    async findByProduct(dbName: string, productCode: number): Promise<PhotoType[]> {
+        const sql = ` SELECT *,
+            TO_BASE64(foto) AS foto,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.fotos_produtos 
+           WHERE produto = ?`;
+
+        const [result] = await conn.query(sql, [productCode]);
+        return result as PhotoType[];
+    }
+
+    async findByCode(dbName: string, code: number): Promise<PhotoType[]> {
+        const sql = ` SELECT *,
+            TO_BASE64(foto) AS foto,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.fotos_produtos 
+           WHERE codigo = ?`;
+
+        const [result] = await conn.query(sql, [code]);
+        return result as PhotoType[];
+    }
+}

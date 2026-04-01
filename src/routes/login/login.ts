@@ -90,10 +90,7 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
                 payload, secret
             )
             return reply.send({
-                msg: "Autenticação bem sucedida!",
                 token: token,
-                usuario: nomeUsuario,
-                codigo: codigoUsuario
             })
 
         } else {

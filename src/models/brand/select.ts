@@ -1,0 +1,113 @@
+import { conn } from "../../database/databaseConfig.ts";
+import { type BrandType } from "./types/brand-type.ts";
+
+type BrandQuery = {
+    codigo: number;
+    id: number;
+    descricao: string;
+    limit: number;
+    ativo: string;
+};
+
+export class SelectBrand {
+    async findAll(dbName: string, limit?: number, dataRecadastro?: string): Promise<BrandType[]> {
+        let sql = ` SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.marcas `;
+
+        const params: any[] = [];
+
+        if (dataRecadastro) {
+            sql += ' WHERE data_recadastro > ?';
+            params.push(dataRecadastro);
+        }
+
+        if (limit && limit > 0) {
+            sql += ' LIMIT ?';
+            params.push(limit);
+        }
+
+        const [result] = await conn.query(sql, params);
+        return result as BrandType[];
+    }
+
+    async findByCode(dbName: string, code: number): Promise<BrandType[]> {
+        const sql = ` SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.marcas 
+           WHERE codigo = ?`;
+
+        const [result] = await conn.query(sql, [code]);
+        return result as BrandType[];
+    }
+
+    async findById(dbName: string, id: number, limit: number): Promise<BrandType[]> {
+        const sql = ` SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.marcas 
+           WHERE id = ?
+           LIMIT ? `;
+
+        const [result] = await conn.query(sql, [id, limit]);
+        return result as BrandType[];
+    }
+
+    async findByDescription(dbName: string, description: string, limit: number): Promise<BrandType[]> {
+        const sql = ` SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.marcas 
+           WHERE descricao LIKE ? `;
+
+        const [result] = await conn.query(sql, [`%${description}%`, limit]);
+        return result as BrandType[];
+    }
+
+    async findByParams(dbName: string, params: Partial<BrandQuery>): Promise<BrandType[]> {
+        const {
+            codigo,
+            id,
+            descricao,
+            limit = 20,
+            ativo
+        } = params;
+
+        let sql = ` SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+         FROM ${dbName}.marcas `;
+
+        const conditions: string[] = [];
+        const values: any[] = [];
+
+        if (codigo) {
+            conditions.push("codigo = ?");
+            values.push(codigo);
+        }
+        if (id) {
+            conditions.push("id = ?");
+            values.push(Number(id));
+        }
+        if (ativo) {
+            conditions.push("ativo = ?");
+            values.push(ativo);
+        }
+        if (descricao) {
+            conditions.push("descricao LIKE ?");
+            values.push(`%${descricao}%`);
+        }
+
+        if (conditions.length > 0) {
+            sql += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        sql += ' LIMIT ?';
+        values.push(Number(limit));
+
+        const [result] = await conn.query(sql, values);
+        return result as BrandType[];
+    }
+}

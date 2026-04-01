@@ -16,7 +16,27 @@ export const getCategoryRoute : FastifyPluginAsyncZod = async ( server )=>{
                 querystring: z.object({
                     data_recadastro: z.string(),
                     limit: z.number().optional()
-                })
+                }),
+                response: { 
+                    200: z.array(
+                        z.object({
+                            codigo : z.number(),
+                             id : z.number(),
+                             data_cadastro : z.string(),
+                             data_recadastro : z.string(),
+                             descricao : z.string(),
+                             ativo : z.enum([ "S" , "n" ]).default('S')
+                        })
+                        ),
+                        500: z.object({
+                            sucess: z.boolean(),
+                            message: z.string()
+                        }),
+                        400: z.object({
+                        sucess: z.boolean(),
+                            message: z.string()
+                        })
+                }
             }
     }, async (request, reply )=>{
         const dateService = new DateService();
@@ -32,8 +52,8 @@ export const getCategoryRoute : FastifyPluginAsyncZod = async ( server )=>{
 
                 if (!dateService.isValidDate(request.query.data_recadastro as string)) {
                     return reply.status(400).send({
-                        erro: true,
-                        msg: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
+                        sucess: true,
+                        message: "Informe a data no formato YYYY-MM-DD HH:mm:ss"
                     });
                     }
 
@@ -46,7 +66,7 @@ export const getCategoryRoute : FastifyPluginAsyncZod = async ( server )=>{
 
         } catch (e) {
             console.log("ocorreu um erro ao consultar as categorias", e)
-            return reply.status(500).send({ erro: true, msg: "ocorreu um erro ao consultar as categorias" })
+            return reply.status(500).send({ sucess: true, message: "ocorreu um erro ao consultar as categorias" })
 
         }
     })

@@ -84,17 +84,17 @@ export const createCompanyRoute : FastifyPluginAsyncZod = async ( server )=>{
                         if (validUserApi.length > 0)
                           return reply.status(400).send({
                               sucess: false,
-                              message: ` Já existe usuario cadastro com este email ${objUser.email}`,
+                              message: ` Já existe usuario cadastrado com este email ${objUser.email}`,
                             });
                             
                             const verify = await selectCompany.verifyExistsCompany(cnpj);
                             if(verify){
-                                return reply.status(400).send({ sucess: false, message: "A empresa com o cnpj/cpf informado já foi cadastrado."})
+                                return reply.status(400).send({ sucess: false, message: "A empresa com o cnpj/cpf informado já foi cadastrada."})
                               }else{
                                 
                                 const userApiRegister = await insertUsersApi.insertUser(objUser);
-
-                                await companyStructure.createStructure(cnpj);
+                                    //console.log("RESULT INSERT USER API : ", userApiRegister)
+                                                  await companyStructure.createStructure(cnpj);
                                     if(userApiRegister.insertId > 0 ){
 
                                             
@@ -111,12 +111,13 @@ export const createCompanyRoute : FastifyPluginAsyncZod = async ( server )=>{
                                                 fim_contrato: '0000-00-00'
                                                 };
                                                const resultInsertCompany = await insertCompany.insertCompany(objEmpresa);
-
+                                          //  console.log(" RESULT INSERT COMPANY  ",resultInsertCompany);
                                                 /// //////////////// 
                                                 ///  criar uma factory para registrar os produtos items de teste
                                                 /// //////////
                                const userCompanyRegister = await insertUsersCompany.insertUser(dbName, objUser)
-                            const secret = process.env.SECRET
+                               const userCompanyId = userCompanyRegister.insertId;
+                            const secret = process.env.SECRET;
                               if (!secret) {
                                   console.error("Erro crítico: JWT_SECRET não está definido!");
                                   return reply.status(500).send({ msg: "Erro interno do servidor [JWT Secret Missing]." });
@@ -124,7 +125,8 @@ export const createCompanyRoute : FastifyPluginAsyncZod = async ( server )=>{
                                 const payload = {
                                                       cnpj: cnpj,
                                                       email: email,
-                                                      senha: senha
+                                                      senha: senha,
+                                                      codigo:userCompanyId
                                                     }
                                                     const token = jwt.sign(
                                                       payload, secret

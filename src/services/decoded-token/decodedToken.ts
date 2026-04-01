@@ -38,7 +38,7 @@ export function DecodedToken(token: string): responseDecodToken {
             console.log("Payoad do jwt invalido ", decodedPayload);
             return { erro: "true", msg: `Payoad do jwt invalido ${decodedPayload}` }
         }
-        decoded = decodedPayload;
+        decoded = decodedPayload as decoded;
 
     })
 

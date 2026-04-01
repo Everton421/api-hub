@@ -1,0 +1,57 @@
+import { conn } from "../../database/databaseConfig";
+import { ProductSectorType } from "./types/product-sector-type";
+
+type ProductSectorWithoutIds = Omit<ProductSectorType, 'id_produto' | 'id_setor'>;
+
+export class InsertProductSector {
+    async insert(dbName: string, productSector: ProductSectorWithoutIds): Promise<{ insertId: number }> {
+        const sql = `INSERT INTO ${dbName}.produto_setor 
+            (setor, produto, estoque, local_produto, local1_produto, local2_produto, local3_produto, local4_produto, data_recadastro)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const values = [
+            productSector.setor,
+            productSector.produto,
+            productSector.estoque,
+            productSector.local_produto,
+            productSector.local1_produto,
+            productSector.local2_produto,
+            productSector.local3_produto,
+            productSector.local4_produto,
+            productSector.data_recadastro
+        ];
+
+        const [result] = await conn.query(sql, values);
+        return { insertId: (result as any).insertId };
+    }
+
+    async insertOrUpdate(dbName: string, productSector: ProductSectorWithoutIds): Promise<{ affectedRows: number }> {
+        const sql = `INSERT INTO ${dbName}.produto_setor 
+            (setor, produto, estoque, local_produto, local1_produto, local2_produto, local3_produto, local4_produto, data_recadastro)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE  
+                estoque = VALUES(estoque),
+                setor = VALUES(setor),
+                local_produto = VALUES(local_produto),
+                local1_produto = VALUES(local1_produto),
+                local2_produto = VALUES(local2_produto),
+                local3_produto = VALUES(local3_produto),
+                local4_produto = VALUES(local4_produto),
+                data_recadastro = VALUES(data_recadastro)`;
+
+        const values = [
+            productSector.setor,
+            productSector.produto,
+            productSector.estoque,
+            productSector.local_produto,
+            productSector.local1_produto,
+            productSector.local2_produto,
+            productSector.local3_produto,
+            productSector.local4_produto,
+            productSector.data_recadastro
+        ];
+
+        const [result] = await conn.query(sql, values);
+        return { affectedRows: (result as any).affectedRows };
+    }
+}

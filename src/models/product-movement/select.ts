@@ -1,0 +1,154 @@
+import { conn } from "../../database/databaseConfig.ts";
+import { type ProductMovementType } from "./types/product-movement-type.ts";
+
+type ProductMovementQuery = {
+    setor: number;
+    produto: number;
+    quantidade: string;
+    tipo: string;
+    historico: string;
+    data_recadastro: string;
+    codigo: number;
+    usuario: number;
+    ent_sai: string;
+};
+
+export class SelectProductMovement {
+    async findAll(dbName: string, params: { dataRecadastro?: string; userId?: number }): Promise<ProductMovementType[]> {
+        let sql = ` SELECT 
+            mp.*,
+            p.id as id_produto,
+            s.id as id_setor,
+            COALESCE(DATE_FORMAT(mp.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+         FROM ${dbName}.movimentos_produtos as mp 
+         JOIN ${dbName}.produtos p ON mp.produto = p.codigo
+         JOIN ${dbName}.setores s ON s.codigo = mp.setor `;
+
+        const conditions: string[] = [];
+        const values: any[] = [];
+
+        if (params.userId && params.userId !== 0) {
+            conditions.push("mp.usuario = ?");
+            values.push(params.userId);
+        }
+
+        if (params.dataRecadastro) {
+            conditions.push("mp.data_recadastro > ?");
+            values.push(params.dataRecadastro);
+        }
+
+        if (conditions.length > 0) {
+            sql += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        const [result] = await conn.query(sql, values);
+        return result as ProductMovementType[];
+    }
+
+    async findByCode(dbName: string, code: number): Promise<ProductMovementType[]> {
+        const sql = ` SELECT 
+            mp.*,
+            p.id as id_produto,
+            s.id as id_setor,
+            COALESCE(DATE_FORMAT(mp.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+         FROM ${dbName}.movimentos_produtos as mp 
+         JOIN ${dbName}.produtos p ON mp.produto = p.codigo
+         JOIN ${dbName}.setores s ON s.codigo = mp.setor
+         WHERE mp.codigo = ?`;
+
+        const [result] = await conn.query(sql, [code]);
+        return result as ProductMovementType[];
+    }
+
+    async findByProduct(dbName: string, productCode: number): Promise<ProductMovementType[]> {
+        const sql = ` SELECT 
+            *,
+            COALESCE(DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+         FROM ${dbName}.movimentos_produtos 
+         WHERE produto = ?`;
+
+        const [result] = await conn.query(sql, [productCode]);
+        return result as ProductMovementType[];
+    }
+
+    async findByProductAndSector(dbName: string, productCode: number, sectorCode: number): Promise<ProductMovementType[]> {
+        const sql = ` SELECT 
+            *,
+            COALESCE(DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+         FROM ${dbName}.movimentos_produtos 
+         WHERE produto = ? AND setor = ?`;
+
+        const [result] = await conn.query(sql, [productCode, sectorCode]);
+        return result as ProductMovementType[];
+    }
+
+    async findByParams(dbName: string, params: Partial<ProductMovementQuery>): Promise<ProductMovementType[]> {
+        const {
+            setor,
+            produto,
+            quantidade,
+            tipo,
+            historico,
+            data_recadastro,
+            codigo,
+            usuario,
+            ent_sai
+        } = params;
+
+        let sql = ` SELECT 
+            mp.*,
+            s.id as id_setor,
+            p.id as id_produto,
+            COALESCE(DATE_FORMAT(mp.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+         FROM ${dbName}.movimentos_produtos as mp
+         JOIN ${dbName}.produtos as p ON mp.produto = p.codigo
+         JOIN ${dbName}.setores s ON s.codigo = mp.setor `;
+
+        const conditions: string[] = [];
+        const values: any[] = [];
+
+        if (codigo) {
+            conditions.push("mp.codigo = ?");
+            values.push(codigo);
+        }
+        if (setor !== undefined) {
+            conditions.push("mp.setor = ?");
+            values.push(setor);
+        }
+        if (produto !== undefined) {
+            conditions.push("mp.produto = ?");
+            values.push(produto);
+        }
+        if (quantidade !== undefined) {
+            conditions.push("mp.quantidade = ?");
+            values.push(quantidade);
+        }
+        if (tipo) {
+            conditions.push("mp.tipo = ?");
+            values.push(tipo);
+        }
+        if (usuario !== undefined) {
+            conditions.push("mp.usuario = ?");
+            values.push(usuario);
+        }
+        if (ent_sai) {
+            conditions.push("mp.ent_sai = ?");
+            values.push(ent_sai);
+        }
+        if (historico) {
+            conditions.push("mp.historico LIKE ?");
+            values.push(`%${historico}%`);
+        }
+        if (data_recadastro) {
+            conditions.push("mp.data_recadastro > ?");
+            values.push(data_recadastro);
+        }
+
+        if (conditions.length > 0) {
+            sql += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        const [result] = await conn.query(sql, values);
+        return result as ProductMovementType[];
+    }
+}

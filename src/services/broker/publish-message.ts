@@ -1,6 +1,6 @@
-import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection/broker";
+import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection/broker.ts";
 
-
+ 
 
 /**
  * 
