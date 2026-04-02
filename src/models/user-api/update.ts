@@ -1,4 +1,4 @@
-import { ResultSetHeader } from "mysql2";
+import { type ResultSetHeader } from "mysql2";
 import { conn, db_api } from "../../database/databaseConfig.ts";
 
 export class UpdateUserApi {

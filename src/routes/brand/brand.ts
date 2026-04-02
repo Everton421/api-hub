@@ -8,9 +8,9 @@ import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
 const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/brands', {
+    server.get('/bulk/marcas', {
         schema: {
-            tags: ['brands'],
+            tags: ['marcas'],
             headers: z.object({
                 token: z.string()
             }),
@@ -53,9 +53,9 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/brands/search', {
+    server.get('/marcas/search', {
         schema: {
-            tags: ['brands'],
+            tags: ['marcas'],
             headers: z.object({
                 token: z.string()
             }),
@@ -96,9 +96,9 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/brands', {
+    server.post('/marcas', {
         schema: {
-            tags: ['brands'],
+            tags: ['marcas'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -152,9 +152,9 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/brands', {
+    server.put('/marcas', {
         schema: {
-            tags: ['brands'],
+            tags: ['marcas'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()

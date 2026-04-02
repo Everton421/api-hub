@@ -8,9 +8,9 @@ import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
 const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/service-order-types', {
+    server.get('/bulk/tipo_os', {
         schema: {
-            tags: ['service-order-types'],
+            tags: ['tipos de os'],
             headers: z.object({
                 token: z.string()
             }),
@@ -53,9 +53,9 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/service-order-types/search', {
+    server.get('/tipo_os/search', {
         schema: {
-            tags: ['service-order-types'],
+            tags: ['tipos de os'],
             headers: z.object({
                 token: z.string()
             }),
@@ -96,9 +96,9 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/service-order-types', {
+    server.post('/tipo_os', {
         schema: {
-            tags: ['service-order-types'],
+            tags: ['tipos de os'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -152,9 +152,9 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/service-order-types', {
+    server.put('/tipo_os', {
         schema: {
-            tags: ['service-order-types'],
+            tags: ['tipos de os'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()

@@ -4,11 +4,11 @@ import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectLocation } from '../../models/location/select.ts';
 import { InsertLocation } from '../../models/location/insert.ts';
 import { UpdateLocation } from '../../models/location/update.ts';
-import { LocationType } from '../../models/location/types/location-type.ts';
+import { type LocationType } from '../../models/location/types/location-type.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
-const getLocationsRoute: FastifyPluginAsyncZod = async (server) => {
+const locationsRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/offline/locations', {
         schema: {
             tags: ['locations'],
@@ -233,5 +233,5 @@ const getLocationsRoute: FastifyPluginAsyncZod = async (server) => {
     });
 };
 
-export { getLocationsRoute };
-export default getLocationsRoute;
+export { locationsRoute };
+export default locationsRoute;

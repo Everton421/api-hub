@@ -8,9 +8,9 @@ import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
 const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/vehicles', {
+    server.get('/bulk/veiculos', {
         schema: {
-            tags: ['vehicles'],
+            tags: ['veiculos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -59,9 +59,9 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/vehicles/search', {
+    server.get('/veiculos/search', {
         schema: {
-            tags: ['vehicles'],
+            tags: ['veiculos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -112,9 +112,9 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/vehicles', {
+    server.post('/veiculos', {
         schema: {
-            tags: ['vehicles'],
+            tags: ['veiculos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -180,9 +180,9 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/vehicles', {
+    server.put('/veiculos', {
         schema: {
-            tags: ['vehicles'],
+            tags: ['veiculos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()

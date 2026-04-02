@@ -7,10 +7,10 @@ import { UpdateService } from '../../models/service/update.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
-const getServicesRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/services', {
+const servicesRoute: FastifyPluginAsyncZod = async (server) => {
+    server.get('/bulk/servicos', {
         schema: {
-            tags: ['services'],
+            tags: ['servicos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -55,9 +55,9 @@ const getServicesRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/services/search', {
+    server.get('/servicos/search', {
         schema: {
-            tags: ['services'],
+            tags: ['servicos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -101,9 +101,9 @@ const getServicesRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/services', {
+    server.post('/servicos', {
         schema: {
-            tags: ['services'],
+            tags: ['servicos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -161,9 +161,9 @@ const getServicesRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/services', {
+    server.put('/servicos', {
         schema: {
-            tags: ['services'],
+            tags: ['servicos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -237,5 +237,5 @@ const getServicesRoute: FastifyPluginAsyncZod = async (server) => {
     });
 };
 
-export { getServicesRoute };
-export default getServicesRoute;
+export { servicesRoute };
+export default servicesRoute;

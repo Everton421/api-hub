@@ -1,4 +1,4 @@
-import { ResultSetHeader } from "mysql2";
+import {type ResultSetHeader } from "mysql2";
 import { conn } from "../../database/databaseConfig.ts";
 import { type NewUserCompany } from "./types/user-company-type.ts";
 

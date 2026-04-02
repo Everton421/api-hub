@@ -6,7 +6,7 @@ import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
 import { DateService } from "../../utils/dateService.ts";
 
 export const getCategoryRoute : FastifyPluginAsyncZod = async ( server )=>{
-    server.get('/offline/categorias' ,  {
+    server.get('/bulk/categorias' ,  {
           schema:
             {
                 tags: ['categorias'],

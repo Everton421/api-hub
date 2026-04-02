@@ -6,7 +6,7 @@ import { InsertProduct } from '../../models/product/insert.ts';
 import { UpdateProduct } from '../../models/product/update.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
-import { ProductType } from '../../models/product/types/product-type.ts';
+import { type ProductType } from '../../models/product/types/product-type.ts';
 
 const productResponseSchema = z.object({
     codigo: z.number(),
@@ -36,8 +36,8 @@ const productResponseSchema = z.object({
 const productWithRelationsSchema = z.object({
     codigo: z.number(),
     id: z.number(),
-    estoque: z.number(),
-    preco: z.number(),
+    estoque: z.string(),
+    preco: z.string(),
     unidade_medida: z.string(),
     grupo: z.number(),
     origem: z.number(),
@@ -58,10 +58,10 @@ const productWithRelationsSchema = z.object({
     observacoes3: z.string()
 });
 
-const getProductsRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/products', {
+const productsRoute: FastifyPluginAsyncZod = async (server) => {
+    server.get('/bulk/produtos', {
         schema: {
-            tags: ['products'],
+            tags: ['produtos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -100,9 +100,9 @@ const getProductsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/products/search', {
+    server.get('/produtos/search', {
         schema: {
-            tags: ['products'],
+            tags: ['produtos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -137,9 +137,9 @@ const getProductsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/products/:codigo', {
+    server.get('/produtos/:codigo', {
         schema: {
-            tags: ['products'],
+            tags: ['produtos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -167,7 +167,7 @@ const getProductsRoute: FastifyPluginAsyncZod = async (server) => {
 
         try {
             const result = await select.findByCode(dbName, codigo);
-
+            console.log(result)
             if (result.length === 0) {
                 return reply.status(404).send({ success: false, message: 'Product not found' });
             }
@@ -181,9 +181,9 @@ const getProductsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/products', {
+    server.post('/produtos', {
         schema: {
-            tags: ['products'],
+            tags: ['produtos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -253,9 +253,9 @@ const getProductsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/products', {
+    server.put('/produtos', {
         schema: {
-            tags: ['products'],
+            tags: ['produtos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -340,5 +340,5 @@ const getProductsRoute: FastifyPluginAsyncZod = async (server) => {
     });
 };
 
-export { getProductsRoute };
-export default getProductsRoute;
+export { productsRoute };
+export default productsRoute;

@@ -7,10 +7,10 @@ import { UpdatePaymentMethod } from '../../models/payment-method/update.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
-const getPaymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/payment-methods', {
+const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
+    server.get('/bulk/formas_pagamento', {
         schema: {
-            tags: ['payment-methods'],
+            tags: ['formas pagamento'],
             headers: z.object({
                 token: z.string()
             }),
@@ -57,9 +57,9 @@ const getPaymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/payment-methods/search', {
+    server.get('/formas_pagamento/search', {
         schema: {
-            tags: ['payment-methods'],
+            tags: ['formas pagamento'],
             headers: z.object({
                 token: z.string()
             }),
@@ -105,9 +105,9 @@ const getPaymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/payment-methods', {
+    server.post('/formas_pagamento', {
         schema: {
-            tags: ['payment-methods'],
+            tags: ['formas pagamento'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -169,9 +169,9 @@ const getPaymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/payment-methods', {
+    server.put('/formas_pagamento', {
         schema: {
-            tags: ['payment-methods'],
+            tags: ['formas pagamento'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -249,5 +249,5 @@ const getPaymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
     });
 };
 
-export { getPaymentMethodsRoute };
-export default getPaymentMethodsRoute;
+export { paymentMethodsRoute };
+export default paymentMethodsRoute;

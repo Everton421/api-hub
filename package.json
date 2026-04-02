@@ -18,8 +18,7 @@
     "@fastify/swagger": "^9.5.2",
     "@fastify/swagger-ui": "^5.2.3",
     "@scalar/fastify-api-reference": "^1.36.2",
-    "@types/amqplib": "^0.10.8",
-    "@types/axios": "^0.9.36",
+    "amqplib": "^1.0.3",
     "argon2": "^0.44.0",
     "axios": "^1.13.5",
     "dayjs": "^1.11.20",
@@ -38,6 +37,8 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
+    "@types/amqplib": "^0.10.8",
+    "@types/axios": "^0.9.36",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.6.2",
     "@types/supertest": "^6.0.3",

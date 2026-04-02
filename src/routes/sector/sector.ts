@@ -7,10 +7,10 @@ import { UpdateSector } from '../../models/sector/update.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
-const getSectorsRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/sectors', {
+const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
+    server.get('/bulk/setores', {
         schema: {
-            tags: ['sectors'],
+            tags: ['setores'],
             headers: z.object({
                 token: z.string()
             }),
@@ -53,7 +53,7 @@ const getSectorsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/sectors/search', {
+    server.get('/setores/search', {
         schema: {
             tags: ['sectors'],
             headers: z.object({
@@ -96,9 +96,9 @@ const getSectorsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/sectors', {
+    server.post('/setores', {
         schema: {
-            tags: ['sectors'],
+            tags: ['setores'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -151,9 +151,9 @@ const getSectorsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/sectors', {
+    server.put('/setores', {
         schema: {
-            tags: ['sectors'],
+            tags: ['setores'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -222,5 +222,5 @@ const getSectorsRoute: FastifyPluginAsyncZod = async (server) => {
     });
 };
 
-export { getSectorsRoute };
-export default getSectorsRoute;
+export { sectorsRoute };
+export default sectorsRoute;

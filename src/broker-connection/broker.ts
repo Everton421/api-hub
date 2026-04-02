@@ -1,6 +1,5 @@
 
-import amqp, { Channel, ChannelModel } from 'amqplib'
-import 'dotenv/config';
+import amqp, { type Channel, type ChannelModel } from 'amqplib'; 
 
     let connectionRabbitMQ: ChannelModel | null = null;
     let channel: Channel | null = null

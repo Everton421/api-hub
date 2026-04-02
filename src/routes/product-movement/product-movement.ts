@@ -5,7 +5,7 @@ import { SelectProductMovement } from '../../models/product-movement/select.ts';
 import { InsertProductMovement } from '../../models/product-movement/insert.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
-import { ProductMovementType } from '../../models/product-movement/types/product-movement-type.ts';
+import {type ProductMovementType } from '../../models/product-movement/types/product-movement-type.ts';
 
 const productMovementResponseSchema = z.object({
     codigo: z.number(),
@@ -33,10 +33,10 @@ const productMovementBodySchema = z.object({
     ent_sai: z.string()
 });
 
-const getProductMovementsRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/product-movements', {
+const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
+    server.get('/bulk/movimentos_produtos', {
         schema: {
-            tags: ['product-movements'],
+            tags: ['movimentos produtos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -76,9 +76,9 @@ const getProductMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/product-movements/search', {
+    server.get('/movimentos_produtos/search', {
         schema: {
-            tags: ['product-movements'],
+            tags: ['movimentos produtos'],
             headers: z.object({
                 token: z.string()
             }),
@@ -121,9 +121,9 @@ const getProductMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/product-movements', {
+    server.post('/movimentos_produtos', {
         schema: {
-            tags: ['product-movements'],
+            tags: ['movimentos produtos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -173,9 +173,9 @@ const getProductMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/product-movements/batch', {
+    server.post('/bulk/movimentos_produtos', {
         schema: {
-            tags: ['product-movements'],
+            tags: ['movimentos produtos'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -231,5 +231,5 @@ const getProductMovementsRoute: FastifyPluginAsyncZod = async (server) => {
     });
 };
 
-export { getProductMovementsRoute };
-export default getProductMovementsRoute;
+export { productMovementsRoute };
+export default productMovementsRoute;
