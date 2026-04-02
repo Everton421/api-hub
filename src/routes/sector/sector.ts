@@ -55,7 +55,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.get('/setores/search', {
         schema: {
-            tags: ['sectors'],
+            tags: ['setores'],
             headers: z.object({
                 token: z.string()
             }),

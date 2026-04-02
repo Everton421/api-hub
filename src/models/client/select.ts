@@ -82,9 +82,11 @@ export class SelectClient {
         cnpj?: string;
         codigo?: number;
         ativo?: string;
+        id?: string;
         limit?: number;
+
     }): Promise<ClientType[]> {
-        const { nome, cnpj, codigo, ativo, limit = 20 } = params;
+        const { nome, cnpj, codigo, ativo, id, limit = 20 } = params;
 
         let sql = `SELECT *,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -105,6 +107,11 @@ export class SelectClient {
         if (ativo) {
             conditions.push("ativo = ?");
             values.push(ativo);
+        }
+        if(id){
+            conditions.push("id = ?");
+            values.push(id);
+        
         }
         if (nome) {
             conditions.push("nome LIKE ?");

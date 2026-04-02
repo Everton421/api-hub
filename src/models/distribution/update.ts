@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { DistributionType } from "./types/distribution-type";
+import { conn } from "../../database/databaseConfig.ts";
+import { DistributionType } from "./types/distribution-type.ts";
 
 type DistributionUpdate = Partial<DistributionType> & { produto: number; setor: number; local: number };
 

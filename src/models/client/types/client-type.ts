@@ -1,6 +1,6 @@
 export type ClientType = {
     codigo: number;
-    id: number;
+    id: string;
     celular: string;
     nome: string;
     cep: string;

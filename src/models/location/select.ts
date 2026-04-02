@@ -45,7 +45,7 @@ export class SelectLocation {
         return result as LocationType[];
     }
 
-    async findById(dbName: string, id: number, limit: number): Promise<LocationType[]> {
+    async findById(dbName: string, id: string, limit: number): Promise<LocationType[]> {
         const sql = ` SELECT *,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
@@ -96,7 +96,7 @@ export class SelectLocation {
         }
         if (id) {
             conditions.push("id = ?");
-            values.push(Number(id));
+            values.push( id );
         }
         if (ativo) {
             conditions.push("ativo = ?");

@@ -3,7 +3,7 @@ import { type PaymentMethodType } from "./types/payment-method-type.ts";
 
 type PaymentMethodQuery = {
     codigo: number;
-    id: number;
+    id: string;
     limit: number;
     descricao: string;
     parcelas: number;

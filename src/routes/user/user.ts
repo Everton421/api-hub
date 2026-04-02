@@ -10,7 +10,7 @@ import { SelectUsersCompany } from '../../models/users-company/select.ts';
 const usersRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/bulk/usuarios', {
         schema: {
-            tags: ['users'],
+            tags: ['usuarios'],
             headers: z.object({
                 token: z.string()
             }),

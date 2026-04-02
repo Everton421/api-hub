@@ -1,11 +1,11 @@
 export type ProductType = {
     codigo: number;
-    id: number;
+    id: string;
     estoque: number;
-    preco: number;
+    preco: string;
     unidade_medida: string;
     grupo: number;
-    origem: number;
+    origem: string;
     descricao: string;
     num_fabricante: string;
     num_original: string;

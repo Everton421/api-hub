@@ -1,6 +1,6 @@
 export type PaymentMethodType = {
     codigo: number;
-    id: number;
+    id: string;
     descricao: string;
     desc_maximo: number;
     parcelas: number;

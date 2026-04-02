@@ -1,46 +1,53 @@
- import { conn } from "../databaseConfig"
+import { conn, db_api } from "../databaseConfig.ts"
  
- type resultDatabase =
-     {
-         fieldCount: number,
-         affectedRows: number,
-         insertId: number,
-         serverStatus: number,
-         warningCount: number,
-         message: string,
-         protocol41: boolean,
-         changedRows: number
-     }
- type resulFunction = {
-     sucess: boolean
-     message: string | number
- }
+ 
  export class CreateTablesApi {
- 
-     async createTable(databaseName: string): Promise<resulFunction> {
- 
-         return new Promise(async (resolve, reject) => {
- 
-             let sql = `CREATE TABLE IF NOT EXISTS ${databaseName}.ml_accounts (
-                           id  int(11) NOT NULL AUTO_INCREMENT,
-                             user_id  bigint(20) NOT NULL,
-                             ml_user_id  bigint(20) NOT NULL,
-                             access_token  text DEFAULT NULL,
-                             refresh_token  text DEFAULT NULL,
-                             token_expires_in  varchar(255) DEFAULT NULL,
-                             PRIMARY KEY ( id ),
-                             KEY user_id  ( user_id , ml_user_id)
-                             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`
- 
-             await conn.query(sql, (err: any, result: resultDatabase) => {
-                 if (err) {
-                     reject({ sucess: false, message: err });
-                 } else {
-                     resolve({ sucess: true, message: result.serverStatus });
-                 }
-             })
-         })
- 
+
+     async createtables(){
+        const arrSql = [
+            `CREATE DATABASE IF NOT EXISTS ??;`,
+            `
+            CREATE TABLE IF NOT EXISTS ??.empresas  (
+                 codigo  int(11) NOT NULL AUTO_INCREMENT,
+                 id  int(10) unsigned NOT NULL DEFAULT 0,
+                 responsavel  int(11) NOT NULL DEFAULT 0,
+                 cnpj  varchar(255) NOT NULL DEFAULT '',
+                 nome  varchar(255) NOT NULL DEFAULT '',
+                 email  varchar(255) DEFAULT NULL,
+                 telefone  varchar(255) DEFAULT NULL,
+                 banco_dados  varchar(255) DEFAULT NULL,
+                 tipo_contrato  enum('T','N') DEFAULT 'T' COMMENT 't=teste, N=normal',
+                 data_contrato  date DEFAULT '0000-00-00',
+                 dias_contrato  int(10) DEFAULT 30,
+                 inicio_contrato  date DEFAULT '0000-00-00',
+                 fim_contrato  date DEFAULT '0000-00-00',
+                 token  varchar(255) NOT NULL DEFAULT '',
+                PRIMARY KEY ( codigo ) USING BTREE
+                ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+            `,
+            `
+            CREATE TABLE IF NOT EXISTS ??.usuarios (
+                  codigo  int(11) NOT NULL AUTO_INCREMENT,
+                  nome  varchar(255) NOT NULL DEFAULT '',
+                  senha  varchar(255) NOT NULL DEFAULT '',
+                  email  varchar(255) DEFAULT NULL,
+                  cnpj  varchar(255) NOT NULL DEFAULT '',
+                  responsavel  enum('S','N') DEFAULT 'N',
+                  cod_recuperador  varchar(255) DEFAULT NULL,
+                  data_expiracao  datetime DEFAULT '0000-00-00 00:00:00',
+                  telefone  varchar(255) DEFAULT NULL,
+                PRIMARY KEY ( codigo )
+                ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+            `
+
+        ]
+
+        const values = [ db_api ]
+        for( const i of arrSql ) {
+                await conn.query(i, values);
+        }
+
      }
  }
  

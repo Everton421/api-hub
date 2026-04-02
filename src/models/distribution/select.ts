@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { DistributionType } from "./types/distribution-type";
+import { conn } from "../../database/databaseConfig.ts";
+import { DistributionType } from "./types/distribution-type.ts";
 
 export class SelectDistribution {
     async findAll(dbName: string, dataRecadastro?: string): Promise<DistributionType[]> {

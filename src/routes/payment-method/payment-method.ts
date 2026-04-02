@@ -21,7 +21,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -66,7 +66,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 codigo: z.coerce.number().optional(),
                 descricao: z.string().optional(),
-                id: z.coerce.number().optional(),
+                id: z.coerce.string().optional(),
                 parcelas: z.coerce.number().optional(),
                 ativo: z.string().optional(),
                 limit: z.coerce.number().optional()
@@ -74,7 +74,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -113,7 +113,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.number(),
+                id: z.string(),
                 descricao: z.string(),
                 desc_maximo: z.number(),
                 parcelas: z.number(),
@@ -124,7 +124,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -157,11 +157,18 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         const insert = new InsertPaymentMethod();
-
-        try {
+        const select = new SelectPaymentMethod();
+            const verify = await select.findByParams(dbName, { id: id })
+            
+            if( verify.length > 0 ) return reply.status(400).send({ success:false, message:`Payment method ID ${id} already exists.`})
+        
+            try {
             const result = await insert.insert(dbName, { id, descricao, desc_maximo, parcelas, intervalo, recebimento, data_cadastro, data_recadastro, ativo });
             const item = { codigo: result.insertId, id, descricao, desc_maximo, parcelas, intervalo, recebimento, data_cadastro, data_recadastro, ativo };
-            await publishMessage(empresa, 'paymentmethod.inserted', item, source);
+           
+           
+            await publishMessage(empresa, 'formaspagamento.inserido', item, source);
+           
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting payment method:', e);
@@ -178,7 +185,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.number(),
+                id: z.string(),
                 descricao: z.string(),
                 desc_maximo: z.number(),
                 parcelas: z.number(),
@@ -189,7 +196,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -237,7 +244,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
 
             if (result.affectedRows > 0) {
                 const item = { codigo, id, descricao, desc_maximo, parcelas, intervalo, recebimento, data_cadastro, data_recadastro, ativo };
-                await publishMessage(empresa, 'paymentmethod.updated', item, source);
+                await publishMessage(empresa, 'formaspagamento.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 

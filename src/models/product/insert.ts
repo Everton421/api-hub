@@ -21,8 +21,9 @@ export class InsertProduct {
             tipo,
             observacoes1,
             observacoes2,
-            observacoes3
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            observacoes3,
+            caracteristica
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
 
         const values = [
             data.id,
@@ -42,7 +43,8 @@ export class InsertProduct {
             data.tipo,
             data.observacoes1,
             data.observacoes2,
-            data.observacoes3
+            data.observacoes3,
+             data.caracteristica
         ];
 
         const [result] = await conn.query(sql, values);

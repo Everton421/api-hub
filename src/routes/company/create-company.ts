@@ -17,10 +17,10 @@ import jwt from 'jsonwebtoken';
 
 
 export const createCompanyRoute : FastifyPluginAsyncZod = async ( server )=>{
-    server.post('/create-company' ,  {
+    server.post('/criar-empresa' ,  {
           schema:
             {
-                tags: ['company'],
+                tags: ['empresa'],
                 body: z.object({
                     usuario: z.object({
                         nome: z.string().max(255),

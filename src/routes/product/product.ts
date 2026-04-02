@@ -10,12 +10,12 @@ import { type ProductType } from '../../models/product/types/product-type.ts';
 
 const productResponseSchema = z.object({
     codigo: z.number(),
-    id: z.number(),
+    id: z.string(),
     estoque: z.number(),
-    preco: z.number(),
+    preco: z.string(),
     unidade_medida: z.string(),
     grupo: z.number(),
-    origem: z.number(),
+    origem: z.string(),
     descricao: z.string(),
     num_fabricante: z.string(),
     num_original: z.string(),
@@ -35,12 +35,12 @@ const productResponseSchema = z.object({
 
 const productWithRelationsSchema = z.object({
     codigo: z.number(),
-    id: z.number(),
-    estoque: z.string(),
+    id: z.string(),
+    estoque: z.number(),
     preco: z.string(),
     unidade_medida: z.string(),
     grupo: z.number(),
-    origem: z.number(),
+    origem: z.string(),
     descricao: z.string(),
     num_fabricante: z.string(),
     num_original: z.string(),
@@ -49,13 +49,14 @@ const productWithRelationsSchema = z.object({
     ativo: z.string(),
     class_fiscal: z.string(),
     cst: z.string(),
-    tipo: z.number(),
-    caracteristica: z.number(),
     data_cadastro: z.string(),
     data_recadastro: z.string(),
     observacoes1: z.string(),
     observacoes2: z.string(),
-    observacoes3: z.string()
+    observacoes3: z.string(),
+    tipo: z.number(),
+    caracteristica: z.number().optional(),
+
 });
 
 const productsRoute: FastifyPluginAsyncZod = async (server) => {
@@ -112,6 +113,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 marca: z.coerce.number().optional(),
                 grupo: z.coerce.number().optional(),
                 ativo: z.string().optional(),
+                id: z.string().optional(),
                 limit: z.coerce.number().optional()
             }),
             response: {
@@ -189,12 +191,12 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.number(),
+                id: z.string(),
                 estoque: z.number().default(0),
-                preco: z.number(),
+                preco: z.string(),
                 unidade_medida: z.string(),
                 grupo: z.number(),
-                origem: z.number().default(0),
+                origem: z.union([z.string(), z.number()]).default('0'),
                 descricao: z.string(),
                 num_fabricante: z.string().default(''),
                 num_original: z.string().default(''),
@@ -203,11 +205,12 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 ativo: z.enum(['S', 'N']).default('S'),
                 class_fiscal: z.string().default(''),
                 cst: z.string().default(''),
-                tipo: z.number().default(0),
                 caracteristica: z.number().default(0),
                 observacoes1: z.string().default(''),
                 observacoes2: z.string().default(''),
-                observacoes3: z.string().default('')
+                observacoes3: z.string().default(''),
+                tipo: z.number().default(0),
+
             }),
             response: {
                 200: productResponseSchema,
@@ -231,12 +234,16 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
 
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
-
+        const { id } = request.body
         const insert = new InsertProduct();
-
+        const select = new SelectProduct();
+        const verify = await select.findByParams( dbName, { id: id})
+        if(verify.length > 0 ) return reply.status(400).send({ success: false, message: `Product ID: ${id} already exists.`})
         try {
+            const { origem, ...rest } = request.body;
             const productData: ProductType = {
-                ...request.body,
+                ...rest,
+                origem: String(origem),
                 data_cadastro,
                 data_recadastro,
                 codigo: 0
@@ -245,7 +252,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             const result = await insert.insert(dbName, productData);
             const item = { ...productData, codigo: result.insertId };
 
-            await publishMessage(empresa, 'product.inserted', item, source);
+            await publishMessage(empresa, 'produto.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting product:', e);
@@ -262,12 +269,12 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.number(),
+                id: z.string(),
                 estoque: z.number().default(0),
-                preco: z.number(),
+                preco: z.string(),
                 unidade_medida: z.string(),
                 grupo: z.number(),
-                origem: z.number().default(0),
+                origem: z.union([z.string(), z.number()]).default('0'),
                 descricao: z.string(),
                 num_fabricante: z.string().default(''),
                 num_original: z.string().default(''),
@@ -318,8 +325,10 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         try {
+            const { origem, ...rest } = request.body;
             const productData: ProductType = {
-                ...request.body,
+                ...rest,
+                origem: String(origem),
                 data_cadastro,
                 data_recadastro
             };
@@ -328,7 +337,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
 
             if (result.affectedRows > 0) {
                 const item = { ...productData };
-                await publishMessage(empresa, 'product.updated', item, source);
+                await publishMessage(empresa, 'produto.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 

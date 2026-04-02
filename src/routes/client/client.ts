@@ -9,7 +9,7 @@ import { publishMessage } from '../../services/broker/publish-message.ts';
 
 const clientResponseSchema = z.object({
     codigo: z.number(),
-    id: z.number(),
+    id: z.string(),
     celular: z.string(),
     nome: z.string(),
     cep: z.string(),
@@ -27,9 +27,9 @@ const clientResponseSchema = z.object({
 });
 
 const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/clients', {
+    server.get('/bulk/clientes', {
         schema: {
-            tags: ['clients'],
+            tags: ['clientes'],
             headers: z.object({
                 token: z.string()
             }),
@@ -65,9 +65,9 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/clients/search', {
+    server.get('/clientes/search', {
         schema: {
-            tags: ['clients'],
+            tags: ['clientes'],
             headers: z.object({
                 token: z.string()
             }),
@@ -76,7 +76,8 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
                 nome: z.string().optional(),
                 cnpj: z.string().optional(),
                 ativo: z.string().optional(),
-                limit: z.coerce.number().optional()
+                limit: z.coerce.number().optional(),
+                id: z.coerce.string().optional()
             }),
             response: {
                 200: z.array(clientResponseSchema),
@@ -101,9 +102,9 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/clients/:codigo', {
+    server.get('/clientes/:codigo', {
         schema: {
-            tags: ['clients'],
+            tags: ['clientes'],
             headers: z.object({
                 token: z.string()
             }),
@@ -137,15 +138,15 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/clients', {
+    server.post('/clientes', {
         schema: {
-            tags: ['clients'],
+            tags: ['clientes'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.number(),
+                id: z.string(),
                 celular: z.string(),
                 nome: z.string(),
                 cep: z.string(),
@@ -178,13 +179,37 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { id, celular, nome, cep, endereco, ie, numero, cnpj, cidade, vendedor, estado, bairro, ativo } = request.body;
-
+        const { id, celular, nome, cep, endereco, ie, numero,   cidade, vendedor, estado, bairro, ativo } = request.body;
+        let { cnpj } = request.body
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
 
-        const insert = new InsertClient();
+        let vCnpj = cnpj;
+       
 
+        function removerCaracteres(str: string) {
+            return str.replace(/\D/g, '');
+        }
+        vCnpj = removerCaracteres(vCnpj)
+
+        if (vCnpj.length < 11 || vCnpj.length > 14 || vCnpj.length === 12 || vCnpj.length === 13) {
+            return reply.status(400).send({ success: true, message: "Invalid cnpj/cpf." });
+        }
+
+        if (vCnpj.length === 14) {
+            cnpj = vCnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5') as string;
+        }
+        if (vCnpj.length === 11) {
+            cnpj = vCnpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4') as string;
+        }
+
+        const insert = new InsertClient();
+        const select  = new SelectClient();
+
+        const verify = await select.findByParams(dbName, { id: id})
+        if(verify.length > 0 ){
+            return reply.status(400).send({ success:false, message: `Cliente ID ${id} already exists.`})
+        }
         try {
             const result = await insert.insert(dbName, { 
                 codigo: 0, 
@@ -222,7 +247,7 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
                 bairro, 
                 ativo 
             };
-            await publishMessage(empresa, 'client.inserted', item, source);
+            await publishMessage(empresa, 'cliente.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting client:', e);
@@ -230,16 +255,16 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/clients', {
+    server.put('/clientes', {
         schema: {
-            tags: ['clients'],
+            tags: ['clientes'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.number(),
+                id: z.string(),
                 celular: z.string(),
                 nome: z.string(),
                 cep: z.string(),
@@ -274,8 +299,8 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { codigo, id, celular, nome, cep, endereco, ie, numero, cnpj, cidade, vendedor, estado, bairro, ativo } = request.body;
-
+        const { codigo, id, celular, nome , cep, endereco, ie, numero,  cidade, vendedor, estado, bairro, ativo } = request.body;
+        let {cnpj} = request.body; 
         if (!codigo) {
             return reply.status(400).send({ success: false, message: 'Code is required' });
         }
@@ -283,6 +308,26 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         const existing = await select.findByCode(dbName, codigo);
         if (existing.length === 0) {
             return reply.status(400).send({ success: false, message: 'Client not found' });
+        }
+
+
+          let vCnpj = cnpj;
+       
+
+        function removerCaracteres(str: string) {
+            return str.replace(/\D/g, '');
+        }
+        vCnpj = removerCaracteres(vCnpj)
+
+        if (vCnpj.length < 11 || vCnpj.length > 14 || vCnpj.length === 12 || vCnpj.length === 13) {
+            return reply.status(400).send({ success: true, message: "Invalid cnpj/cpf." });
+        }
+
+        if (vCnpj.length === 14) {
+            cnpj = vCnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5') as string;
+        }
+        if (vCnpj.length === 11) {
+            cnpj = vCnpj.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4') as string;
         }
 
         const data_cadastro = existing[0].data_cadastro;
@@ -327,7 +372,7 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
                     bairro, 
                     ativo 
                 };
-                await publishMessage(empresa, 'client.updated', item, source);
+                await publishMessage(empresa, 'cliente.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 

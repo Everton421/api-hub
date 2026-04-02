@@ -3,7 +3,7 @@ import { type BrandType } from "./types/brand-type.ts";
 
 type BrandQuery = {
     codigo: number;
-    id: number;
+    id: string;
     descricao: string;
     limit: number;
     ativo: string;
@@ -43,7 +43,7 @@ export class SelectBrand {
         return result as BrandType[];
     }
 
-    async findById(dbName: string, id: number, limit: number): Promise<BrandType[]> {
+    async findById(dbName: string, id: string, limit: number): Promise<BrandType[]> {
         const sql = ` SELECT *,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro

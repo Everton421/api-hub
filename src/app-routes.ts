@@ -9,7 +9,6 @@ import { createCompanyRoute } from "./routes/company/create-company.ts";
 import { healthRoute } from "./routes/health/health.ts";
 import { loginRoute } from "./routes/login/login.ts";
 import { getBrandsRoute } from "./routes/brand/brand.ts";
-import { getCategoryRoute } from "./routes/category/get-category.ts";
 import { getClientsRoute } from "./routes/client/client.ts";
 import { getCompanyRoute } from "./routes/company/get-company.ts";
 import locationsRoute from "./routes/location/location.ts";
@@ -21,6 +20,7 @@ import { getServiceOrderTypesRoute } from "./routes/service-order-types/service-
 import servicesRoute from "./routes/service/service.ts";
 import usersRoute from "./routes/user/user.ts";
 import { getVehicleRoute } from "./routes/vehicle/vehicle.ts";
+import { categoryRoute } from "./routes/category/category.ts";
 
 let certPathEnv;
 if (process.env.PATH_CERT) certPathEnv = String(process.env.PATH_CERT)
@@ -79,7 +79,7 @@ server.register(loginRoute);
 server.register(createCompanyRoute);
 server.register(usersRoute);
 server.register(getCompanyRoute);
-server.register(getCategoryRoute);
+server.register(categoryRoute);
 server.register(getServiceOrderTypesRoute);
 server.register(getVehicleRoute);
 server.register(sectorsRoute);

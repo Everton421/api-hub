@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { DistributionType } from "./types/distribution-type";
+import { conn } from "../../database/databaseConfig.ts";
+import { type DistributionType } from "./types/distribution-type.ts";
 
 export class InsertDistribution {
     async insert(dbName: string, distribution: DistributionType): Promise<{ insertId: number }> {

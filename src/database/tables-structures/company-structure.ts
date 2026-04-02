@@ -31,6 +31,7 @@ export class CompanyStructure {
                   observacoes2  blob DEFAULT NULL,
                   observacoes3  blob DEFAULT NULL,
                   tipo  int(10) NOT NULL DEFAULT 0,
+                  caracteristica int(10) NOT NULL DEFAULT 0,
                   PRIMARY KEY ( codigo )
               );`,
       `CREATE TABLE IF NOT EXISTS ??.servicos (
@@ -65,7 +66,7 @@ export class CompanyStructure {
             );`,
       `CREATE TABLE IF NOT EXISTS ??.forma_pagamento (
                 codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
-                id varchar(255) NOT NULL DEFAULT 0,
+                id varchar(255) NOT NULL DEFAULT '0',
                 descricao TEXT NOT NULL, 
                 desc_maximo INTEGER DEFAULT 0,  
                 parcelas INTEGER DEFAULT 0,  

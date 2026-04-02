@@ -1,8 +1,8 @@
-export type BrandType = {
+export type CategoryType = {
     codigo: number;
     descricao: string;
     id: string;
     data_cadastro: string;
     data_recadastro: string;
-    ativo: string;
+    ativo: 'S' | 'N';
 };

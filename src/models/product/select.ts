@@ -91,6 +91,7 @@ export class SelectProduct {
 
     async findByParams(dbName: string, params: {
         codigo?: number;
+        id?:string;
         marca?: number;
         grupo?: number;
         descricao?: string;
@@ -102,6 +103,7 @@ export class SelectProduct {
             marca,
             grupo,
             descricao,
+            id,
             limit = 20,
             ativo
         } = params;
@@ -136,6 +138,10 @@ export class SelectProduct {
         if (descricao) {
             conditions.push("descricao LIKE ?");
             values.push(`%${descricao}%`);
+        }
+        if( id ){
+            conditions.push("id = ?");
+            values.push(id);
         }
 
         if (conditions.length > 0) {

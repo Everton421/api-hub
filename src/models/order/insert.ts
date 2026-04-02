@@ -1,0 +1,132 @@
+import { conn } from "../../database/databaseConfig.ts";
+import { type OrderReceivedType } from "./types/order-type.ts";
+import { InsertOrderItems } from "./insert-items.ts";
+
+export class InsertOrder {
+    private getCurrentDate(): string {
+        const current = new Date();
+        const day = String(current.getDate()).padStart(2, '0');
+        const month = String(current.getMonth() + 1).padStart(2, '0');
+        const year = current.getFullYear();
+        return `${year}-${month}-${day}`;
+    }
+
+    private convertDate(date: string): string {
+        const [day, month, year] = date.split('/');
+        return `${year}-${month}-${day}`;
+    }
+
+    async create(dbName: string, data: OrderReceivedType): Promise<{ insertId: number; status: boolean }> {
+        const currentDate = this.getCurrentDate();
+        const insertOrderItems = new InsertOrderItems();
+
+        const {
+            codigo,
+            forma_pagamento = 0,
+            descontos = 0,
+            observacoes = '',
+            quantidade_parcelas = 0,
+            total_geral,
+            total_produtos,
+            total_servicos = 0,
+            totalSemDesconto,
+            situacao = 'EA',
+            situacao_separacao = 'N',
+            tipo = 1,
+            vendedor = 1,
+            data_cadastro = currentDate,
+            data_recadastro = currentDate,
+            veiculo = 0,
+            tipo_os = 0,
+            contato = '',
+            just_ipi = '',
+            just_icms = '',
+            just_subst = '',
+            id = 0,
+            id_externo = 0,
+            id_interno,
+            frete = 0
+        } = data;
+
+        const servicos = data.servicos || [];
+        const parcelas = data.parcelas || [];
+        const produtos = data.produtos || [];
+        const cliente = data.cliente;
+
+        const sql = `INSERT INTO ${dbName}.pedidos (
+            codigo,
+            id,
+            id_externo,
+            id_interno,
+            vendedor,
+            situacao,
+            situacao_separacao,
+            contato,
+            descontos,
+            frete,
+            forma_pagamento,
+            quantidade_parcelas,
+            total_geral,
+            total_produtos,
+            total_servicos,
+            cliente,
+            veiculo,
+            data_cadastro,
+            data_recadastro,
+            tipo_os,
+            enviado,
+            tipo,
+            observacoes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const values = [
+            codigo,
+            id,
+            id_externo,
+            id_interno || '',
+            vendedor,
+            situacao,
+            situacao_separacao,
+            contato,
+            descontos,
+            frete,
+            forma_pagamento,
+            quantidade_parcelas,
+            total_geral,
+            total_produtos,
+            total_servicos,
+            cliente?.codigo,
+            veiculo,
+            data_cadastro,
+            data_recadastro,
+            tipo_os,
+            'S',
+            tipo,
+            observacoes
+        ];
+
+        const [result] = await conn.query(sql, values);
+
+        let status: boolean | null = null;
+        if (servicos.length > 0) {
+            try {
+                await insertOrderItems.insertServices(servicos, codigo, dbName);
+                status = true;
+            } catch (e) { console.log(e); }
+        }
+        if (produtos.length > 0) {
+            try {
+                await insertOrderItems.insertProducts(produtos, dbName, codigo, total_produtos ?? 0, frete ?? 0);
+                status = true;
+            } catch (e) { console.log(e); }
+        }
+        if (parcelas.length > 0) {
+            try {
+                await insertOrderItems.insertInstallments(parcelas, dbName, codigo);
+                status = true;
+            } catch (e) { console.log(e); }
+        }
+
+        return { insertId: codigo, status: status ?? false };
+    }
+}

@@ -9,9 +9,9 @@ import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
 const locationsRoute: FastifyPluginAsyncZod = async (server) => {
-    server.get('/offline/locations', {
+    server.get('/bulk/locais', {
         schema: {
-            tags: ['locations'],
+            tags: ['locais'],
             headers: z.object({
                 token: z.string()
             }),
@@ -55,9 +55,9 @@ const locationsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.get('/offline/locations/search', {
+    server.get('/locais/search', {
         schema: {
-            tags: ['locations'],
+            tags: ['locais'],
             headers: z.object({
                 token: z.string()
             }),
@@ -67,7 +67,7 @@ const locationsRoute: FastifyPluginAsyncZod = async (server) => {
                 descricao: z.string().optional(),
                 setor: z.coerce.number().optional(),
                 ativo: z.string().optional(),
-                limit: z.coerce.number().optional()
+                limit: z.coerce.number().optional().default(20)
             }),
             response: {
                 200: z.array(z.object({
@@ -100,9 +100,9 @@ const locationsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.post('/offline/locations', {
+    server.post('/locais', {
         schema: {
-            tags: ['locations'],
+            tags: ['locais'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -146,11 +146,16 @@ const locationsRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         const insert = new InsertLocation();
+        const select = new SelectLocation();
+        const verify = await select.findById(dbName, id , 1 );
+        if(verify.length > 0 ){
+            return reply.status(400).send({ success: false, message: `Location ID ${id} already exists.`});
+        }
 
         try {
             const result = await insert.insert(dbName, { id, descricao, setor, ativo, data_cadastro, data_recadastro });
             const item: LocationType = { codigo: result.insertId, id, descricao, setor, ativo, data_cadastro, data_recadastro };
-            await publishMessage(empresa, 'location.inserted', item, source);
+            await publishMessage(empresa, 'locais.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting location:', e);
@@ -158,9 +163,9 @@ const locationsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
-    server.put('/offline/locations', {
+    server.put('/locais', {
         schema: {
-            tags: ['locations'],
+            tags: ['locais'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
@@ -221,7 +226,7 @@ const locationsRoute: FastifyPluginAsyncZod = async (server) => {
             if (result.affectedRows > 0) {
                 const updated = await select.findByCode(dbName, codigo);
                 const item = updated[0];
-                await publishMessage(empresa, 'location.updated', item, source);
+                await publishMessage(empresa, 'locais.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 
