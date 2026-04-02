@@ -35,7 +35,7 @@ export class CompanyStructure {
               );`,
       `CREATE TABLE IF NOT EXISTS ??.servicos (
                   codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
-                  id  int(10) unsigned NOT NULL DEFAULT 0,
+                  id varchar(255) NOT NULL DEFAULT 0,
                   valor REAL DEFAULT 0,
                   aplicacao TEXT NOT NULL,
                   tipo_serv INTEGER DEFAULT 0,
@@ -65,7 +65,7 @@ export class CompanyStructure {
             );`,
       `CREATE TABLE IF NOT EXISTS ??.forma_pagamento (
                 codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
-                id int(10) unsigned NOT NULL DEFAULT 0,
+                id varchar(255) NOT NULL DEFAULT 0,
                 descricao TEXT NOT NULL, 
                 desc_maximo INTEGER DEFAULT 0,  
                 parcelas INTEGER DEFAULT 0,  
@@ -142,7 +142,7 @@ export class CompanyStructure {
             );`,
       `CREATE TABLE IF NOT EXISTS ??.tipos_os (
                   codigo  int(11) NOT NULL AUTO_INCREMENT,
-                  id  int(10) unsigned NOT NULL DEFAULT 0,
+                  id  varchar(255)NOT NULL DEFAULT 0,
                   descricao TEXT NOT NULL,
                   data_cadastro  date NOT NULL DEFAULT '2000-01-01',
                   data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
@@ -152,7 +152,7 @@ export class CompanyStructure {
 
       `CREATE TABLE IF NOT EXISTS ??.veiculos (
                 codigo  int(11) NOT NULL AUTO_INCREMENT,
-                id int(10) unsigned NOT NULL DEFAULT 0,
+                id varchar(255) NOT NULL DEFAULT 0,
                 cliente INTEGER NOT NULL DEFAULT 0,
                 placa varchar(255) NOT NULL DEFAULT '',
                 marca varchar(255) NOT NULL DEFAULT '',
@@ -185,7 +185,7 @@ export class CompanyStructure {
               `,
       ` CREATE TABLE IF NOT EXISTS ??.categorias  (
                   codigo  int(11) NOT NULL AUTO_INCREMENT,
-                  id  int(10) unsigned NOT NULL DEFAULT 0,
+                  id  varchar(255) NOT NULL DEFAULT 0,
                   data_cadastro  date NOT NULL DEFAULT '2000-01-01',
                   data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
                   descricao  varchar(255) NOT NULL DEFAULT '',
@@ -195,7 +195,7 @@ export class CompanyStructure {
               `,
       ` CREATE TABLE IF NOT EXISTS ??.marcas  (
                 codigo  int(11) NOT NULL AUTO_INCREMENT,
-                id  int(10) unsigned NOT NULL DEFAULT 0,
+                id  varchar(255) NOT NULL DEFAULT 0,
                 data_cadastro  date NOT NULL DEFAULT '2000-01-01',
                 data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
                 descricao  varchar(255) NOT NULL DEFAULT '',
@@ -228,8 +228,8 @@ export class CompanyStructure {
               ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
             `,
       ` CREATE TABLE IF NOT EXISTS ??.movimentos_produtos (
-              id  int(10) unsigned NOT NULL AUTO_INCREMENT,
-              codigo  int(11) NOT NULL DEFAULT 0,
+              codigo int(10) unsigned NOT NULL AUTO_INCREMENT,
+              id  int(11) NOT NULL DEFAULT 0,
               setor  int(10) DEFAULT 0,
               produto  int(10) DEFAULT 0,
               quantidade  varchar(255) DEFAULT '0',
