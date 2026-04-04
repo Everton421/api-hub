@@ -8,12 +8,15 @@
     "dev": "node --env-file .env --watch --experimental-strip-types src/server.ts",
     "db:seed": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/database/seed.ts",
     "teste:all": "node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings --experimental-test-coverage --test ",
-    "teste:seed": " node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings src/database/seed.ts"
+    "teste:seed": " node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings src/database/seed.ts",
+    "teste:factory": " node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings src/__teste__/teste-factory.ts"
+
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^10.4.0",
     "@fastify/cors": "^11.1.0",
     "@fastify/swagger": "^9.5.2",
     "@fastify/swagger-ui": "^5.2.3",
@@ -36,7 +39,6 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.9.0",
     "@types/amqplib": "^0.10.8",
     "@types/axios": "^0.9.36",
     "@types/jsonwebtoken": "^9.0.10",

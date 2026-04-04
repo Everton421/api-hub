@@ -2,7 +2,7 @@ import { conn } from "../../database/databaseConfig.ts";
 import { type ProductType } from "./types/product-type.ts";
 
 export class InsertProduct {
-    async insert(dbName: string, data: ProductType): Promise<{ insertId: number }> {
+    async insert(dbName: string, data: Omit<ProductType, 'codigo'>): Promise<{ insertId: number }> {
         const sql = `INSERT INTO ${dbName}.produtos (
             id,
             estoque,
