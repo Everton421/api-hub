@@ -1,5 +1,5 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
-import z, { email, success } from "zod";
+import z, { boolean, email, string, success } from "zod";
 import { type UsuarioApi } from "../../models/users-api/interface.ts";
 import { SelectUsersApi } from "../../models/users-api/select.ts";
 import { SelectCompany } from "../../models/company/select.ts";
@@ -9,6 +9,7 @@ import { InsertCompany } from "../../models/company/insert.ts";
 import { DateService } from "../../utils/dateService.ts";
 import { InsertUsersApi } from "../../models/users-api/insert.ts";
 import jwt from 'jsonwebtoken';
+import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
 
 
     type newUserOmitCode = Omit<UsuarioApi, "codigo">;
@@ -16,7 +17,7 @@ import jwt from 'jsonwebtoken';
     type newUser = newUserOmitCode & ativo
 
 
-export const createCompanyRoute : FastifyPluginAsyncZod = async ( server )=>{
+export const  CompanyRoute : FastifyPluginAsyncZod = async ( server )=>{
     server.post('/criar-empresa' ,  {
           schema:
             {
@@ -139,4 +140,43 @@ export const createCompanyRoute : FastifyPluginAsyncZod = async ( server )=>{
 
 
     })
+      server.get('/empresa', { 
+            schema: { 
+                tags: ['empresa'],
+                headers:z.object({
+                         token: z.string()
+                    }),
+                    response: {
+                        200: z.object({
+                              cnpj:z.string(),
+                              data_contrato: z.string(), 
+                              telefone:z.string() ,
+                              nome:z.string() ,
+                              email:z.string() ,
+                              codigo: z.number(),
+                              responsavel: z.number()
+                        }),
+                        400: z.object({ success: boolean, message: string})
+                    }
+                         
+            }
+        },
+        async ( request, reply ) =>{
+            if(!request.headers.token) return reply.status(400).send({ success: false, message: "Token was not provided."})
+                            let decodToken = DecodedToken(String(request.headers.token))
+                            const selectCompany = new SelectCompany();
+    
+                                  const { cnpj } = decodToken.payload!;
+                            const resultCompany = await selectCompany.findByCnpj(cnpj);
+                             if(resultCompany.length >  0 ){
+    
+                                    const { cnpj, data_contrato, telefone, nome ,email ,  codigo  , responsavel} = resultCompany[0];
+                                    return reply.status(200).send({ cnpj, data_contrato, telefone, nome ,email , codigo, responsavel });
+                             }else{
+                               return reply.status(400).send({success:false, message:"Compony not found." });
+    
+                             }
+    
+                      } 
+    )
 }

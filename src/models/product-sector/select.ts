@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { ProductSectorType } from "./types/product-sector-type";
+import { conn } from "../../database/databaseConfig.ts";
+import { type ProductSectorType } from "./types/product-sector-type.ts";
 
 export class SelectProductSector {
     async findAll(dbName: string, dataRecadastro?: string): Promise<ProductSectorType[]> {

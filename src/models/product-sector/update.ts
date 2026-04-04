@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { ProductSectorType } from "./types/product-sector-type";
+import { conn } from "../../database/databaseConfig.ts";
+import { type ProductSectorType } from "./types/product-sector-type.ts";
 
 type ProductSectorUpdate = Partial<Omit<ProductSectorType, 'id_produto' | 'id_setor'>> & { produto: number; setor: number };
 

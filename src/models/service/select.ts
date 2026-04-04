@@ -2,7 +2,7 @@ import { conn } from "../../database/databaseConfig.ts";
 import { type ServiceType } from "./types/service-type.ts";
 
 export class SelectService {
-    async findAll(dbName: string, dataRecadastro?: string): Promise<ServiceType[]> {
+    async findAll(dbName: string, dataRecadastro?: string, limit?:number): Promise<ServiceType[]> {
         let sql = `SELECT *,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
@@ -13,6 +13,11 @@ export class SelectService {
         if (dataRecadastro) {
             sql += ' WHERE data_recadastro > ?';
             params.push(dataRecadastro);
+        }
+        if(limit){
+            sql += '  LIMIT ? ';
+            params.push(limit);
+
         }
 
         const [result] = await conn.query(sql, params);
@@ -46,7 +51,7 @@ export class SelectService {
 
     async findByParams(dbName: string, params: {
         codigo?: number;
-        id?: number;
+        id?: string;
         aplicacao?: string;
         tipo?: number;
         ativo?: string;

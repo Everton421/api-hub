@@ -1,6 +1,6 @@
 export type VehicleType = {
     codigo: number;
-    id: number;
+    id: string;
     cliente: number;
     placa: string;
     marca: string;

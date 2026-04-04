@@ -3,11 +3,13 @@ import { type OrderType } from "./types/order-type.ts";
 
 export class SelectOrder {
     async findByCode(dbName: string, code: number): Promise<OrderType[]> {
-        const sql = `SELECT *,
-            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
-            CONVERT(observacoes USING utf8) AS observacoes
-        FROM ${dbName}.pedidos
+        const sql = `SELECT p.*, c.id as cliente_id, c.nome as cliente_nome,
+            DATE_FORMAT(p.data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(p.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+            CONVERT(p.observacoes USING utf8) AS observacoes
+        FROM ${dbName}.pedidos p 
+        JOIN ${dbName}.clientes c ON c.codigo = p.cliente 
+        
         WHERE codigo = ?`;
 
         const [result] = await conn.query(sql, [code]);
@@ -24,7 +26,7 @@ export class SelectOrder {
     }
 
     async findByDate(dbName: string, queryDate?: string, seller?: number): Promise<OrderType[]> {
-        const sql = `SELECT co.*, c.nome,
+        const sql = `SELECT co.*, c.id as cliente_id,  c.nome as cliente_nome,
             DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(co.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(co.observacoes USING utf8) AS observacoes
@@ -59,7 +61,7 @@ export class SelectOrder {
         filter: string | null,
         seller: number
     ): Promise<OrderType[]> {
-        const sql = `SELECT co.*, c.nome,
+        const sql = `SELECT co.*, c.id as cliente_id,  c.nome as cliente_nome,
             DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(co.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(co.observacoes USING utf8) AS observacoes
@@ -99,7 +101,7 @@ export class SelectOrder {
             type
         } = params;
 
-        const sql = `SELECT pe.*, c.nome,
+        const sql = `SELECT pe.*, c.id as cliente_id,  c.nome as cliente_nome,
             DATE_FORMAT(pe.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(pe.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(pe.observacoes USING utf8) AS observacoes
@@ -160,7 +162,8 @@ export class SelectOrder {
     async findLastInserted(dbName: string, seller: number, limit: number): Promise<OrderType[]> {
         const sql = `SELECT 
             p.id, COALESCE(p.id_externo, 0) AS id_externo,
-            p.total_geral, p.situacao, c.nome,
+            p.total_geral, p.situacao, 
+              c.id as cliente_id,  c.nome as cliente_nome,
             DATE_FORMAT(p.data_cadastro, '%Y-%m-%d') AS data_cadastro
         FROM ${dbName}.pedidos AS p
         JOIN ${dbName}.clientes as c ON c.codigo = p.cliente
@@ -173,46 +176,46 @@ export class SelectOrder {
     }
 
     async findStats(dbName: string, seller: number): Promise<{
-        total_faturado: number;
-        total_pedidos: number;
-        media_pedidos: number;
-        quantidade_pedidos: number;
-        novos_clientes: number;
-        total_clientes: number;
-    }[]> {
-        const sql = `SELECT  
-            (SELECT SUM(pf.total_geral) AS total_faturado 
-             FROM ${dbName}.pedidos pf 
-             WHERE pf.situacao = 'FI' AND pf.vendedor = ?) AS total_faturado,
-            (SELECT SUM(total_geral) 
-             FROM ${dbName}.pedidos 
-             WHERE vendedor = ?) AS total_pedidos,
-            (SELECT AVG(total_geral) 
-             FROM ${dbName}.pedidos 
-             WHERE vendedor = ?) AS media_pedidos,
-            (SELECT COUNT(codigo) 
-             FROM ${dbName}.pedidos 
-             WHERE vendedor = ?) AS quantidade_pedidos,
-            (SELECT COUNT(codigo) 
-             FROM ${dbName}.clientes 
-             WHERE ativo = 'S' 
-             AND data_cadastro >= DATE_FORMAT(NOW(), '%Y-%m-01')
-             AND vendedor = ?) AS novos_clientes,
-            (SELECT COUNT(codigo) 
-             FROM ${dbName}.clientes 
-             WHERE ativo = 'S' 
-             AND (vendedor = ? OR vendedor = 0)) AS total_clientes
-        FROM DUAL`;
-
-        const [result] = await conn.query(sql, [seller, seller, seller, seller, seller, seller]);
-        return result as {
             total_faturado: number;
             total_pedidos: number;
             media_pedidos: number;
             quantidade_pedidos: number;
             novos_clientes: number;
             total_clientes: number;
-        }[];
+        }[]> {
+            const sql = `SELECT  
+                (SELECT SUM(pf.total_geral) AS total_faturado 
+                FROM ${dbName}.pedidos pf 
+                WHERE pf.situacao = 'FI' AND pf.vendedor = ?) AS total_faturado,
+                (SELECT SUM(total_geral) 
+                FROM ${dbName}.pedidos 
+                WHERE vendedor = ?) AS total_pedidos,
+                (SELECT AVG(total_geral) 
+                FROM ${dbName}.pedidos 
+                WHERE vendedor = ?) AS media_pedidos,
+                (SELECT COUNT(codigo) 
+                FROM ${dbName}.pedidos 
+                WHERE vendedor = ?) AS quantidade_pedidos,
+                (SELECT COUNT(codigo) 
+                FROM ${dbName}.clientes 
+                WHERE ativo = 'S' 
+                AND data_cadastro >= DATE_FORMAT(NOW(), '%Y-%m-01')
+                AND vendedor = ?) AS novos_clientes,
+                (SELECT COUNT(codigo) 
+                FROM ${dbName}.clientes 
+                WHERE ativo = 'S' 
+                AND (vendedor = ? OR vendedor = 0)) AS total_clientes
+            FROM DUAL`;
+
+            const [result] = await conn.query(sql, [seller, seller, seller, seller, seller, seller]);
+            return result as {
+                total_faturado: number;
+                total_pedidos: number;
+                media_pedidos: number;
+                quantidade_pedidos: number;
+                novos_clientes: number;
+                total_clientes: number;
+            }[];
     }
 
     getCurrentDateWithoutTime(): string {

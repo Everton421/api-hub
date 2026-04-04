@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { PhotoType } from "./types/photo-type";
+import { conn } from "../../database/databaseConfig.ts";
+import { type PhotoType } from "./types/photo-type.ts";
 
 export class InsertPhoto {
     async insert(dbName: string, photo: Omit<PhotoType, 'codigo'>): Promise<{ insertId: number }> {

@@ -21,7 +21,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     cliente: z.number(),
                     placa: z.string(),
                     marca: z.string(),
@@ -68,7 +68,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 codigo: z.coerce.number().optional(),
                 cliente: z.coerce.number().optional(),
-                id: z.coerce.number().optional(),
+                id: z.string().optional(),
                 placa: z.string().optional(),
                 marca: z.string().optional(),
                 modelo: z.string().optional(),
@@ -79,7 +79,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     cliente: z.number(),
                     placa: z.string(),
                     marca: z.string(),
@@ -120,7 +120,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.number(),
+                id: z.string(),
                 cliente: z.number(),
                 placa: z.string(),
                 marca: z.string(),
@@ -133,7 +133,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     cliente: z.number(),
                     placa: z.string(),
                     marca: z.string(),
@@ -168,11 +168,14 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         const insert = new InsertVehicle();
+        const select = new SelectVehicle();
+        const verify = await select.findByParams(dbName, { id: id });
 
+        if( verify.length >  0) return reply.status(400).send({ success: false, message: `vehicle ID ${id} already exists.`}) 
         try {
             const result = await insert.insert(dbName, { id, cliente, placa, marca, modelo, ano, cor, combustivel, data_cadastro, data_recadastro, ativo });
             const item = { codigo: result.insertId, id, cliente, placa, marca, modelo, ano, cor, combustivel, data_cadastro, data_recadastro, ativo };
-            await publishMessage(empresa, 'vehicle.inserted', item, source);
+            await publishMessage(empresa, 'veiculo.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting vehicle:', e);
@@ -189,7 +192,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.number(),
+                id: z.string(),
                 cliente: z.number(),
                 placa: z.string(),
                 marca: z.string(),
@@ -202,7 +205,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     cliente: z.number(),
                     placa: z.string(),
                     marca: z.string(),
@@ -252,7 +255,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
 
             if (result.affectedRows > 0) {
                 const item = { codigo, id, cliente, placa, marca, modelo, ano, cor, combustivel, data_cadastro, data_recadastro, ativo };
-                await publishMessage(empresa, 'vehicle.updated', item, source);
+                await publishMessage(empresa, 'veiculo.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 

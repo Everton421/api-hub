@@ -1,46 +1,50 @@
 export type OrderType = {
     codigo: number;
-    id: number;
-    id_externo: number;
+    id: string;
+    id_externo: string;
     id_interno: string;
     vendedor: number;
-    situacao: string;
-    situacao_separacao: string;
+    situacao:  'EA' | 'FI' | 'RE' | 'FP' ;
+    situacao_separacao: 'N' | 'P' | 'I'  ;
     contato: string;
-    descontos: number;
-    frete: number;
+    descontos: string;
+    frete: string;
     forma_pagamento: number;
     quantidade_parcelas: number;
-    total_geral: number;
-    total_produtos: number;
-    total_servicos: number;
+    total_geral: string;
+    total_produtos: string;
+    total_servicos: string;
+    cliente_id: string;
     cliente: number;
+    cliente_nome: string,
     veiculo: number;
     data_cadastro: string;
     data_recadastro: string;
     tipo_os: number;
-    enviado: string;
+    enviado: 'S'| 'N';
     tipo: number;
     observacoes: string;
 };
 
 export type OrderReceivedType = {
     codigo: number;
-    id: number;
-    id_externo?: number;
+    id: string;
+    id_externo?: string;
     id_interno?: string;
     vendedor?: number;
-    situacao?: string;
-    situacao_separacao?: string;
+    situacao?: 'EA' | 'FI' | 'RE' | 'FP';
+    situacao_separacao: 'N' | 'P' | 'I'  ;
     contato?: string;
-    descontos?: number;
-    frete?: number;
+    descontos?: string;
+    frete?: string;
+    cliente_id?: string;
+    cliente_nome?: string,
     forma_pagamento?: number;
     quantidade_parcelas?: number;
-    total_geral?: number;
-    total_produtos?: number;
-    total_servicos?: number;
-    totalSemDesconto?: number;
+    total_geral?: string;
+    total_produtos?: string;
+    total_servicos?: string;
+    totalSemDesconto?: string;
     cliente?: {
         codigo: number;
         nome?: string;
@@ -49,7 +53,7 @@ export type OrderReceivedType = {
     data_cadastro?: string;
     data_recadastro?: string;
     tipo_os?: number;
-    enviado?: string;
+    enviado?: 'S' | 'N';
     tipo?: number;
     observacoes?: string;
     observacoes2?: string;
@@ -64,21 +68,24 @@ export type OrderReceivedType = {
 export type ProductOrderType = {
     codigo: number;
     preco: number;
+    id: string;
     quantidade: number;
     desconto: number;
     total: number;
     frete?: number;
+    descricao: string;
     quantidade_separada?: number;
     quantidade_faturada?: number;
 };
 
 export type ServiceOrderType = {
     codigo: number;
-    preco: number;
     quantidade: number;
     desconto: number;
     total: number;
     valor: number;
+    id: string;
+
 };
 
 export type ParcelOrderType = {

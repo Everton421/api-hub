@@ -5,7 +5,7 @@ import { SelectProductMovement } from '../../models/product-movement/select.ts';
 import { InsertProductMovement } from '../../models/product-movement/insert.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
-import {type ProductMovementType } from '../../models/product-movement/types/product-movement-type.ts';
+import { type ProductMovementType } from '../../models/product-movement/types/product-movement-type.ts';
 
 const productMovementResponseSchema = z.object({
     codigo: z.number(),
@@ -23,6 +23,7 @@ const productMovementResponseSchema = z.object({
 });
 
 const productMovementBodySchema = z.object({
+    codigo: z.number(),
     setor: z.number(),
     produto: z.number(),
     quantidade: z.string(),
@@ -43,7 +44,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 data_recadastro: z.string().optional(),
                 limit: z.coerce.number().optional(),
-                userId: z.coerce.number().optional()
+                usuario: z.coerce.number().optional()
             }),
             response: {
                 200: z.array(productMovementResponseSchema),
@@ -62,10 +63,10 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { data_recadastro, limit, userId } = request.query;
+        const { data_recadastro, limit, usuario } = request.query;
 
         try {
-            let result = await select.findAll(dbName, { dataRecadastro: data_recadastro, userId });
+            let result = await select.findAll(dbName, { data_recadastro: data_recadastro, usuario });
             if (limit && result.length > limit) {
                 result = result.slice(0, limit);
             }
@@ -150,9 +151,13 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         const source = request.headers.source as string || 'api_internal';
 
         const data_recadastro = dateService.obterDataHoraAtual();
-
+        const { codigo, usuario} = request.body
         const insert = new InsertProductMovement();
+        const select = new SelectProductMovement();
 
+                const verify = await select.findByCodeAndUser(dbName, codigo, usuario  )
+
+                    if(verify.length > 0 ) return reply.status(400).send({ success : false, message:`Moviment CODE: ${codigo} `})
         try {
             const movementData = {
                 ...request.body,
@@ -165,7 +170,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                 codigo: result.insertId
             };
 
-            await publishMessage(empresa, 'productmovement.inserted', item, source);
+            await publishMessage(empresa, 'movimentosprodutos.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting product movement:', e);
@@ -203,30 +208,40 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
 
         const data_recadastro = dateService.obterDataHoraAtual();
         const insert = new InsertProductMovement();
+        const select = new SelectProductMovement();
 
         try {
             const results: ProductMovementType[] = [];
-
+            console.log(request.body)
             for (const movement of request.body) {
                 const movementData = {
                     ...movement,
                     data_recadastro
                 };
 
-                const result = await insert.insert(dbName, movementData);
-                const item: ProductMovementType = {
-                    ...movementData,
-                    codigo: result.insertId
-                };
-                results.push(item);
+                const verify = await select.findByCodeAndUser(dbName,    movement.codigo,  movement.usuario  )
+                console.log(verify)
+                if (verify.length > 0) {
+                    console.log(` o movimento: ${movement.codigo} ja foi registrado  `)
 
-                await publishMessage(empresa, 'productmovement.inserted', item, source);
+                } else {
+
+                    const result = await insert.insertWithCode(dbName, movementData);
+                    const item: ProductMovementType = {
+                        ...movementData,
+                        codigo: result.insertId
+                    };
+                    results.push(item);
+
+                    await publishMessage(empresa, 'movimentosprodutos.inserido', item, source);
+                }
+
             }
 
             return reply.status(200).send(results);
         } catch (e) {
             console.error('Error inserting product movements batch:', e);
-            return reply.status(400).send({ success: false, message: 'Error inserting product movements batch' });
+            return reply.status(400).send({ success: false, message: 'Error inserting bulk product movements' });
         }
     });
 };

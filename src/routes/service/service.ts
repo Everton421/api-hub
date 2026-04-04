@@ -21,7 +21,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     valor: z.number(),
                     aplicacao: z.string(),
                     tipo_serv: z.number(),
@@ -47,7 +47,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
         const { data_recadastro, limit } = request.query;
 
         try {
-            const result = await select.findAll(dbName, data_recadastro);
+            const result = await select.findAll(dbName, data_recadastro, limit);
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error fetching services:', e);
@@ -63,7 +63,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             querystring: z.object({
                 codigo: z.coerce.number().optional(),
-                id: z.coerce.number().optional(),
+                id: z.string().optional(),
                 aplicacao: z.string().optional(),
                 tipo: z.coerce.number().optional(),
                 ativo: z.string().optional(),
@@ -72,7 +72,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     valor: z.number(),
                     aplicacao: z.string(),
                     tipo_serv: z.number(),
@@ -109,7 +109,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.number(),
+                id: z.string(),
                 valor: z.number(),
                 aplicacao: z.string(),
                 tipo_serv: z.number(),
@@ -118,7 +118,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     valor: z.number(),
                     aplicacao: z.string(),
                     tipo_serv: z.number(),
@@ -149,11 +149,13 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         const insert = new InsertService();
-
+        const select = new SelectService();
+        const verify = await select.findByParams( dbName, { id:id });
+        if( verify.length > 0 ) return reply.status(400).send({ success: true , message:`Service ID ${id} already exists.`}) 
         try {
             const result = await insert.insert(dbName, { codigo: 0, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
             const item = { codigo: result.insertId, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo };
-            await publishMessage(empresa, 'service.inserted', item, source);
+            await publishMessage(empresa, 'servico.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting service:', e);
@@ -170,7 +172,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.number(),
+                id: z.string(),
                 valor: z.number(),
                 aplicacao: z.string(),
                 tipo_serv: z.number(),
@@ -179,7 +181,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     valor: z.number(),
                     aplicacao: z.string(),
                     tipo_serv: z.number(),
@@ -225,7 +227,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
 
             if (result.affectedRows > 0) {
                 const item = { codigo, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo };
-                await publishMessage(empresa, 'service.updated', item, source);
+                await publishMessage(empresa, 'servico.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 

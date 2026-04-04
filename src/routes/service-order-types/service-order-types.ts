@@ -21,7 +21,7 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
                 response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -62,14 +62,14 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 codigo: z.coerce.number().optional(),
                 descricao: z.string().optional(),
-                id: z.coerce.number().optional(),
+                id: z.string().optional(),
                 ativo: z.string().optional(),
                 limit: z.coerce.number().optional()
             }),
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -104,14 +104,14 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.number(),
+                id: z.string(),
                 descricao: z.string(),
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -140,11 +140,13 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         const insert = new InsertServiceOrderType();
-
+        const select = new SelectServiceOrderType();
+        const verify = await select.findByParams( dbName ,{  id });
+        if( verify.length >  0) return reply.status(400).send({ success: false, message: `service order type ID ${id} already exists.`}) 
         try {
             const result = await insert.insert(dbName, { id, descricao, ativo, data_cadastro, data_recadastro, codigo: 0 });
             const item = { codigo: result.insertId, id, descricao, ativo, data_cadastro, data_recadastro };
-            await publishMessage(empresa, 'serviceordertype.inserted', item, source);
+            await publishMessage(empresa, 'tipoos.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting service order type:', e);
@@ -161,14 +163,14 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.number(),
+                id: z.string(),
                 descricao: z.string(),
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -212,7 +214,7 @@ const getServiceOrderTypesRoute: FastifyPluginAsyncZod = async (server) => {
 
             if (result.affectedRows > 0) {
                 const item = { codigo, id, descricao, ativo, data_cadastro, data_recadastro };
-                await publishMessage(empresa, 'serviceordertype.updated', item, source);
+                await publishMessage(empresa, 'tipoos.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 

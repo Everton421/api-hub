@@ -16,7 +16,7 @@ export class CompanyStructure {
                   preco  decimal(10,2) DEFAULT 0.00,
                   unidade_medida  varchar(255) DEFAULT 'UND',
                   grupo  int(11) DEFAULT 0,
-                  origem  char(1) NOT NULL DEFAULT '0',
+                  origem  varchar(255) DEFAULT '00',
                   descricao  varchar(255) NOT NULL DEFAULT '',
                   num_fabricante  varchar(255) NOT NULL DEFAULT '',
                   num_original  varchar(255) DEFAULT NULL DEFAULT '',

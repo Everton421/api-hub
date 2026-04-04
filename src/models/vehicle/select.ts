@@ -44,7 +44,7 @@ export class SelectVehicle {
     async findByParams(dbName: string, params: {
         codigo?: number;
         cliente?: number;
-        id?: number;
+        id?: string;
         limit?: number;
         placa?: string;
         marca?: string;

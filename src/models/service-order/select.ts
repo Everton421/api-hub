@@ -33,7 +33,7 @@ export class SelectServiceOrderType {
     async findByParams(dbName: string, params: {
         codigo?: number;
         descricao?: string;
-        id?: number;
+        id?: string;
         limit?: number;
         ativo?: string;
     }): Promise<ServiceOrderType[]> {

@@ -14,7 +14,7 @@ type ProductMovementQuery = {
 };
 
 export class SelectProductMovement {
-    async findAll(dbName: string, params: { dataRecadastro?: string; userId?: number }): Promise<ProductMovementType[]> {
+    async findAll(dbName: string, params: { data_recadastro?: string; usuario?: number }): Promise<ProductMovementType[]> {
         let sql = ` SELECT 
             mp.*,
             p.id as id_produto,
@@ -27,14 +27,14 @@ export class SelectProductMovement {
         const conditions: string[] = [];
         const values: any[] = [];
 
-        if (params.userId && params.userId !== 0) {
+        if (params.usuario && params.usuario !== 0) {
             conditions.push("mp.usuario = ?");
-            values.push(params.userId);
+            values.push(params.usuario);
         }
 
-        if (params.dataRecadastro) {
+        if (params.data_recadastro) {
             conditions.push("mp.data_recadastro > ?");
-            values.push(params.dataRecadastro);
+            values.push(params.data_recadastro);
         }
 
         if (conditions.length > 0) {
@@ -57,6 +57,17 @@ export class SelectProductMovement {
          WHERE mp.codigo = ?`;
 
         const [result] = await conn.query(sql, [code]);
+        return result as ProductMovementType[];
+    }
+    async findByCodeAndUser(dbName: string, code: number, user:number ): Promise<ProductMovementType[]> {
+        const sql = ` SELECT 
+            mp.*,
+         
+            COALESCE(DATE_FORMAT(mp.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+         FROM ${dbName}.movimentos_produtos as mp 
+         WHERE mp.codigo = ? AND mp.usuario =  ? ;`;
+
+        const [result] = await conn.query(sql, [ code, user]);
         return result as ProductMovementType[];
     }
 

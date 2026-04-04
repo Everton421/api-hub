@@ -11,7 +11,7 @@ export type OrderItemProduct = {
     quantidade_separada: number;
     quantidade_faturada: number;
     descricao?: string;
-    id?: number;
+    id?: string;
 };
 
 export type OrderItemService = {
@@ -22,7 +22,7 @@ export type OrderItemService = {
     valor: number;
     total: number;
     aplicacao?: string;
-    id?: number;
+    id?: string;
 };
 
 export type OrderInstallment = {

@@ -21,7 +21,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -62,14 +62,14 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 codigo: z.coerce.number().optional(),
                 descricao: z.string().optional(),
-                id: z.coerce.number().optional(),
+                id: z.string().optional(),
                 ativo: z.string().optional(),
                 limit: z.coerce.number().optional()
             }),
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -104,13 +104,13 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.number(),
+                id: z.string(),
                 descricao: z.string()
             }),
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -139,11 +139,14 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         const insert = new InsertSector();
+        const select = new SelectSector();
+        const verify = await select.findByParams(dbName, { id: id})
+        if( verify.length > 0 ) return reply.status(400).send({ success: false, message:`Sector ID ${id} already exists.`})
 
         try {
             const result = await insert.insert(dbName, { id, descricao, data_cadastro, data_recadastro, codigo: 0, ativo: 'S' });
             const item = { codigo: result.insertId, id, descricao, ativo: 'S', data_cadastro, data_recadastro };
-            await publishMessage(empresa, 'sector.inserted', item, source);
+            await publishMessage(empresa, 'setor.inserido', item, source);
             return reply.status(200).send(item);
         } catch (e) {
             console.error('Error inserting sector:', e);
@@ -160,13 +163,13 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.number(),
+                id: z.string(),
                 descricao: z.string()
             }),
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.number(),
+                    id: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
                     descricao: z.string(),
@@ -210,7 +213,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
 
             if (result.affectedRows > 0) {
                 const item = { codigo, id, descricao, ativo: 'S', data_cadastro, data_recadastro };
-                await publishMessage(empresa, 'sector.updated', item, source);
+                await publishMessage(empresa, 'setor.atualizado', item, source);
                 return reply.status(200).send(item);
             }
 

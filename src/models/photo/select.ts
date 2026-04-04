@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { PhotoType } from "./types/photo-type";
+import { conn } from "../../database/databaseConfig.ts";
+import { type PhotoType } from "./types/photo-type.ts";
 
 export class SelectPhoto {
     async findAll(dbName: string, dataRecadastro?: string): Promise<PhotoType[]> {

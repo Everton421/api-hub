@@ -1,6 +1,6 @@
 export type ServiceType = {
     codigo: number;
-    id: number;
+    id: string;
     valor: number;
     aplicacao: string;
     tipo_serv: number;
