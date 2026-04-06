@@ -1,6 +1,9 @@
 import { MakeProduct } from "../factories/make-product.ts";
 
 
-const factory = new MakeProduct();
+const factoryProduct = new MakeProduct();
 
-await factory.create(`12264558911`)
+//const result = await factory.create(`\`12264558911\``);
+
+const resultFakeStore = await factoryProduct.createByFakeStoreApi(`\`12264558911\``, 5)
+console.log(resultFakeStore)

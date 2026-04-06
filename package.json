@@ -9,7 +9,7 @@
     "db:seed": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/database/seed.ts",
     "teste:all": "node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings --experimental-test-coverage --test ",
     "teste:seed": " node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings src/database/seed.ts",
-    "teste:factory": " node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings src/__teste__/teste-factory.ts"
+    "teste:factory": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/teste-factory.ts"
 
   },
   "keywords": [],

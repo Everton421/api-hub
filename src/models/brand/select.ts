@@ -60,7 +60,7 @@ export class SelectBrand {
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
          FROM ${dbName}.marcas 
-           WHERE descricao LIKE ? `;
+           WHERE descricao LIKE ? limit ?  `;
 
         const [result] = await conn.query(sql, [`%${description}%`, limit]);
         return result as BrandType[];

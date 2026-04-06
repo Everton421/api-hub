@@ -2,7 +2,7 @@ import { conn } from "../../database/databaseConfig.ts";
 import { type ServiceType } from "./types/service-type.ts";
 
 export class InsertService {
-    async insert(dbName: string, data: ServiceType): Promise<{ insertId: number }> {
+    async insert(dbName: string, data: Omit<ServiceType, 'codigo'>): Promise<{ insertId: number }> {
         const sql = `INSERT INTO ${dbName}.servicos (id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo)
                      VALUES (?, ?, ?, ?, ?, ?, ?)`;
 

@@ -4,13 +4,12 @@ import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectUserCompany } from '../../models/user-company/select.ts';
 import { InsertUserApi } from '../../models/user-api/insert.ts';
 import { InsertUserCompany } from '../../models/user-company/insert.ts';
-import { DateService } from '../../utils/dateService.ts';
 import { SelectUsersCompany } from '../../models/users-company/select.ts';
 
 const usersRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/bulk/usuarios', {
         schema: {
-            tags: ['usuarios'],
+            tags: ['usuários'],
             headers: z.object({
                 token: z.string()
             }),
@@ -56,9 +55,9 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
- server.get('/usuarios', {
+    server.get('/usuarios', {
         schema: {
-            tags: ['usuarios '],
+            tags: ['usuários'],
             headers:z.object({
                 token: z.string()
             })
@@ -83,11 +82,11 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
 
 
                     }
-    })  
+    });
 
     server.get('/usuarios/search', {
         schema: {
-            tags: ['usuarios'],
+            tags: ['usuários'],
             headers: z.object({
                 token: z.string()
             }),
@@ -131,7 +130,7 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.post('/usuarios', {
         schema: {
-            tags: ['usuarios'],
+            tags: ['usuários'],
             headers: z.object({
                 token: z.string(),
                 source: z.string().optional()
