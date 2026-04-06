@@ -3,13 +3,13 @@ import { type UsuarioApi } from "../../models/users-api/interface.ts";
 import { SelectUsersApi } from "../../models/users-api/select.ts";
 import { SelectCompany } from "../../models/company/select.ts";
 import { CompanyStructure } from "../../database/tables-structures/company-structure.ts";
-import { InsertUsersCompany } from "../../models/users-company/insert.ts";
 import { InsertCompany } from "../../models/company/insert.ts";
 import { DateService } from "../../utils/dateService.ts";
 import { InsertUsersApi } from "../../models/users-api/insert.ts";
 import jwt from 'jsonwebtoken';
 import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
 import { type FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { InsertUserCompany } from "../../models/user-company/insert.ts";
 
 
     type newUserOmitCode = Omit<UsuarioApi, "codigo">;
@@ -84,7 +84,7 @@ import { type FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
             const selectUsersApi = new SelectUsersApi();
             const selectCompany = new SelectCompany();
             const companyStructure = new CompanyStructure();
-            const insertUsersCompany = new InsertUsersCompany();
+            const insertUsersCompany = new InsertUserCompany();
             const insertCompany = new InsertCompany();
             const dateService = new DateService();
             const insertUsersApi = new InsertUsersApi();
@@ -101,9 +101,9 @@ import { type FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
             const ativo = 'S'
 
                 cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
-
-                    let objUser: newUser = { nome, email, cnpj, senha, responsavel, telefone, ativo };
-
+                const codigo_perfil = 0 ; 
+                    let objUser: newUser = { nome, email, cnpj, senha, responsavel, telefone, ativo , codigo_perfil };
+                        
                     // Regex para remover caracteres não numéricos
                     cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
 
@@ -155,7 +155,7 @@ import { type FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
                                                 /// //////////////// 
                                                 ///  criar uma factory para registrar os produtos items de teste
                                                 /// //////////
-                               const userCompanyRegister = await insertUsersCompany.insertUser(dbName, objUser)
+                               const userCompanyRegister = await insertUsersCompany.insert(dbName, objUser)
                                const userCompanyId = userCompanyRegister.insertId;
                             const secret = process.env.SECRET;
                               if (!secret) {

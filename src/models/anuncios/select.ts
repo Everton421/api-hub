@@ -1,5 +1,5 @@
-import { conn } from "../../database/databaseConfig";
-import { typeAnuncios } from "../../types/anuncios/type-anuncio";
+import { conn } from "../../database/databaseConfig.ts";
+import { type typeAnuncios } from "../../types/anuncios/type-anuncio.ts";
 
 export type queryAnuncio = {
     id?: number
@@ -16,65 +16,55 @@ export type queryAnuncio = {
     limit?: number
 }
 
-
-
 export class SelectAnuncios {
 
-    async findAll(empresa: string, data_recadastro?: string, limit?: number): Promise<typeAnuncios[]> {
+    async findAll(empresa: string, dataRecadastro?: string, limit?: number): Promise<typeAnuncios[]> {
         let sql = ` SELECT *,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
          FROM ${empresa}.anuncios `;
 
-        let paramQuery: string[] = [];
-        let valueQuery: any[] = [];
+        let params: any[] = [];
 
-        if (data_recadastro) {
-            paramQuery.push(' WHERE data_recadastro >  ? ');
-            valueQuery.push(data_recadastro);
+        if (dataRecadastro) {
+            sql += ' WHERE data_recadastro > ? ';
+            params.push(dataRecadastro);
         }
+        
         if (limit && limit > 0) {
-            paramQuery.push(' LIMIT ? ');
-            valueQuery.push(limit);
+            sql += ' LIMIT ? ';
+            params.push(limit);
         }
 
-        let finalSql = sql;
-        if (paramQuery.length > 0) {
-            finalSql = sql + paramQuery.join('');
-        }
-
-        const [result] = await conn.query(finalSql, valueQuery);
+        const [result] = await conn.query(sql, params);
         return result as typeAnuncios[];
     }
 
     async findById(empresa: string, id: number): Promise<typeAnuncios[]> {
-        let sqlAnuncios = ` SELECT an.*,
+        let sql = ` SELECT an.*,
             DATE_FORMAT(an.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(an.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
          FROM ${empresa}.anuncios an
          where an.id = ? 
          `;
 
-        const params = [id];
-        const [result] = await conn.query(sqlAnuncios, params);
+        const [result] = await conn.query(sql, [id]);
         return result as typeAnuncios[];
     }
 
     async findByParams(empresa: string, query: queryAnuncio): Promise<typeAnuncios[]> {
-        let {
+        const {
             id,
             codigo_produto,
-            integration_id,
             plataforma,
+            ativo,
+            id_externo,
             descricao,
             titulo,
-            num_fabricante,
             sku_externo,
-            id_externo,
-            ativo,
+            num_fabricante,
             limit
         } = query;
-
 
         let baseSql = `
          SELECT *,
@@ -94,11 +84,6 @@ export class SelectAnuncios {
         if (codigo_produto) {
             conditions.push("codigo_produto = ?");
             params.push(codigo_produto);
-        }
-
-        if (integration_id) {
-            conditions.push("integration_id = ?");
-            params.push(integration_id);
         }
 
         if (plataforma) {
@@ -147,5 +132,4 @@ export class SelectAnuncios {
         const [result] = await conn.query(baseSql, params);
         return result as typeAnuncios[];
     }
-
 }

@@ -5,9 +5,9 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z, { email } from "zod";
  import jwt from 'jsonwebtoken'
-import { SelectUsersCompany } from "../../models/users-company/select.ts";
 import { SelectUsersApi } from "../../models/users-api/select.ts";
 import { validaContratoLogin } from "../../services/validaContrato/validaContrato.ts";
+import { SelectUserCompany } from "../../models/user-company/select.ts";
 
 export const loginRoute: FastifyPluginAsyncZod = async (server) => {
     server.post('/login', {
@@ -22,7 +22,7 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
     }, async (request, reply) => {
 
         const selectUserApi = new SelectUsersApi();
-        const selectUsersCompany = new SelectUsersCompany();
+        const selectUsersCompany = new SelectUserCompany();
     
 
         const { email, senha } = request.body

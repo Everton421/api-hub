@@ -139,6 +139,7 @@ export class CompanyStructure {
                 cnpj varchar(255),
                 responsavel varchar(255) DEFAULT 'N',
                 ativo  char(1) NOT NULL DEFAULT 'S',
+                codigo_perfil int(10) NOT NULL,
                 PRIMARY KEY (codigo) USING BTREE 
             );`,
       `CREATE TABLE IF NOT EXISTS ??.tipos_os (
@@ -275,6 +276,32 @@ export class CompanyStructure {
                 ativo  char(1) NOT NULL DEFAULT 'S',
                 PRIMARY KEY (codigo)
               ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+            `,
+      `CREATE TABLE IF NOT EXISTS ??.perfis (
+                codigo  int(11) NOT NULL AUTO_INCREMENT,
+                id  varchar(255) NOT NULL DEFAULT '0',
+                nome  varchar(50) NOT NULL,
+                data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+                data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+                ativo  char(1) NOT NULL DEFAULT 'S',
+                PRIMARY KEY (codigo)
+              ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+            `,
+      `CREATE TABLE IF NOT EXISTS ??.permissoes (
+                codigo  int(11) NOT NULL AUTO_INCREMENT,
+                id  varchar(255) NOT NULL DEFAULT '0',
+                descricao  varchar(255) NOT NULL,
+                data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+                data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
+                ativo  char(1) NOT NULL DEFAULT 'S',
+                PRIMARY KEY (codigo)
+              ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+            `,
+      `CREATE TABLE IF NOT EXISTS ??.perfil_permissoes (
+                codigo_perfil  int(11) NOT NULL,
+                codigo_permissao  int(11) NOT NULL,
+                PRIMARY KEY (codigo_perfil, codigo_permissao)
+              ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
             `
     ];
 
@@ -286,9 +313,124 @@ export class CompanyStructure {
               await conn.query(query, [database_name]);
           });
 
+          await Promise.all(tablePromises);
+          await this.seedDefaultData(database_name);
+
         } catch (tableErr) {
           console.log("[X] Erro ao tentar registrar o banco de dados da empresa.")
         }
-     
+      
+  }
+
+  private async seedDefaultData(database_name: string) {
+    const dataAtual = new Date().toISOString().split('T')[0];
+    const dataHoraAtual = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+    const perfis = [
+      { id: '1', nome: 'Administrador' },
+      { id: '2', nome: 'Gerente' },
+      { id: '3', nome: 'Vendedor' },
+      { id: '4', nome: 'Estoque' }
+    ];
+
+    const permissoes = [
+      { id: 'produtos.ler', descricao: 'Visualizar produtos' },
+      { id: 'produtos.criar', descricao: 'Criar produtos' },
+      { id: 'produtos.editar', descricao: 'Editar produtos' },
+      { id: 'produtos.deletar', descricao: 'Excluir produtos' },
+      { id: 'pedidos.ler', descricao: 'Visualizar pedidos' },
+      { id: 'pedidos.criar', descricao: 'Criar pedidos' },
+      { id: 'pedidos.editar', descricao: 'Editar pedidos' },
+      { id: 'pedidos.deletar', descricao: 'Excluir pedidos' },
+      { id: 'clientes.ler', descricao: 'Visualizar clientes' },
+      { id: 'clientes.criar', descricao: 'Criar clientes' },
+      { id: 'clientes.editar', descricao: 'Editar clientes' },
+      { id: 'clientes.deletar', descricao: 'Excluir clientes' },
+      { id: 'usuarios.ler', descricao: 'Visualizar usuários' },
+      { id: 'usuarios.criar', descricao: 'Criar usuários' },
+      { id: 'usuarios.editar', descricao: 'Editar usuários' },
+      { id: 'usuarios.deletar', descricao: 'Excluir usuários' },
+      { id: 'servicos.ler', descricao: 'Visualizar serviços' },
+      { id: 'servicos.criar', descricao: 'Criar serviços' },
+      { id: 'servicos.editar', descricao: 'Editar serviços' },
+      { id: 'servicos.deletar', descricao: 'Excluir serviços' },
+      { id: 'setores.ler', descricao: 'Visualizar setores' },
+      { id: 'setores.criar', descricao: 'Criar setores' },
+      { id: 'setores.editar', descricao: 'Editar setores' },
+      { id: 'setores.deletar', descricao: 'Excluir setores' },
+      { id: 'veiculos.ler', descricao: 'Visualizar veículos' },
+      { id: 'veiculos.criar', descricao: 'Criar veículos' },
+      { id: 'veiculos.editar', descricao: 'Editar veículos' },
+      { id: 'veiculos.deletar', descricao: 'Excluir veículos' },
+      { id: 'relatorios.ler', descricao: 'Visualizar relatórios' },
+      { id: 'configuracoes.ler', descricao: 'Visualizar configurações' },
+      { id: 'configuracoes.editar', descricao: 'Editar configurações' }
+    ];
+
+    const permAdministrador = permissoes.map(p => p.id);
+
+    const permGerente = [
+      'produtos.ler', 'produtos.criar', 'produtos.editar',
+      'pedidos.ler', 'pedidos.criar', 'pedidos.editar',
+      'clientes.ler', 'clientes.criar', 'clientes.editar',
+      'usuarios.ler',
+      'servicos.ler', 'servicos.criar', 'servicos.editar',
+      'setores.ler', 'setores.criar', 'setores.editar',
+      'veiculos.ler', 'veiculos.criar', 'veiculos.editar',
+      'relatorios.ler'
+    ];
+
+    const permVendedor = [
+      'produtos.ler',
+      'pedidos.ler', 'pedidos.criar', 'pedidos.editar',
+      'clientes.ler', 'clientes.criar', 'clientes.editar',
+      'servicos.ler',
+      'veiculos.ler', 'veiculos.criar'
+    ];
+
+    const permEstoque = [
+      'produtos.ler', 'produtos.criar', 'produtos.editar',
+      'clientes.ler',
+      
+      'setores.ler', 'setores.criar', 'setores.editar',
+      'veiculos.ler'
+    ];
+
+    const perfilPermissoes: { [key: string]: string[] } = {
+      '1': permAdministrador,
+      '2': permGerente,
+      '3': permVendedor,
+      '4': permEstoque
+    };
+
+    try {
+      const insertPerfil = `INSERT INTO ??.perfis (id, nome, data_cadastro, data_recadastro, ativo) VALUES (?, ?, ?, ?, 'S')`;
+      const insertPermissao = `INSERT INTO ??.permissoes (id, descricao, data_cadastro, data_recadastro, ativo) VALUES (?, ?, ?, ?, 'S')`;
+      const insertPerfilPermissao = `INSERT INTO ??.perfil_permissoes (codigo_perfil, codigo_permissao) VALUES (?, ?)`;
+
+      for (const perfil of perfis) {
+        await conn.query(insertPerfil, [database_name, perfil.id, perfil.nome, dataAtual, dataHoraAtual]);
+      }
+
+      for (const permissao of permissoes) {
+        await conn.query(insertPermissao, [database_name, permissao.id, permissao.descricao, dataAtual, dataHoraAtual]);
+      }
+
+      const [permRows] = await conn.query(`SELECT codigo, id FROM ??.permissoes`, [database_name]) as [any[], any];
+      const permMap = new Map(permRows.map(p => [p.id, p.codigo]));
+
+      for (const [perfilId, permIds] of Object.entries(perfilPermissoes)) {
+        for (const permId of permIds) {
+          const codigoPermissao = permMap.get(permId);
+          if (codigoPermissao) {
+            await conn.query(insertPerfilPermissao, [database_name, parseInt(perfilId), codigoPermissao]);
+          }
+        }
+      }
+
+      console.log(`[✓] Seed de perfis e permissões criado para ${database_name}`);
+    } catch (err) {
+      console.log("[X] Erro ao criar seed de perfis/permissões:", err);
+    }
   }
 }

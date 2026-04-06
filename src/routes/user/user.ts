@@ -4,7 +4,6 @@ import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectUserCompany } from '../../models/user-company/select.ts';
 import { InsertUserApi } from '../../models/user-api/insert.ts';
 import { InsertUserCompany } from '../../models/user-company/insert.ts';
-import { SelectUsersCompany } from '../../models/users-company/select.ts';
 
 const usersRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/bulk/usuarios', {
@@ -23,7 +22,8 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
                     email: z.string(),
                     cnpj: z.string(),
                     responsavel: z.string(),
-                    ativo: z.string()
+                    ativo: z.string(),
+                    codigo_perfil: z.number()
                 })),
                 400: z.object({
                     success: z.boolean(),
@@ -64,7 +64,7 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
 
-        const selectUsersCompany = new SelectUsersCompany();
+        const selectUsersCompany = new SelectUserCompany();
                 let decodToken = DecodedToken(String(request.headers.token))
                     //console.log(decodToken.payload?.codigo)
                     if(decodToken.payload?.codigo && decodToken.payload?.cnpj ){
@@ -142,7 +142,9 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
                 senha: z.string(),
                 responsavel: z.string(),
                 telefone: z.string(),
-                ativo: z.enum(['S', 'N']).default('S')
+                ativo: z.enum(['S', 'N']).default('S'),
+              codigo_perfil: z.number().optional().default(0)
+
             }),
             response: {
                 200: z.object({
@@ -166,7 +168,7 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { nome, email, cnpj, senha, responsavel, telefone, ativo } = request.body;
+        const { nome, email, cnpj, senha, responsavel, telefone, ativo , codigo_perfil} = request.body;
 
         const insertUserApi = new InsertUserApi();
         const insertUserCompany = new InsertUserCompany();
@@ -175,7 +177,7 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
             const resultUserApi = await insertUserApi.insert({ nome, email, cnpj, senha, responsavel, telefone });
             const userApiCode = resultUserApi.insertId;
 
-            const resultUserCompany = await insertUserCompany.insert(dbName, { nome, email, cnpj, senha, responsavel, ativo });
+            const resultUserCompany = await insertUserCompany.insert(dbName, { nome, email, cnpj, senha, responsavel, ativo , codigo_perfil});
             const userCompanyCode = resultUserCompany.insertId;
 
             return reply.status(200).send({

@@ -1,19 +1,19 @@
-import { conn } from "../../database/databaseConfig";
-import { typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios";
+import { conn } from "../../database/databaseConfig.ts";
+import { type typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios.ts";
+
+type NewAtributo = Omit<typeAtributosAnuncios, 'id'>;
 
 export class SelectAtributosAnuncios {
 
-    async buscaPorIdAnuncio(empresa: string, id: number): Promise<typeAtributosAnuncios[]> {
-        let sql = ` SELECT   *,
-            DATE_FORMAT( data_cadastro, '%Y-%m-%d') AS data_cadastro,
-            DATE_FORMAT( data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+    async findByAnuncioId(empresa: string, idAnuncio: number): Promise<typeAtributosAnuncios[]> {
+        const sql = ` SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
          FROM ${empresa}.atributos_anuncios  
-         where  id_anuncio = ? 
-         `;
+         WHERE id_anuncio = ? 
+        `;
 
-        const params = [id];
-        const [result] = await conn.query(sql, params);
+        const [result] = await conn.query(sql, [idAnuncio]);
         return result as typeAtributosAnuncios[];
     }
-
 }

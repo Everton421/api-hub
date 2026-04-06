@@ -36,6 +36,7 @@ import { conn, db_api } from "../databaseConfig.ts"
                   cod_recuperador  varchar(255) DEFAULT NULL,
                   data_expiracao  datetime DEFAULT '0000-00-00 00:00:00',
                   telefone  varchar(255) DEFAULT NULL,
+                 codigo_perfil int(10)  DEFAULT 0,
                 PRIMARY KEY ( codigo )
                 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 

@@ -7,6 +7,7 @@ export interface UsuarioApi {
     senha: string,
     responsavel: string
     telefone: string
+    codigo_perfil: number
 }
 
 

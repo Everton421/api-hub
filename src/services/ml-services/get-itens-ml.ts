@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getValidAccessToken } from "../integration/mercadolivre-integration/ml-auth-service"; // Importe do arquivo que criamos antes
+import { getValidMlAccessToken } from "../integration/mercadolivre-integration/ml-auth-service.ts"; // Importe do arquivo que criamos antes
 
 const ML_API_URL = 'https://api.mercadolibre.com';
 
@@ -8,7 +8,7 @@ export class GetMlItemsService {
     async getItemsFromSeller(cnpj: string, systemUserCode: number, mlUserId: number) {
         try {
             // 1. GARANTE O TOKEN (Se estiver vencido, ele renova sozinho aqui)
-            const accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
+            const accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
 
             // 2. Busca os IDs dos itens do vendedor
             // Endpoint: /users/{id}/items/search

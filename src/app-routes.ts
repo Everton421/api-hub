@@ -22,11 +22,41 @@ import { getVehicleRoute } from "./routes/vehicle/vehicle.ts";
 import { categoryRoute } from "./routes/category/category.ts";
 import { photosRoute } from "./routes/photo/photo.ts";
 import { ordersRoute } from "./routes/order/order.ts";
+import { perfilRoute } from "./routes/perfil/perfil.ts";
  
 import   cors   from '@fastify/cors'
 import companyRoute from "./routes/company/company.ts";
+import { mlIntegrationRoute } from "./routes/ml-integration/ml-integration.ts";
+import { mlAnunciosRoute } from "./routes/ml/ml-anuncios.ts";
+import { mlToolsRoute } from "./routes/ml/ml-tools.ts";
+import { mlAccountsRoute } from "./routes/ml/ml-accounts.ts";
+let certPathEnv;
+if(process.env.PATH_CERT_CERT) certPathEnv = String(process.env.PATH_CERT_CERT)
 
-const server = fastify( ).withTypeProvider<ZodTypeProvider>()
+let keyPathEnv 
+if(process.env.PATH_CERT_KEY) keyPathEnv = String(process.env.PATH_CERT_KEY)
+
+
+
+   let dataServer:any = {
+    logger:false 
+    }
+
+let httpsOptions ={}
+if(  keyPathEnv && certPathEnv ){
+    const keyPath = path.join(keyPathEnv);
+    const certPath = path.join(certPathEnv);
+    
+    httpsOptions= {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath)
+    }
+    dataServer.https = httpsOptions;
+}
+    
+ const server =fastify( dataServer ).withTypeProvider<ZodTypeProvider>()
+
+//const server = fastify( ).withTypeProvider<ZodTypeProvider>()
 
 
 if (!server) {
@@ -37,7 +67,7 @@ if (!server) {
 server.register(fastifySwagger, {
   openapi: {
     info: {
-      title: "API E-commerce",
+      title: "API Mobile",
       version: "1.0.0"
     }
   },
@@ -78,8 +108,15 @@ server.register(loginRoute);
  server.register(locationsRoute);
  server.register(getBrandsRoute);
  server.register(paymentMethodsRoute);
- server.register(productMovementsRoute);
+ server.register(productMovementsRoute); 
  server.register(photosRoute);
  server.register(ordersRoute);
+ server.register(perfilRoute);
+
+// ml routes 
+server.register(mlIntegrationRoute);
+server.register(mlAnunciosRoute);
+server.register(mlToolsRoute);
+server.register(mlAccountsRoute);
  
 export { server };

@@ -1,12 +1,14 @@
-import { conn, db_api } from "../../database/databaseConfig";
-import { IMl_account } from "../../types/ml-account/type-ml-account";
+import { conn, db_api } from "../../database/databaseConfig.ts";
+import { type IMl_account } from "../../types/ml-account/type-ml-account.ts";
 
+
+type resultuserIntegration = {
+     ml_user_id: number, integration_name: string 
+}
 export class SelectMLAccountClient {
 
 
     async fincByIdMLandCodeSystem(empresa: string, user_id: number, ml_user_id: number): Promise<IMl_account[]> {
-
-        return new Promise(async (resolve, reject) => {
 
             let sql = ` SELECT *
              FROM ${empresa}.ml_accounts 
@@ -15,18 +17,11 @@ export class SelectMLAccountClient {
                `
             let param = [user_id, ml_user_id]
 
-            await conn.query(sql, param, (err: any, result: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            })
-        })
+            const [result] = await conn.query(sql, param )
+            return result as IMl_account[];
     }
 
-    async findByUserIdAndIntegration(empresa: string, user_id: number,): Promise<[{ ml_user_id: number, integration_name: string }]> {
-        return new Promise(async (resolve, reject) => {
+    async findByUserIdAndIntegration(empresa: string, user_id: number,): Promise<resultuserIntegration[]> {
             const sql = `
                     SELECT 
                         i.ml_user_id,
@@ -37,13 +32,8 @@ export class SelectMLAccountClient {
                     and i.ml_user_id = ma.ml_user_id  
                     where ma.user_id = ? 
                 `
-            await conn.query(sql, [user_id], (err: any, result: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            })
-        })
+            const [ result ] = await conn.query(sql, [user_id]);
+            return result as resultuserIntegration[]  ;
+
     }
 }

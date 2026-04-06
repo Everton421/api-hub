@@ -1,12 +1,11 @@
-import { conn, db_api } from "../../database/databaseConfig";
-import { IUsersMlIntegrations } from "../../types/users_ml_integrations/type-users-ml-integrations";
+import { conn, db_api } from "../../database/databaseConfig.ts";
+import { type IUsersMlIntegrations } from "../../types/users_ml_integrations/type-users-ml-integrations.ts";
 
 export class SelectUsersMlIntegrations {
 
 
     async fincByIdMLandCodeSystem(user_id: number, ml_user_id: number): Promise<IUsersMlIntegrations[]> {
 
-        return new Promise(async (resolve, reject) => {
 
             let sql = ` SELECT *
              FROM ${db_api}.users_ml_integrations 
@@ -15,31 +14,19 @@ export class SelectUsersMlIntegrations {
                `
             let param = [user_id, ml_user_id]
 
-            await conn.query(sql, param, (err: any, result: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            })
-        })
+           const [ result] =  await conn.query(sql, param )
+           return result as IUsersMlIntegrations[]
     }
 
     async findBySystemUserCodeAndCnpj(user_id: number, ml_user_id: number, cnpj: string): Promise<IUsersMlIntegrations[]> {
-        return new Promise(async (resolve, reject) => {
             let sql = ` SELECT *
              FROM ${db_api}.users_ml_integrations 
                WHERE   system_user_code  = ? and  cnpj = ?  and ml_user_id
                `
             let param = [user_id, cnpj, ml_user_id]
 
-            await conn.query(sql, param, (err: any, result: any) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            })
-        })
-    }
+            const [result] = await conn.query(sql, param );
+           return result as IUsersMlIntegrations[]
+
+        }
 }

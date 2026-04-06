@@ -1,11 +1,10 @@
 import axios from "axios";
-import { CreateTablesAnuncios } from "../../database/tables-structures/create-table-anuncios";
-import { InsertAnuncios } from "../../models/anuncios/insert";
-import { InsertAtributosAnuncios } from "../../models/atributos-anuncios/insert";
-import { delay } from "../delay-service/delay";
-import { getValidAccessToken } from "../integration/mercadolivre-integration/ml-auth-service";
+import { InsertAnuncios } from "../../models/anuncios/insert.ts";
+import { InsertAtributosAnuncios } from "../../models/atributos-anuncios/insert.ts";
+import { delay } from "../delay-service/delay.ts";
+import { getValidMlAccessToken } from "../integration/mercadolivre-integration/ml-auth-service.ts";
 
-export interface PublishItem {
+export interface IPublishItem {
     title: string;
     price: number;
     quantity: number;
@@ -27,8 +26,7 @@ const ML_API_URL = 'https://api.mercadolibre.com';
 export class PostMlItemsService {
 
 
-    async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, codigo_produto: number, integrationId: number, data: PublishItem) {
-        const createTablesAnuncios = new CreateTablesAnuncios();
+    async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, codigo_produto: number, integrationId: number, data: IPublishItem) {
         const insertAnuncios = new InsertAnuncios();
         const insertAtributosAnuncios = new InsertAtributosAnuncios();
 
@@ -36,7 +34,7 @@ export class PostMlItemsService {
         try {
 
             try {
-                accessToken = await getValidAccessToken(cnpj, systemUserCode, mlUserId);
+                accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
             } catch (e) {
                 if (e instanceof Error) {
                     throw new Error(e.message);

@@ -1,10 +1,10 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import Jwt from "jsonwebtoken";
-import { InsertaMLAccountClient } from "../../../models/ml-accounts/insert-ml-accounts";
-import { SelectMLAccountClient } from "../../../models/ml-accounts/select-ml-accounts";
-import { UpdateMLAccountClient } from "../../../models/ml-accounts/update-ml-accounts";
-import { InsertUserMl } from "../../../types/ml-account/type-ml-account";
+import { InsertaMLAccountClient } from "../../../models/ml-accounts/insert-ml-accounts.ts";
+import { SelectMLAccountClient } from "../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../models/ml-accounts/update-ml-accounts.ts";
+import {type InsertUserMl } from "../../../types/ml-account/type-ml-account.ts";
 
 
 type dataStateuser = {
@@ -20,9 +20,9 @@ type state = {
     codigo: number,
     cnpj: string
 }
-const ML_API_URL = 'https://api.mercadolibre.com';
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
-export const exchangeCodeForToken = async (code: string, state: state) => {
+export const exchangeCodeForMlToken = async (code: string, state: state) => {
 
     const insertaMLAccountClient = new InsertaMLAccountClient();
     const selectMlAccountClient = new SelectMLAccountClient();
@@ -53,7 +53,7 @@ export const exchangeCodeForToken = async (code: string, state: state) => {
         const expirationDate = dayjs().add(expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
         if (response.status === 200 && access_token) {
-            const dataUser = DecodedStateToken(String(state)).payload;
+            const dataUser = DecodedMlStateToken(String(state)).payload;
             if (!dataUser) return;
 
             let dbName = `\`${dataUser.cnpj}\``;
@@ -96,7 +96,7 @@ export const exchangeCodeForToken = async (code: string, state: state) => {
  * Se o token atual estiver valido, retorna ele.
  * Se estiver vencido (ou quase), faz o refresh, salva no banco e retorna o novo.
  */
-export const getValidAccessToken = async (cnpj: string, systemUserCode: number, mlUserId: number) => {
+export const getValidMlAccessToken = async (cnpj: string, systemUserCode: number, mlUserId: number) => {
     const selectMlAccountClient = new SelectMLAccountClient();
     const updateMlAccountClient = new UpdateMLAccountClient();
 
@@ -166,7 +166,7 @@ export const getValidAccessToken = async (cnpj: string, systemUserCode: number, 
     }
 }
 
-export const getUserCode = async () => {
+export const getMlUserCode = async () => {
 
     const client_id = process.env.APP_ID_ML
     const redirect_uri = process.env.REDIRECT_URI_ML
@@ -176,10 +176,10 @@ export const getUserCode = async () => {
     return base_uri
 }
 
-export function DecodedStateToken(token: string): responseDecodToken {
+export function DecodedMlStateToken(token: string): responseDecodToken {
     const secret = process.env.SECRET_ML_ENCODE_STATE;
     if (!secret) {
-        return { erro: true, msg: `secret nao informado` }
+        return { erro: true, msg: `SECRET_ML_ENCODE_STATE secret nao informado.` }
     }
     let decoded;
     Jwt.verify(token, secret, (err: any, decodedPayload: any) => {
