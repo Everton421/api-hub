@@ -147,7 +147,7 @@ export class SelectOrder {
         return result as OrderType[];
     }
 
-    async findTotalsByDate(dbName: string, seller: number): Promise<{ total: number; data_cadastro: string }[]> {
+    async findTotalsByDate(dbName: string, seller: number): Promise<{ total: string; data_cadastro: string }[]> {
         const sql = `SELECT 
             SUM(total_geral) as total,
             DATE_FORMAT(data_cadastro, '%Y-%d-%m') as data_cadastro
@@ -156,7 +156,7 @@ export class SelectOrder {
         GROUP BY data_cadastro`;
 
         const [result] = await conn.query(sql, [seller]);
-        return result as { total: number; data_cadastro: string }[];
+        return result as { total: string; data_cadastro: string }[];
     }
 
     async findLastInserted(dbName: string, seller: number, limit: number): Promise<OrderType[]> {
@@ -176,18 +176,18 @@ export class SelectOrder {
     }
 
     async findStats(dbName: string, seller: number): Promise<{
-            total_faturado: number;
-            total_pedidos: number;
-            media_pedidos: number;
+            total_faturado: string;
+            total_pedidos: string;
+            media_pedidos: string;
             quantidade_pedidos: number;
             novos_clientes: number;
             total_clientes: number;
         }[]> {
             const sql = `SELECT  
-                (SELECT SUM(pf.total_geral) AS total_faturado 
+                (SELECT COALESCE( SUM(pf.total_geral),0) AS total_faturado 
                 FROM ${dbName}.pedidos pf 
                 WHERE pf.situacao = 'FI' AND pf.vendedor = ?) AS total_faturado,
-                (SELECT SUM(total_geral) 
+                (SELECT COALESCE(SUM(total_geral), 0 ) 
                 FROM ${dbName}.pedidos 
                 WHERE vendedor = ?) AS total_pedidos,
                 (SELECT AVG(total_geral) 
@@ -209,9 +209,9 @@ export class SelectOrder {
 
             const [result] = await conn.query(sql, [seller, seller, seller, seller, seller, seller]);
             return result as {
-                total_faturado: number;
-                total_pedidos: number;
-                media_pedidos: number;
+                total_faturado: string;
+                total_pedidos: string;
+                media_pedidos: string;
                 quantidade_pedidos: number;
                 novos_clientes: number;
                 total_clientes: number;

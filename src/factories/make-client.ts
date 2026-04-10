@@ -25,8 +25,9 @@ export class MakeClient {
             const cidade = faker.location.city();
             const estado = faker.location.state({ abbreviated: true });
 
+                const id = randomUUID() as string; 
             await insertClient.insert(empresa, {
-                id: randomUUID(),
+                id,
                 celular,
                 nome,
                 cep,

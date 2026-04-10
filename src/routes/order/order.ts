@@ -296,9 +296,9 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             response: {
                 200: z.array(z.object({
-                    total_faturado: z.number().nullable(),
-                    total_pedidos: z.number().nullable(),
-                    media_pedidos: z.number().nullable(),
+                    total_faturado: z.string().nullable().default('0.00'),
+                    total_pedidos: z.string().nullable().default('0.00'),
+                    media_pedidos: z.string().nullable().default('0.00'),
                     quantidade_pedidos: z.number().nullable(),
                     novos_clientes: z.number().nullable(),
                     total_clientes: z.number().nullable()
@@ -350,12 +350,14 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             response: {
                 200: z.array(z.object({
-                    id: z.number().optional(),
-                    id_externo: z.number().optional(),
-                    total_geral: z.number().optional(),
+                    id: z.string().optional(),
+                    id_externo: z.string().optional(),
+                    total_geral: z.string().optional(),
                     situacao: z.string().optional(),
                     nome: z.string().optional(),
-                    data_cadastro: z.string().optional()
+                    data_cadastro: z.string().optional(),
+                    cliente_nome:z.string().optional(),
+                    cliente_id:z.string().optional() 
                 })),
                 400: z.object({
                     erro: z.boolean(),
@@ -402,9 +404,10 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 vendedor: z.coerce.number()
             }),
+             
             response: {
                 200: z.array(z.object({
-                    total: z.number().nullable(),
+                    total: z.string().nullable().default('0'),
                     data_cadastro: z.string()
                 })),
                 400: z.object({
@@ -416,6 +419,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     msg: z.string()
                 })
             }
+             
         }
     }, async (request, reply) => {
         const selectPedido = new SelectOrder();
@@ -435,7 +439,9 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         try {
             const result = await selectPedido.findTotalsByDate(dbName, vendedor);
+            console.log(result)
             return reply.status(200).send(result);
+
         } catch (e) {
             console.error('Erro ao buscar totais por data:', e);
             return reply.status(500).send({ erro: true, msg: 'Erro interno ao buscar os dados dos orçamentos.' });

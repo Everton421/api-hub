@@ -7,7 +7,10 @@ import { UpdateProduct } from '../../models/product/update.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 import { type ProductType } from '../../models/product/types/product-type.ts';
+import { SelectPhoto } from '../../models/photo/select.ts';
+import { type PhotoType } from '../../models/photo/types/photo-type.ts';
 
+type productType  = ProductType & { fotos: PhotoType[] }
 const productResponseSchema = z.object({
     codigo: z.number(),
     id: z.string(),
@@ -88,11 +91,24 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const { data_recadastro, limit } = request.query;
-
+        const selectPhoto = new SelectPhoto();
+        let arrResult =[]
         try {
             let result = await select.findAll(dbName, data_recadastro);
             if (limit && result.length > limit) {
                 result = result.slice(0, limit);
+                      
+                    const productResponse =[]
+                for( let i of result ){
+                    let fotos:PhotoType[] =[];
+                   let product = i as productType;
+                    const resultFotos = await selectPhoto.findByProduct(dbName, i.codigo);
+                    fotos = resultFotos  
+                    i = {  ...i, fotos } as productType;
+                    productResponse.push(i)
+                }
+            console.log(productResponse)
+
             }
             return reply.status(200).send(result);
         } catch (e) {

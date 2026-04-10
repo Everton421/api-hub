@@ -68,7 +68,7 @@ export type OrderReceivedType = {
 export type ProductOrderType = {
     codigo: number;
     preco: number;
-    id: string;
+    id?: string;
     quantidade: number;
     desconto: number;
     total: number;

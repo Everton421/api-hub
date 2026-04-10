@@ -2,7 +2,7 @@ import { conn } from "../../database/databaseConfig.ts";
 import { type ClientType } from "./types/client-type.ts";
 
 export class InsertClient {
-    async insert(dbName: string, data: ClientType): Promise<{ affectedRows: number; insertId: number }> {
+    async insert(dbName: string, data: Omit<ClientType, 'codigo'>): Promise<{ affectedRows: number; insertId: number }> {
         const sql = `INSERT INTO ${dbName}.clientes
             (id, celular, nome, cep, endereco, ie, numero, cnpj, cidade, data_cadastro, data_recadastro, vendedor, bairro, estado)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;

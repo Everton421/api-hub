@@ -10,6 +10,10 @@ import jwt from 'jsonwebtoken';
 import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
 import { type FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { InsertUserCompany } from "../../models/user-company/insert.ts";
+import { MakeProduct } from "../../factories/make-product.ts";
+import { MakeService } from "../../factories/make-service.ts";
+import { MakeClient } from "../../factories/make-client.ts";
+import { MakeOrder } from "../../factories/make-order.ts";
 
 
     type newUserOmitCode = Omit<UsuarioApi, "codigo">;
@@ -88,7 +92,10 @@ import { InsertUserCompany } from "../../models/user-company/insert.ts";
             const insertCompany = new InsertCompany();
             const dateService = new DateService();
             const insertUsersApi = new InsertUsersApi();
-
+                     const factoryProduct = new MakeProduct();
+                     const makeService = new MakeService();
+                     const makeClient = new MakeClient();
+                     const makeOrder = new MakeOrder();
             const { empresa , usuario }  = request.body;
             let  { cnpj, tipo_contrato,dados_teste  } = empresa;
             const { nome, email, senha, telefone } = usuario;
@@ -151,9 +158,14 @@ import { InsertUserCompany } from "../../models/user-company/insert.ts";
                                                 fim_contrato: '0000-00-00'
                                                 };
                                                const resultInsertCompany = await insertCompany.insertCompany(objEmpresa);
-                                          //  console.log(" RESULT INSERT COMPANY  ",resultInsertCompany);
+                                           
                                                 /// //////////////// 
-                                                ///  criar uma factory para registrar os produtos items de teste
+                                                ///   items de teste
+                                                
+                                                  await factoryProduct.createByFakeStoreApi( dbName, 5)
+                                                  await makeService.createService( dbName,3)
+                                                  await makeClient.create(dbName, 5)
+                                                  await makeOrder.create(dbName,'EA');
                                                 /// //////////
                                const userCompanyRegister = await insertUsersCompany.insert(dbName, objUser)
                                const userCompanyId = userCompanyRegister.insertId;
