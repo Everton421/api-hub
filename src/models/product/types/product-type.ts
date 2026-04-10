@@ -11,7 +11,7 @@ export type ProductType = {
     num_original: string;
     sku: string;
     marca: number;
-    ativo: string;
+    ativo: 'S' | 'N';
     class_fiscal: string;
     cst: string;
     tipo: number;

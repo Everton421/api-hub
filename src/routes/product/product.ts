@@ -24,16 +24,17 @@ const productResponseSchema = z.object({
     num_original: z.string(),
     sku: z.string(),
     marca: z.number(),
-    ativo: z.string(),
+    ativo: z.enum(["S" ,"N"]),
     class_fiscal: z.string(),
     cst: z.string(),
-    tipo: z.number(),
-    caracteristica: z.number(),
+    caracteristica: z.number().optional(),
     data_cadastro: z.string(),
     data_recadastro: z.string(),
     observacoes1: z.string(),
     observacoes2: z.string(),
-    observacoes3: z.string()
+    observacoes3: z.string(),
+    tipo: z.number()
+
 });
 
 const productWithRelationsSchema = z.object({

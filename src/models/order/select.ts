@@ -88,6 +88,7 @@ export class SelectOrder {
         cnpj?: string;
         limit?: number;
         name?: string;
+        search?:string;
         type?: number;
     }): Promise<OrderType[]> {
         const {
@@ -96,8 +97,8 @@ export class SelectOrder {
             seller,
             client,
             cnpj,
-            limit = 20,
-            name,
+            limit,
+            search,
             type
         } = params;
 
@@ -131,17 +132,22 @@ export class SelectOrder {
             conditions.push("pe.tipo = ?");
             values.push(Number(type));
         }
-        if (name) {
+        if (search) {
             conditions.push("c.nome LIKE ?");
-            values.push(`%${name}%`);
+            values.push(`%${search}%`);
         }
 
         let finalSql = sql;
         if (conditions.length > 0) {
             finalSql += ' WHERE ' + conditions.join(' AND ');
         }
-        finalSql += ' ORDER BY pe.data_recadastro LIMIT ?';
+
+        finalSql += ' ORDER BY pe.data_recadastro ';
+        
+        if(limit){
+        finalSql += ' LIMIT ?';
         values.push(Number(limit));
+        }
 
         const [result] = await conn.query(finalSql, values);
         return result as OrderType[];

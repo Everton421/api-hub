@@ -198,8 +198,12 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 token: z.string()
             }),
             querystring: z.object({
-                data: z.string(),
-                vendedor: z.coerce.number().optional()
+                data_inicial: z.string().optional(),
+                data_final: z.string().optional(), 
+                vendedor: z.coerce.number().optional(),
+                search: z.string().optional(),
+                tipo:z.coerce.number().optional(),
+                limit: z.coerce.number().optional().default(20)
             }),
             response: {
                 200: z.array(orderResponseSchema),
@@ -226,21 +230,28 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { data, vendedor } = request.query;
+        const {  data_final, data_inicial , search , tipo, vendedor, limit } = request.query;
 
-        if (!data) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar uma data' });
-        }
+       
 
-        if (!dateService.isValidDate(data)) {
+        if (data_final && !dateService.isValidDate(data_final)) {
             return reply.status(400).send({
                 erro: true,
                 msg: 'Informe a data no formato YYYY-MM-DD HH:mm:ss'
             });
         }
 
+        if (data_inicial && !dateService.isValidDate(data_inicial)) {
+            return reply.status(400).send({
+                erro: true,
+                msg: 'Informe a data no formato YYYY-MM-DD HH:mm:ss'
+            });
+        }
+
+
+
         try {
-            const dados_orcamentos = await selectPedido.findByDate(dbName, data, vendedor);
+            const dados_orcamentos = await selectPedido.findByParams(dbName, { startDate:data_inicial, endDate:data_final, search: search, type:tipo, limit: limit,seller:vendedor });
 
             if (dados_orcamentos.length === 0) {
                 return reply.status(200).send([]);
