@@ -7,9 +7,11 @@ export class CreateTableMLAccounts {
  
 
      async createTableMlAcounts(databaseName: string){
- 
+          
+          let result = { sucess: false, message:''};
+
           const sql = [ 
-                `CREATE TABLE IF NOT EXISTS ?.ml_accounts (
+                `CREATE TABLE IF NOT EXISTS ??.ml_accounts (
                            id  int(11) NOT NULL AUTO_INCREMENT,
                              user_id  bigint(20) NOT NULL,
                              ml_user_id  bigint(20) NOT NULL,
@@ -20,7 +22,7 @@ export class CreateTableMLAccounts {
                              KEY user_id  ( user_id , ml_user_id)
                              ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`,
 
-                               ` CREATE TABLE IF NOT EXISTS  ?.anuncios  (
+                               ` CREATE TABLE IF NOT EXISTS  ??.anuncios  (
                                         id  int(11) unsigned NOT NULL AUTO_INCREMENT,
                                         codigo_produto  int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'codigo do produto vindo da tabela de produtos.',
                                         integration_id  int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'id da integracao',
@@ -41,7 +43,7 @@ export class CreateTableMLAccounts {
                                         PRIMARY KEY ( id )
                                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci`,
 
-                               `CREATE TABLE IF NOT EXISTS  ?.atributos_anuncios  (
+                               `CREATE TABLE IF NOT EXISTS  ??.atributos_anuncios  (
                                      id  int(11) unsigned NOT NULL AUTO_INCREMENT,
                                      id_anuncio  int(11) NOT NULL comment 'id referente ao anuncio',
                                      id_atributo  varchar(255) NOT NULL comment 'ID do atributo ( ex:  BRAND ,  MODEL , VOLTAGE )',
@@ -54,10 +56,16 @@ export class CreateTableMLAccounts {
                                     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`
           ]    
           for( const i of sql ){
-                     const [resultInsert] = await conn.query(i, [databaseName]);
-
-          }
-
+                     const [ resultCreateTable ] = await conn.query(i, [databaseName]);
+                         const resutl = resultCreateTable as ResultSetHeader;
+                      if( resutl.serverStatus > 0 ){
+                         result.sucess = true;
+                         }else{
+                             result.sucess = false;
+                             return result;
+                         }
+                    }
+             return result
      }
 
 

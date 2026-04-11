@@ -6,7 +6,6 @@ export class UpdateMLAccountClient {
 
     async update(empresa: any, user: InsertUserMl) {
 
-        return new Promise(async (resolve, reject) => {
 
             const sql = ` UPDATE  ${empresa}.ml_accounts SET  
                                     access_token = ?,
@@ -15,12 +14,10 @@ export class UpdateMLAccountClient {
                                    WHERE user_id = ?
                                    AND ml_user_id = ?
                             `;
-
             const values = [ user.access_token, user.refresh_token, user.token_expires_in, user.user_id, user.ml_user_id ];
 
             const [ result ] = await conn.query(sql, values);
             return result as ResultSetHeader;
-        })
     }
 
 }

@@ -5,8 +5,7 @@ import { type IUsersMlIntegrations } from "../../types/users_ml_integrations/typ
 export class UpdateUsersMLIntegrations {
 
 
-    async update(user: IUsersMlIntegrations) {
-
+    async update(user: Omit<IUsersMlIntegrations, 'id' >) {
 
             const sql = ` UPDATE  ${db_api}.users_ml_integrations SET  
                                     cnpj = '${user.cnpj}',

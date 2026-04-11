@@ -6,7 +6,7 @@ import { type IUsersMlIntegrations } from "../../types/users_ml_integrations/typ
 
 export class InsertUsersMlintegration {
 
-    async cadastrar(user: IUsersMlIntegrations) {
+    async cadastrar(user: Omit<IUsersMlIntegrations, 'id' >) {
 
             let sql = `
                     INSERT INTO ${db_api}.users_ml_integrations (     ml_user_id, system_user_code, cnpj , created_at, integration_name ) VALUES

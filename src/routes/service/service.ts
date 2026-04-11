@@ -21,8 +21,8 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.string(),
-                    valor: z.number(),
+                    id: z.coerce.string(),
+                    valor: z.coerce.string(),
                     aplicacao: z.string(),
                     tipo_serv: z.number(),
                     data_cadastro: z.string(),
@@ -72,8 +72,8 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(z.object({
                     codigo: z.number(),
-                    id: z.string(),
-                    valor: z.number(),
+                    id: z.coerce.string(),
+                    valor: z.coerce.string(),
                     aplicacao: z.string(),
                     tipo_serv: z.number(),
                     data_cadastro: z.string(),
@@ -94,6 +94,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
 
         try {
             const result = await select.findByParams(dbName, request.query);
+            console.log(result)
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error searching services:', e);
@@ -153,7 +154,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
         const verify = await select.findByParams( dbName, { id:id });
         if( verify.length > 0 ) return reply.status(400).send({ success: true , message:`Service ID ${id} already exists.`}) 
         try {
-            const result = await insert.insert(dbName, { codigo: 0, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
+            const result = await insert.insert(dbName, {  id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
             const item = { codigo: result.insertId, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo };
             await publishMessage(empresa, 'servico.inserido', item, source);
             return reply.status(200).send(item);

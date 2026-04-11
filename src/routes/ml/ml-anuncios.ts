@@ -20,12 +20,12 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
                 token: z.string()
             }),
             body: z.object({
-                title: z.string(),
-                price: z.number(),
+                title: z.coerce.string(),
+                price: z.coerce.number(),
                 category_id: z.string(),
                 available_quantity: z.number(),
-                ml_user_id: z.number(),
-                codigo_produto: z.number(),
+                ml_user_id: z.coerce.number(),
+                codigo_produto: z.coerce.number(),
                 listing_type_id: z.string().optional(),
                 condition: z.string().optional(),
                 description: z.string().optional(),

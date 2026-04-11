@@ -22,7 +22,7 @@ type state = {
 }
 const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
-export const exchangeCodeForMlToken = async (code: string, state: state) => {
+export const exchangeCodeForMlToken = async (code: string, state: string) => {
 
     const insertaMLAccountClient = new InsertaMLAccountClient();
     const selectMlAccountClient = new SelectMLAccountClient();
@@ -47,14 +47,18 @@ export const exchangeCodeForMlToken = async (code: string, state: state) => {
         });
 
         const { access_token, refresh_token, expires_in, user_id } = response.data;
-
+        console.log({ access_token, refresh_token, expires_in, user_id })
         // 1. CALCULO DA DATA (CORREÇÃO): Data Atual + Segundos de vida
         // Formata para o MySQL: 'YYYY-MM-DD HH:mm:ss'
         const expirationDate = dayjs().add(expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
         if (response.status === 200 && access_token) {
             const dataUser = DecodedMlStateToken(String(state)).payload;
-            if (!dataUser) return;
+
+            if (!dataUser) { 
+                console.log(`[X] não foi possivel decodificar o state.`)
+                return;
+            }
 
             let dbName = `\`${dataUser.cnpj}\``;
 
@@ -68,10 +72,15 @@ export const exchangeCodeForMlToken = async (code: string, state: state) => {
 
 
             let resultValidUser = await selectMlAccountClient.fincByIdMLandCodeSystem(dbName, dataUser.codigo, user_id);
-            if (resultValidUser.length > 0) {
-                await updateMlAccountClient.update(dbName, userMlAccount);
+                
+             if (resultValidUser.length > 0) {
+                console.log("[V] encotrado conta do usuario, atualizando daddos ...")
+                const resultUpdate = await updateMlAccountClient.update(dbName, userMlAccount);
+                resultUpdate.affectedRows > 0 && console.log("[V] dados de acesso atualizados com sucesso.")
             } else {
-                await insertaMLAccountClient.cadastrar(dbName, userMlAccount);
+               const resultInsert=  await insertaMLAccountClient.cadastrar(dbName, userMlAccount);
+                resultInsert.affectedRows > 0 && console.log("[V] dados de acesso registrados com sucesso.")
+             
             }
 
 
@@ -81,9 +90,10 @@ export const exchangeCodeForMlToken = async (code: string, state: state) => {
             //} else {
             //   await insertUsersMlIntegration.cadastrar({ cnpj: dataUser.cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: dataUser.codigo, ml_user_id: user_id });
             //}
-        }
+        } 
 
-        return { access_token, refresh_token, expirationDate, ml_user_id: user_id };
+        const result ={ access_token, refresh_token, expirationDate, ml_user_id: user_id } 
+        return result;
 
     } catch (error: any) {
         console.error('Erro ao trocar token:', error.response?.data || error.message);

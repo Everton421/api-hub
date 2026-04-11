@@ -21,7 +21,7 @@ export interface IPublishItem {
 }
 type typeFinalAttributes = { id: string, value_name: string }
 
-const ML_API_URL = 'https://api.mercadolibre.com';
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
 export class PostMlItemsService {
 
@@ -154,7 +154,7 @@ export class PostMlItemsService {
             if (error.response?.data?.cause) {
                 // Pega o primeiro erro da lista de causas do ML
                 const mlError = error.response.data.cause[0];
-                errorMessage = `ML Recusou: ${mlError.message} (Código: ${mlError.code})`;
+                errorMessage = `ML Recusou: ${mlError &&  mlError.message ? mlError.message : mlError } (Código: ${mlError && mlError.code ? mlError.code : mlError })`;
 
                 // Exemplo comum: Categoria exige atributos específicos
                 if (mlError.code === "validation_error") {

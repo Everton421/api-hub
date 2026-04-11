@@ -6,6 +6,9 @@ import { DecodedMlStateToken, exchangeCodeForMlToken  } from "../../services/int
 import jwt from 'jsonwebtoken';
 import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
 import { CreateTableMLAccounts } from "../../database/tables-structures/create-table-ml-accounts.ts";
+import { UpdateUsersMLIntegrations } from "../../models/users-ml-integration/update-users-ml-integration.ts";
+import { DateService } from "../../utils/dateService.ts";
+import { InsertUsersMlintegration } from "../../models/users-ml-integration/insert-users-ml-integration.ts";
 
 
 type state = {
@@ -18,30 +21,35 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
         schema: { 
             tags: ['ml/integration'],
             querystring: z.object({
-                code: z.string(),
-                state: z.object({
-                    codigo: z.number(),
-                    cnpj:z.string()
-                })
+                code: z.coerce.string(),
+                state:z.coerce.string(),
+                //state: z.object({
+                //    codigo: z.coerce.number(),
+                //    cnpj:z.string()
+                //})
                 })
         }
     } , async ( request, reply )=>{
-
         const selectUserApi = new SelectUserApi();
         const selectUsersCompany = new SelectUsersMlIntegrations();
 
-
         const frontEndtUrl = process.env.FRONT_END_URL || 'http://localhost:8000';
-
 
             try{
 
+               // console.log(request.query);
+               if(!request.query.code) return reply.status(500).send({ success:false, message: "CODE is missing."});
+               if(!request.query.state) return reply.status(500).send({success:false, message: "STATE is missing."});
+
+
                 const code  = request.query.code;
-                const state = request.query.state as state;
+                const state = request.query.state  ;
 
                 const returnTokens = await exchangeCodeForMlToken(code , state );
+                    console.log(returnTokens)
+
             if (!returnTokens?.access_token) {
-                return reply.redirect(`${frontEndtUrl}/integracoes?status=error&message=Nao+foi+possivel+obter+token`);
+                return reply.redirect(`${frontEndtUrl}/marketplaces?status=error&message=Nao+foi+possivel+obter+token`);
             }
 
             const payloadState = DecodedMlStateToken(request.query.state as any).payload;
@@ -55,7 +63,6 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
                         system_user_code: payloadState.codigo, // Assumindo que vc decodificou o state antes
                         cnpj: payloadState.cnpj
                     };
-                    
 
             if (!process.env.SECRET_ML_ENCODE_STATE) {
                     throw new Error("SECRET_ML_ENCODE_STATE nao foi configurada.")
@@ -64,11 +71,11 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
 
             const tempToken = jwt.sign(payload, secret, { expiresIn: '10m' }); // Vale por 10 min
 
-          return reply.redirect(`${frontEndtUrl}/integracoes?data=${tempToken}`);
+          return reply.redirect(`${frontEndtUrl}/marketplaces?data=${tempToken}`);
 
             }catch(e){
                  console.log(e);
-                   return reply.redirect(`${frontEndtUrl}/integracoes?status=error&message=Erro+interno+na+integracao`);
+                   return reply.redirect(`${frontEndtUrl}/marketplaces?status=error&message=Erro+interno+na+integracao`);
 
             }
         
@@ -78,12 +85,22 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
     server.get('/ml/integration/getCode',{
         schema:{
             tags:['ml/integration'],
+            description:"Retorna a url de autorização, para que o MercadoLivre autorize o App a acessar a conta do usuario. ",
             headers: z.object({
                 token: z.string()
             }),
             querystring: z.object({
-                vendedor: z.number()
-            })
+                vendedor: z.coerce.number()
+            }),
+             response :{
+                200: z.object({
+                    uri: z.string().describe("Url de autorização.")
+                }),
+                500: z.object({
+                success:z.boolean(),
+                message:z.string() 
+                })
+            }
         }
    
 } , async ( request, reply )=>{
@@ -93,15 +110,19 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
         const createTableMLAccounts = new CreateTableMLAccounts();
 
         const dbName = `\`${empresa}\``;
-    
+        if(!empresa){
+            return reply.status(500).send({ success:false, message: "Erro interno do servidor [JWT Secret]"})
+        }
         const queryVendedor = request.query.vendedor;
    
-         const resultCreateTable = await createTableMLAccounts.createTableMlAcounts(dbName);
-
+         const resultCreateTable = await createTableMLAccounts.createTableMlAcounts(empresa);
+        if(!resultCreateTable.sucess){
+            return reply.status(500).send({success: false, message: "Erro interno do servidor." });
+        }
     const secret = process.env.SECRET_ML_ENCODE_STATE;
     if (!secret) {
       console.error("Erro crítico: JWT_SECRET não está definido!");
-      return reply.status(500).send({ msg: "Erro interno do servidor [JWT Secret Missing]." });
+      return reply.status(500).send({success: false, message: "Erro interno do servidor [JWT Secret Missing]." });
     }
 
 
@@ -141,6 +162,9 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
     try {
 
     const selectUsersMlIntegration = new SelectUsersMlIntegrations();
+        const updateUsersMLIntegrations = new UpdateUsersMLIntegrations();
+        const insertUsersMlintegration  = new InsertUsersMlintegration();
+        const dateService = new DateService();
 
         if (!process.env.SECRET_ML_ENCODE_STATE) {
          return;
@@ -170,11 +194,11 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
 
       // 2. FINALMENTE insere na tabela principal
       const validuserMlIntegration = await selectUsersMlIntegration.fincByIdMLandCodeSystem(system_user_code, ml_user_id);
-      //   if (validuserMlIntegration.length > 0) {
-      //       await updateUsersMlIntegration.update({ integration_name: integrationName, cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
-      //   } else {
-      //       await insertUsersMlIntegration.cadastrar({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id, integration_name:integrationName });
-      //   }
+          if (validuserMlIntegration.length > 0) {
+              await updateUsersMLIntegrations.update({ integration_name: integrationName, cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id });
+          } else {
+              await insertUsersMlintegration.cadastrar({ cnpj: cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: system_user_code, ml_user_id: ml_user_id, integration_name:integrationName });
+          }
 
 
       return reply.status(200).send({ success: true, message: "Integração concluída com sucesso!" });

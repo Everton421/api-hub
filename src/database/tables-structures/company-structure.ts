@@ -231,7 +231,7 @@ export class CompanyStructure {
             `,
       ` CREATE TABLE IF NOT EXISTS ??.movimentos_produtos (
               codigo int(10) unsigned NOT NULL AUTO_INCREMENT,
-              id  int(11) NOT NULL DEFAULT 0,
+              id  varchar(255) NOT NULL DEFAULT 0,
               setor  int(10) DEFAULT 0,
               produto  int(10) DEFAULT 0,
               quantidade  varchar(255) DEFAULT '0',
