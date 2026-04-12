@@ -3,7 +3,9 @@ import { type IMl_account } from "../../types/ml-account/type-ml-account.ts";
 
 
 type resultuserIntegration = {
-     ml_user_id: number, integration_name: string 
+     ml_user_id: number,
+      integration_name: string ,
+      created_at:string
 }
 export class SelectMLAccountClient {
 
@@ -25,7 +27,8 @@ export class SelectMLAccountClient {
             const sql = `
                     SELECT 
                         i.ml_user_id,
-                        i.integration_name
+                        i.integration_name,
+                        i.created_at
                     FROM ${empresa}.ml_accounts ma
                       join ${db_api}.users_ml_integrations i 
                     on  ma.user_id = i.system_user_code 

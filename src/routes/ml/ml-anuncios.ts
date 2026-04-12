@@ -1,5 +1,5 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
-import z from "zod";
+import z, { string } from "zod";
 import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
 import { PostMlItemsService, type IPublishItem } from "../../services/ml-services/post-itens-ml.ts";
 import { SelectUsersMlIntegrations } from "../../models/users-ml-integration/select-users-ml-integration.ts";
@@ -10,6 +10,7 @@ import { DeleteAnuncios } from "../../models/anuncios/delete.ts";
 import { DeleteAtributosAnuncios } from "../../models/atributos-anuncios/delete.ts";
 import { type typeAnuncios } from "../../types/anuncios/type-anuncio.ts";
 import { type typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios.ts";
+import { GetMlItemsService } from "../../services/ml-services/get-itens-ml-service.ts";
 
 export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
@@ -85,9 +86,93 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
+    server.get('/ml/get/anuncios', {
+        schema: {
+            tags: ['ml/anuncios'],
+            description:"Consulta os anuncios do usuario no MercadoLivre.",
+            headers: z.object({
+                token: z.string(),
+                ml_user_id: z.coerce.number(),
+            }),
+            response: {
+                200: z.object({
+                  seller_id: z.number() ,
+                 total_found : z.number(),
+                 items : z.array( 
+                    z.object({
+                     id: z.string(),
+                     title: z.string(),
+                     price: z.number(),
+                     quantity: z.number(),
+                     permalink: z.string(),
+                     thumbnail: z.string(),
+                     }) ) 
+                }),
+                401 : z.object({
+                    success: z.boolean(),
+                    message: z.string() 
+                })
+                    
+                    
+                 
+            }
+        }
+    }, async (request, reply) => {
+
+        const decoded = DecodedToken(String(request.headers.token));
+        if (decoded.erro || !decoded.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
+        }
+        const systemUserCode = decoded.payload.codigo;
+        const empresa = decoded.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const { ml_user_id } = request.headers;
+
+        const getMlItemsService = new GetMlItemsService();
+
+          const result =  await getMlItemsService.getItemsFromSeller(empresa, systemUserCode, ml_user_id );
+          if(result.items.length > 0 ){
+            return reply.status(200).send(result);
+          }
+        //console.log(result);
+
+      /*  const query = request.query;
+        const queryParams: any = { ativo: query.ativo || 'S' };
+        
+        if (query.limit) queryParams.limit = query.limit;
+        if (query.data_recadastro) queryParams.data_recadastro = query.data_recadastro;
+        if (query.plataforma) queryParams.plataforma = query.plataforma;
+        if (query.id_externo) queryParams.id_externo = query.id_externo;
+        if (query.sku_externo) queryParams.sku_externo = query.sku_externo;
+
+        try {
+            let anuncios: typeAnuncios[] = [];
+
+            if (Object.keys(queryParams).length > 1) {
+                anuncios = await selectAnuncios.findByParams(dbName, queryParams);
+            } else {
+                anuncios = await selectAnuncios.findAll(dbName, queryParams.data_recadastro);
+            }
+
+            const anunciosCompleto = await Promise.all(anuncios.map(async (i) => {
+                let atributos: typeAtributosAnuncios[] = [];
+                try {
+                    atributos = await selectAtributosAnuncios.findByAnuncioId(dbName, i.id);
+                } catch (e) { }
+                return { ...i, atributos };
+            }));
+
+            return reply.status(200).send(anunciosCompleto);
+        } catch (e) {
+            return reply.status(500).send({ success: false, message: 'erro ao tentar consultar os anuncios' });
+        }
+        */
+    });
+
     server.get('/ml/anuncios', {
         schema: {
             tags: ['ml/anuncios'],
+            description:"Consulta os anuncios cadastrados.",
             headers: z.object({
                 token: z.string()
             }),
@@ -147,6 +232,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/ml/anuncios/:id', {
         schema: {
             tags: ['ml/anuncios'],
+            description:"Consulta anuncio cadastrado pelo ID.",
             headers: z.object({
                 token: z.string()
             }),

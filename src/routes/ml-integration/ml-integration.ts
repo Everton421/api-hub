@@ -46,10 +46,9 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
                 const state = request.query.state  ;
 
                 const returnTokens = await exchangeCodeForMlToken(code , state );
-                    console.log(returnTokens)
 
             if (!returnTokens?.access_token) {
-                return reply.redirect(`${frontEndtUrl}/marketplaces?status=error&message=Nao+foi+possivel+obter+token`);
+                return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?status=error&message=Nao+foi+possivel+obter+token`);
             }
 
             const payloadState = DecodedMlStateToken(request.query.state as any).payload;
@@ -71,11 +70,11 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
 
             const tempToken = jwt.sign(payload, secret, { expiresIn: '10m' }); // Vale por 10 min
 
-          return reply.redirect(`${frontEndtUrl}/marketplaces?data=${tempToken}`);
+          return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?data=${tempToken}`);
 
             }catch(e){
                  console.log(e);
-                   return reply.redirect(`${frontEndtUrl}/marketplaces?status=error&message=Erro+interno+na+integracao`);
+                   return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?status=error&message=Erro+interno+na+integracao`);
 
             }
         

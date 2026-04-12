@@ -3,9 +3,26 @@ import { getValidMlAccessToken } from "../integration/mercadolivre-integration/m
 
 const ML_API_URL = 'https://api.mercadolibre.com';
 
+
+     
+
+            type resultGetMlItens = {
+                items: itenResponse[],
+                seller_id: number,
+                total_found: number
+            }
+            type itenResponse = {
+                id: string,
+                 title:string,
+                price:number,
+                quantity:number,
+                permalink:string,
+                thumbnail:string,
+             }
+
 export class GetMlItemsService {
 
-    async getItemsFromSeller(cnpj: string, systemUserCode: number, mlUserId: number) {
+    async getItemsFromSeller(cnpj: string, systemUserCode: number, mlUserId: number) :Promise<resultGetMlItens>{
         try {
             // 1. GARANTE O TOKEN (Se estiver vencido, ele renova sozinho aqui)
             const accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
@@ -16,16 +33,23 @@ export class GetMlItemsService {
                 headers: { Authorization: `Bearer ${accessToken}` },
 
                 params: {
-                    limit: 5, // Vamos pegar só 5 para testar
+                 //   limit: 5, // Vamos pegar só 5 para testar
                     status: 'active' // Opcional: pegar só os ativos
                 }
             });
 
             const itemIds = searchResponse.data.results; // Array de IDs: ["MLB123", "MLB456"]
-
+            
             if (itemIds.length === 0) {
-                return { message: "Nenhum anúncio encontrado nesta conta.", items: [] };
+
+              return {
+                seller_id: mlUserId,
+                total_found: 0,
+                items: []  as itenResponse[]
+            };
+
             }
+           
 
             // 3. (BÔNUS) Busca os detalhes desses itens (Multiget)
             // Endpoint: /items?ids=MLB123,MLB456
@@ -37,7 +61,7 @@ export class GetMlItemsService {
             });
 
             // Mapeia para devolver um JSON limpo
-            const itemsDetails = itemsResponse.data.map((i: any) => ({
+           const   itemsDetails = itemsResponse.data.map((i: any) => ({
                 id: i.body.id,
                 title: i.body.title,
                 price: i.body.price,
@@ -45,10 +69,10 @@ export class GetMlItemsService {
                 permalink: i.body.permalink,
                 thumbnail: i.body.thumbnail
             }));
-
+            const total = searchResponse.data.paging.total ? searchResponse.data.paging.total : 0;
             return {
                 seller_id: mlUserId,
-                total_found: searchResponse.data.paging.total,
+                total_found:total,
                 items: itemsDetails
             };
 
