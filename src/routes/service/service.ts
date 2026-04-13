@@ -94,7 +94,6 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
 
         try {
             const result = await select.findByParams(dbName, request.query);
-            console.log(result)
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error searching services:', e);

@@ -11,6 +11,7 @@ import { DeleteAtributosAnuncios } from "../../models/atributos-anuncios/delete.
 import { type typeAnuncios } from "../../types/anuncios/type-anuncio.ts";
 import { type typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios.ts";
 import { GetMlItemsService } from "../../services/ml-services/get-itens-ml-service.ts";
+import { CreateTableMLAccounts } from "../../database/tables-structures/create-table-ml-accounts.ts";
 
 export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
@@ -225,6 +226,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
             return reply.status(200).send(anunciosCompleto);
         } catch (e) {
+            console.log(e)
             return reply.status(500).send({ success: false, message: 'erro ao tentar consultar os anuncios' });
         }
     });

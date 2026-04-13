@@ -13,9 +13,9 @@ import { type PhotoType } from '../../models/photo/types/photo-type.ts';
 type productType  = ProductType & { fotos: PhotoType[] }
 const productResponseSchema = z.object({
     codigo: z.number(),
-    id: z.string(),
-    estoque: z.number(),
-    preco: z.string(),
+    id: z.coerce.string(),
+    estoque: z.coerce.number(),
+    preco: z.coerce.string(),
     unidade_medida: z.string(),
     grupo: z.number(),
     origem: z.string(),
@@ -208,7 +208,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.string(),
+                id: z.coerce.string(),
                 estoque: z.number().default(0),
                 preco: z.string(),
                 unidade_medida: z.string(),
