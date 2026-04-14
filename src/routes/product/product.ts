@@ -27,7 +27,7 @@ const productResponseSchema = z.object({
     ativo: z.enum(["S" ,"N"]),
     class_fiscal: z.string(),
     cst: z.string(),
-    caracteristica: z.number().optional(),
+    caracteristica: z.coerce.number().default(0),
     data_cadastro: z.string(),
     data_recadastro: z.string(),
     observacoes1: z.string(),
@@ -108,8 +108,6 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                     i = {  ...i, fotos } as productType;
                     productResponse.push(i)
                 }
-            console.log(productResponse)
-
             }
             return reply.status(200).send(result);
         } catch (e) {
@@ -166,7 +164,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 codigo: z.coerce.number()
             }),
             response: {
-                200: productWithRelationsSchema,
+                200: productResponseSchema,
                 400: z.object({
                     success: z.boolean(),
                     message: z.string()
@@ -209,9 +207,9 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 id: z.coerce.string(),
-                estoque: z.number().default(0),
-                preco: z.string(),
-                unidade_medida: z.string(),
+                estoque: z.coerce.number().default(0),
+                preco: z.coerce.number().default(0),
+                unidade_medida: z.string().default('und'),
                 grupo: z.number(),
                 origem: z.union([z.string(), z.number()]).default('0'),
                 descricao: z.string(),
@@ -287,8 +285,8 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             body: z.object({
                 codigo: z.number(),
                 id: z.string(),
-                estoque: z.number().default(0),
-                preco: z.string(),
+                  estoque: z.coerce.number().default(0),
+                preco: z.coerce.number().default(0),
                 unidade_medida: z.string(),
                 grupo: z.number(),
                 origem: z.union([z.string(), z.number()]).default('0'),
