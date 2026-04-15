@@ -1,16 +1,27 @@
+
 services:
-  database-api:
-    image: mariadb:10.6
-    container_name: database-api-mobile
-    environment:
-       MARIADB_USER: user
-       MARIADB_PASSWORD: 123
-       MARIADB_ROOT_PASSWORD: 123
-    volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./docker:/docker-entrypoint-initdb.d
-    ports: 
-      - "3306:3306"
-volumes:
-  mariadb_data:
+  api:
+    build: .
+    # O Compose lê o arquivo local e entrega as chaves para o SO do container
+    env_file:
+      - .env 
+    ports:
+      - "3000:3000"
+networks:
+  rede-geral:
+#services:
+#  database-api:
+#    image: mariadb:10.6
+#    container_name: database-api-mobile
+#    environment:
+#       MARIADB_USER: user
+#       MARIADB_PASSWORD: 123
+#       MARIADB_ROOT_PASSWORD: 123
+#    volumes:
+#      - mariadb_data:/var/lib/mysql
+#      - ./docker:/docker-entrypoint-initdb.d
+#    ports: 
+#      - "3306:3306"
+#volumes:
+#  mariadb_data:
 
