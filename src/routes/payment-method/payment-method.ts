@@ -122,7 +122,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {
-                200: z.object({
+                201: z.object({
                     codigo: z.number(),
                     id: z.string(),
                     data_cadastro: z.string(),
@@ -169,7 +169,7 @@ const paymentMethodsRoute: FastifyPluginAsyncZod = async (server) => {
            
             await publishMessage(empresa, 'formaspagamento.inserido', item, source);
            
-            return reply.status(200).send(item);
+            return reply.status(201).send(item);
         } catch (e) {
             console.error('Error inserting payment method:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting payment method' });

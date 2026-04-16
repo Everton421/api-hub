@@ -80,7 +80,7 @@ export class SelectService {
         }
         if (id) {
             conditions.push("id = ?");
-            values.push(Number(id));
+            values.push(String(id));
         }
         if (tipo) {
             conditions.push("tipo_serv = ?");

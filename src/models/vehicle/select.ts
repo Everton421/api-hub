@@ -77,8 +77,8 @@ export class SelectVehicle {
             values.push(codigo);
         }
         if (id) {
-            conditions.push("id = ?");
-            values.push(Number(id));
+            conditions.push(" id = ? ");
+            values.push(String(id));
         }
         if (cliente) {
             conditions.push("cliente = ?");

@@ -161,7 +161,7 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {
-                200: clientResponseSchema,
+                201: clientResponseSchema,
                 400: z.object({
                     success: z.boolean(),
                     message: z.string()
@@ -212,7 +212,6 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         }
         try {
             const result = await insert.insert(dbName, { 
-                codigo: 0, 
                 id, 
                 celular, 
                 nome, 
@@ -248,7 +247,7 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
                 ativo 
             };
             await publishMessage(empresa, 'cliente.inserido', item, source);
-            return reply.status(200).send(item);
+            return reply.status(201).send(item);
         } catch (e) {
             console.error('Error inserting client:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting client' });

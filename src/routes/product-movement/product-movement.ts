@@ -131,7 +131,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: productMovementBodySchema,
             response: {
-                200: productMovementResponseSchema,
+                201: productMovementResponseSchema,
                 400: z.object({
                     success: z.boolean(),
                     message: z.string()
@@ -171,7 +171,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             };
 
             await publishMessage(empresa, 'movimentosprodutos.inserido', item, source);
-            return reply.status(200).send(item);
+            return reply.status(201).send(item);
         } catch (e) {
             console.error('Error inserting product movement:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting product movement' });

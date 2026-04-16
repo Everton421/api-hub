@@ -228,7 +228,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
 
             }),
             response: {
-                200: productResponseSchema,
+                201: productResponseSchema,
                 400: z.object({
                     success: z.boolean(),
                     message: z.string()
@@ -268,7 +268,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             const item = { ...productData, codigo: result.insertId };
 
             await publishMessage(empresa, 'produto.inserido', item, source);
-            return reply.status(200).send(item);
+            return reply.status(201).send(item);
         } catch (e) {
             console.error('Error inserting product:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting product' });

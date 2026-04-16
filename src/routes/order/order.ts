@@ -119,7 +119,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 parcelas: z.array(parcelOrderSchema).optional()
             })),
             response: {
-                200: z.object({
+                201: z.object({
                     results: z.array(z.object({
                         codigo: z.number(),
                         status: z.string()
@@ -184,7 +184,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 return { codigo: p.codigo, status };
             }));
 
-            return reply.status(200).send({ results });
+            return reply.status(201).send({ results });
         } catch (e) {
             console.error('Erro ao processar pedidos:', e);
             return reply.status(500).send({ erro: true, msg: 'Erro interno ao processar pedidos.' });

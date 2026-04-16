@@ -129,7 +129,7 @@ const perfilRoute: FastifyPluginAsyncZod = async (server) => {
                 nome: z.string()
             }),
             response: {
-                200: z.object({
+                201: z.object({
                     success: z.boolean(),
                     message: z.string(),
                     data: z.object({
@@ -170,7 +170,7 @@ const perfilRoute: FastifyPluginAsyncZod = async (server) => {
             const item = { codigo: result.insertId, id, nome, ativo: "S", data_cadastro, data_recadastro };
             await publishMessage(empresa, "perfil.inserido", item, source);
 
-            return reply.status(200).send({
+            return reply.status(201).send({
                 success: true,
                 message: "Perfil criado com sucesso",
                 data: item

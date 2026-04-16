@@ -31,7 +31,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
                     combustivel: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
-                    ativo: z.string()
+                    ativo:  z.enum(['S', 'N']).default('S')
                 })),
                 400: z.object({
                     success: z.boolean(),
@@ -89,7 +89,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
                     combustivel: z.string(),
                     data_cadastro: z.string(),
                     data_recadastro: z.string(),
-                    ativo: z.string()
+                    ativo:  z.enum(['S', 'N']).default('S')
                 })),
                 400: z.object({
                     success: z.boolean(),
@@ -120,29 +120,29 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.string(),
-                cliente: z.number(),
-                placa: z.string(),
-                marca: z.string(),
-                modelo: z.string(),
-                ano: z.string(),
-                cor: z.string(),
-                combustivel: z.string(),
+                id: z.coerce.string(),
+                cliente: z.coerce.number(),
+                placa: z.coerce.string(),
+                marca: z.coerce.string(),
+                modelo: z.coerce.string(),
+                ano: z.coerce.string(),
+                cor: z.coerce.string(),
+                combustivel: z.coerce.string(),
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.string(),
+                    id: z.coerce.string(),
                     cliente: z.number(),
-                    placa: z.string(),
-                    marca: z.string(),
-                    modelo: z.string(),
-                    ano: z.string(),
-                    cor: z.string(),
-                    combustivel: z.string(),
-                    data_cadastro: z.string(),
-                    data_recadastro: z.string(),
+                    placa: z.coerce.string(),
+                    marca: z.coerce.string(),
+                    modelo: z.coerce.string(),
+                    ano: z.coerce.string(),
+                    cor: z.coerce.string(),
+                    combustivel: z.coerce.string(),
+                    data_cadastro: z.coerce.string(),
+                    data_recadastro: z.coerce.string(),
                     ativo: z.string()
                 }),
                 400: z.object({
@@ -192,14 +192,14 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.string(),
-                cliente: z.number(),
-                placa: z.string(),
-                marca: z.string(),
-                modelo: z.string(),
-                ano: z.string(),
-                cor: z.string(),
-                combustivel: z.string(),
+                id: z.coerce.string(),
+                cliente: z.coerce.number(),
+                placa: z.coerce.string(),
+                marca: z.coerce.string(),
+                modelo: z.coerce.string(),
+                ano: z.coerce.string(),
+                cor: z.coerce.string(),
+                combustivel: z.coerce.string(),
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {

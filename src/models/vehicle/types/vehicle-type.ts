@@ -10,7 +10,7 @@ export type VehicleType = {
     combustivel: string;
     data_cadastro: string;
     data_recadastro: string;
-    ativo: string;
+    ativo: 'S' | 'N';
 };
 
 export type VehicleInsert = Omit<VehicleType, 'codigo'>;

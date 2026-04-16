@@ -118,7 +118,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
                 }))
             }),
             response: {
-                200: z.object({
+                201: z.object({
                     ok: z.boolean(),
                     msg: z.string()
                 }),
@@ -186,7 +186,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
                 }
             }
 
-            return reply.status(200).send({
+            return reply.status(201).send({
                 ok: true,
                 msg: 'Fotos alteradas com sucesso'
             });

@@ -133,7 +133,7 @@ export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
                     ativo: z.enum(['S', 'N']).default('S')
                 }),
                 response: {
-                    200: z.object({
+                    201: z.object({
                         codigo: z.number(),
                         id: z.string(),
                         data_cadastro: z.string(),
@@ -173,7 +173,7 @@ export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
                 const result = await insert.create(dbName, { id, descricao, ativo, data_cadastro, data_recadastro });
                 const item = { codigo: result.insertId, id, descricao, ativo, data_cadastro, data_recadastro };
                 await publishMessage(empresa, 'categoria.inserido', item, source);
-                return reply.status(200).send(item);
+                return reply.status(201).send(item);
             } catch (e) {
                 console.error('Error inserting brand:', e);
                 return reply.status(400).send({ success: false, message: 'Error inserting category' });

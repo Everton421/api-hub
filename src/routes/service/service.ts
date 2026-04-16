@@ -109,22 +109,22 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
-                id: z.string(),
-                valor: z.number(),
-                aplicacao: z.string(),
-                tipo_serv: z.number(),
+                id: z.coerce.string(),
+                valor: z.coerce.number(),
+                aplicacao: z.coerce.string(),
+                tipo_serv: z.coerce.number(),
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {
-                200: z.object({
+                201: z.object({
                     codigo: z.number(),
-                    id: z.string(),
-                    valor: z.number(),
-                    aplicacao: z.string(),
-                    tipo_serv: z.number(),
-                    data_cadastro: z.string(),
-                    data_recadastro: z.string(),
-                    ativo: z.string()
+                    id: z.coerce.string(),
+                    valor: z.coerce.number(),
+                    aplicacao: z.coerce.string(),
+                    tipo_serv: z.coerce.number(),
+                    data_cadastro: z.coerce.string(),
+                    data_recadastro: z.coerce.string(),
+                    ativo:  z.enum(['S', 'N']).default('S')
                 }),
                 400: z.object({
                     success: z.boolean(),
@@ -156,7 +156,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             const result = await insert.insert(dbName, {  id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
             const item = { codigo: result.insertId, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo };
             await publishMessage(empresa, 'servico.inserido', item, source);
-            return reply.status(200).send(item);
+            return reply.status(201).send(item);
         } catch (e) {
             console.error('Error inserting service:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting service' });
@@ -172,22 +172,22 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number(),
-                id: z.string(),
-                valor: z.number(),
-                aplicacao: z.string(),
-                tipo_serv: z.number(),
+                id: z.coerce.string(),
+                valor: z.coerce.number(),
+                aplicacao: z.coerce.string(),
+                tipo_serv: z.coerce.number(),
                 ativo: z.enum(['S', 'N']).default('S')
             }),
             response: {
                 200: z.object({
                     codigo: z.number(),
-                    id: z.string(),
-                    valor: z.number(),
-                    aplicacao: z.string(),
-                    tipo_serv: z.number(),
-                    data_cadastro: z.string(),
-                    data_recadastro: z.string(),
-                    ativo: z.string()
+                    id: z.coerce.string(),
+                    valor: z.coerce.number(),
+                    aplicacao: z.coerce.string(),
+                    tipo_serv: z.coerce.number(),
+                    data_cadastro: z.coerce.string(),
+                    data_recadastro: z.coerce.string(),
+                    ativo: z.enum(['S', 'N']).default('S')
                 }),
                 400: z.object({
                     success: z.boolean(),

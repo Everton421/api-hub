@@ -108,7 +108,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
                 descricao: z.string()
             }),
             response: {
-                200: z.object({
+                201: z.object({
                     codigo: z.number(),
                     id: z.string(),
                     data_cadastro: z.string(),
@@ -147,7 +147,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
             const result = await insert.insert(dbName, { id, descricao, data_cadastro, data_recadastro, codigo: 0, ativo: 'S' });
             const item = { codigo: result.insertId, id, descricao, ativo: 'S', data_cadastro, data_recadastro };
             await publishMessage(empresa, 'setor.inserido', item, source);
-            return reply.status(200).send(item);
+            return reply.status(201).send(item);
         } catch (e) {
             console.error('Error inserting sector:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting sector' });
