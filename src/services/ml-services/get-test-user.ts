@@ -23,7 +23,7 @@ const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
                 }
             }
 
-            const response = await axios.post(`${ML_API_URL}/Users/test_user`, 
+            const response = await axios.post(`${ML_API_URL}/users/test_user`, 
                 {
                     site_id: "MLB"
                 }, {

@@ -12,12 +12,14 @@ import { type typeAnuncios } from "../../types/anuncios/type-anuncio.ts";
 import { type typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios.ts";
 import { GetMlItemsService } from "../../services/ml-services/get-itens-ml-service.ts";
 import { CreateTableMLAccounts } from "../../database/tables-structures/create-table-ml-accounts.ts";
+type typeFinalAttributes = { id: string, value_name: string }
 
 export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.post('/ml/anuncios/create', {
         schema: {
             tags: ['ml/anuncios'],
+            description: "Cria um novo anúncio no mercadolivre",
             headers: z.object({
                 token: z.string()
             }),
@@ -85,6 +87,139 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         } catch (e) {
             return reply.status(500).send({ success: false, message: `${e}` });
         }
+    });
+    server.post('/ml/anuncios/register', {
+        schema: {
+            tags: ['ml/anuncios'],
+            description: "Registar os dados de um anuncio no banco de dados ",
+            headers: z.object({
+                token: z.string()
+            }),
+            body: z.object({
+                title: z.coerce.string(),
+                price: z.coerce.number(),
+                category_id: z.string(),
+                available_quantity: z.number(),
+                ml_user_id: z.coerce.number(),
+                codigo_produto: z.coerce.number(),
+                listing_type_id: z.string().optional(),
+                condition: z.string().optional(),
+                description: z.string().optional(),
+                pictures: z.array(z.string()).optional(),
+                brand: z.string().optional(),
+                model: z.string().optional(),
+                ean: z.string().optional(),
+                attributes: z.array(z.object({
+                    id: z.string(),
+                    value_name: z.string()
+                })).optional(),
+                thumbnail: z.string().optional()
+            })
+        }
+    }, async (request, reply) => {
+        const mlService = new PostMlItemsService();
+        const selectUsersMl = new SelectUsersMlIntegrations();
+
+        const { title, price, category_id, ml_user_id, codigo_produto } = request.body;
+
+        const decoded = DecodedToken(String(request.headers.token));
+        if (decoded.erro || !decoded.payload) {
+            return reply.status(401).send({ msg: "Token inválido" });
+        }
+
+        const userCnpj = decoded.payload.cnpj;
+        const systemUserCode = decoded.payload.codigo;
+
+        const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(systemUserCode, ml_user_id, userCnpj);
+        if (!integracoes || integracoes.length === 0) {
+            return reply.status(400).send({ msg: "Usuário não possui conta ML vinculada." });
+        }
+
+        const mlUserId = integracoes[0].ml_user_id;
+        const integrationId = integracoes[0].id;
+
+                const itemData: IPublishItem = {
+                    title: request.body.title,
+                    price: Number(request.body.price),
+                    quantity: Number(request.body.available_quantity),
+                    category_id: request.body.category_id,
+                    listing_type_id: request.body.listing_type_id || "gold_special",
+                    condition: request.body.condition || "new",
+                    description: request.body.description,
+                    pictures: request.body.pictures || [],
+                    brand: request.body.brand,
+                    model: request.body.model,
+                    attributes: request.body.attributes || [],
+                    thumbnail: request.body.thumbnail
+
+                };
+
+        let finalAttributes: typeFinalAttributes[] = [];
+
+                    if (itemData.attributes && itemData.attributes.length > 0) {
+                        // Se vieram atributos dinâmicos, usamos eles!
+                        finalAttributes = itemData.attributes;
+                    } else {
+                        // FALLBACK: Se não veio nada (produtos antigos/simples), criamos o básico
+                        finalAttributes = [
+                            { id: "BRAND", value_name: request.body.brand || "Genérica" },
+                            { id: "MODEL", value_name: request.body.model || "Padrão" }
+                        ];
+                        if (request.body.ean) {
+                            finalAttributes.push({ id: "GTIN", value_name: data.ean });
+                        }
+                    }
+
+
+                const resultInsert = await insertAnuncios.insert(database,
+                    {
+                        ativo: 'S',
+                        codigo_produto: codigo_produto,
+                        descricao: data.title,
+                        estoque: data.quantity,
+                        id_externo: '1',
+                        integration_id: integrationId,
+                        link: '',
+                        num_fabricante: ean,
+                        titulo: data.title,
+                        preco: data.price,
+                        plataforma: 'ML',
+                        sku_externo: null,
+                        unidade_medida: '',
+                        thumbnail: data.thumbnail || ''
+                    }
+                )
+                if (resultInsert.sucess && resultInsert.insertId) {
+                    if (finalAttributes.length > 0) {
+                        for (const atr of finalAttributes) {
+                            await insertAtributosAnuncios.insert(database,
+                                {
+                                    id_anuncio: resultInsert.insertId,
+                                    id_atributo: atr.id,
+                                    id_valor_atributo: null,
+                                    nome_atributo: atr.id,
+                                    valor_atributo: atr.value_name
+                                })
+                        }
+                        for (const img of data.pictures) {
+                            await insertAtributosAnuncios.insert(database,
+                                {
+                                    id_anuncio: resultInsert.insertId,
+                                    id_atributo: 'IMAGEM_ANUNCIO',
+                                    id_valor_atributo: null,
+                                    nome_atributo: 'IMAGEM_ANUNCIO',
+                                    valor_atributo: img
+                                })
+                        }
+                    }
+                }
+
+//        try {
+//            const result = await mlService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
+//            return reply.status(201).send(result);
+//        } catch (e) {
+//            return reply.status(500).send({ success: false, message: `${e}` });
+//        }
     });
 
     server.get('/ml/get/anuncios', {

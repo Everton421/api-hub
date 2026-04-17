@@ -30,6 +30,7 @@ import { mlIntegrationRoute } from "./routes/ml-integration/ml-integration.ts";
 import { mlAnunciosRoute } from "./routes/ml/ml-anuncios.ts";
 import { mlToolsRoute } from "./routes/ml/ml-tools.ts";
 import { mlAccountsRoute } from "./routes/ml/ml-accounts.ts";
+import {    GetMlUserTestRoute } from "./routes/ml/ml-get-user-test.ts";
 let certPathEnv;
 if(process.env.PATH_CERT_CERT) certPathEnv = String(process.env.PATH_CERT_CERT)
 
@@ -118,5 +119,6 @@ server.register(mlIntegrationRoute);
 server.register(mlAnunciosRoute);
 server.register(mlToolsRoute);
 server.register(mlAccountsRoute);
+server.register(GetMlUserTestRoute);
  
 export { server };

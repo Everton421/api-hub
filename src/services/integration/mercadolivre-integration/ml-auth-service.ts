@@ -101,10 +101,16 @@ export const exchangeCodeForMlToken = async (code: string, state: string) => {
     }
 };
 
+ 
+
 /**
- * Função Inteligente para pegar Token Válido
+ ** Função Inteligente para pegar Token Válido
  * Se o token atual estiver valido, retorna ele.
  * Se estiver vencido (ou quase), faz o refresh, salva no banco e retorna o novo.
+ * @param cnpj 
+ * @param systemUserCode codigo do usuario na empresa
+ * @param mlUserId codigo do usuario no mercadolivre
+ * @returns 
  */
 export const getValidMlAccessToken = async (cnpj: string, systemUserCode: number, mlUserId: number) => {
     const selectMlAccountClient = new SelectMLAccountClient();

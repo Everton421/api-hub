@@ -76,9 +76,17 @@ export class PostMlItemsService {
                 shipping: {
                     mode: "me2",
                     local_pick_up: false,
-                    free_shipping: false
+                    free_shipping: false,
+                      methods : [],
+                     dimensions : null,
+                     tags : [],
+                     logistic_type : "default",
+                     store_pick_up : false
                 }
             };
+
+            console.log(mlPayload)
+            
             const database = `\`${cnpj}\``;
 
             delay(1);

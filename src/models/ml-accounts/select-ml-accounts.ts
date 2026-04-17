@@ -10,6 +10,13 @@ type resultuserIntegration = {
 export class SelectMLAccountClient {
 
 
+        /**
+         * 
+         * @param empresa 
+         * @param user_id codigo do usuario na empresa
+         * @param ml_user_id id do usuario no mercadolivre
+         * @returns 
+         */
     async fincByIdMLandCodeSystem(empresa: string, user_id: number, ml_user_id: number): Promise<IMl_account[]> {
 
             let sql = ` SELECT *
@@ -23,6 +30,12 @@ export class SelectMLAccountClient {
             return result as IMl_account[];
     }
 
+    /**
+     * 
+     * @param empresa 
+     * @param user_id codigo do usuario na empresa
+     * @returns 
+     */
     async findByUserIdAndIntegration(empresa: string, user_id: number,): Promise<resultuserIntegration[]> {
             const sql = `
                     SELECT 
