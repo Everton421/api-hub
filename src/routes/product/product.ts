@@ -33,35 +33,23 @@ const productResponseSchema = z.object({
     observacoes1: z.string(),
     observacoes2: z.string(),
     observacoes3: z.string(),
-    tipo: z.number()
-
-});
-
-const productWithRelationsSchema = z.object({
-    codigo: z.number(),
-    id: z.string(),
-    estoque: z.number(),
-    preco: z.string(),
-    unidade_medida: z.string(),
-    grupo: z.number(),
-    origem: z.string(),
-    descricao: z.string(),
-    num_fabricante: z.string(),
-    num_original: z.string(),
-    sku: z.string(),
-    marca: z.number(),
-    ativo: z.string(),
-    class_fiscal: z.string(),
-    cst: z.string(),
-    data_cadastro: z.string(),
-    data_recadastro: z.string(),
-    observacoes1: z.string(),
-    observacoes2: z.string(),
-    observacoes3: z.string(),
     tipo: z.number(),
-    caracteristica: z.number().optional(),
+        fotos: z.array(
+      z.object({
+          codigo: z.number().optional(),
+          produto: z.number(),
+          sequencia: z.number().nullable().optional(),
+          descricao: z.string().nullable().optional(),
+          link: z.string().nullable().optional(),
+          foto: z.string().nullable().optional(),
+          data_cadastro: z.string(),
+          data_recadastro: z.string()
+      })
+    )
 
 });
+
+ 
 
 const productsRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/bulk/produtos', {
@@ -131,23 +119,34 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 id: z.string().optional(),
                 limit: z.coerce.number().optional()
             }),
-            response: {
-                200: z.array(productResponseSchema),
-                400: z.object({
-                    success: z.boolean(),
-                    message: z.string()
-                })
-            }
+             response: {
+                 200: z.array(productResponseSchema),
+                 400: z.object({
+                     success: z.boolean(),
+                     message: z.string()
+                 })
+             }
         }
     }, async (request, reply) => {
         const select = new SelectProduct();
+        const selectPhoto = new SelectPhoto();
+
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
 
         try {
+                let products:any[] =[]
             const result = await select.findByParams(dbName, request.query);
-            return reply.status(200).send(result);
+            if(result.length > 0 ){
+                 for( const p of result as any[] ) { 
+                    const fotos = await selectPhoto.findByProduct(dbName, p.codigo);
+                    p.fotos = fotos
+                    products.push(p);
+                 }
+            }
+
+            return reply.status(200).send(products);
         } catch (e) {
             console.error('Error searching products:', e);
             return reply.status(400).send({ success: false, message: 'Error searching products' });
@@ -181,15 +180,20 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const { codigo } = request.params;
+        const selectPhoto = new SelectPhoto();
 
         try {
             const result = await select.findByCode(dbName, codigo);
-            console.log(result)
             if (result.length === 0) {
                 return reply.status(404).send({ success: false, message: 'Product not found' });
             }
 
-            const product = result[0];
+            let product = result[0] as any;
+
+                if(result.length > 0 ){
+                    const fotos = await selectPhoto.findByProduct(dbName, result[0]?.codigo);
+                    product.fotos = fotos
+            }
 
             return reply.status(200).send(product);
         } catch (e) {
