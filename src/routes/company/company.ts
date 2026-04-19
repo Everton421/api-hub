@@ -4,6 +4,7 @@ import { SelectUsersApi } from "../../models/users-api/select.ts";
 import { SelectCompany } from "../../models/company/select.ts";
 import { CompanyStructure } from "../../database/tables-structures/company-structure.ts";
 import { InsertCompany } from "../../models/company/insert.ts";
+import { Update_empresa } from "../../models/company/update.ts";
 import { DateService } from "../../utils/dateService.ts";
 import { InsertUsersApi } from "../../models/users-api/insert.ts";
 import jwt from 'jsonwebtoken';
@@ -22,7 +23,7 @@ import { MakeOrder } from "../../factories/make-order.ts";
 
 
  const  companyRoute : FastifyPluginAsyncZod = async ( server )=>{
-       server.get('/empresa', { 
+server.get('/empresa', { 
             schema: { 
                 tags: ['empresas'],
                 headers:z.object({
@@ -36,31 +37,131 @@ import { MakeOrder } from "../../factories/make-order.ts";
                               nome:z.string() ,
                               email:z.string() ,
                               codigo: z.number(),
-                              responsavel: z.number()
+                              responsavel: z.number(),
+                              logo_url: z.string().nullable(),
+                              cor_fonte: z.string(),
+                              cor_fundo: z.string(),
+                              cor_banner: z.string()
                         }),
                         400: z.object({ success: z.boolean(), message: z.string()})
                     }
-                         
+                          
             }
         },
-        async ( request, reply ) =>{
+        async ( request, reply )=>{
                             let decodToken = DecodedToken(String(request.headers.token))
                             const selectCompany = new SelectCompany();
-    
+      
                                   const { cnpj } = decodToken.payload!;
                             const resultCompany = await selectCompany.findByCnpj(cnpj);
                              if(resultCompany.length >  0 ){
     
-                                    const { cnpj, data_contrato, telefone, nome ,email ,  codigo  , responsavel} = resultCompany[0];
-                                    return reply.status(200).send({ cnpj, data_contrato, telefone, nome ,email , codigo, responsavel });
+                                    const company = resultCompany[0];
+                                    return reply.status(200).send({ 
+                                        cnpj: company.cnpj, 
+                                        data_contrato: company.data_contrato, 
+                                        telefone: company.telefone, 
+                                        nome: company.nome,
+                                        email: company.email, 
+                                        codigo: company.codigo, 
+                                        responsavel: company.responsavel,
+                                        logo_url: company.logo_url,
+                                        cor_fonte: company.cor_fonte,
+                                        cor_fundo: company.cor_fundo,
+                                        cor_banner: company.cor_banner
+                                    });
                              }else{
                                return reply.status(400).send({success:false, message:"Compony not found." });
     
                              }
     
-                      } 
+                       } 
     );
-    
+
+    server.put('/empresa', { 
+        schema: { 
+            tags: ['empresas'],
+            headers: z.object({
+                token: z.string()
+            }),
+            body: z.object({
+                logo_url: z.string().url().optional(),
+                cor_fonte: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().default('#333333'),
+                cor_fundo: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().default('#FFFFFF'),
+                cor_banner: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().default('#1a73e8')
+            }),
+            response: {
+                200: z.object({
+                    success: z.boolean(),
+                    message: z.string(),
+                    data: z.object({
+                        cnpj: z.string(),
+                        nome: z.string(),
+                        email: z.string(),
+                        telefone: z.string(),
+                        logo_url: z.string().nullable(),
+                        cor_fonte: z.string(),
+                        cor_fundo: z.string(),
+                        cor_banner: z.string()
+                    })
+                }),
+                500: z.object({ success: z.boolean(), message: z.string() }),
+                400: z.object({ success: z.boolean(), message: z.string() }),
+                401: z.object({ success: z.boolean(), message: z.string() })
+            }
+        }
+    },
+    async (request, reply) => {
+        const decodedToken = DecodedToken(String(request.headers.token));
+        
+        if (!decodedToken.success || !decodedToken.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
+        }
+
+        const { logo_url, cor_fonte, cor_fundo, cor_banner } = request.body;
+        const cnpj = decodedToken.payload.cnpj;
+
+        const selectCompany = new SelectCompany();
+        const resultCompany = await selectCompany.findByCnpj(cnpj);
+
+        if (resultCompany.length === 0) {
+            return reply.status(400).send({ success: false, message: "Empresa não encontrada" });
+        }
+
+        const updateEmpresa = new Update_empresa();
+        const updateData = {
+            logo_url,
+            cor_fonte,
+            cor_fundo,
+            cor_banner
+        };
+
+        try {
+            await updateEmpresa.atualizar_dados_empresa(cnpj, updateData);
+            
+            const updatedCompany = await selectCompany.findByCnpj(cnpj);
+            const company = updatedCompany[0];
+
+            return reply.status(200).send({
+                success: true,
+                message: "Empresa atualizada com sucesso",
+                data: {
+                    cnpj: company.cnpj,
+                    nome: company.nome,
+                    email: company.email,
+                    telefone: company.telefone,
+                    logo_url: company.logo_url,
+                    cor_fonte: company.cor_fonte,
+                    cor_fundo: company.cor_fundo,
+                    cor_banner: company.cor_banner
+                }
+            });
+        } catch (error) {
+            console.error("Erro ao atualizar empresa:", error);
+            return reply.status(500).send({ success: false, message: "Erro ao atualizar empresa" });
+        }
+    });
+
     server.post('/criar-empresa' ,  {
           schema:
             {
@@ -115,10 +216,10 @@ import { MakeOrder } from "../../factories/make-order.ts";
                     cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
 
                     if (cnpj.length < 11 || cnpj.length > 14) {
-                    return reply.status(400).send({ erro: true, msg: "CPF/CNPJ inválido." });
+                    return reply.status(400).send({ success: false, message: "CPF/CNPJ inválido." });
                     } else {
                     if (cnpj.length === 12 || cnpj.length === 13) {
-                        return reply.status(400).send({ erro: true, msg: "CPF/CNPJ inválido." });
+                        return reply.status(400).send({ success: false, message: "CPF/CNPJ inválido." });
                     }
                     }
 

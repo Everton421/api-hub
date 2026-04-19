@@ -31,8 +31,8 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(photoResponseSchema),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -41,7 +41,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -53,7 +53,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Erro ao consultar as fotos dos produtos:', e);
-            return reply.status(400).send({ erro: true, msg: 'Ocorreu um erro ao consultar as fotos dos produtos' });
+            return reply.status(400).send({ success: false, message: 'Ocorreu um erro ao consultar as fotos dos produtos' });
         }
     });
 
@@ -69,8 +69,8 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(photoResponseSchema),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -79,7 +79,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -87,7 +87,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
         const codigo = Number(request.query.codigo);
 
         if (!codigo) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o código do produto' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o código do produto' });
         }
 
         try {
@@ -95,7 +95,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Erro ao consultar as fotos dos produtos:', e);
-            return reply.status(400).send({ erro: true, msg: 'Ocorreu um erro ao consultar as fotos dos produtos' });
+            return reply.status(400).send({ success: false, message: 'Ocorreu um erro ao consultar as fotos dos produtos' });
         }
     });
 
@@ -120,11 +120,11 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 201: z.object({
                     ok: z.boolean(),
-                    msg: z.string()
+                    message: z.string()
                 }),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -136,7 +136,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -145,11 +145,11 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
         const { produto, fotos } = request.body;
 
         if (!fotos || fotos.length === 0) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar as fotos do produto' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar as fotos do produto' });
         }
 
         if (!produto) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o código do produto' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o código do produto' });
         }
 
         try {
@@ -192,7 +192,7 @@ const photosRoute: FastifyPluginAsyncZod = async (server) => {
             });
         } catch (e) {
             console.error('Erro ao registrar as fotos do produto:', e);
-            return reply.status(400).send({ erro: true, msg: 'Erro ao registrar as fotos do produto' } as const);
+            return reply.status(400).send({ success: false, message: 'Erro ao registrar as fotos do produto' });
         }
     });
 };

@@ -32,7 +32,7 @@ export const mlAccountsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
+        if (!decoded.success || !decoded.payload) {
             return reply.status(401).send({ success:false, message: "Token inválido" });
         }
 

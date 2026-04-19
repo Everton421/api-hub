@@ -4,27 +4,27 @@ import { validaContratoLogin } from "../../services/validaContrato/validaContrat
 
 export async function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
     if (!req.headers.token) {
-        return res.status(401).json({ msg: 'Acesso negado. Token não fornecido.' });
+        return res.status(401).json({ success: false, message: 'Acesso negado. Token não fornecido.' });
     }
     const token = String(req.headers.token);
 
     const secret = process.env.SECRET;
-    if (!secret) return res.status(500).json({ msg: "Erro interno do servidor [JWT Secret Missing]" })
+    if (!secret) return res.status(500).json({ success: false, message: "Erro interno do servidor [JWT Secret Missing]" })
 
     let cnpj: string = '';
     Jwt.verify(token, secret, (err: any, decodedPayload: any) => {
 
         if (err) {
             if (err.name === 'TokenExpiredError') {
-                return res.status(401).json({ msg: 'Token expirado.' });
+                return res.status(401).json({ success: false, message: 'Token expirado.' });
             }
             console.log(`Erro na verificação do jwt `, err.message);
-            return res.status(403).json({ msg: 'Token inválido ou malformado.' });
+            return res.status(403).json({ success: false, message: 'Token inválido ou malformado.' });
         }
 
         if (!decodedPayload || !decodedPayload.cnpj) {
             console.log("Payoad do jwt invalido ", decodedPayload);
-            return res.status(403).json({ msg: 'Token inválido : CNPJ ausente.' });
+            return res.status(403).json({ success: false, message: 'Token inválido : CNPJ ausente.' });
         }
 
         cnpj = decodedPayload.cnpj
@@ -38,15 +38,15 @@ export async function AuthMiddleware(req: Request, res: Response, next: NextFunc
         if (resulValidContr.valido === false) {
             return res.status(400).json(
                 {
-                    erro: true,
-                    tipo_contrato: resulValidContr.tipo_contrato,
-                    msg: resulValidContr.tipo_contrato === 'T' ? 'Período de teste Expirado.' : `${resulValidContr.motivo}`
+                    success: false,
+                    message: resulValidContr.tipo_contrato === 'T' ? 'Período de teste Expirado.' : `${resulValidContr.motivo}`,
+                    tipo_contrato: resulValidContr.tipo_contrato
                 });
 
         }
     } catch (e) {
         return res.status(500).json(
-            { erro: true, msg: "Ocorreu um erro ao tentar verificar o contrato!" });
+            { success: false, message: "Ocorreu um erro ao tentar verificar o contrato!" });
     }
 
 

@@ -17,16 +17,16 @@ export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
-            return reply.status(401).send({ msg: "Token inválido" });
+        if (!decoded.success || !decoded.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
         }
 
         const { title } = request.body;
 
         if (!title || title.length < 3) {
             return reply.status(400).send({
-                erro: true,
-                msg: "O título é obrigatório e deve ter pelo menos 3 caracteres."
+                success: false,
+                message: "O título é obrigatório e deve ter pelo menos 3 caracteres."
             });
         }
 
@@ -36,8 +36,8 @@ export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(result);
         } catch (error: any) {
             return reply.status(500).send({
-                erro: true,
-                msg: error.message
+                success: false,
+                message: error.message
             });
         }
     });

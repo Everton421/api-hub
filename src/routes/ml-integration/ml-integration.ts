@@ -51,15 +51,17 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
                 return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?status=error&message=Nao+foi+possivel+obter+token`);
             }
 
-            const payloadState = DecodedMlStateToken(request.query.state as any).payload;
-                if (!payloadState || payloadState === undefined) {
-                    console.log(`Retorno inesperado da função [ DecodedMlStateToken ] `, payloadState)
-                    return;
-                }
+            const decodedState = DecodedMlStateToken(request.query.state as any);
+            if (!decodedState.success || !decodedState.payload) {
+                console.log(`Retorno inesperado da função [ DecodedMlStateToken ] `, decodedState.message);
+                return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?status=error&message=Token+invalido`);
+            }
 
+            const payloadState = decodedState.payload;
+                
                    const payload = {
                         ml_user_id: returnTokens.ml_user_id,
-                        system_user_code: payloadState.codigo, // Assumindo que vc decodificou o state antes
+                        system_user_code: payloadState.codigo,
                         cnpj: payloadState.cnpj
                     };
 

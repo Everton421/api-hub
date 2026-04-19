@@ -29,18 +29,18 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
         let validUserEmail = await selectUserApi.findByEmail(email);
 
         if (validUserEmail.length === 0) {
-            return reply.status(400).send({ msg: "Credenciais invalidas." })
+            return reply.status(400).send({ success: false, message: "Credenciais invalidas." })
         }
 
         const user = validUserEmail[0]
 
         if (!user.senha) {
-            return reply.status(400).send({ msg: "Credenciais invalidas." })
+            return reply.status(400).send({ success: false, message: "Credenciais invalidas." })
         }
 
 
         if (user.senha !== senha) {
-            return reply.status(400).send({ msg: "Credenciais invalidas." })
+            return reply.status(400).send({ success: false, message: "Credenciais invalidas." })
         }
 
         const validUserApi = await selectUserApi.findByEmalAndPassword(email, senha);
@@ -55,7 +55,7 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
             if (resultUserEmpr.length === 0) {
                 console.log(`Não foi encontrado usuario com o email :${email} no banco de dados da empresa `);
 
-                return reply.status(400).send({ msg: "Erro interno do servidor durante a autenticação!" })
+                return reply.status(400).send({ success: false, message: "Erro interno do servidor durante a autenticação!" })
             }
 
             const codigoUsuario = resultUserEmpr[0].codigo
@@ -65,9 +65,9 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
             if (resultValidContrato.valido === false) {
                 return reply.status(400).send(
                     {
-                        erro: true,
-                        tipo_contrato: resultValidContrato.tipo_contrato,
-                        msg: resultValidContrato.tipo_contrato === 'T' ? 'Período de teste Expirado.' : `${resultValidContrato.motivo}`
+                        success: false,
+                        message: resultValidContrato.tipo_contrato === 'T' ? 'Período de teste Expirado.' : `${resultValidContrato.motivo}`,
+                        tipo_contrato: resultValidContrato.tipo_contrato
                     });
 
             }
@@ -75,7 +75,7 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
             const secret = process.env.SECRET
              if (!secret) {
                 console.error("Erro crítico: JWT_SECRET não está definido!");
-                return reply.status(500).send({ msg: "Erro interno do servidor [JWT Secret Missing]." });
+                return reply.status(500).send({ success: false, message: "Erro interno do servidor [JWT Secret Missing]." });
             }
 
             const payload = {

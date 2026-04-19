@@ -12,8 +12,8 @@ type dataStateuser = {
     codigo: number
 }
 interface responseDecodToken {
-    erro: boolean,
-    msg?: string
+    success: boolean,
+    message?: string
     payload?: dataStateuser
 }
 type state = {
@@ -53,12 +53,13 @@ export const exchangeCodeForMlToken = async (code: string, state: string) => {
         const expirationDate = dayjs().add(expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
         if (response.status === 200 && access_token) {
-            const dataUser = DecodedMlStateToken(String(state)).payload;
-
-            if (!dataUser) { 
-                console.log(`[X] não foi possivel decodificar o state.`)
+            const decodedState = DecodedMlStateToken(String(state));
+            if (!decodedState.success || !decodedState.payload) {
+                console.log(`[X] não foi possivel decodificar o state.`, decodedState.message);
                 return;
             }
+
+            const dataUser = decodedState.payload;
 
             let dbName = `\`${dataUser.cnpj}\``;
 
@@ -189,30 +190,28 @@ export const getMlUserCode = async () => {
 export function DecodedMlStateToken(token: string): responseDecodToken {
     const secret = process.env.SECRET_ML_ENCODE_STATE;
     if (!secret) {
-        return { erro: true, msg: `SECRET_ML_ENCODE_STATE secret nao informado.` }
+        return { success: false, message: `SECRET_ML_ENCODE_STATE secret nao informado.` }
     }
     let decoded;
     Jwt.verify(token, secret, (err: any, decodedPayload: any) => {
         if (err) {
 
             if (err.name === 'TokenExpiredError') {
-                //return res.status(401).json({ msg: 'Token expirado.' });
                 console.log(err.name)
-                return { erro: "true", msg: `'Token expirado. ' ${err.name}` }
+                return { success: false, message: `Token expirado. ${err.name}` }
 
             }
-            //   console.log(`Erro na verificação do jwt `, err.message);
-            return { erro: "true", msg: `Erro na verificação do jwt ${err.message}` }
+            return { success: false, message: `Erro na verificação do jwt ${err.message}` }
         }
         if (!decodedPayload || !decodedPayload.cnpj) {
             console.log("Payoad do jwt invalido ", decodedPayload);
-            return { erro: "true", msg: `Payoad do jwt invalido ${decodedPayload}` }
+            return { success: false, message: `Payoad do jwt invalido ${decodedPayload}` }
         }
         decoded = decodedPayload;
 
     })
 
-    return { erro: false, payload: decoded, msg: '' }
+    return { success: true, message: '', payload: decoded }
 
 }
 
