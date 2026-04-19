@@ -51,8 +51,8 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const { title, price, category_id, ml_user_id, codigo_produto } = request.body;
 
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
-            return reply.status(401).send({ msg: "Token inválido" });
+        if (!decoded.success || !decoded.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
         }
 
         const userCnpj = decoded.payload.cnpj;
@@ -60,7 +60,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
         const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(systemUserCode, ml_user_id, userCnpj);
         if (!integracoes || integracoes.length === 0) {
-            return reply.status(400).send({ msg: "Usuário não possui conta ML vinculada." });
+            return reply.status(400).send({ success: false, message: "Usuário não possui conta ML vinculada." });
         }
 
         const mlUserId = integracoes[0].ml_user_id;
@@ -255,11 +255,11 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
 
-        const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
+const decoded = DecodedToken(String(request.headers.token));
+        if (!decoded.success || !decoded.payload) {
             return reply.status(401).send({ success: false, message: "Token inválido" });
         }
-        const systemUserCode = decoded.payload.codigo;
+
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const { ml_user_id } = request.headers;
@@ -326,7 +326,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const selectAtributosAnuncios = new SelectAtributosAnuncios();
 
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
+        if (!decoded.success || !decoded.payload) {
             return reply.status(401).send({ msg: "Token inválido" });
         }
 
@@ -382,8 +382,8 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const selectAtributosAnuncios = new SelectAtributosAnuncios();
 
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
-            return reply.status(401).send({ msg: "Token inválido" });
+        if (!decoded.success || !decoded.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
         }
 
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
@@ -395,7 +395,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             const anuncios = await selectAnuncios.findById(dbName, id);
 
             if (anuncios.length === 0) {
-                return reply.status(404).send({ msg: "Anúncio não encontrado" });
+                return reply.status(404).send({ success: false, message: "Anúncio não encontrado" });
             }
 
             const atributos = await selectAtributosAnuncios.findByAnuncioId(dbName, id);
@@ -433,8 +433,8 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
-            return reply.status(401).send({ msg: "Token inválido" });
+        if (!decoded.success || !decoded.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
         }
 
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
@@ -448,9 +448,11 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             if (resultUpdate && resultUpdate.affectedRows > 0) {
                 return reply.status(200).send(request.body);
             }
-            return reply.status(400).send({ erro: true, msg: "Anúncio não encontrado ou erro ao atualizar" });
-        } catch (e) {
-            return reply.status(500).send({ erro: true, msg: "erro interno no servidor." });
+return reply.status(400).send({ success: false, message: "Anúncio não encontrado ou erro ao atualizar" });
+
+            }
+
+            return reply.status(500).send({ success: false, message: "erro interno no servidor." });
         }
     });
 
@@ -466,8 +468,8 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
-            return reply.status(401).send({ msg: "Token inválido" });
+        if (!decoded.success || !decoded.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
         }
 
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
@@ -480,18 +482,18 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
         const validaExisAnuncio = await selectAnuncios.findById(dbName, id);
         if (validaExisAnuncio.length === 0) {
-            return reply.status(400).send({ erro: true, msg: "O anúncio informado não existe." });
+            return reply.status(400).send({ success: false, message: "O anúncio informado não existe." });
         }
 
         try {
             const resultDeleteAnuncio = await deleteAnuncios.delete(dbName, id);
             const resultDeleteAtributos = await deleteAtributosAnuncios.delete(dbName, id);
             if (resultDeleteAnuncio.affectedRows > 0) {
-                return reply.status(200).send({ ok: true, msg: "Anúncio deletado com sucesso." });
+                return reply.status(200).send({ success: true, message: "Anúncio deletado com sucesso." });
             }
-            return reply.status(500).send({ erro: true, msg: "erro ao deletar anúncio." });
+            return reply.status(500).send({ success: false, message: "erro ao deletar anúncio." });
         } catch (e) {
-            return reply.status(500).send({ erro: true, msg: "erro interno no servidor." });
+            return reply.status(500).send({ success: false, message: "erro interno no servidor." });
         }
     });
 };

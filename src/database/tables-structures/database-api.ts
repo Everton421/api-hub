@@ -7,7 +7,7 @@ import { conn, db_api } from "../databaseConfig.ts"
         const arrSql = [
             `CREATE DATABASE IF NOT EXISTS ??;`,
             `
-            CREATE TABLE IF NOT EXISTS ??.empresas  (
+CREATE TABLE IF NOT EXISTS ??.empresas  (
                  codigo  int(11) NOT NULL AUTO_INCREMENT,
                  id  int(10) unsigned NOT NULL DEFAULT 0,
                  responsavel  int(11) NOT NULL DEFAULT 0,
@@ -16,14 +16,18 @@ import { conn, db_api } from "../databaseConfig.ts"
                  email  varchar(255) DEFAULT NULL,
                  telefone  varchar(255) DEFAULT NULL,
                  banco_dados  varchar(255) DEFAULT NULL,
+                 logo_url  varchar(500) DEFAULT NULL COMMENT 'URL do logo da empresa',
+                 cor_fonte  varchar(7) DEFAULT '#333333' COMMENT 'Cor da fonte',
+                 cor_fundo  varchar(7) DEFAULT '#FFFFFF' COMMENT 'Cor de fundo',
+                 cor_banner  varchar(7) DEFAULT '#1a73e8' COMMENT 'Cor do banner',
                  tipo_contrato  enum('T','N') DEFAULT 'T' COMMENT 't=teste, N=normal',
                  data_contrato  date DEFAULT '0000-00-00',
                  dias_contrato  int(10) DEFAULT 30,
                  inicio_contrato  date DEFAULT '0000-00-00',
                  fim_contrato  date DEFAULT '0000-00-00',
                  token  varchar(255) NOT NULL DEFAULT '',
-                PRIMARY KEY ( codigo ) USING BTREE
-                ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+                 PRIMARY KEY ( codigo ) USING BTREE
+                 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
             `,
             `
             CREATE TABLE IF NOT EXISTS ??.usuarios (

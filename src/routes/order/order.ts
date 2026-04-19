@@ -126,12 +126,12 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     }))
                 }),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -142,7 +142,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const cnpj = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -150,7 +150,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const source = request.headers.source as string || 'api_internal';
 
         if (!request.body || request.body.length === 0) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar os pedidos!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar os pedidos!' });
         }
 
         try {
@@ -187,7 +187,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(201).send({ results });
         } catch (e) {
             console.error('Erro ao processar pedidos:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro interno ao processar pedidos.' });
+            return reply.status(500).send({ success: false, message: 'Erro interno ao processar pedidos.' });
         }
     });
 
@@ -208,12 +208,12 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: z.array(orderResponseSchema),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -225,7 +225,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -236,15 +236,15 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         if (data_final && !dateService.isValidDate(data_final)) {
             return reply.status(400).send({
-                erro: true,
-                msg: 'Informe a data no formato YYYY-MM-DD HH:mm:ss'
+                success: false,
+                message: 'Informe a data no formato YYYY-MM-DD HH:mm:ss'
             });
         }
 
         if (data_inicial && !dateService.isValidDate(data_inicial)) {
             return reply.status(400).send({
-                erro: true,
-                msg: 'Informe a data no formato YYYY-MM-DD HH:mm:ss'
+                success: false,
+                message: 'Informe a data no formato YYYY-MM-DD HH:mm:ss'
             });
         }
 
@@ -292,7 +292,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(orcamentos_registrados);
         } catch (error) {
             console.error('Erro ao buscar orçamentos:', error);
-            return reply.status(500).send({ erro: true, msg: 'Erro interno ao buscar orçamentos.' });
+            return reply.status(500).send({ success: false, message: 'Erro interno ao buscar orçamentos.' });
         }
     });
 
@@ -315,12 +315,12 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     total_clientes: z.number().nullable()
                 })),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -329,7 +329,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -337,7 +337,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const vendedor = Number(request.query.vendedor);
 
         if (!vendedor) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o vendedor' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o vendedor' });
         }
 
         try {
@@ -345,7 +345,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Erro ao buscar totais:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro interno ao buscar os dados dos orçamentos.' });
+            return reply.status(500).send({ success: false, message: 'Erro interno ao buscar os dados dos orçamentos.' });
         }
     });
 
@@ -371,12 +371,12 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     cliente_id:z.string().optional() 
                 })),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -385,7 +385,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -394,7 +394,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const limit = request.query.limit || 7;
 
         if (!vendedor) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o vendedor' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o vendedor' });
         }
 
         try {
@@ -402,7 +402,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Erro ao buscar últimos inseridos:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro interno ao buscar os dados dos orçamentos.' });
+            return reply.status(500).send({ success: false, message: 'Erro interno ao buscar os dados dos orçamentos.' });
         }
     });
 
@@ -422,12 +422,12 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     data_cadastro: z.string()
                 })),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
              
@@ -437,7 +437,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o token!' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -445,7 +445,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const vendedor = Number(request.query.vendedor);
 
         if (!vendedor) {
-            return reply.status(400).send({ erro: true, msg: 'É necessário informar o vendedor' });
+            return reply.status(400).send({ success: false, message: 'É necessário informar o vendedor' });
         }
 
         try {
@@ -455,7 +455,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         } catch (e) {
             console.error('Erro ao buscar totais por data:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro interno ao buscar os dados dos orçamentos.' });
+            return reply.status(500).send({ success: false, message: 'Erro interno ao buscar os dados dos orçamentos.' });
         }
     });
 };

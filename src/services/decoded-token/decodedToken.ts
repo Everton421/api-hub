@@ -10,8 +10,8 @@ type decoded = {
 }
 
 interface responseDecodToken {
-    erro: boolean,
-    msg?: string
+    success: boolean,
+    message?: string
     payload?: decoded
 }
 
@@ -19,29 +19,27 @@ interface responseDecodToken {
 export function DecodedToken(token: string): responseDecodToken {
     const secret = process.env.SECRET;
     if (!secret) {
-        return { erro: true, msg: `secret nao informado` }
+        return { success: false, message: `secret nao informado` }
     }
     let decoded;
     Jwt.verify(token, secret, (err: any, decodedPayload: any) => {
         if (err) {
 
             if (err.name === 'TokenExpiredError') {
-                //return res.status(401).json({ msg: 'Token expirado.' });
                 console.log(err.name)
-                return { erro: "true", msg: `'Token expirado. ' ${err.name}` }
+                return { success: false, message: `Token expirado. ${err.name}` }
 
             }
-            //   console.log(`Erro na verificação do jwt `, err.message);
-            return { erro: "true", msg: `Erro na verificação do jwt ${err.message}` }
+            return { success: false, message: `Erro na verificação do jwt ${err.message}` }
         }
         if (!decodedPayload || !decodedPayload.cnpj) {
             console.log("Payoad do jwt invalido ", decodedPayload);
-            return { erro: "true", msg: `Payoad do jwt invalido ${decodedPayload}` }
+            return { success: false, message: `Payoad do jwt invalido ${decodedPayload}` }
         }
         decoded = decodedPayload as decoded;
 
     })
 
-    return { erro: false, payload: decoded, msg: '' }
+    return { success: true, message: '', payload: decoded }
 
 }
