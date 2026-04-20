@@ -10,7 +10,7 @@ import { type ProductType } from '../../models/product/types/product-type.ts';
 import { SelectPhoto } from '../../models/photo/select.ts';
 import { type PhotoType } from '../../models/photo/types/photo-type.ts';
 
-type productType  = ProductType & { fotos: PhotoType[] }
+type productTypeAndPhotos  = ProductType & { fotos: PhotoType[] }
 const productResponseSchema = z.object({
     codigo: z.number(),
     id: z.coerce.string(),
@@ -24,7 +24,7 @@ const productResponseSchema = z.object({
     num_original: z.string(),
     sku: z.string(),
     marca: z.number(),
-    ativo: z.enum(["S" ,"N"]),
+    ativo: z.enum(["S" ,"N"]).describe('S = ativo, N = inativo'),
     class_fiscal: z.string(),
     cst: z.string(),
     caracteristica: z.coerce.number().default(0),
@@ -35,16 +35,15 @@ const productResponseSchema = z.object({
     observacoes3: z.string(),
     tipo: z.number(),
         fotos: z.array(
-      z.object({
-          codigo: z.number().optional(),
-          produto: z.number(),
-          sequencia: z.number().nullable().optional(),
-          descricao: z.string().nullable().optional(),
-          link: z.string().nullable().optional(),
-          foto: z.string().nullable().optional(),
-          data_cadastro: z.string(),
-          data_recadastro: z.string()
-      })
+            z.object({
+                produto: z.number(),
+                sequencia: z.number(),
+                descricao: z.string(),
+                link: z.string(),
+                foto: z.string(),
+                data_cadastro: z.string(),
+                data_recadastro: z.string()
+            })
     )
 
 });
@@ -63,15 +62,15 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 limit: z.coerce.number().optional()
             }),
             response: {
-                200: z.array(productResponseSchema),
-                400: z.object({
-                    success: z.boolean(),
-                    message: z.string()
-                }),
-                500: z.object({
-                    success: z.boolean(),
-                    message: z.string()
-                })
+                 200: z.array(productResponseSchema),
+                   400: z.object({
+                       success: z.boolean(),
+                       message: z.string()
+                   }),
+                   500: z.object({
+                       success: z.boolean(),
+                       message: z.string()
+                   })
             }
         }
     }, async (request, reply) => {
@@ -83,21 +82,20 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         const selectPhoto = new SelectPhoto();
         let arrResult =[]
         try {
-            let result = await select.findAll(dbName, data_recadastro);
-            if (limit && result.length > limit) {
-                result = result.slice(0, limit);
+            let result = await select.findAll(dbName, data_recadastro, limit );
+                    const productResponse:productTypeAndPhotos[] =[]
                       
-                    const productResponse =[]
-                for( let i of result ){
-                    let fotos:PhotoType[] =[];
-                   let product = i as productType;
-                    const resultFotos = await selectPhoto.findByProduct(dbName, i.codigo);
-                    fotos = resultFotos  
-                    i = {  ...i, fotos } as productType;
-                    productResponse.push(i)
-                }
-            }
-            return reply.status(200).send(result);
+                    for( let i of result as any ){
+                        let fotos:PhotoType[] =[];
+
+
+                         const resultFotos = await selectPhoto.findByProduct(dbName, i.codigo);
+                        fotos = resultFotos  
+                        i = {  ...i, fotos } as productTypeAndPhotos;
+
+                        productResponse.push(i)
+                    }
+            return reply.status(200).send(productResponse);
         } catch (e) {
             console.error('Error fetching products:', e);
             return reply.status(500).send({ success: false, message: 'Error fetching products' });
@@ -212,7 +210,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             body: z.object({
                 id: z.coerce.string(),
                 estoque: z.coerce.number().default(0),
-                preco: z.coerce.number().default(0),
+                preco: z.coerce.string().default('0'),
                 unidade_medida: z.string().default('und'),
                 grupo: z.number(),
                 origem: z.union([z.string(), z.number()]).default('0'),
@@ -269,7 +267,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             };
 
             const result = await insert.insert(dbName, productData);
-            const item = { ...productData, codigo: result.insertId };
+            const item = { ...productData, codigo: result.insertId , fotos:[]};
 
             await publishMessage(empresa, 'produto.inserido', item, source);
             return reply.status(201).send(item);
@@ -289,8 +287,8 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             body: z.object({
                 codigo: z.number(),
                 id: z.string(),
-                  estoque: z.coerce.number().default(0),
-                preco: z.coerce.number().default(0),
+                 estoque: z.coerce.number().default(0),
+                preco: z.coerce.string().default('0'),
                 unidade_medida: z.string(),
                 grupo: z.number(),
                 origem: z.union([z.string(), z.number()]).default('0'),
@@ -355,7 +353,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             const result = await update.update(dbName, productData);
 
             if (result.affectedRows > 0) {
-                const item = { ...productData };
+                const item = { ...productData, fotos:[] };
                 await publishMessage(empresa, 'produto.atualizado', item, source);
                 return reply.status(200).send(item);
             }

@@ -63,8 +63,10 @@ export class SelectProduct {
         return result as ProductType[];
     }
 
-    async findAll(dbName: string, dataRecadastro?: string): Promise<ProductType[]> {
-        let sql = `SELECT *,
+    async findAll(dbName: string, dataRecadastro?: string, limit?:number): Promise<ProductType[]> {
+        let sql = `SELECT 
+                *,
+             COALESCE(caracteristica, 0 ) AS caracteristica,   
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(observacoes1 USING utf8) as observacoes1,
@@ -77,6 +79,11 @@ export class SelectProduct {
         if (dataRecadastro) {
             sql += ' WHERE data_recadastro > ?';
             params.push(dataRecadastro);
+        }
+        if(limit){
+            sql += '  limit   ?';
+            params.push(limit);
+            
         }
 
         const [result] = await conn.query(sql, params);
