@@ -12,6 +12,8 @@ import { type typeAnuncios } from "../../types/anuncios/type-anuncio.ts";
 import { type typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios.ts";
 import { GetMlItemsService } from "../../services/ml-services/get-itens-ml-service.ts";
 import { CreateTableMLAccounts } from "../../database/tables-structures/create-table-ml-accounts.ts";
+import { InsertAnuncios } from "../../models/anuncios/insert.ts";
+import { InsertAtributosAnuncios } from "../../models/atributos-anuncios/insert.ts";
 type typeFinalAttributes = { id: string, value_name: string }
 
 export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
@@ -120,17 +122,22 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const mlService = new PostMlItemsService();
         const selectUsersMl = new SelectUsersMlIntegrations();
 
-        const { title, price, category_id, ml_user_id, codigo_produto } = request.body;
+        const { title, price, category_id, ml_user_id, codigo_produto, available_quantity , ean, thumbnail } = request.body;
+        const insertAnuncios = new InsertAnuncios();
+        const insertAtributosAnuncios = new InsertAtributosAnuncios();
 
         const decoded = DecodedToken(String(request.headers.token));
-        if (decoded.erro || !decoded.payload) {
+        if ( !decoded.payload) {
             return reply.status(401).send({ msg: "Token inválido" });
         }
 
-        const userCnpj = decoded.payload.cnpj;
+        const empresa = decoded.payload.cnpj;
+        const dbName = `\`${empresa}\``;
+
+
         const systemUserCode = decoded.payload.codigo;
 
-        const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(systemUserCode, ml_user_id, userCnpj);
+        const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(systemUserCode, ml_user_id, empresa);
         if (!integracoes || integracoes.length === 0) {
             return reply.status(400).send({ msg: "Usuário não possui conta ML vinculada." });
         }
@@ -165,34 +172,34 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
                             { id: "BRAND", value_name: request.body.brand || "Genérica" },
                             { id: "MODEL", value_name: request.body.model || "Padrão" }
                         ];
-                        if (request.body.ean) {
-                            finalAttributes.push({ id: "GTIN", value_name: data.ean });
+                        if (ean) {
+                            finalAttributes.push({ id: "GTIN", value_name:  ean });
                         }
                     }
 
 
-                const resultInsert = await insertAnuncios.insert(database,
+                const resultInsert = await insertAnuncios.insert(dbName,
                     {
                         ativo: 'S',
                         codigo_produto: codigo_produto,
-                        descricao: data.title,
-                        estoque: data.quantity,
+                        descricao:   title,
+                        estoque:  available_quantity,
                         id_externo: '1',
                         integration_id: integrationId,
                         link: '',
-                        num_fabricante: ean,
-                        titulo: data.title,
-                        preco: data.price,
+                        num_fabricante: ean || '',
+                        titulo:  title,
+                        preco:  price,
                         plataforma: 'ML',
                         sku_externo: null,
                         unidade_medida: '',
-                        thumbnail: data.thumbnail || ''
+                        thumbnail:  thumbnail || ''
                     }
                 )
                 if (resultInsert.sucess && resultInsert.insertId) {
                     if (finalAttributes.length > 0) {
                         for (const atr of finalAttributes) {
-                            await insertAtributosAnuncios.insert(database,
+                            await insertAtributosAnuncios.insert(dbName,
                                 {
                                     id_anuncio: resultInsert.insertId,
                                     id_atributo: atr.id,
@@ -201,25 +208,25 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
                                     valor_atributo: atr.value_name
                                 })
                         }
-                        for (const img of data.pictures) {
-                            await insertAtributosAnuncios.insert(database,
-                                {
-                                    id_anuncio: resultInsert.insertId,
-                                    id_atributo: 'IMAGEM_ANUNCIO',
-                                    id_valor_atributo: null,
-                                    nome_atributo: 'IMAGEM_ANUNCIO',
-                                    valor_atributo: img
-                                })
-                        }
+                      //  for (const img of data.pictures) {
+                      //      await insertAtributosAnuncios.insert(database,
+                      //          {
+                      //              id_anuncio: resultInsert.insertId,
+                      //              id_atributo: 'IMAGEM_ANUNCIO',
+                      //              id_valor_atributo: null,
+                      //              nome_atributo: 'IMAGEM_ANUNCIO',
+                      //              valor_atributo: img
+                      //          })
+                      //  }
                     }
                 }
 
-//        try {
-//            const result = await mlService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
-//            return reply.status(201).send(result);
-//        } catch (e) {
-//            return reply.status(500).send({ success: false, message: `${e}` });
-//        }
+         try {
+             const result = await mlService.publishItem(empresa, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
+             return reply.status(201).send(result);
+         } catch (e) {
+             return reply.status(500).send({ success: false, message: `${e}` });
+         }
     });
 
     server.get('/ml/get/anuncios', {
@@ -261,6 +268,7 @@ const decoded = DecodedToken(String(request.headers.token));
         }
 
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
+        const systemUserCode  = decoded.payload.codigo;
         const dbName = `\`${empresa}\``;
         const { ml_user_id } = request.headers;
 
@@ -450,11 +458,13 @@ const decoded = DecodedToken(String(request.headers.token));
             }
 return reply.status(400).send({ success: false, message: "Anúncio não encontrado ou erro ao atualizar" });
 
+            }catch(e){
+                console.log(e);
+            return reply.status(500).send({ success: false, message: "erro interno no servidor." });
             }
 
-            return reply.status(500).send({ success: false, message: "erro interno no servidor." });
         }
-    });
+     );
 
     server.delete('/ml/anuncios/delete/:id', {
         schema: {

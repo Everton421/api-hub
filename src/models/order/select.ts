@@ -10,7 +10,7 @@ export class SelectOrder {
         FROM ${dbName}.pedidos p 
         JOIN ${dbName}.clientes c ON c.codigo = p.cliente 
         
-        WHERE codigo = ?`;
+        WHERE p.codigo = ?`;
 
         const [result] = await conn.query(sql, [code]);
         return result as OrderType[];
@@ -90,6 +90,8 @@ export class SelectOrder {
         name?: string;
         search?:string;
         type?: number;
+        situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP',
+        situacao_separacao?:    'I' | 'P' | 'N' 
     }): Promise<OrderType[]> {
         const {
             startDate,
@@ -99,6 +101,8 @@ export class SelectOrder {
             cnpj,
             limit,
             search,
+            situacao,
+            situacao_separacao,
             type
         } = params;
 
@@ -128,9 +132,19 @@ export class SelectOrder {
             conditions.push("c.cnpj = ?");
             values.push(Number(cnpj));
         }
+
+        if(situacao_separacao){
+            conditions.push("pe.situacao_separacao = ?");
+            values.push(String(situacao_separacao));
+        }
         if (type) {
             conditions.push("pe.tipo = ?");
             values.push(Number(type));
+        }
+        if(situacao){
+            conditions.push("pe.situacao = ?");
+            values.push(String(situacao));
+            
         }
         if (search) {
             conditions.push("c.nome LIKE ?");

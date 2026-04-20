@@ -51,8 +51,8 @@ const orderResponseSchema = z.object({
     id_externo: z.union([z.number(), z.string()]).optional(),
     id_interno: z.string().optional(),
     vendedor: z.union([z.number(), z.string()]),
-    situacao: z.string().optional(),
-    situacao_separacao: z.enum(['N','P','I']).optional().describe("N = não separado; p = separado parcialmente; i = separado integralmente"),
+    situacao:z.enum([ 'EA' , 'FI' , 'RE' , 'AI' , 'FP' ]).optional().describe(" EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente "),
+    situacao_separacao: z.enum(['N','P','I']).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
     contato: z.string().optional(),
     descontos: z.union([z.number(), z.string()]).optional(),
     frete: z.union([z.number(), z.string()]).optional(),
@@ -76,7 +76,7 @@ const orderResponseSchema = z.object({
     parcelas: z.array(parcelOrderSchema).optional(),
     cliente_info: clientSchema.optional()
 });
-
+         
 const ordersRoute: FastifyPluginAsyncZod = async (server) => {
     server.post('/pedidos', {
         schema: {
@@ -91,8 +91,8 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 id_externo: z.number().optional(),
                 id_interno: z.string().optional(),
                 vendedor: z.number().optional(),
-                situacao: z.string().optional(),
-                situacao_separacao: z.enum(['N','P','I']),
+                situacao:z.enum([ 'EA' , 'FI' , 'RE' , 'AI' , 'FP' ]).optional().describe(" EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente "),
+                situacao_separacao: z.enum(['N','P','I']).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
                 contato: z.string().optional(),
                 descontos: z.number().optional(),
                 frete: z.number().optional(),
@@ -203,7 +203,9 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 vendedor: z.coerce.number().optional(),
                 search: z.string().optional(),
                 tipo:z.coerce.number().optional(),
-                limit: z.coerce.number().optional().default(20)
+                limit: z.coerce.number().optional().default(20),
+                situacao: z.enum([ 'EA' , 'FI' , 'RE' , 'AI' , 'FP' ]).optional().describe(" EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente "),
+                situacao_separacao: z.enum([ 'I' , 'P' , 'N' ]).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
             }),
             response: {
                 200: z.array(orderResponseSchema),
@@ -230,7 +232,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const {  data_final, data_inicial , search , tipo, vendedor, limit } = request.query;
+        const {  data_final, data_inicial , search , tipo, vendedor, limit, situacao, situacao_separacao} = request.query;
 
        
 
@@ -251,7 +253,17 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
 
         try {
-            const dados_orcamentos = await selectPedido.findByParams(dbName, { startDate:data_inicial, endDate:data_final, search: search, type:tipo, limit: limit,seller:vendedor });
+            const dados_orcamentos = await selectPedido.findByParams(dbName, 
+                { 
+                        startDate:data_inicial,
+                        endDate:data_final,
+                        search: search,
+                        type:tipo,
+                        limit: limit,
+                        seller:vendedor ,
+                         situacao:situacao,
+                         situacao_separacao: situacao_separacao
+                        });
 
             if (dados_orcamentos.length === 0) {
                 return reply.status(200).send([]);
@@ -288,14 +300,96 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     cliente_info
                 };
             }));
-            console.log(JSON.stringify(orcamentos_registrados[0]))
             return reply.status(200).send(orcamentos_registrados);
         } catch (error) {
             console.error('Erro ao buscar orçamentos:', error);
             return reply.status(500).send({ success: false, message: 'Erro interno ao buscar orçamentos.' });
         }
     });
+    server.get('/pedidos/:codigo', {
+        schema: {
+            tags: ['pedidos'],
+            headers: z.object({
+                token: z.string()
+            }),
+           params: z.object({
+                 codigo: z.coerce.number()
+               }),
+            response: {
+                200: orderResponseSchema ,
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                404: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const selectPedido = new SelectOrder();
+        const selectCliente = new SelectClient();
+        const selectOrderItems = new SelectOrderItems();
+        const dateService = new DateService();
+        const decodedToken = DecodedToken(String(request.headers.token));
 
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const {  codigo } = request.params;
+
+        try {
+            const dados_orcamentos = await selectPedido.findByCode(dbName, codigo);
+
+            if (dados_orcamentos.length === 0) {
+                return reply.status(404).send({ success: false, message:`Pedido ${codigo} não foi encontrado.`});
+            }
+
+            const orcamentos_registrados = await Promise.all(dados_orcamentos.map(async (i: OrderType) => {
+                let produtos: OrderItemProduct[] = [];
+                let servicos: OrderItemService[] = [];
+                let parcelas: OrderInstallment[] = [];
+                let cliente_info: any;
+
+                try {
+                    const resultCliente = await selectCliente.findByCode(dbName, i.cliente);
+                    cliente_info = resultCliente.length > 0 ? { codigo: resultCliente[0].codigo, nome: resultCliente[0].nome } : undefined;
+                } catch (e) { console.log(`Erro ao buscar o cliente do pedido ${i.codigo}`); }
+
+                try {
+                    produtos = await selectOrderItems.findProductsByOrder(dbName, i.codigo);
+                } catch (e) { console.log(`Erro ao buscar os produtos do pedido ${i.codigo}`); }
+
+                try {
+                    servicos = await selectOrderItems.findServicesByOrder(dbName, i.codigo);
+                } catch (e) { console.log(`Erro ao buscar os servicos do pedido ${i.codigo}`); }
+
+                try {
+                    parcelas = await selectOrderItems.findInstallmentsByOrder(dbName, i.codigo);
+                } catch (e) { console.log(`Erro ao buscar as parcelas do pedido ${i.codigo}`); }
+
+                return {
+                    ...i,
+                    produtos,
+                    servicos,
+                    parcelas,
+                    cliente_info
+                };
+            }));
+            return reply.status(200).send(orcamentos_registrados[0]);
+        } catch (error) {
+            console.error('Erro ao buscar orçamentos:', error);
+            return reply.status(500).send({ success: false, message: 'Erro interno ao buscar orçamentos.' });
+        }
+    });
     server.get('/pedidos/totais', {
         schema: {
             tags: ['pedidos'],
@@ -450,7 +544,6 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         try {
             const result = await selectPedido.findTotalsByDate(dbName, vendedor);
-            console.log(result)
             return reply.status(200).send(result);
 
         } catch (e) {
