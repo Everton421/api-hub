@@ -87,36 +87,36 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.array(z.object({
                 codigo: z.number(),
-                id: z.number().optional(),
-                id_externo: z.number().optional(),
-                id_interno: z.string().optional(),
+                id: z.coerce.string(),
+                id_externo: z.coerce.string().default('0'),
+                id_interno: z.coerce.string().default('0'),
                 vendedor: z.number().optional(),
-                situacao:z.enum([ 'EA' , 'FI' , 'RE' , 'AI' , 'FP' ]).optional().describe(" EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente "),
-                situacao_separacao: z.enum(['N','P','I']).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
-                contato: z.string().optional(),
-                descontos: z.number().optional(),
-                frete: z.number().optional(),
-                forma_pagamento: z.number().optional(),
-                quantidade_parcelas: z.number().optional(),
-                total_geral: z.number(),
-                total_produtos: z.number(),
-                total_servicos: z.number().optional(),
+                situacao:z.enum([ 'EA' , 'FI' , 'RE' , 'AI' , 'FP' ]).describe(" EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente "),
+                situacao_separacao: z.enum(['N','P','I']).describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
+                contato: z.string(),
+                descontos: z.coerce.string(),
+                frete: z.coerce.string(),
+                forma_pagamento: z.number(),
+                quantidade_parcelas: z.number(),
+                total_geral: z.coerce.string(),
+                total_produtos: z.coerce.string(),
+                total_servicos: z.coerce.string(),
                 cliente: z.object({
                     codigo: z.number()
-                }).optional(),
-                veiculo: z.number().optional(),
-                data_cadastro: z.string().optional(),
-                data_recadastro: z.string().optional(),
-                tipo_os: z.number().optional(),
-                tipo: z.number().optional(),
-                observacoes: z.string().optional(),
-                observacoes2: z.string().optional(),
-                just_ipi: z.string().optional(),
-                just_icms: z.string().optional(),
-                just_subst: z.string().optional(),
-                produtos: z.array(productOrderSchema).optional(),
-                servicos: z.array(serviceOrderSchema).optional(),
-                parcelas: z.array(parcelOrderSchema).optional()
+                }),
+                veiculo: z.number(),
+                data_cadastro: z.string(),
+                data_recadastro: z.string(),
+                tipo_os: z.number(),
+                tipo: z.number(),
+                observacoes: z.string(),
+                observacoes2: z.string(),
+                just_ipi: z.string(),
+                just_icms: z.string(),
+                just_subst: z.string(),
+                produtos: z.array(productOrderSchema) ,
+                servicos: z.array(serviceOrderSchema) ,
+                parcelas: z.array(parcelOrderSchema) 
             })),
             response: {
                 201: z.object({
@@ -154,7 +154,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         }
 
         try {
-            const results = await Promise.all(request.body.map(async (p) => {
+            const results = await Promise.all(request.body.map(async (p:OrderReceivedType) => {
                 let status: string;
 
                 const validPedido = await selectPedido.exists(empresa, p.codigo);
@@ -166,7 +166,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                         
                         if (p.data_recadastro && p.data_recadastro > existingRecadastro) {
                             console.log(`Atualizando pedido ${p.codigo}`);
-                            await updatePedido.update(empresa, p as OrderReceivedType, p.codigo);
+                            await updatePedido.update(empresa, p  , p.codigo);
                             await publishMessage(cnpj, 'pedido.atualizado', p, source);
                             status = 'atualizado';
                         } else {

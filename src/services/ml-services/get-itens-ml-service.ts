@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, type AxiosResponse } from "axios";
 import { getValidMlAccessToken } from "../integration/mercadolivre-integration/ml-auth-service.ts"; // Importe do arquivo que criamos antes
 
 const ML_API_URL = 'https://api.mercadolibre.com';
@@ -80,5 +80,21 @@ export class GetMlItemsService {
             console.error("Erro ao buscar itens:", error.response?.data || error.message);
             throw new Error("Falha ao buscar itens no Mercado Livre");
         }
+    }
+
+    async getStatusSeller(cnpj: string, systemUserCode: number, mlUserId: number):Promise<AxiosResponse<any, any, {}>>{
+           try {
+            // 1. GARANTE O TOKEN (Se estiver vencido, ele renova sozinho aqui)
+            const accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
+               const response = await axios.get(`${ML_API_URL}/users/${mlUserId}/?attriibutes=status`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+             
+            });
+
+            return response  
+
+        }catch(e:any){
+            return e
+           }
     }
 }

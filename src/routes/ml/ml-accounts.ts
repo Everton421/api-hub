@@ -12,7 +12,7 @@ export const mlAccountsRoute: FastifyPluginAsyncZod = async (server) => {
                 token: z.string()
             }),
             params: z.object({
-                codigo: z.coerce.number()
+                codigo: z.coerce.number().describe("Codigo do vendedor no sistema.")
             }),
             response: {
                 200: z.array(z.object({
