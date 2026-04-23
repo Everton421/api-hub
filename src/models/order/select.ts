@@ -91,7 +91,8 @@ export class SelectOrder {
         search?:string;
         type?: number;
         situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP',
-        situacao_separacao?:    'I' | 'P' | 'N' 
+        situacao_separacao?:    'I' | 'P' | 'N',
+        orderBy?: "id_externo" | "codigo" | "id_interno" | "id" | "nome" | "data_recadastro"
     }): Promise<OrderType[]> {
         const {
             startDate,
@@ -103,7 +104,8 @@ export class SelectOrder {
             search,
             situacao,
             situacao_separacao,
-            type
+            type,
+            orderBy
         } = params;
 
         const sql = `SELECT pe.*, c.id as cliente_id,  c.nome as cliente_nome,
@@ -144,11 +146,11 @@ export class SelectOrder {
         if(situacao){
             conditions.push("pe.situacao = ?");
             values.push(String(situacao));
-            
         }
+         
         if (search) {
-            conditions.push("c.nome LIKE ?");
-            values.push(`%${search}%`);
+            conditions.push(" c.nome LIKE ? OR pe.id_externo = ? OR  pe.codigo = ? OR pe.id_interno = ? OR pe.id = ? ");
+            values.push(`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`, );
         }
 
         let finalSql = sql;
@@ -156,13 +158,15 @@ export class SelectOrder {
             finalSql += ' WHERE ' + conditions.join(' AND ');
         }
 
-        finalSql += ' ORDER BY pe.data_recadastro ';
-        
+        if(orderBy === "codigo" ) finalSql += ` ORDER BY pe.codigo `;
+        if(orderBy === "data_recadastro" ) finalSql += ` ORDER BY pe.data_recadastro `;
+        if(orderBy === "id" ) finalSql += ` ORDER BY pe.id `;
+        if(orderBy === "id_externo" ) finalSql += ` ORDER BY pe.id_externo `;
+        if(orderBy === "id_interno" ) finalSql += ` ORDER BY pe.id_interno `;
         if(limit){
         finalSql += ' LIMIT ?';
         values.push(Number(limit));
         }
-
         const [result] = await conn.query(finalSql, values);
         return result as OrderType[];
     }

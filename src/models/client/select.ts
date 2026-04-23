@@ -84,9 +84,10 @@ export class SelectClient {
         ativo?: string;
         id?: string;
         limit?: number;
-
+        orderBy?: 'codigo' | 'nome' | 'id',
+        search?:string
     }): Promise<ClientType[]> {
-        const { nome, cnpj, codigo, ativo, id, limit = 20 } = params;
+        const { nome, cnpj, codigo, ativo, id, limit = 20, orderBy, search } = params;
 
         let sql = `SELECT *,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -117,14 +118,21 @@ export class SelectClient {
             conditions.push("nome LIKE ?");
             values.push(`%${nome}%`);
         }
+      
+        if( search ){
+           conditions.push("   codigo LIKE ? OR nome LIKE ? OR cnpj = ? OR id = ? ");
+            values.push(`%${search}%`, `%${search}%` , `%${search}%` , `%${search}%`);
+        }
+
 
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
-
+        if(orderBy){
+                    sql += ` ORDER BY ${orderBy} `;
+                }   
         sql += ' LIMIT ?';
         values.push(Number(limit));
-
         const [result] = await conn.query(sql, values);
         return result as ClientType[];
     }

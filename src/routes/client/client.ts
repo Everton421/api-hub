@@ -77,7 +77,9 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
                 cnpj: z.string().optional(),
                 ativo: z.string().optional(),
                 limit: z.coerce.number().optional(),
-                id: z.coerce.string().optional()
+                id: z.coerce.string().optional(),
+                search: z.coerce.string().optional().describe("Pesquisa nos campos codigo, nome, cnpj e id do cliente. "),
+                orderBy: z.enum(['codigo' , 'nome', 'id']).default('codigo')
             }),
             response: {
                 200: z.array(clientResponseSchema),
