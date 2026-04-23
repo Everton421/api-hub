@@ -65,8 +65,10 @@ export class SelectCategory {
         descricao?: string;
         ativo?: string;
         limit?: number;
+        search?:string
+        orderBy?: 'codigo' | 'id' | 'descricao' |  'data_recadastro'
     }): Promise<CategoryType[]> {
-        const { codigo, id, descricao, ativo, limit = 20 } = params;
+        const { codigo, id, descricao, ativo, limit = 20 ,search, orderBy} = params;
 
         let sql = `SELECT *,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -93,14 +95,19 @@ export class SelectCategory {
             values.push(`%${descricao}%`);
         }
 
+        if(search){
+            conditions.push(" descricao LIKE ? OR id LIKE ? OR codigo LIKE ?  ");
+            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+        }
+
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
-
+        if(orderBy){
+            sql+= ` ORDER BY ${orderBy} `
+        }
         sql += ' LIMIT ?';
         values.push(Number(limit));
-        
-
         const [result] = await conn.query(sql, values);
         return result as CategoryType[];
     }

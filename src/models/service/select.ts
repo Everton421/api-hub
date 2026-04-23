@@ -56,6 +56,8 @@ export class SelectService {
         tipo?: number;
         ativo?: string;
         limit?: number;
+       search?:string;
+        orderBy?: 'codigo' | 'aplicacao' | 'data_recadastro' | 'id'
     }): Promise<ServiceType[]> {
         const {
             codigo,
@@ -63,7 +65,9 @@ export class SelectService {
             aplicacao,
             tipo,
             ativo,
-            limit = 20
+            limit = 20,
+            orderBy,
+            search
         } = params;
 
         let sql = `SELECT *,
@@ -94,11 +98,16 @@ export class SelectService {
             conditions.push("aplicacao LIKE ?");
             values.push(`%${aplicacao}%`);
         }
-
+      if(search){
+            conditions.push(" aplicacao LIKE ? OR id LIKE ? OR codigo LIKE  ?  ");
+            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+        }
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
-
+   if(orderBy){
+            sql+= ` ORDER BY ${orderBy} `
+        }
         sql += ' LIMIT ?';
         values.push(Number(limit));
 

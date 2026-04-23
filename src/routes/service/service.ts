@@ -67,7 +67,9 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
                 aplicacao: z.string().optional(),
                 tipo: z.coerce.number().optional(),
                 ativo: z.string().optional(),
-                limit: z.coerce.number().optional()
+                limit: z.coerce.number().optional(),
+                search: z.coerce.string().optional(),
+                orderBy: z.enum(['codigo' , 'aplicacao', 'data_recadastro', 'id' ]).default('codigo')
             }),
             response: {
                 200: z.array(z.object({

@@ -64,7 +64,9 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
                 descricao: z.string().optional(),
                 id: z.string().optional(),
                 ativo: z.string().optional(),
-                limit: z.coerce.number().optional()
+                limit: z.coerce.number().optional(),
+                 search: z.coerce.string().optional(),
+                orderBy: z.enum(['codigo' , 'descricao', 'data_recadastro', 'id' ]).default('codigo')
             }),
             response: {
                 200: z.array(z.object({

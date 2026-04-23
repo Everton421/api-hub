@@ -252,7 +252,6 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         }
 
 
-
         try {
             const dados_orcamentos = await selectPedido.findByParams(dbName, 
                 { 

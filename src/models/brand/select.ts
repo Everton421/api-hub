@@ -7,6 +7,8 @@ type BrandQuery = {
     descricao: string;
     limit: number;
     ativo: string;
+    search:string
+    orderBy: 'codigo' | 'id' | 'descricao' |  'data_recadastro'
 };
 
 export class SelectBrand {
@@ -72,7 +74,9 @@ export class SelectBrand {
             id,
             descricao,
             limit = 20,
-            ativo
+            ativo,
+            orderBy,
+            search
         } = params;
 
         let sql = ` SELECT *,
@@ -99,11 +103,16 @@ export class SelectBrand {
             conditions.push("descricao LIKE ?");
             values.push(`%${descricao}%`);
         }
-
-        if (conditions.length > 0) {
-            sql += ' WHERE ' + conditions.join(' AND ');
+        if(search){
+            conditions.push(" descricao LIKE ? OR id LIKE ? OR codigo LIKE  ?  ");
+            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
         }
-
+        if (conditions.length > 0) {
+            sql += ' WHERE ' + conditions.join(' AND ') ;
+        }
+   if(orderBy){
+            sql+= ` ORDER BY ${orderBy} `
+        }
         sql += ' LIMIT ?';
         values.push(Number(limit));
 

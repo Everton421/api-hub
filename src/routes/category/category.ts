@@ -74,8 +74,7 @@ export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
         }
     });
 
-
-
+ 
         server.get('/categorias/search', {
             schema: {
                 tags: ['categorias'],
@@ -87,7 +86,9 @@ export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
                     descricao: z.string().optional(),
                     id: z.coerce.string().optional(),
                     ativo: z.string().optional(),
-                    limit: z.coerce.number().optional()
+                    limit: z.coerce.number().optional(),
+                    search: z.coerce.string().optional(),
+                    orderBy: z.enum(['codigo' , 'descricao', 'data_recadastro', 'id' ]).default('codigo')
                 }),
                 response: {
                     200: z.array(z.object({
@@ -96,7 +97,7 @@ export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
                         data_cadastro: z.string(),
                         data_recadastro: z.string(),
                         descricao: z.string(),
-                        ativo: z.string()
+                        ativo: z.string(),
                     })),
                     400: z.object({
                         success: z.boolean(),
@@ -191,7 +192,7 @@ export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
                         codigo: z.number(),
                         id: z.string(),
                         descricao: z.string(),
-                        ativo: z.enum(['S', 'N']).default('S')
+                        ativo: z.enum(['S', 'N']).default('S'),
                     }),
                     response: {
                         200: z.object({

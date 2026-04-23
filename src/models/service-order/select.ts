@@ -36,13 +36,17 @@ export class SelectServiceOrderType {
         id?: string;
         limit?: number;
         ativo?: string;
+          search?:string;
+        orderBy?: 'codigo' | 'descricao' | 'data_recadastro' | 'id'
     }): Promise<ServiceOrderType[]> {
         const {
             codigo,
             descricao,
             id,
             limit = 20,
-            ativo
+            ativo,
+            orderBy,
+            search
         } = params;
 
         let sql = `SELECT *,
@@ -69,9 +73,16 @@ export class SelectServiceOrderType {
             conditions.push("descricao LIKE ?");
             values.push(`%${descricao}%`);
         }
-
+        if(search){
+            conditions.push(" descricao LIKE ? OR id LIKE ? OR codigo LIKE  ?  ");
+            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+        }
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');
+        }
+        
+      if(orderBy){
+            sql+= ` ORDER BY ${orderBy} `
         }
 
         sql += ' LIMIT ?';
