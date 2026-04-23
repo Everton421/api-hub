@@ -34,7 +34,7 @@ const productResponseSchema = z.object({
     observacoes2: z.string(),
     observacoes3: z.string(),
     tipo: z.number(),
-        fotos: z.array(
+    fotos: z.array(
             z.object({
                 produto: z.number(),
                 sequencia: z.number(),
@@ -115,7 +115,9 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 grupo: z.coerce.number().optional(),
                 ativo: z.string().optional(),
                 id: z.string().optional(),
-                limit: z.coerce.number().optional()
+                limit: z.coerce.number().optional(),
+                search: z.coerce.string().optional().describe("Pesquisa nos campos codigo, descricao e id do produto. "),
+                orderBy: z.enum(['codigo' , 'descricao', 'id']).default('codigo')
             }),
              response: {
                  200: z.array(productResponseSchema),
@@ -134,17 +136,17 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         const dbName = `\`${empresa}\``;
 
         try {
-                let products:any[] =[]
-            const result = await select.findByParams(dbName, request.query);
-            if(result.length > 0 ){
-                 for( const p of result as any[] ) { 
+                let productsResponseRequest:any[] =[]
+                    const { orderBy,  ativo, codigo, descricao, grupo, id, limit, marca, search} =request.query;
+            let resultProductsSeachByParams = await select.findByParams(dbName, request.query) as productTypeAndPhotos[];
+            if(resultProductsSeachByParams.length > 0 ){
+                 for( const p of resultProductsSeachByParams as any[] ) { 
                     const fotos = await selectPhoto.findByProduct(dbName, p.codigo);
                     p.fotos = fotos
-                    products.push(p);
+                    productsResponseRequest.push(p);
                  }
             }
-
-            return reply.status(200).send(products);
+            return reply.status(200).send(productsResponseRequest);
         } catch (e) {
             console.error('Error searching products:', e);
             return reply.status(400).send({ success: false, message: 'Error searching products' });

@@ -104,6 +104,8 @@ export class SelectProduct {
         descricao?: string;
         limit?: number;
         ativo?: string;
+        search?:string;
+        orderBy?:'codigo' | 'descricao' | 'id'
     }): Promise<ProductType[]> {
         const {
             codigo,
@@ -112,7 +114,9 @@ export class SelectProduct {
             descricao,
             id,
             limit = 20,
-            ativo
+            ativo,
+            search,
+            orderBy
         } = params;
 
         let sql = `SELECT *,
@@ -151,13 +155,20 @@ export class SelectProduct {
             values.push(id);
         }
 
+        if( search ){
+           conditions.push("descricao LIKE ? OR codigo LIKE ? OR id LIKE ? ");
+            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+        }
+
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
 
+        if(orderBy){
+            sql += ` ORDER BY ${orderBy} `;
+        }
         sql += ' LIMIT ?';
         values.push(Number(limit));
-
         const [result] = await conn.query(sql, values);
         return result as ProductType[];
     }
