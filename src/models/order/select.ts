@@ -90,7 +90,7 @@ export class SelectOrder {
         name?: string;
         search?:string;
         type?: number;
-        situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP',
+        situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP' | '*',
         situacao_separacao?:    'I' | 'P' | 'N',
         orderBy?: "id_externo" | "codigo" | "id_interno" | "id" | "nome" | "data_recadastro"
     }): Promise<OrderType[]> {
@@ -143,7 +143,7 @@ export class SelectOrder {
             conditions.push("pe.tipo = ?");
             values.push(Number(type));
         }
-        if(situacao){
+        if(situacao && situacao != '*'){
             conditions.push("pe.situacao = ?");
             values.push(String(situacao));
         }

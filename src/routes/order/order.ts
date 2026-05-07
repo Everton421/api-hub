@@ -204,7 +204,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 search: z.string().optional().describe("Consulta o pedido atravéz do id_externo, codigo, id_interno, id e pelo nome do cliente ."),
                 tipo:z.coerce.number().optional(),
                 limit: z.coerce.number().optional().default(20),
-                situacao: z.enum([ 'EA' , 'FI' , 'RE' , 'AI' , 'FP' ]).optional().describe(" EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente "),
+                situacao: z.enum([ 'EA' ,'*', 'FI' , 'RE' , 'AI' , 'FP' ]).optional().describe(" * = todos, EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente "),
                 situacao_separacao: z.enum([ 'I' , 'P' , 'N' ]).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
                 orderBy: z.enum(["id_externo", "codigo", "id_interno", "id", "nome" , "data_recadastro"]).default('data_recadastro').describe("Ordena os pedidos atravéz do id_externo, codigo, id_interno, id e pelo nome do cliente ."),
             }),
