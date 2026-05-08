@@ -115,6 +115,9 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 grupo: z.coerce.number().optional(),
                 ativo: z.string().optional(),
                 id: z.string().optional(),
+                num_fabricante: z.string().optional(),
+                num_original: z.string().optional(),
+                sku: z.string().optional(),
                 limit: z.coerce.number().optional(),
                 search: z.coerce.string().optional().describe("Pesquisa nos campos codigo, descricao e id do produto. "),
                 orderBy: z.enum(['codigo' , 'descricao', 'id']).default('codigo')

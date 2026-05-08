@@ -105,6 +105,9 @@ export class SelectProduct {
         limit?: number;
         ativo?: string;
         search?:string;
+        num_fabricante?:string,
+        num_original?:string,
+        sku?:string,
         orderBy?:'codigo' | 'descricao' | 'id'
     }): Promise<ProductType[]> {
         const {
@@ -116,7 +119,10 @@ export class SelectProduct {
             limit = 20,
             ativo,
             search,
-            orderBy
+            orderBy,
+            num_fabricante,
+            num_original,
+            sku
         } = params;
 
         let sql = `SELECT *,
@@ -154,6 +160,19 @@ export class SelectProduct {
             conditions.push("id = ?");
             values.push(id);
         }
+
+            if(num_fabricante){
+               conditions.push(" num_fabricante = ?");
+              values.push(num_fabricante);
+            } 
+            if(num_original){
+                 conditions.push(" num_original = ?");
+                 values.push(num_original);
+            } 
+            if(sku){
+                  conditions.push(" sku = ?");
+                 values.push(sku);
+            }
 
         if( search ){
            conditions.push("descricao LIKE ? OR codigo LIKE ? OR id LIKE ? ");

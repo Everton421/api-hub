@@ -111,9 +111,6 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 tipo: z.number(),
                 observacoes: z.string(),
                 observacoes2: z.string(),
-                just_ipi: z.string(),
-                just_icms: z.string(),
-                just_subst: z.string(),
                 produtos: z.array(productOrderSchema) ,
                 servicos: z.array(serviceOrderSchema) ,
                 parcelas: z.array(parcelOrderSchema) 
