@@ -1,14 +1,14 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z  from "zod";
-import { SelectUserApi } from "../../models/user-api/select.ts";
-import { SelectUsersMlIntegrations   } from "../../models/users-ml-integration/select-users-ml-integration.ts";
-import { DecodedMlStateToken, exchangeCodeForMlToken  } from "../../services/integration/mercadolivre-integration/ml-auth-service.ts";
+import { SelectUserApi } from "../../../../models/user-api/select.ts";
+import { SelectUsersMlIntegrations   } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
+import { DecodedMlStateToken, exchangeCodeForMlToken  } from "../services/ml-auth-service.ts";
 import jwt from 'jsonwebtoken';
-import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
-import { CreateTableMLAccounts } from "../../database/tables-structures/create-table-ml-accounts.ts";
-import { UpdateUsersMLIntegrations } from "../../models/users-ml-integration/update-users-ml-integration.ts";
-import { DateService } from "../../utils/dateService.ts";
-import { InsertUsersMlintegration } from "../../models/users-ml-integration/insert-users-ml-integration.ts";
+import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
+import { CreateTableMLAccounts } from "../../../../database/tables-structures/create-table-ml-accounts.ts";
+import { UpdateUsersMLIntegrations } from "../../../../models/users-ml-integration/update-users-ml-integration.ts";
+import { DateService } from "../../../../utils/dateService.ts";
+import { InsertUsersMlintegration } from "../../../../models/users-ml-integration/insert-users-ml-integration.ts";
 
 
 type state = {

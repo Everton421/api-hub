@@ -1,9 +1,9 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
-import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
-import { SelectMLAccountClient } from "../../models/ml-accounts/select-ml-accounts.ts";
-import { GetUserTest } from "../../services/ml-services/get-test-user.ts";
-import { SelectUsersMlIntegrations } from "../../models/users-ml-integration/select-users-ml-integration.ts";
+import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
+import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
+import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
+import { GetUserTest } from "../services/get-test-user.ts";
 
 export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
 

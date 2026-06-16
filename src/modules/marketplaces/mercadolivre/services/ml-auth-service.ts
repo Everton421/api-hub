@@ -1,10 +1,10 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import Jwt from "jsonwebtoken";
-import { InsertaMLAccountClient } from "../../../models/ml-accounts/insert-ml-accounts.ts";
-import { SelectMLAccountClient } from "../../../models/ml-accounts/select-ml-accounts.ts";
-import { UpdateMLAccountClient } from "../../../models/ml-accounts/update-ml-accounts.ts";
-import {type InsertUserMl } from "../../../types/ml-account/type-ml-account.ts";
+import { InsertaMLAccountClient } from "../../../../models/ml-accounts/insert-ml-accounts.ts";
+import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../../models/ml-accounts/update-ml-accounts.ts";
+import {type InsertUserMl } from "../../../../types/ml-account/type-ml-account.ts";
 
 
 type dataStateuser = {

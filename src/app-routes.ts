@@ -26,11 +26,11 @@ import { perfilRoute } from "./routes/perfil/perfil.ts";
  
 import   cors   from '@fastify/cors'
 import companyRoute from "./routes/company/company.ts";
-import { mlIntegrationRoute } from "./routes/ml-integration/ml-integration.ts";
-import { mlAnunciosRoute } from "./routes/ml/ml-anuncios.ts";
-import { mlToolsRoute } from "./routes/ml/ml-tools.ts";
-import { mlAccountsRoute } from "./routes/ml/ml-accounts.ts";
-import {    GetMlUserTestRoute } from "./routes/ml/ml-get-user-test.ts";
+import { mlIntegrationRoute } from "./modules/marketplaces/mercadolivre/routes/ml-integration.ts";
+import { mlAccountsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-accounts.ts";
+import {    GetMlUserTestRoute } from "./modules/marketplaces/mercadolivre/routes/ml-get-user-test.ts";
+import { mlAnunciosRoute } from "./modules/marketplaces/mercadolivre/routes/ml-anuncios.ts";
+import { mlToolsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-tools.ts";
 let certPathEnv;
 if(process.env.PATH_CERT_CERT) certPathEnv = String(process.env.PATH_CERT_CERT)
 

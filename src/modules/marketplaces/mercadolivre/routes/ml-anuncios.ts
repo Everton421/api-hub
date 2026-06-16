@@ -1,19 +1,18 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z, { string } from "zod";
-import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
-import { PostMlItemsService, type IPublishItem } from "../../services/ml-services/post-itens-ml.ts";
-import { SelectUsersMlIntegrations } from "../../models/users-ml-integration/select-users-ml-integration.ts";
-import { SelectAnuncios } from "../../models/anuncios/select.ts";
-import { SelectAtributosAnuncios } from "../../models/atributos-anuncios/select.ts";
-import { UpdateAnuncios } from "../../models/anuncios/update.ts";
-import { DeleteAnuncios } from "../../models/anuncios/delete.ts";
-import { DeleteAtributosAnuncios } from "../../models/atributos-anuncios/delete.ts";
-import { type typeAnuncios } from "../../types/anuncios/type-anuncio.ts";
-import { type typeAtributosAnuncios } from "../../types/atributos-anuncios/type-atributos-anuncios.ts";
-import { GetMlItemsService } from "../../services/ml-services/get-itens-ml-service.ts";
-import { CreateTableMLAccounts } from "../../database/tables-structures/create-table-ml-accounts.ts";
-import { InsertAnuncios } from "../../models/anuncios/insert.ts";
-import { InsertAtributosAnuncios } from "../../models/atributos-anuncios/insert.ts";
+import {type IPublishItem, PostMlItemsService } from "../services/post-itens-ml.ts";
+import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
+import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
+import { InsertAnuncios } from "../../../../models/anuncios/insert.ts";
+import { InsertAtributosAnuncios } from "../../../../models/atributos-anuncios/insert.ts";
+import { GetMlItemsService } from "../services/get-itens-ml-service.ts";
+import { SelectAnuncios } from "../../../../models/anuncios/select.ts";
+import { SelectAtributosAnuncios } from "../../../../models/atributos-anuncios/select.ts";
+import { UpdateAnuncios } from "../../../../models/anuncios/update.ts";
+import { DeleteAtributosAnuncios } from "../../../../models/atributos-anuncios/delete.ts";
+import { DeleteAnuncios } from "../../../../models/anuncios/delete.ts";
+import { type typeAtributosAnuncios } from "../../../../types/atributos-anuncios/type-atributos-anuncios.ts";
+import { type typeAnuncios } from "../../../../types/anuncios/type-anuncio.ts";
 type typeFinalAttributes = { id: string, value_name: string }
 
 export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {

@@ -1,5 +1,5 @@
 import axios, { AxiosError, type AxiosResponse } from "axios";
-import { getValidMlAccessToken } from "../integration/mercadolivre-integration/ml-auth-service.ts"; // Importe do arquivo que criamos antes
+import { getValidMlAccessToken } from "./ml-auth-service.ts";
 
 const ML_API_URL = 'https://api.mercadolibre.com';
 

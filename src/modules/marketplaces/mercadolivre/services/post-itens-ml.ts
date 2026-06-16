@@ -1,8 +1,8 @@
 import axios from "axios";
-import { InsertAnuncios } from "../../models/anuncios/insert.ts";
-import { InsertAtributosAnuncios } from "../../models/atributos-anuncios/insert.ts";
-import { delay } from "../delay-service/delay.ts";
-import { getValidMlAccessToken } from "../integration/mercadolivre-integration/ml-auth-service.ts";
+import { InsertAnuncios } from "../../../../models/anuncios/insert.ts";
+import { InsertAtributosAnuncios } from "../../../../models/atributos-anuncios/insert.ts";
+import { getValidMlAccessToken } from "./ml-auth-service.ts";
+import { delay } from "../../../../services/delay-service/delay.ts";
 
 export interface IPublishItem {
     title: string;
@@ -89,7 +89,7 @@ export class PostMlItemsService {
             
             const database = `\`${cnpj}\``;
 
-            delay(1);
+           await delay(1);
             const ean = data.ean || ''
 
 

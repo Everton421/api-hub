@@ -1,8 +1,8 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
-import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
-import { MlToolsService } from "../../services/ml-services/ml-tools-service.ts";
-import { GetMlItemsService } from "../../services/ml-services/get-itens-ml-service.ts";
+import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
+import { MlToolsService } from "../services/ml-tools-service.ts";
+import { GetMlItemsService } from "../services/get-itens-ml-service.ts";
  
 export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
 

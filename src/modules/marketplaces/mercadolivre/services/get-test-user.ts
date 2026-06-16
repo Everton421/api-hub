@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getValidMlAccessToken } from "../integration/mercadolivre-integration/ml-auth-service.ts";
+import { getValidMlAccessToken } from "./ml-auth-service.ts";
 
 export class GetUserTest{
     /**
