@@ -12,7 +12,7 @@ export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
             tags: ['ml/accounts'],
             headers: z.object({
                 token: z.string(),
-                ml_user_id: z.coerce.number(),
+                ml_user_id: z.string(),
             }),
             /*response: {
                 200: z.array(z.object({
@@ -46,9 +46,9 @@ export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
         const ml_user_id = request.headers.ml_user_id;
 
             const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(Number(codigo), Number(ml_user_id), empresa);
-    //    if (!integracoes || integracoes.length === 0) {
-    //        return reply.status(400).send({ msg: "Usuário não possui conta ML vinculada." });
-    //    }
+         if (!integracoes || integracoes.length === 0) {
+             return reply.status(400).send({ msg: "Usuário não possui conta ML vinculada." });
+         }
 
         try {
 
