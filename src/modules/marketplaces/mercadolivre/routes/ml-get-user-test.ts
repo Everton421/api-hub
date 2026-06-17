@@ -12,7 +12,7 @@ export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
             tags: ['ml/accounts'],
             headers: z.object({
                 token: z.string(),
-                mlUserId: z.string(),
+                ml_user_id: z.string(),
             }),
             /*response: {
                 200: z.array(z.object({
@@ -43,7 +43,7 @@ export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const codigo = decoded.payload.codigo;
-        const ml_user_id = request.headers.mlUserId;
+        const ml_user_id = request.headers.ml_user_id;
 
             const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(Number(codigo), Number(ml_user_id), empresa);
          if (!integracoes || integracoes.length === 0) {
