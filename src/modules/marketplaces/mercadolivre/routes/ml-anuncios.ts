@@ -234,7 +234,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             description:"Consulta os anuncios do usuario no MercadoLivre.",
             headers: z.object({
                 token: z.string(),
-                ml_user_id: z.string(),
+                ml_user_id: z.coerce.number(),
             }),
             /*response: {
                 200: z.object({
