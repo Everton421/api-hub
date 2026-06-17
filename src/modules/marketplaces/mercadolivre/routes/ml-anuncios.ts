@@ -273,7 +273,7 @@ const decoded = DecodedToken(String(request.headers.token));
         const { ml_user_id } = request.headers;
 
         const getMlItemsService = new GetMlItemsService();
-
+        console.log(request.headers)
           const result =  await getMlItemsService.getItemsFromSeller(empresa, systemUserCode, Number(ml_user_id) );
           //if(result.items.length > 0 ){
             return reply.status(200).send(result);
