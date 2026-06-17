@@ -284,9 +284,7 @@ server.get('/empresa', {
                                                     const token = jwt.sign(
                                                       payload, secret
                                                     )
-                return reply.status(200).send( { success: true, message: "Empresa registrada com sucesso!"  }
-                        
-                                    );
+                              return reply.status(200).send( { success: true, message: "Empresa registrada com sucesso!" } );
                                     }
                             }
 

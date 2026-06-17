@@ -26,6 +26,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 title: z.coerce.string(),
+                sku:z.coerce.string(),
                 price: z.coerce.number(),
                 category_id: z.string(),
                 available_quantity: z.number(),
@@ -46,7 +47,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             })
         }
     }, async (request, reply) => {
-        const mlService = new PostMlItemsService();
+        const postMlItemsService = new PostMlItemsService();
         const selectUsersMl = new SelectUsersMlIntegrations();
 
         const { title, price, category_id, ml_user_id, codigo_produto } = request.body;
@@ -69,6 +70,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
         const itemData: IPublishItem = {
             title: request.body.title,
+            sku: request.body.sku,
             price: Number(request.body.price),
             quantity: Number(request.body.available_quantity),
             category_id: request.body.category_id,
@@ -83,7 +85,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         };
 
         try {
-            const result = await mlService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
+            const result = await postMlItemsService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
             return reply.status(201).send(result);
         } catch (e) {
             return reply.status(500).send({ success: false, message: `${e}` });
@@ -98,6 +100,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 title: z.coerce.string(),
+                sku: z.coerce.string(),
                 price: z.coerce.number(),
                 category_id: z.string(),
                 available_quantity: z.number(),
@@ -121,7 +124,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const mlService = new PostMlItemsService();
         const selectUsersMl = new SelectUsersMlIntegrations();
 
-        const { title, price, category_id, ml_user_id, codigo_produto, available_quantity , ean, thumbnail } = request.body;
+        const { title, price, category_id, ml_user_id, codigo_produto, available_quantity , sku ,ean, thumbnail } = request.body;
         const insertAnuncios = new InsertAnuncios();
         const insertAtributosAnuncios = new InsertAtributosAnuncios();
 
@@ -146,6 +149,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
                 const itemData: IPublishItem = {
                     title: request.body.title,
+                    sku:  sku,
                     price: Number(request.body.price),
                     quantity: Number(request.body.available_quantity),
                     category_id: request.body.category_id,
@@ -160,7 +164,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
                 };
 
-        let finalAttributes: typeFinalAttributes[] = [];
+             let finalAttributes: typeFinalAttributes[] = [];
 
                     if (itemData.attributes && itemData.attributes.length > 0) {
                         // Se vieram atributos dinâmicos, usamos eles!
@@ -181,6 +185,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
                     {
                         ativo: 'S',
                         codigo_produto: codigo_produto,
+                        sku: sku,                    
                         descricao:   title,
                         estoque:  available_quantity,
                         id_externo: '1',

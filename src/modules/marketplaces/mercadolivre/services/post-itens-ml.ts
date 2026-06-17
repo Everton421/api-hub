@@ -8,6 +8,7 @@ export interface IPublishItem {
     title: string;
     price: number;
     quantity: number;
+    sku:string
     category_id: string;
     listing_type_id: string;
     condition: string;
@@ -62,6 +63,7 @@ export class PostMlItemsService {
                 title: data.title,
                 category_id: data.category_id,
                 price: data.price,
+                sku: data.sku,
                 currency_id: "BRL",
                 available_quantity: data.quantity,
                 buying_mode: "buy_it_now",
@@ -106,6 +108,7 @@ export class PostMlItemsService {
                     {
                         ativo: 'S',
                         codigo_produto: codigo_produto,
+                        sku: data.sku,
                         descricao: data.title,
                         estoque: data.quantity,
                         id_externo: '1',

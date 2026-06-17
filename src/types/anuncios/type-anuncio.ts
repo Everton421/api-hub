@@ -3,6 +3,7 @@
 export type typeAnuncios ={
 id:number
 codigo_produto:number
+sku:string,
 integration_id:number
 plataforma:string
 estoque:number
