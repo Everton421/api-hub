@@ -48,7 +48,7 @@ export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
             tags: ['ml/tools'],
             headers: z.object({
                 token: z.string(),
-              ml_user_id: z.coerce.number(),
+              mlUserId: z.coerce.number(),
             }),
         }
     }, async (request, reply) => {
@@ -60,13 +60,13 @@ export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
         const  { codigo } = decoded.payload
         const dbName = `\`${empresa}\``;
-        const { ml_user_id } = request.headers;
+        const {   mluserid } = request.headers;
 
       
         const getMlItemsService = new GetMlItemsService();
         
         
-        const result = await getMlItemsService.getStatusSeller(empresa, codigo,  ml_user_id); 
+        const result = await getMlItemsService.getStatusSeller(empresa, codigo,  mluserid); 
         return result.data;
     });
 };

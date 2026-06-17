@@ -234,7 +234,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             description:"Consulta os anuncios do usuario no MercadoLivre.",
             headers: z.object({
                 token: z.string(),
-                ml_user_id: z.coerce.number(),
+                mlUserId: z.coerce.number(),
             }),
             /*response: {
                 200: z.object({
@@ -270,11 +270,11 @@ const decoded = DecodedToken(String(request.headers.token));
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
         const systemUserCode  = decoded.payload.codigo;
         const dbName = `\`${empresa}\``;
-        const { ml_user_id } = request.headers;
+        const { mlUserId } = request.headers;
 
         const getMlItemsService = new GetMlItemsService();
         console.log(request.headers)
-          const result =  await getMlItemsService.getItemsFromSeller(empresa, systemUserCode, Number(ml_user_id) );
+          const result =  await getMlItemsService.getItemsFromSeller(empresa, systemUserCode, Number(mlUserId) );
           //if(result.items.length > 0 ){
             return reply.status(200).send(result);
           //}
