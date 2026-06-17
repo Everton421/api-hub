@@ -1,15 +1,33 @@
 import axios from "axios";
+import crypto from "node:crypto";
 import dayjs from "dayjs";
 import Jwt from "jsonwebtoken";
 import { InsertaMLAccountClient } from "../../../../models/ml-accounts/insert-ml-accounts.ts";
 import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
 import { UpdateMLAccountClient } from "../../../../models/ml-accounts/update-ml-accounts.ts";
-import {type InsertUserMl } from "../../../../types/ml-account/type-ml-account.ts";
-
+import { type InsertUserMl } from "../../../../types/ml-account/type-ml-account.ts";
 
 type dataStateuser = {
     cnpj: string
     codigo: number
+    code_verifier?: string
+}
+
+function base64URLEncode(buffer: Buffer): string {
+    return buffer.toString("base64")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+}
+
+export function generateCodeVerifier(): string {
+    const bytes = crypto.randomBytes(32);
+    return base64URLEncode(bytes);
+}
+
+export function generateCodeChallenge(verifier: string): string {
+    const hash = crypto.createHash("sha256").update(verifier).digest();
+    return base64URLEncode(hash);
 }
 interface responseDecodToken {
     success: boolean,
@@ -34,12 +52,23 @@ export const exchangeCodeForMlToken = async (code: string, state: string) => {
 
     if (!CLIENT_SECRET || !CLIENT_ID || !REDIRECT_URI) throw Error("credenciais ausentes");
 
+    const decodedState = DecodedMlStateToken(String(state));
+    if (!decodedState.success || !decodedState.payload) {
+        console.log(`[X] não foi possivel decodificar o state.`, decodedState.message);
+        return;
+    }
+
+    const dataUser = decodedState.payload;
+
     const params = new URLSearchParams();
     params.append('grant_type', 'authorization_code');
     params.append('client_id', CLIENT_ID);
     params.append('client_secret', CLIENT_SECRET);
     params.append('code', code);
     params.append('redirect_uri', REDIRECT_URI);
+    if (dataUser.code_verifier) {
+        params.append('code_verifier', dataUser.code_verifier);
+    }
 
     try {
         const response = await axios.post(`${ML_API_URL}/oauth/token`, params, {
@@ -48,18 +77,9 @@ export const exchangeCodeForMlToken = async (code: string, state: string) => {
 
         const { access_token, refresh_token, expires_in, user_id } = response.data;
         console.log({ access_token, refresh_token, expires_in, user_id })
-        // 1. CALCULO DA DATA (CORREÇÃO): Data Atual + Segundos de vida
-        // Formata para o MySQL: 'YYYY-MM-DD HH:mm:ss'
         const expirationDate = dayjs().add(expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
         if (response.status === 200 && access_token) {
-            const decodedState = DecodedMlStateToken(String(state));
-            if (!decodedState.success || !decodedState.payload) {
-                console.log(`[X] não foi possivel decodificar o state.`, decodedState.message);
-                return;
-            }
-
-            const dataUser = decodedState.payload;
 
             let dbName = `\`${dataUser.cnpj}\``;
 
@@ -81,16 +101,10 @@ export const exchangeCodeForMlToken = async (code: string, state: string) => {
             } else {
                const resultInsert=  await insertaMLAccountClient.cadastrar(dbName, userMlAccount);
                 resultInsert.affectedRows > 0 && console.log("[V] dados de acesso registrados com sucesso.")
-             
+              
             }
 
 
-            // let validuserMlIntegration = await selectUsersMlIntegration.fincByIdMLandCodeSystem(dataUser.codigo, user_id);
-            // if (validuserMlIntegration.length > 0) {
-            //    await updateUsersMlIntegration.update({ cnpj: dataUser.cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: dataUser.codigo, ml_user_id: user_id });
-            //} else {
-            //   await insertUsersMlIntegration.cadastrar({ cnpj: dataUser.cnpj, created_at: dateService.obterDataHoraAtual(), system_user_code: dataUser.codigo, ml_user_id: user_id });
-            //}
         } 
 
         const result ={ access_token, refresh_token, expirationDate, ml_user_id: user_id } 
@@ -98,7 +112,7 @@ export const exchangeCodeForMlToken = async (code: string, state: string) => {
 
     } catch (error: any) {
         console.error('Erro ao trocar token:', error.response?.data || error.message);
-        throw error; // É importante lançar o erro para o controller saber
+        throw error;
     }
 };
 

@@ -2,7 +2,7 @@ import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z  from "zod";
 import { SelectUserApi } from "../../../../models/user-api/select.ts";
 import { SelectUsersMlIntegrations   } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
-import { DecodedMlStateToken, exchangeCodeForMlToken  } from "../services/ml-auth-service.ts";
+import { DecodedMlStateToken, exchangeCodeForMlToken, generateCodeVerifier, generateCodeChallenge  } from "../services/ml-auth-service.ts";
 import jwt from 'jsonwebtoken';
 import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
 import { CreateTableMLAccounts } from "../../../../database/tables-structures/create-table-ml-accounts.ts";
@@ -13,7 +13,8 @@ import { InsertUsersMlintegration } from "../../../../models/users-ml-integratio
 
 type state = {
     codigo: number,
-    cnpj: string
+    cnpj: string,
+    code_verifier?: string
 }
 
 export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
@@ -127,21 +128,25 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
     }
 
 
+           const codeVerifier = generateCodeVerifier();
+           const codeChallenge = generateCodeChallenge(codeVerifier);
+
            const payload = {
                 cnpj: empresa,
-                codigo: queryVendedor
+                codigo: queryVendedor,
+                code_verifier: codeVerifier
                 }
 
     const token = jwt.sign(payload, secret)
     
          if(!process.env.APP_ID_ML) return reply.status(500).send({success: false, message: ` APP_ID_ML não foi configurada.`})
-        const client_id = process.env.APP_ID_ML  //4127824475666105
+        const client_id = process.env.APP_ID_ML
 
          if(!process.env.REDIRECT_URI_ML) return reply.status(500).send({success: false, message: ` REDIRECT_URI_ML não foi configurada.`})
-        const redirect_uri = process.env.REDIRECT_URI_ML //https://3acc823e2f47.ngrok-free.app/v1/ml/integrations/callback
+        const redirect_uri = process.env.REDIRECT_URI_ML
         
         
-        const base_uri = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=${token}`
+        const base_uri = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=${token}&code_challenge=${codeChallenge}&code_challenge_method=S256`
     
         return reply.status(200).send({ uri: base_uri })
 
