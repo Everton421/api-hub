@@ -105,12 +105,15 @@ export class SelectAnuncios {
 
         if (descricao) {
             conditions.push("descricao LIKE ?");
-            params.push(`%${descricao}%`);
+              const terms = descricao.trim().split(/\s+/).filter(t => t.length > 0);
+            
+            params.push(`%${terms}%`);
         }
 
         if (titulo) {
             conditions.push("titulo LIKE ?");
-            params.push(`%${titulo}%`);
+              const terms = titulo.trim().split(/\s+/).filter(t => t.length > 0);
+            params.push(`%${terms}%`);
         }
 
         if (sku_externo) {

@@ -4,7 +4,7 @@ export type OrderType = {
     id_externo: string;
     id_interno: string;
     vendedor: number;
-    situacao:  'EA' | 'FI' | 'RE' | 'FP' ;
+    situacao:  'EA' | 'FI' | 'RE' | 'FP' | 'AI' ;
     situacao_separacao: 'N' | 'P' | 'I'  ;
     contato: string;
     descontos: string;

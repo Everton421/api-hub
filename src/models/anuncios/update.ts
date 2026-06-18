@@ -36,6 +36,10 @@ export class UpdateAnuncios {
             fields.push("preco = ?");
             values.push(anuncio.preco);
         }
+        if (anuncio.sku !== undefined) {
+            fields.push("sku = ?");
+            values.push(anuncio.sku);
+        }
         if (anuncio.unidade_medida !== undefined) {
             fields.push("unidade_medida = ?");
             values.push(anuncio.unidade_medida);

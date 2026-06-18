@@ -57,6 +57,15 @@ CREATE TABLE IF NOT EXISTS ??.empresas  (
                 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
+               `,
+               ` CREATE TABLE  IF NOT EXISTS ??.marketplaces  (
+                     id  int(11) NOT NULL AUTO_INCREMENT,
+                     sigla  varchar(10) DEFAULT NULL,
+                     plataforma  varchar(255) DEFAULT NULL,
+                     url_logo  varchar(255) DEFAULT NULL,
+                    PRIMARY KEY ( Id )
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+               
                `
 
         ]

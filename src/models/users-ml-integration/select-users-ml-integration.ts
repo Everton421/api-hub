@@ -18,6 +18,12 @@ export class SelectUsersMlIntegrations {
            return result as IUsersMlIntegrations[]
     }
 
+    async findByMlUserId(ml_user_id: number): Promise<IUsersMlIntegrations[]> {
+        const sql = `SELECT * FROM ${db_api}.users_ml_integrations WHERE ml_user_id = ?`;
+        const [result] = await conn.query(sql, [ml_user_id]);
+        return result as IUsersMlIntegrations[];
+    }
+
     async findBySystemUserCodeAndCnpj(user_id: number, ml_user_id: number, cnpj: string): Promise<IUsersMlIntegrations[]> {
             let sql = ` SELECT *
              FROM ${db_api}.users_ml_integrations 

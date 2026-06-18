@@ -31,6 +31,9 @@ import { mlAccountsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-a
 import {    GetMlUserTestRoute } from "./modules/marketplaces/mercadolivre/routes/ml-get-user-test.ts";
 import { mlAnunciosRoute } from "./modules/marketplaces/mercadolivre/routes/ml-anuncios.ts";
 import { mlToolsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-tools.ts";
+import { marketplacesRoute } from "./routes/marketplaces/marketplace.ts";
+import { mlAppAnunciosRoute } from "./modules/marketplaces/mercadolivre/routes/ml-app-anuncios.ts";
+import { mlNotificationsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-notifications.ts";
 let certPathEnv;
 if(process.env.PATH_CERT_CERT) certPathEnv = String(process.env.PATH_CERT_CERT)
 
@@ -117,8 +120,13 @@ server.register(loginRoute);
 // ml routes 
 server.register(mlIntegrationRoute);
 server.register(mlAnunciosRoute);
+server.register(mlAppAnunciosRoute);
+
 server.register(mlToolsRoute);
 server.register(mlAccountsRoute);
+server.register(marketplacesRoute);
+
 server.register(GetMlUserTestRoute);
+server.register(mlNotificationsRoute);
  
 export { server };
