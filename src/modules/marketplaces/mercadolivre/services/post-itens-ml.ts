@@ -8,7 +8,7 @@ export interface IPublishItem {
     title: string;
     price: number;
     quantity: number;
-    sku:string
+    sku?:string
     category_id: string;
     listing_type_id: string;
     condition: string;
@@ -59,11 +59,14 @@ export class PostMlItemsService {
                 }
             }
 
-            const mlPayload = {
+            if (data.sku) {
+                    finalAttributes.push({ id: "SELLER_SKU", value_name: data.sku });
+                }
+
+            let mlPayload  = {
                 title: data.title,
                 category_id: data.category_id,
                 price: data.price,
-                sku: data.sku,
                 currency_id: "BRL",
                 available_quantity: data.quantity,
                 buying_mode: "buy_it_now",
@@ -86,7 +89,7 @@ export class PostMlItemsService {
                      store_pick_up : false
                 }
             };
-
+          
             console.log(mlPayload)
             
             const database = `\`${cnpj}\``;
@@ -108,19 +111,20 @@ export class PostMlItemsService {
                     {
                         ativo: 'S',
                         codigo_produto: codigo_produto,
-                        sku: data.sku,
+                        sku: data.sku || '' ,
                         descricao: data.title,
                         estoque: data.quantity,
-                        id_externo: '1',
+                        id_externo: null,
                         integration_id: integrationId,
-                        link: '',
+                        link: response.data.permalink || '',
                         num_fabricante: ean,
                         titulo: data.title,
                         preco: data.price,
                         plataforma: 'ML',
                         sku_externo: null,
                         unidade_medida: '',
-                        thumbnail: data.thumbnail || ''
+                        thumbnail: data.thumbnail || '',
+                        id_plataforma: response.data.id
                     }
                 )
                 if (resultInsert.sucess && resultInsert.insertId) {
@@ -147,6 +151,26 @@ export class PostMlItemsService {
                         }
                     }
                 }
+
+
+                if (data.description) {
+                    
+                try {
+                    await axios.put(
+                        `${ML_API_URL}/items/${response.data.id}/description`,
+                        { plain_text: data.description },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                                "Content-Type": "application/json"
+                            }
+                        }
+                    );
+                } catch (e) {
+                    console.error("Erro ao atualizar descrição:", e);
+                }
+            }
+
             }
 
             return {

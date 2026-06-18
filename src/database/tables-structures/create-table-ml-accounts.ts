@@ -38,6 +38,7 @@ export class CreateTableMLAccounts {
                                         sku_externo  varchar(255) DEFAULT NULL,
                                         id_externo  varchar(255) DEFAULT NULL,
                                         link  varchar(255) DEFAULT NULL,
+                                        id_plataforma varchar(255) DEFAULT NULL,
                                         data_cadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
                                         data_recadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
                                         PRIMARY KEY ( id )

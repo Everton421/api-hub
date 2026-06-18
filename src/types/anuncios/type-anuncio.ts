@@ -19,6 +19,7 @@ link:string | null
 thumbnail:string | null
 data_cadastro:string
 data_recadastro:string
+id_plataforma:string
 }
 
 

@@ -25,7 +25,8 @@ export class InsertAnuncios {
                     sku_externo = ?,
                     id_externo = ?,
                     link = ?,
-                    thumbnail = ?
+                    thumbnail = ?,
+                    id_plataforma = ? 
         `;
 
         const values = [
@@ -42,7 +43,8 @@ export class InsertAnuncios {
             anuncio.sku_externo,
             anuncio.id_externo,
             anuncio.link,
-            anuncio.thumbnail
+            anuncio.thumbnail,
+            anuncio.id_plataforma
         ];
 
         try {

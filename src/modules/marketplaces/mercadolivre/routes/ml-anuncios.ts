@@ -68,9 +68,8 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const mlUserId = integracoes[0].ml_user_id;
         const integrationId = integracoes[0].id;
 
-        const itemData: IPublishItem = {
+        let itemData: IPublishItem = {
             title: request.body.title,
-            sku: request.body.sku,
             price: Number(request.body.price),
             quantity: Number(request.body.available_quantity),
             category_id: request.body.category_id,
@@ -83,6 +82,9 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             attributes: request.body.attributes || [],
             thumbnail: request.body.thumbnail
         };
+        if(request.body.sku){
+            itemData.sku = request.body.sku;
+        }
 
         try {
             const result = await postMlItemsService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
@@ -113,18 +115,20 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
                 brand: z.string().optional(),
                 model: z.string().optional(),
                 ean: z.string().optional(),
+                id: z.string(),
                 attributes: z.array(z.object({
                     id: z.string(),
                     value_name: z.string()
                 })).optional(),
-                thumbnail: z.string().optional()
+                thumbnail: z.string().optional(),
+                permalink: z.string().optional()
             })
         }
     }, async (request, reply) => {
         const mlService = new PostMlItemsService();
         const selectUsersMl = new SelectUsersMlIntegrations();
 
-        const { title, price, category_id, ml_user_id, codigo_produto, available_quantity , sku ,ean, thumbnail } = request.body;
+        const { title, price, category_id, ml_user_id, codigo_produto, id, available_quantity , sku ,ean, thumbnail } = request.body;
         const insertAnuncios = new InsertAnuncios();
         const insertAtributosAnuncios = new InsertAtributosAnuncios();
 
@@ -190,14 +194,15 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
                         estoque:  available_quantity,
                         id_externo: '1',
                         integration_id: integrationId,
-                        link: '',
+                        link: request.body.permalink || '',
                         num_fabricante: ean || '',
                         titulo:  title,
                         preco:  price,
                         plataforma: 'ML',
                         sku_externo: null,
                         unidade_medida: '',
-                        thumbnail:  thumbnail || ''
+                        thumbnail:  thumbnail || '',
+                        id_plataforma: id
                     }
                 )
                 if (resultInsert.sucess && resultInsert.insertId) {

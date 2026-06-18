@@ -14,6 +14,7 @@ export type queryAnuncio = {
     sku_externo?: string
     id_externo?: string
     limit?: number
+    id_plataforma?:string
 }
 
 export class SelectAnuncios {
@@ -63,7 +64,8 @@ export class SelectAnuncios {
             titulo,
             sku_externo,
             num_fabricante,
-            limit
+            limit,
+            id_plataforma
         } = query;
 
         let baseSql = `
@@ -121,9 +123,17 @@ export class SelectAnuncios {
             params.push(`%${num_fabricante}%`);
         }
 
+        
+        if (id_plataforma) {
+            conditions.push(" id_plataforma = ?");
+            params.push(id_plataforma);
+        }
+        
+
         if (conditions.length > 0) {
             baseSql += " WHERE " + conditions.join(" AND ");
         }
+
 
         const limitValue = (limit && Number(limit) > 0) ? Number(limit) : 20;
         baseSql += " LIMIT ?";

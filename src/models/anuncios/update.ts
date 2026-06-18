@@ -73,6 +73,12 @@ export class UpdateAnuncios {
             values.push(anuncio.thumbnail);
         }
 
+         if (anuncio.id_plataforma !== undefined) {
+            fields.push("id_plataforma = ?");
+            values.push(anuncio.id_plataforma);
+        }
+        
+
         if (fields.length === 0) {
             throw new Error("Nenhum campo para atualizar");
         }
