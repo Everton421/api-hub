@@ -88,10 +88,14 @@ export class SelectOrder {
         cnpj?: string;
         limit?: number;
         name?: string;
-        search?:string;
+        search?: string;
         type?: number;
+        codigo?: number;
+        id_interno?: string;
+        id_externo?: string;
+        id?: string;
         situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP' | '*',
-        situacao_separacao?:    'I' | 'P' | 'N',
+        situacao_separacao?: 'I' | 'P' | 'N',
         orderBy?: "id_externo" | "codigo" | "id_interno" | "id" | "nome" | "data_recadastro"
     }): Promise<OrderType[]> {
         const {
@@ -105,6 +109,7 @@ export class SelectOrder {
             situacao,
             situacao_separacao,
             type,
+            codigo, id, id_interno, id_externo,
             orderBy
         } = params;
 
@@ -135,7 +140,7 @@ export class SelectOrder {
             values.push(Number(cnpj));
         }
 
-        if(situacao_separacao){
+        if (situacao_separacao) {
             conditions.push("pe.situacao_separacao = ?");
             values.push(String(situacao_separacao));
         }
@@ -143,14 +148,34 @@ export class SelectOrder {
             conditions.push("pe.tipo = ?");
             values.push(Number(type));
         }
-        if(situacao && situacao != '*'){
+        if (situacao && situacao != '*') {
             conditions.push("pe.situacao = ?");
             values.push(String(situacao));
         }
-         
+
         if (search) {
             conditions.push(" c.nome LIKE ? OR pe.id_externo = ? OR  pe.codigo = ? OR pe.id_interno = ? OR pe.id = ? ");
-            values.push(`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`,`%${search}%`, );
+            values.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`,);
+        }
+
+        if (codigo && codigo != 0) {
+            conditions.push(" pe.codigo = ? ");
+            values.push(codigo);
+        }
+
+
+        if (id_interno && id_interno != '0') {
+            conditions.push(" pe.id_interno = ? ");
+            values.push(id_interno);
+        }
+
+        if (id && id != '0') {
+            conditions.push(" pe.id = ? ");
+            values.push(id);
+        }
+        if (id_externo && id_externo != '0') {
+            conditions.push(" pe.id_externo = ? ");
+            values.push(id_externo);
         }
 
         let finalSql = sql;
@@ -158,15 +183,18 @@ export class SelectOrder {
             finalSql += ' WHERE ' + conditions.join(' AND ');
         }
 
-        if(orderBy === "codigo" ) finalSql += ` ORDER BY pe.codigo `;
-        if(orderBy === "data_recadastro" ) finalSql += ` ORDER BY pe.data_recadastro `;
-        if(orderBy === "id" ) finalSql += ` ORDER BY pe.id `;
-        if(orderBy === "id_externo" ) finalSql += ` ORDER BY pe.id_externo `;
-        if(orderBy === "id_interno" ) finalSql += ` ORDER BY pe.id_interno `;
-        if(limit){
-        finalSql += ' LIMIT ?';
-        values.push(Number(limit));
+        if (orderBy === "codigo") finalSql += ` ORDER BY pe.codigo `;
+        if (orderBy === "data_recadastro") finalSql += ` ORDER BY pe.data_recadastro `;
+        if (orderBy === "id") finalSql += ` ORDER BY pe.id `;
+        if (orderBy === "id_externo") finalSql += ` ORDER BY pe.id_externo `;
+        if (orderBy === "id_interno") finalSql += ` ORDER BY pe.id_interno `;
+        if (limit) {
+            finalSql += ' LIMIT ?';
+            values.push(Number(limit));
         }
+
+
+
         const [result] = await conn.query(finalSql, values);
         return result as OrderType[];
     }
@@ -200,14 +228,14 @@ export class SelectOrder {
     }
 
     async findStats(dbName: string, seller: number): Promise<{
-            total_faturado: string;
-            total_pedidos: string;
-            media_pedidos: string;
-            quantidade_pedidos: number;
-            novos_clientes: number;
-            total_clientes: number;
-        }[]> {
-            const sql = `SELECT  
+        total_faturado: string;
+        total_pedidos: string;
+        media_pedidos: string;
+        quantidade_pedidos: number;
+        novos_clientes: number;
+        total_clientes: number;
+    }[]> {
+        const sql = `SELECT  
                 (SELECT COALESCE( SUM(pf.total_geral),0) AS total_faturado 
                 FROM ${dbName}.pedidos pf 
                 WHERE pf.situacao = 'FI' AND pf.vendedor = ?) AS total_faturado,
@@ -231,15 +259,15 @@ export class SelectOrder {
                 AND (vendedor = ? OR vendedor = 0)) AS total_clientes
             FROM DUAL`;
 
-            const [result] = await conn.query(sql, [seller, seller, seller, seller, seller, seller]);
-            return result as {
-                total_faturado: string;
-                total_pedidos: string;
-                media_pedidos: string;
-                quantidade_pedidos: number;
-                novos_clientes: number;
-                total_clientes: number;
-            }[];
+        const [result] = await conn.query(sql, [seller, seller, seller, seller, seller, seller]);
+        return result as {
+            total_faturado: string;
+            total_pedidos: string;
+            media_pedidos: string;
+            quantidade_pedidos: number;
+            novos_clientes: number;
+            total_clientes: number;
+        }[];
     }
 
     getCurrentDateWithoutTime(): string {

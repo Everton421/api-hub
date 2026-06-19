@@ -197,6 +197,10 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 data_inicial: z.string().optional(),
                 data_final: z.string().optional(), 
+                id_interno:z.string().optional(),
+                codigo:z.number().optional(),
+                id: z.string().optional(),
+                id_externo:z.string().optional(),
                 vendedor: z.coerce.number().optional(),
                 search: z.string().optional().describe("Consulta o pedido atravéz do id_externo, codigo, id_interno, id e pelo nome do cliente ."),
                 tipo:z.coerce.number().optional(),
@@ -232,7 +236,8 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         const dbName = `\`${empresa}\``;
         const {  data_final, data_inicial , search , tipo, vendedor, limit, situacao, situacao_separacao, orderBy} = request.query;
 
-       
+        const {id_externo, id_interno, codigo  , id } = request.query;
+
 
         if (data_final && !dateService.isValidDate(data_final)) {
             return reply.status(400).send({
@@ -256,11 +261,15 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                         endDate:data_final,
                         search: search,
                         type:tipo,
-                        limit: limit,
+                          limit,
                         seller:vendedor ,
-                         situacao:situacao,
-                         situacao_separacao: situacao_separacao,
-                         orderBy:orderBy
+                          situacao,
+                          situacao_separacao,
+                          orderBy,
+                        id_externo,
+                        codigo,
+                        id,
+                        id_interno
                         });
 
             if (dados_orcamentos.length === 0) {
