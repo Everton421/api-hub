@@ -8,6 +8,7 @@ export class UpdateOrder {
     async updateOrderTable(dbName: string, data: OrderReceivedType, orderCode: number): Promise<{ affectedRows: number }> {
         const sql = `UPDATE ${dbName}.pedidos SET 
             cliente = ?,
+            fornecedor = ?,
             total_geral = ?,
             total_produtos = ?,
             total_servicos = ?,
@@ -27,9 +28,14 @@ export class UpdateOrder {
             id_interno = ?,
             id_externo = ?
         WHERE codigo = ?`;
+        
+        const cliente = data.cliente && data.cliente.codigo ?  data.cliente.codigo : 0;
+        const fornecedor = data.fornecedor && data.fornecedor.codigo ? data.fornecedor.codigo : 0;
+
 
         const values = [
-            data.cliente?.codigo,
+            cliente,
+            fornecedor,
             data.total_geral,
             data.total_produtos,
             data.total_servicos,
