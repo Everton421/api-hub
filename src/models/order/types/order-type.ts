@@ -24,6 +24,8 @@ export type OrderType = {
     enviado: 'S'| 'N';
     tipo: number;
     observacoes: string;
+    operacao: 'V' | 'C' // venda ou compra
+    fornecedor:number
 };
 
 export type OrderReceivedType = {
@@ -45,6 +47,12 @@ export type OrderReceivedType = {
     total_produtos?: string;
     total_servicos?: string;
     totalSemDesconto?: string;
+    operacao: 'V' | 'C' // venda ou compra
+    fornecedor?: {
+         codigo: number;
+         nome?: string;
+    }
+
     cliente?: {
         codigo: number;
         nome?: string;

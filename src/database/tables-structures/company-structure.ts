@@ -64,6 +64,24 @@ export class CompanyStructure {
             estado  char(2) DEFAULT NULL,
             PRIMARY KEY ( codigo )
             );`,
+      `CREATE TABLE IF NOT EXISTS ??.fornecedores (
+            codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
+            id  varchar(255) NOT NULL DEFAULT '0',
+            celular  varchar(255) DEFAULT NULL,
+            nome  varchar(255) NOT NULL DEFAULT '',
+            cep  varchar(255) NOT NULL DEFAULT '00000-000',
+            endereco  varchar(255) DEFAULT NULL,
+            ie  varchar(255) DEFAULT '',
+            numero  varchar(255) DEFAULT '',
+            cnpj  varchar(255) DEFAULT '',
+            ativo  char(1) NOT NULL DEFAULT 'S',
+            cidade  varchar(255) DEFAULT NULL,
+            data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+            data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' ,
+            bairro  varchar(255) DEFAULT NULL,
+            estado  char(2) DEFAULT NULL,
+            PRIMARY KEY ( codigo )
+            );`,
       `CREATE TABLE IF NOT EXISTS ??.forma_pagamento (
                 codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
                 id varchar(255) NOT NULL DEFAULT '0',
@@ -102,6 +120,8 @@ export class CompanyStructure {
                 tipo_os  int(11) DEFAULT 0,
                 enviado  enum('N','S') NOT NULL DEFAULT 'S',
                 tipo  int(11) NOT NULL DEFAULT 1, 
+                fornecedor  int(11) DEFAULT 0,
+                operacao  enum('V','C') DEFAULT 'V' COMMENT 'V =VENDA; C = COMPRA',
                 PRIMARY KEY (codigo),
                 KEY id (id) USING BTREE
             );`,
@@ -389,6 +409,10 @@ export class CompanyStructure {
       { id: 'clientes.criar', descricao: 'Criar clientes' },
       { id: 'clientes.editar', descricao: 'Editar clientes' },
       { id: 'clientes.deletar', descricao: 'Excluir clientes' },
+      { id: 'fornecedores.ler', descricao: 'Visualizar fornecedores' },
+      { id: 'fornecedores.criar', descricao: 'Criar fornecedores' },
+      { id: 'fornecedores.editar', descricao: 'Editar fornecedores' },
+      { id: 'fornecedores.deletar', descricao: 'Excluir fornecedores' },
       { id: 'usuarios.ler', descricao: 'Visualizar usuários' },
       { id: 'usuarios.criar', descricao: 'Criar usuários' },
       { id: 'usuarios.editar', descricao: 'Editar usuários' },
@@ -416,6 +440,7 @@ export class CompanyStructure {
       'produtos.ler', 'produtos.criar', 'produtos.editar',
       'pedidos.ler', 'pedidos.criar', 'pedidos.editar',
       'clientes.ler', 'clientes.criar', 'clientes.editar',
+      'fornecedores.ler', 'fornecedores.criar', 'fornecedores.editar',
       'usuarios.ler',
       'servicos.ler', 'servicos.criar', 'servicos.editar',
       'setores.ler', 'setores.criar', 'setores.editar',
@@ -427,6 +452,7 @@ export class CompanyStructure {
       'produtos.ler',
       'pedidos.ler', 'pedidos.criar', 'pedidos.editar',
       'clientes.ler', 'clientes.criar', 'clientes.editar',
+      'fornecedores.ler', 'fornecedores.criar', 'fornecedores.editar',
       'servicos.ler',
       'veiculos.ler', 'veiculos.criar'
     ];
@@ -434,6 +460,7 @@ export class CompanyStructure {
     const permEstoque = [
       'produtos.ler', 'produtos.criar', 'produtos.editar',
       'clientes.ler',
+      'fornecedores.ler',
 
       'setores.ler', 'setores.criar', 'setores.editar',
       'veiculos.ler'

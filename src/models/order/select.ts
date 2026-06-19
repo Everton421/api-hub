@@ -8,7 +8,7 @@ export class SelectOrder {
             DATE_FORMAT(p.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(p.observacoes USING utf8) AS observacoes
         FROM ${dbName}.pedidos p 
-        JOIN ${dbName}.clientes c ON c.codigo = p.cliente 
+        left JOIN ${dbName}.clientes c ON c.codigo = p.cliente 
         
         WHERE p.codigo = ?`;
 
@@ -85,11 +85,13 @@ export class SelectOrder {
         endDate?: string;
         seller?: number;
         client?: number;
+        supplier?:number;
         cnpj?: string;
         limit?: number;
         name?: string;
         search?: string;
         type?: number;
+        operation?: 'V' | 'C';
         codigo?: number;
         id_interno?: string;
         id_externo?: string;
@@ -102,6 +104,7 @@ export class SelectOrder {
             startDate,
             endDate,
             seller,
+            operation,
             client,
             cnpj,
             limit,
@@ -110,15 +113,21 @@ export class SelectOrder {
             situacao_separacao,
             type,
             codigo, id, id_interno, id_externo,
-            orderBy
+            orderBy,
+            supplier
         } = params;
 
-        const sql = `SELECT pe.*, c.id as cliente_id,  c.nome as cliente_nome,
-            DATE_FORMAT(pe.data_cadastro, '%Y-%m-%d') AS data_cadastro,
+        const sql = `SELECT pe.*, 
+        c.id as cliente_id,  c.nome as cliente_nome,
+        f.id as fornecedor_id, f.nome as fornecedor_nome,    
+        DATE_FORMAT(pe.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(pe.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(pe.observacoes USING utf8) AS observacoes
         FROM ${dbName}.pedidos AS pe
-        JOIN ${dbName}.clientes c ON c.codigo = pe.cliente`;
+        LEFT JOIN ${dbName}.clientes c ON c.codigo = pe.cliente
+        LEFT JOIN ${dbName}.fornecedores f ON f.codigo = pe.fornecedor 
+        `
+        ;
 
         const conditions: string[] = [];
         const values: any[] = [];
@@ -130,6 +139,14 @@ export class SelectOrder {
         if (client) {
             conditions.push("pe.cliente = ?");
             values.push(Number(client));
+        }
+        if(supplier){
+            conditions.push("pe.forncedor = ?");
+            values.push(Number(supplier));
+        }
+        if(operation){
+            conditions.push("pe.operacao = ?");
+            values.push(operation);
         }
         if (seller) {
             conditions.push("pe.vendedor = ?");
@@ -193,7 +210,8 @@ export class SelectOrder {
             values.push(Number(limit));
         }
 
-
+     //   console.log(finalSql)
+     //   console.log(values)
 
         const [result] = await conn.query(finalSql, values);
         return result as OrderType[];

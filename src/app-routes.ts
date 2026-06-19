@@ -9,6 +9,7 @@ import { healthRoute } from "./routes/health/health.ts";
 import { loginRoute } from "./routes/login/login.ts";
 import { getBrandsRoute } from "./routes/brand/brand.ts";
 import { getClientsRoute } from "./routes/client/client.ts";
+import { getSuppliersRoute } from "./routes/supplier/supplier.ts";
 import locationsRoute from "./routes/location/location.ts";
 import paymentMethodsRoute from "./routes/payment-method/payment-method.ts";
 import productMovementsRoute from "./routes/product-movement/product-movement.ts";
@@ -109,6 +110,7 @@ server.register(loginRoute);
  server.register(productSectorRoute);
  
  server.register(getClientsRoute);
+ server.register(getSuppliersRoute);
  server.register(locationsRoute);
  server.register(getBrandsRoute);
  server.register(paymentMethodsRoute);
