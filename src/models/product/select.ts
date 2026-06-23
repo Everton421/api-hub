@@ -126,6 +126,14 @@ export class SelectProduct {
         } = params;
 
         let sql = `SELECT *,
+         COALESCE(caracteristica, 0) AS caracteristica,
+            COALESCE(origem, '') AS origem,
+            COALESCE(class_fiscal, '') AS class_fiscal,
+            COALESCE(cst, '') AS cst,
+            COALESCE(sku, '') AS sku,
+            COALESCE(num_fabricante, '') AS num_fabricante,
+            COALESCE(num_original, '') AS num_original,
+            COALESCE(unidade_medida, 'UND') AS unidade_medida,
             DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(observacoes1 USING utf8) as observacoes1,
@@ -175,8 +183,16 @@ export class SelectProduct {
             }
 
         if( search ){
-           conditions.push("descricao LIKE ? OR codigo LIKE ? OR id LIKE ? ");
-            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+                const terms = search.trim().split(/\s+/).filter(t => t.length > 0);
+        if (terms.length > 0) {
+            const termConditions = terms.map(() =>
+            '( codigo LIKE ? OR descricao LIKE ? OR id LIKE ?)'
+            );
+            conditions.push(`(${termConditions.join(' AND ')})`);
+            terms.forEach(term => {
+            values.push(`%${term}%`, `%${term}%`, `%${term}%`);
+            });
+      }
         }
 
         if (conditions.length > 0) {

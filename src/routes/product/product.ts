@@ -27,7 +27,7 @@ const productResponseSchema = z.object({
     ativo: z.enum(["S" ,"N"]).describe('S = ativo, N = inativo'),
     class_fiscal: z.string(),
     cst: z.string(),
-    caracteristica: z.coerce.number().default(0),
+    caracteristica: z.coerce.number().nullable(),
     data_cadastro: z.string(),
     data_recadastro: z.string(),
     observacoes1: z.string(),
@@ -143,6 +143,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                     const { orderBy,  ativo, codigo, descricao, grupo, id, limit, marca, search} =request.query;
             let resultProductsSeachByParams = await select.findByParams(dbName, request.query) as productTypeAndPhotos[];
             if(resultProductsSeachByParams.length > 0 ){
+
                  for( const p of resultProductsSeachByParams as any[] ) { 
                     const fotos = await selectPhoto.findByProduct(dbName, p.codigo);
                     p.fotos = fotos

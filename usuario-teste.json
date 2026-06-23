@@ -7,5 +7,12 @@
   "password": "pzsF3TxpZt"
 }
 
-// conta comprador
+// conta teste comprador
 
+{
+  "id": 3483013360,
+  "email": "test_user_8307898036478257821@testuser.com",
+  "nickname": "TESTUSER8307898036478257821",
+  "site_status": "active",
+  "password": "e1ljsQJG9v"
+}

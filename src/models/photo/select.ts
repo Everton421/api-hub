@@ -23,8 +23,9 @@ export class SelectPhoto {
     async findByProduct(dbName: string, productCode: number): Promise<PhotoType[]> {
         const sql = ` SELECT *,
             TO_BASE64(foto) AS foto,
-            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
-            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+            coalesce(descricao, '' ) as descricao,
+          coalesce( DATE_FORMAT(data_cadastro, '%Y-%m-%d'), '0000-00-00') AS data_cadastro,
+           coalesce(DATE_FORMAT( data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00' )  AS data_recadastro
          FROM ${dbName}.fotos_produtos 
            WHERE produto = ?`;
 
