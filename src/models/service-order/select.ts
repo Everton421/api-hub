@@ -71,11 +71,11 @@ export class SelectServiceOrderType {
         }
         if (descricao) {
             conditions.push("descricao LIKE ?");
-            values.push(`%${descricao}%`);
+            values.push(`%${descricao.toLowerCase()}%`);
         }
         if(search){
             conditions.push(" descricao LIKE ? OR id LIKE ? OR codigo LIKE  ?  ");
-            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+            values.push(`%${search.toLowerCase()}%`, `%${search}%`, `%${search}%` );
         }
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');

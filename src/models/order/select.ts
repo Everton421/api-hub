@@ -172,7 +172,7 @@ export class SelectOrder {
 
         if (search) {
             conditions.push(" c.nome LIKE ? OR pe.id_externo = ? OR  pe.codigo = ? OR pe.id_interno = ? OR pe.id = ? ");
-            values.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`,);
+            values.push(`%${search.toLowerCase()}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`,);
         }
 
         if (codigo && codigo != 0) {

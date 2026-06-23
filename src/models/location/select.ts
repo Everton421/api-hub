@@ -64,7 +64,7 @@ export class SelectLocation {
          FROM ${dbName}.locais 
            WHERE descricao LIKE ? `;
 
-        const [result] = await conn.query(sql, [`%${description}%`, limit]);
+        const [result] = await conn.query(sql, [`%${description.toLowerCase()}%`, limit]);
         return result as LocationType[];
     }
 

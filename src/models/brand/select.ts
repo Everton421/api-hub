@@ -64,7 +64,7 @@ export class SelectBrand {
          FROM ${dbName}.marcas 
            WHERE descricao LIKE ? limit ?  `;
 
-        const [result] = await conn.query(sql, [`%${description}%`, limit]);
+        const [result] = await conn.query(sql, [`%${description.toLowerCase()}%`, limit]);
         return result as BrandType[];
     }
 
@@ -101,11 +101,11 @@ export class SelectBrand {
         }
         if (descricao) {
             conditions.push("descricao LIKE ?");
-            values.push(`%${descricao}%`);
+            values.push(`%${descricao.toLowerCase()}%`);
         }
         if(search){
             conditions.push(" descricao LIKE ? OR id LIKE ? OR codigo LIKE  ?  ");
-            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+            values.push(`%${search.toLowerCase()}%`, `%${search.toLowerCase()}%`, `%${search.toLowerCase()}%` );
         }
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ') ;

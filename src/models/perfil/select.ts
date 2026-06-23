@@ -28,7 +28,7 @@ export class SelectPerfil {
         }
         if (params.nome) {
             conditions.push("nome LIKE ?");
-            values.push(`%${params.nome}%`);
+            values.push(`%${params.nome.toLowerCase()}%`);
         }
         if (params.ativo) {
             conditions.push("ativo = ?");

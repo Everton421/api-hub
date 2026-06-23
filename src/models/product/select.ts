@@ -162,7 +162,7 @@ export class SelectProduct {
         }
         if (descricao) {
             conditions.push("descricao LIKE ?");
-            values.push(`%${descricao}%`);
+            values.push(`%${descricao.toLowerCase()}%`);
         }
         if( id ){
             conditions.push("id = ?");
@@ -190,7 +190,7 @@ export class SelectProduct {
             );
             conditions.push(`(${termConditions.join(' AND ')})`);
             terms.forEach(term => {
-            values.push(`%${term}%`, `%${term}%`, `%${term}%`);
+            values.push(`%${term}%`, `%${term.toLowerCase()}%`, `%${term}%`);
             });
       }
         }

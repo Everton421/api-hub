@@ -45,7 +45,7 @@ export class SelectService {
         WHERE codigo LIKE ? OR aplicacao LIKE ?
         LIMIT 20`;
 
-        const [result] = await conn.query(sql, [searchParam, searchParam]);
+        const [result] = await conn.query(sql, [searchParam, `%${param.toLowerCase()}%` ]);
         return result as ServiceType[];
     }
 
@@ -96,11 +96,11 @@ export class SelectService {
         }
         if (aplicacao) {
             conditions.push("aplicacao LIKE ?");
-            values.push(`%${aplicacao}%`);
+            values.push(`%${aplicacao.toLowerCase()}%`);
         }
       if(search){
             conditions.push(" aplicacao LIKE ? OR id LIKE ? OR codigo LIKE  ?  ");
-            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+            values.push(`%${search.toLowerCase()}%`, `%${search}%`, `%${search}%` );
         }
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');

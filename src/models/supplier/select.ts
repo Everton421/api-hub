@@ -57,7 +57,7 @@ export class SelectSupplier {
         WHERE nome LIKE ? OR codigo LIKE ? OR cnpj LIKE ?
         LIMIT 50`;
 
-        const [result] = await conn.query(sql, [searchParam, searchParam, searchParam]);
+        const [result] = await conn.query(sql, [`%${param.toLowerCase()}%`, searchParam, searchParam]);
         return result as SupplierType[];
     }
 
@@ -99,11 +99,11 @@ export class SelectSupplier {
         }
         if (nome) {
             conditions.push("nome LIKE ?");
-            values.push(`%${nome}%`);
+            values.push(`%${nome.toLowerCase()}%`);
         }
         if (search) {
             conditions.push("   codigo LIKE ? OR nome LIKE ? OR cnpj = ? OR id = ? ");
-            values.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+            values.push(`%${search.toLowerCase()}%`, `%${search}%`, `%${search}%`, `%${search}%`);
         }
 
         if (conditions.length > 0) {

@@ -90,15 +90,15 @@ export class SelectVehicle {
         }
         if (placa) {
             conditions.push("placa LIKE ?");
-            values.push(`%${placa}%`);
+            values.push(`%${placa.toLowerCase()}%`);
         }
         if (marca) {
             conditions.push("marca LIKE ?");
-            values.push(`%${marca}%`);
+            values.push(`%${marca.toLowerCase()}%`);
         }
         if (modelo) {
             conditions.push("modelo LIKE ?");
-            values.push(`%${modelo}%`);
+            values.push(`%${modelo.toLowerCase()}%`);
         }
         if (ano) {
             conditions.push("ano LIKE ?");

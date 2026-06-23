@@ -201,7 +201,7 @@ export class CompanyStructure {
               link text NOT NULL,
               foto longblob DEFAULT NULL,
               data_cadastro date NOT NULL DEFAULT '0000-00-00',
-              data_recadastro datetime DEFAULT NULL,
+              data_recadastro  datetime DEFAULT '0000-00-00 00:00:00',
               PRIMARY KEY ( produto , sequencia ) USING BTREE
             ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci ROW_FORMAT=DYNAMIC;
               `,

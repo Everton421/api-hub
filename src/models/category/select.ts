@@ -31,7 +31,7 @@ export class SelectCategory {
         WHERE descricao LIKE ? OR codigo LIKE ?
         LIMIT ?`;
 
-        const [result] = await conn.query(sql, [`%${description}%`, `%${description}%`, limit]);
+        const [result] = await conn.query(sql, [`%${description.toLowerCase()}%`, `%${description.toLowerCase()}%`, limit]);
         return result as CategoryType[];
     }
 
@@ -92,12 +92,12 @@ export class SelectCategory {
         }
         if (descricao) {
             conditions.push(" descricao LIKE ? ");
-            values.push(`%${descricao}%`);
+            values.push(`%${descricao.toLowerCase()}%`);
         }
 
         if(search){
             conditions.push(" descricao LIKE ? OR id LIKE ? OR codigo LIKE ?  ");
-            values.push(`%${search}%`, `%${search}%`, `%${search}%` );
+            values.push(`%${search.toLowerCase()}%`, `%${search.toLowerCase()}%`, `%${search.toLowerCase()}%` );
         }
 
         if (conditions.length > 0) {
@@ -109,6 +109,7 @@ export class SelectCategory {
         sql += ' LIMIT ?';
         values.push(Number(limit));
         const [result] = await conn.query(sql, values);
+
         return result as CategoryType[];
     }
 }

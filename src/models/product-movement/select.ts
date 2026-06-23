@@ -148,7 +148,7 @@ export class SelectProductMovement {
         }
         if (historico) {
             conditions.push("mp.historico LIKE ?");
-            values.push(`%${historico}%`);
+            values.push(`%${historico.toLowerCase()}%`);
         }
         if (data_recadastro) {
             conditions.push("mp.data_recadastro > ?");

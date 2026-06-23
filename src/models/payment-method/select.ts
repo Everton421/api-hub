@@ -75,7 +75,7 @@ export class SelectPaymentMethod {
         }
         if (descricao) {
             conditions.push("descricao LIKE ?");
-            values.push(`%${descricao}%`);
+            values.push(`%${descricao.toLowerCase()}%`);
         }
 
         if (conditions.length > 0) {
