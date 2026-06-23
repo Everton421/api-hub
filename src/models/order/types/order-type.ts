@@ -81,7 +81,7 @@ export type ProductOrderType = {
     desconto: number;
     total: number;
     frete?: number;
-    descricao: string;
+    descricao?: string;
     quantidade_separada?: number;
     quantidade_faturada?: number;
 };

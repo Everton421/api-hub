@@ -18,8 +18,8 @@ const productOrderSchema = z.object({
     desconto: z.union([z.number(), z.string()]).optional(),
     total: z.union([z.number(), z.string()]),
     frete: z.union([z.number(), z.string()]).optional(),
-    descricao: z.string(),
-    id: z.union([z.number(), z.string()]),
+    //descricao: z.string(),
+   // id: z.union([z.number(), z.string()]),
     quantidade_separada: z.union([z.number(), z.string()]).optional(),
     quantidade_faturada: z.union([z.number(), z.string()]).optional()
 });
@@ -30,8 +30,8 @@ const serviceOrderSchema = z.object({
     desconto: z.union([z.number(), z.string()]).optional(),
     total: z.union([z.number(), z.string()]),
     valor: z.union([z.number(), z.string()]),
-    aplicacao: z.string().optional(),
-    id: z.union([z.number(), z.string()]),
+ //   aplicacao: z.string().optional(),
+ //   id: z.union([z.number(), z.string()]),
 
 });
 
@@ -43,13 +43,13 @@ const parcelOrderSchema = z.object({
 
 const clientSchema = z.object({
     codigo: z.number(),
-    id:z.string(),
-    nome: z.string().optional()
+   // id:z.string(),
+   // nome: z.string().optional()
 });
 const supplierSchema = z.object({
     codigo: z.number(),
-    id:z.string(),
-    nome: z.string().optional()
+    //id:z.string(),
+    //nome: z.string().optional()
 });
 const orderResponseSchema = z.object({
     codigo: z.union([z.number(), z.string()]),
@@ -107,6 +107,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 total_geral: z.coerce.string(),
                 total_produtos: z.coerce.string(),
                 total_servicos: z.coerce.string(),
+                operacao: z.enum(['C', 'V']).describe('C = compra, V =venda'),
                 cliente: z.object({
                     codigo: z.number()
                 }).optional(),
