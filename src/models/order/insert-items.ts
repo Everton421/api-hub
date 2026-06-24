@@ -9,6 +9,7 @@ export class InsertOrderItems {
         totalProducts: number,
         totalFreight: number
     ): Promise<void> {
+
         for (let i = 0; i < products.length; i++) {
             const p = products[i];
             const {
@@ -17,10 +18,11 @@ export class InsertOrderItems {
                 quantidade = 0,
                 desconto = 0,
                 total = 0,
+                sequencia,
                 quantidade_separada = 0,
                 quantidade_faturada = 0
             } = p;
-
+         
             const productValue = quantidade * preco;
             const factor = productValue / totalProducts;
             const freight = factor * totalFreight;
@@ -28,6 +30,7 @@ export class InsertOrderItems {
             const sql = `INSERT INTO ${dbName}.produtos_pedido (
                 pedido,
                 codigo,
+                sequencia,
                 desconto,
                 quantidade,
                 preco,
@@ -35,9 +38,9 @@ export class InsertOrderItems {
                 total,
                 quantidade_separada,
                 quantidade_faturada
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-            const values = [orderCode, codigo, desconto, quantidade, preco, freight, total, quantidade_separada, quantidade_faturada];
+            const values = [orderCode, codigo, sequencia, desconto, quantidade, preco, freight, total, quantidade_separada, quantidade_faturada];
             await conn.query(sql, values);
         }
     }

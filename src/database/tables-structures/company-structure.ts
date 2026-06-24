@@ -128,6 +128,7 @@ export class CompanyStructure {
       `CREATE TABLE IF NOT EXISTS ??.produtos_pedido (
                 pedido bigint(20) unsigned NOT NULL DEFAULT 0,
                 codigo INTEGER NOT NULL,
+                sequencia INTEGER NOT NULL,
                 desconto decimal(10,2) DEFAULT 0.00,
                 quantidade decimal(10,2) NOT NULL DEFAULT 0.00,
                 preco decimal(10,2) DEFAULT 0.00,

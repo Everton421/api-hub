@@ -77,6 +77,7 @@ export type ProductOrderType = {
     codigo: number;
     preco: number;
     id?: string;
+    sequencia:number;
     quantidade: number;
     desconto: number;
     total: number;

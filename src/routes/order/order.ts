@@ -18,6 +18,7 @@ const productOrderSchema = z.object({
     desconto: z.union([z.number(), z.string()]).optional(),
     total: z.union([z.number(), z.string()]),
     frete: z.union([z.number(), z.string()]).optional(),
+    sequencia:z.number(),
     //descricao: z.string(),
    // id: z.union([z.number(), z.string()]),
     quantidade_separada: z.union([z.number(), z.string()]).optional(),
