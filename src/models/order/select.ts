@@ -118,8 +118,10 @@ export class SelectOrder {
         } = params;
 
         const sql = `SELECT pe.*, 
-        c.id as cliente_id,  c.nome as cliente_nome,
-        f.id as fornecedor_id, f.nome as fornecedor_nome,    
+         -- c.id as cliente_id,  
+         -- c.nome as cliente_nome,
+         -- f.id as fornecedor_id,
+         -- f.nome as fornecedor_nome,    
         DATE_FORMAT(pe.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(pe.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(pe.observacoes USING utf8) AS observacoes

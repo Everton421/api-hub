@@ -18,9 +18,9 @@ const productOrderSchema = z.object({
     desconto: z.union([z.number(), z.string()]).optional(),
     total: z.union([z.number(), z.string()]),
     frete: z.union([z.number(), z.string()]).optional(),
-    sequencia:z.number(),
-    //descricao: z.string(),
-   // id: z.union([z.number(), z.string()]),
+    sequencia:z.number().nullable(),
+     descricao: z.string().optional(),
+     id: z.union([z.number(), z.string()]).optional(),
     quantidade_separada: z.union([z.number(), z.string()]).optional(),
     quantidade_faturada: z.union([z.number(), z.string()]).optional()
 });
@@ -31,8 +31,8 @@ const serviceOrderSchema = z.object({
     desconto: z.union([z.number(), z.string()]).optional(),
     total: z.union([z.number(), z.string()]),
     valor: z.union([z.number(), z.string()]),
- //   aplicacao: z.string().optional(),
- //   id: z.union([z.number(), z.string()]),
+     aplicacao: z.string().optional(),
+     id: z.union([z.number(), z.string()]).optional(),
 
 });
 
@@ -44,13 +44,13 @@ const parcelOrderSchema = z.object({
 
 const clientSchema = z.object({
     codigo: z.number(),
-   // id:z.string(),
-   // nome: z.string().optional()
+    nome: z.string().optional(),
+    id: z.union([z.number(), z.string()]).optional()
 });
 const supplierSchema = z.object({
     codigo: z.number(),
-    //id:z.string(),
-    //nome: z.string().optional()
+    nome: z.string().optional(),
+    id: z.union([z.number(), z.string()]).optional()
 });
 const orderResponseSchema = z.object({
     codigo: z.union([z.number(), z.string()]),
@@ -79,9 +79,9 @@ const orderResponseSchema = z.object({
     produtos: z.array(productOrderSchema).optional(),
     servicos: z.array(serviceOrderSchema).optional(),
     parcelas: z.array(parcelOrderSchema).optional(),
-    cliente: clientSchema.optional(),
+    cliente: clientSchema.nullish(),
     operacao: z.enum([ 'V' , 'C']).describe('V= venda, C = compra '),
-    fornecedor:supplierSchema.optional(),
+    fornecedor:supplierSchema.nullish(),
 });
          
 const ordersRoute: FastifyPluginAsyncZod = async (server) => {
@@ -303,14 +303,17 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 try {
                     const resultCliente = await selectCliente.findByCode(dbName, i.cliente);
                         const { codigo, id , nome }  =resultCliente[0];
-                    cliente = resultCliente.length > 0 ? {  codigo,  nome , id  } : undefined;
+                    cliente = resultCliente.length > 0 ? {  codigo,  nome , id  } : null;
                 } catch (e) { console.log(`Erro ao buscar o cliente do pedido ${i.codigo}`); }
                 try{
 
                    const resultSupplier = await selectSupplier.findByCode(dbName, i.fornecedor);
+                   if(resultSupplier.length > 0){
                    const { codigo, id, nome } =resultSupplier[0];
-                    fornecedor = resultSupplier.length > 0 ? {  codigo,  nome, id } : undefined;
-               
+                        fornecedor = {  codigo,  nome, id }
+                   }else{
+                    fornecedor = null;
+                   }
                 }catch(e){
 
                 }

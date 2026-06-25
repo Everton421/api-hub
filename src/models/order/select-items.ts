@@ -3,6 +3,7 @@ import { conn } from "../../database/databaseConfig.ts";
 export type OrderItemProduct = {
     pedido: number;
     codigo: number;
+    sequencia:number
     desconto: number;
     quantidade: number;
     preco: number;
