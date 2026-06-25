@@ -4,7 +4,7 @@ export type OrderType = {
     id_externo: string;
     id_interno: string;
     vendedor: number;
-    situacao:  'EA' | 'FI' | 'RE' | 'FP' | 'AI' ;
+    situacao:  'EA' | 'FI' | 'RE' | 'FP' | 'AI' | 'BM';
     situacao_separacao: 'N' | 'P' | 'I'  ;
     contato: string;
     descontos: string;
@@ -34,7 +34,7 @@ export type OrderReceivedType = {
     id_externo?: string;
     id_interno?: string;
     vendedor?: number;
-    situacao?: 'EA' | 'FI' | 'RE' | 'FP' | 'AI';
+    situacao?: 'EA' | 'FI' | 'RE' | 'FP' | 'AI' | 'BM';
     situacao_separacao: 'N' | 'P' | 'I'  ;
     contato?: string;
     descontos?: string;
