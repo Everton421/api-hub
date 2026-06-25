@@ -173,7 +173,7 @@ const getSuppliersRoute: FastifyPluginAsyncZod = async (server) => {
         vCnpj = removerCaracteres(vCnpj)
 
         if (vCnpj.length < 11 || vCnpj.length > 14 || vCnpj.length === 12 || vCnpj.length === 13) {
-            return reply.status(400).send({ success: true, message: "Invalid cnpj/cpf." });
+           // return reply.status(400).send({ success: true, message: "Invalid cnpj/cpf." });
         }
 
         if (vCnpj.length === 14) {
