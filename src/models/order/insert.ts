@@ -32,17 +32,14 @@ export class InsertOrder {
             totalSemDesconto,
             situacao = 'EA',
             situacao_separacao = 'N',
-            tipo = 1,
-            vendedor = 1,
+            tipo ,
+            vendedor ,
             data_cadastro = currentDate,
             data_recadastro = currentDate,
-            veiculo = 0,
-            tipo_os = 0,
-            contato = '',
-            just_ipi = '',
-            just_icms = '',
-            just_subst = '',
-            id = 0,
+            veiculo ,
+            tipo_os  ,
+            contato  ,
+            id  ,
             id_externo = 0,
             id_interno,
             frete ,
@@ -119,7 +116,7 @@ export class InsertOrder {
         }
         if (produtos.length > 0) {
             try {
-                await insertOrderItems.insertProducts(produtos, dbName, codigo, total_produtos ?? 0, frete ?? 0);
+                await insertOrderItems.insertProducts(produtos, dbName, codigo, Number(total_produtos) ?? 0, Number(frete) ?? 0);
                 status = true;
             } catch (e) { console.log(e); }
         }

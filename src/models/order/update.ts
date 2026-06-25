@@ -84,7 +84,7 @@ export class UpdateOrder {
             await deleteOrderItems.deleteProducts(dbName, orderCode);
         }
         if (produtos.length > 0) {
-            await insertOrderItems.insertProducts(produtos, dbName, orderCode, data.total_produtos ?? 0, data.frete ?? 0);
+            await insertOrderItems.insertProducts(produtos, dbName, orderCode, Number(data.total_produtos) ?? 0, Number(data.frete) ?? 0);
         }
 
         const installmentCount = await selectOrderItems.countInstallmentsByOrder(dbName, orderCode);
