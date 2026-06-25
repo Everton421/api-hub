@@ -26,7 +26,9 @@ export class UpdateOrder {
             situacao = ?,
             situacao_separacao = ?,
             id_interno = ?,
-            id_externo = ?
+            id_externo = ?,
+            operacao = ? 
+
         WHERE codigo = ?`;
         
         const cliente = data.cliente && data.cliente.codigo ?  data.cliente.codigo : 0;
@@ -53,6 +55,7 @@ export class UpdateOrder {
             data.situacao_separacao ?? 'N',
             data.id_interno ?? '',
             data.id_externo ?? 0,
+            data.operacao,
             orderCode
         ];
 

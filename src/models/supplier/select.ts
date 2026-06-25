@@ -26,7 +26,6 @@ export class SelectSupplier {
             DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
         FROM ${dbName}.fornecedores
         WHERE codigo = ?`;
-
         const [result] = await conn.query(sql, [code]);
         return result as SupplierType[];
     }

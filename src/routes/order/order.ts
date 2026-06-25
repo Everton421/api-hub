@@ -300,23 +300,30 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 let cliente: any;
                 let fornecedor: any;
 
-                try {
-                    const resultCliente = await selectCliente.findByCode(dbName, i.cliente);
-                        const { codigo, id , nome }  =resultCliente[0];
-                    cliente = resultCliente.length > 0 ? {  codigo,  nome , id  } : null;
-                } catch (e) { console.log(`Erro ao buscar o cliente do pedido ${i.codigo}`); }
-                try{
-
-                   const resultSupplier = await selectSupplier.findByCode(dbName, i.fornecedor);
-                   if(resultSupplier.length > 0){
-                   const { codigo, id, nome } =resultSupplier[0];
-                        fornecedor = {  codigo,  nome, id }
-                   }else{
-                    fornecedor = null;
-                   }
-                }catch(e){
+                if(i.operacao == 'C' && i.fornecedor > 0 ){
+                        try{
+                        const resultSupplier = await selectSupplier.findByCode(dbName, i.fornecedor);
+                        if(resultSupplier.length > 0){
+                        const { codigo, id, nome } =resultSupplier[0];
+                                fornecedor = {  codigo,  nome, id }
+                        }else{
+                            fornecedor = null;
+                        }
+                            } catch (e) { console.log(`Erro ao buscar o fornecedor do pedido ${i.codigo} `, e); }
 
                 }
+                if(i.operacao == 'V'){
+                    try {
+                        const resultCliente = await selectCliente.findByCode(dbName, i.cliente);
+                        if(resultCliente.length > 0 ){
+                          const { codigo, id , nome }  =resultCliente[0];
+                          cliente = resultCliente.length > 0 ? {  codigo,  nome , id  } : null;
+                        }
+
+                    } catch (e) { console.log(`Erro ao buscar o cliente do pedido ${i.codigo} `, e); }
+                
+                }
+             
 
                 try {
                     produtos = await selectOrderItems.findProductsByOrder(dbName, i.codigo);

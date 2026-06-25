@@ -96,7 +96,7 @@ export class SelectOrder {
         id_interno?: string;
         id_externo?: string;
         id?: string;
-        situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP' | '*',
+        situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP'| 'BM' | '*',
         situacao_separacao?: 'I' | 'P' | 'N',
         orderBy?: "id_externo" | "codigo" | "id_interno" | "id" | "nome" | "data_recadastro"
     }): Promise<OrderType[]> {

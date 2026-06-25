@@ -43,7 +43,8 @@ export class InsertOrder {
             id_externo = 0,
             id_interno,
             frete ,
-            fornecedor
+            fornecedor,
+            operacao
         } = data;
 
         const servicos = data.servicos || [];
@@ -75,8 +76,9 @@ export class InsertOrder {
             enviado,
             tipo,
             observacoes,
-            fornecedor
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
+            fornecedor,
+            operacao
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? )`;
 
         const values = [
             codigo,
@@ -102,7 +104,9 @@ export class InsertOrder {
             'S',
             tipo,
             observacoes,
-            fornecedor?.codigo || 0
+            fornecedor?.codigo || 0,
+            operacao
+
         ];
 
         const [result] = await conn.query(sql, values);
