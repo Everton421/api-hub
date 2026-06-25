@@ -210,7 +210,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 data_inicial: z.string().optional(),
                 data_final: z.string().optional(), 
                 id_interno:z.string().optional(),
-                codigo:z.number().optional(),
+                codigo: z.coerce.number().optional(),
                 id: z.string().optional(),
                 id_externo:z.string().optional(),
                 vendedor: z.coerce.number().optional(),

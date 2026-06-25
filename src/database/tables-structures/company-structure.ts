@@ -366,7 +366,29 @@ export class CompanyStructure {
           data_cadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
           data_recadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
          PRIMARY KEY ( id )
-         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`
+         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`,
+
+        `CREATE TABLE IF NOT EXISTS ??.lotes_series (
+            codigo int(10) unsigned NOT NULL AUTO_INCREMENT,
+            produto int(10) unsigned NOT NULL DEFAULT 0,
+            lote varchar(50) DEFAULT NULL,
+            serie varchar(50) DEFAULT NULL,
+            PRIMARY KEY (codigo),
+            UNIQUE KEY prod_lote_serie (produto, lote, serie),
+            KEY serie (serie)
+        ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;`,
+
+        `CREATE TABLE IF NOT EXISTS ??.lote_serie_setor (
+            setor int(10) unsigned NOT NULL DEFAULT 0,
+            produto int(10) unsigned NOT NULL DEFAULT 0,
+            lote_serie int(10) unsigned NOT NULL DEFAULT 0,
+            estoque float(15,6) NOT NULL DEFAULT 0.000000,
+            PRIMARY KEY (setor, lote_serie),
+            KEY lote_serie (lote_serie),
+            KEY produto (produto, lote_serie),
+            KEY setor (setor, produto, lote_serie),
+            KEY idx_produto_setor (produto, setor)
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;`
     ];
 
 

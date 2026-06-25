@@ -1,0 +1,11 @@
+import { conn } from "../../database/databaseConfig.ts";
+import { type LotesSeriesInput } from "./types/lotes-series-type.ts";
+
+export class InsertLotesSeries {
+    async insert(dbName: string, data: LotesSeriesInput): Promise<{ insertId: number }> {
+        const sql = `INSERT INTO ${dbName}.lotes_series (produto, lote, serie) VALUES (?, ?, ?)`;
+        const values = [data.produto, data.lote ?? null, data.serie ?? null];
+        const [result] = await conn.query(sql, values);
+        return { insertId: (result as any).insertId };
+    }
+}

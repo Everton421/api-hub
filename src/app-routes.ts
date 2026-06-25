@@ -35,6 +35,8 @@ import { mlToolsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-tool
 import { marketplacesRoute } from "./routes/marketplaces/marketplace.ts";
 import { mlAppAnunciosRoute } from "./modules/marketplaces/mercadolivre/routes/ml-app-anuncios.ts";
 import { mlNotificationsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-notifications.ts";
+import { lotesSeriesRoute } from "./routes/lotes-series/lotes-series.ts";
+import { loteSerieSetorRoute } from "./routes/lote-serie-setor/lote-serie-setor.ts";
 let certPathEnv;
 if(process.env.PATH_CERT_CERT) certPathEnv = String(process.env.PATH_CERT_CERT)
 
@@ -118,6 +120,8 @@ server.register(loginRoute);
  server.register(photosRoute);
  server.register(ordersRoute);
  server.register(perfilRoute);
+ server.register(lotesSeriesRoute);
+ server.register(loteSerieSetorRoute);
 
 // ml routes 
 server.register(mlIntegrationRoute);
