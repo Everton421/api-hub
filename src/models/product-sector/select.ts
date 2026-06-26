@@ -58,7 +58,7 @@ export class SelectProductSector {
           const values =[]
 
         if(productCode){
-            sql += ' ps.produto = ? '
+            sql += 'AND ps.produto = ? '
             values.push(productCode)
         }
 
