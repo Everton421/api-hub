@@ -7,15 +7,21 @@ import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 import { type ProductMovementType } from '../../models/product-movement/types/product-movement-type.ts';
 import { SelectProduct } from '../../models/product/select.ts';
+import { SelectSector } from '../../models/sector/select.ts';
 
 const productMovementResponseSchema = z.object({
     codigo: z.coerce.number(),
-    setor: z.coerce.number(),
+    setor:  z.object({
+                    codigo: z.coerce.number(), 
+                    id: z.coerce.string(), 
+                    descricao: z.coerce.string(),
+           }), 
     id:z.string(),
     produto: z.object({
-                                codigo: z.coerce.number(), 
-                                id: z.coerce.string(), 
-                                descricao: z.coerce.string(),
+                    codigo: z.coerce.number(), 
+                    id: z.coerce.string(), 
+                    descricao: z.coerce.string(),
+                    unidade_medida:z.coerce.string()
            }),
     unidade_medida: z.string(),
     ent_sai: z.string(),
@@ -24,8 +30,6 @@ const productMovementResponseSchema = z.object({
     historico: z.string(),
     data_recadastro: z.string(),
     usuario: z.coerce.number(),
-    id_setor: z.string().optional(),
-    id_produto: z.string().optional()
 });
 
 const productMovementBodySchema = z.object({
@@ -71,6 +75,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const { data_recadastro, limit, usuario } = request.query;
+        const selectSetor = new SelectSector();
 
         try {
             let resultMoviment = await select.findAll(dbName, { data_recadastro: data_recadastro, usuario });
@@ -79,15 +84,24 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             }
     let  resultMovimentRequest:any[] = [] ;
 
+               
                 for( const mov of resultMoviment ){
                     const produto = mov.produto;
+                    const setor = mov.setor;
                     const [product] = await selectProduct.findByCode(dbName, produto );
+                    const [ sector ] = await selectSetor.findByCode(dbName, setor);
                      resultMovimentRequest.push(   {
                          ...mov,
                         produto:{
                                 codigo: product.codigo,
                                 id:product.id,
-                                descricao: product.descricao
+                                descricao: product.descricao,
+                                unidade_medida: product.unidade_medida
+                        },
+                        setor:{
+                            codigo: sector.codigo,
+                            id: sector.id,
+                            descricao:sector.descricao
                         }
                      })
                 }
@@ -128,6 +142,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
         const selectProduct = new SelectProduct();
+        const selectSetor = new SelectSector();
 
         const select = new SelectProductMovement();
         const decodedToken = DecodedToken(String(request.headers.token));
@@ -145,13 +160,21 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
 
                 for( const mov of resultMoviment ){
                     const produto = mov.produto;
+                    const setor = mov.setor;
                     const [product] = await selectProduct.findByCode(dbName, produto );
+                    const [ sector ] = await selectSetor.findByCode(dbName, setor);
                      resultMovimentRequest.push(   {
                          ...mov,
                         produto:{
                                 codigo: product.codigo,
                                 id:product.id,
-                                descricao: product.descricao
+                                descricao: product.descricao,
+                                unidade_medida: product.unidade_medida
+                        },
+                        setor:{
+                            codigo: sector.codigo,
+                            id: sector.id,
+                            descricao:sector.descricao
                         }
                      })
                 }
