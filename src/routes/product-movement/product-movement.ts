@@ -194,7 +194,16 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: productMovementBodySchema,
             response: {
-                201: productMovementResponseSchema,
+                201: z.object({
+                       codigo:z.number(),
+                        unidade_medida: z.string(),
+                        ent_sai: z.string(),
+                        quantidade: z.coerce.number(),
+                        tipo: z.string(),
+                        historico: z.string(),
+                        data_recadastro: z.string(),
+                        usuario: z.coerce.number(),
+                }),
                 400: z.object({
                     success: z.boolean(),
                     message: z.string()
@@ -204,7 +213,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
     }, async (request, reply) => {
         const dateService = new DateService();
         const decodedToken = DecodedToken(String(request.headers.token));
-
+ 
         if (!decodedToken.payload?.cnpj) {
             return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
         }
@@ -214,10 +223,9 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         const source = request.headers.source as string || 'api_internal';
 
         const data_recadastro = dateService.obterDataHoraAtual();
-        const {  usuario} = request.body
+ 
         const insert = new InsertProductMovement();
-        const select = new SelectProductMovement();
-
+       
 
         try {
             const movementData = {
@@ -248,7 +256,18 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.array(productMovementBodySchema),
             response: {
-                200: z.array(productMovementResponseSchema),
+                200: z.array(
+                     z.object({
+                       codigo:z.number(),
+                        unidade_medida: z.string(),
+                        ent_sai: z.string(),
+                        quantidade: z.coerce.number(),
+                        tipo: z.string(),
+                        historico: z.string(),
+                        data_recadastro: z.string(),
+                        usuario: z.coerce.number(),
+                }),
+                ),
                 400: z.object({
                     success: z.boolean(),
                     message: z.string()
