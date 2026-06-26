@@ -3,10 +3,16 @@ import { type ServiceOrderType } from "./types/service-order-type.ts";
 
 export class InsertServiceOrderType {
     async insert(dbName: string, data: ServiceOrderType): Promise<{ insertId: number }> {
-        const sql = `INSERT INTO ${dbName}.tipos_os (id, data_cadastro, data_recadastro, descricao, ativo)
-                      VALUES (?, ?, ?, ?, ?)`;
-
+        const columns = ['id', 'data_cadastro', 'data_recadastro', 'descricao', 'ativo'];
         const values = [data.id, data.data_cadastro, data.data_recadastro, data.descricao, data.ativo];
+
+        if (data.codigo != null) {
+            columns.unshift('codigo');
+            values.unshift(data.codigo);
+        }
+
+        const placeholders = values.map(() => '?').join(', ');
+        const sql = `INSERT INTO ${dbName}.tipos_os (${columns.join(', ')}) VALUES (${placeholders})`;
 
         const [result] = await conn.query(sql, values);
         return { insertId: (result as any).insertId };

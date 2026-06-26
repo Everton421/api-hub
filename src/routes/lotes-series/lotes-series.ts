@@ -14,6 +14,7 @@ const lotesSeriesResponseSchema = z.object({
 });
 
 const lotesSeriesBodySchema = z.object({
+    codigo: z.number().optional(),
     produto: z.number(),
     lote: z.string().optional().nullable(),
     serie: z.string().optional().nullable()
@@ -88,11 +89,11 @@ const lotesSeriesRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { produto, lote, serie } = request.body;
+        const { codigo, produto, lote, serie } = request.body;
 
         try {
             const insert = new InsertLotesSeries();
-            const result = await insert.insert(dbName, { produto, lote, serie });
+            const result = await insert.insert(dbName, { ...(codigo !== undefined ? { codigo } : {}), produto, lote, serie });
             const item = { codigo: result.insertId, produto, lote: lote ?? null, serie: serie ?? null };
             await publishMessage(empresa, 'lotesseriel.inserido', item, source);
             return reply.status(201).send(item);

@@ -2,10 +2,22 @@ import { conn } from "../../database/databaseConfig.ts";
 import { type SupplierType } from "./types/supplier-type.ts";
 
 export class InsertSupplier {
-    async insert(dbName: string, data: Omit<SupplierType, 'codigo'>): Promise<{ affectedRows: number; insertId: number }> {
-        const sql = `INSERT INTO ${dbName}.fornecedores
-            (id, celular, nome, cep, endereco, ie, numero, cnpj, cidade, data_cadastro, data_recadastro, bairro, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    async insert(dbName: string, data: SupplierType): Promise<{ affectedRows: number; insertId: number }> {
+        const columns = [
+            'id',
+            'celular',
+            'nome',
+            'cep',
+            'endereco',
+            'ie',
+            'numero',
+            'cnpj',
+            'cidade',
+            'data_cadastro',
+            'data_recadastro',
+            'bairro',
+            'estado'
+        ];
 
         const values = [
             data.id,
@@ -22,6 +34,14 @@ export class InsertSupplier {
             data.bairro,
             data.estado
         ];
+
+        if (data.codigo != null) {
+            columns.unshift('codigo');
+            values.unshift(data.codigo);
+        }
+
+        const placeholders = values.map(() => '?').join(', ');
+        const sql = `INSERT INTO ${dbName}.fornecedores (${columns.join(', ')}) VALUES (${placeholders})`;
 
         const [result] = await conn.query(sql, values);
         return { affectedRows: (result as any).affectedRows, insertId: (result as any).insertId };

@@ -106,6 +106,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
+                codigo: z.number().optional(),
                 id: z.string(),
                 descricao: z.string()
             }),
@@ -135,7 +136,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { id, descricao } = request.body;
+        const { id, descricao, codigo } = request.body;
 
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
@@ -146,7 +147,7 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
         if( verify.length > 0 ) return reply.status(400).send({ success: false, message:`Sector ID ${id} already exists.`})
 
         try {
-            const result = await insert.insert(dbName, { id, descricao, data_cadastro, data_recadastro, codigo: 0, ativo: 'S' });
+            const result = await insert.insert(dbName, { id, descricao, data_cadastro, data_recadastro, codigo, ativo: 'S' });
             const item = { codigo: result.insertId, id, descricao, ativo: 'S', data_cadastro, data_recadastro };
             await publishMessage(empresa, 'setor.inserido', item, source);
             return reply.status(201).send(item);

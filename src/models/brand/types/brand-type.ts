@@ -1,5 +1,5 @@
 export type BrandType = {
-    codigo: number;
+    codigo?: number;
     descricao: string;
     id: string;
     data_cadastro: string;

@@ -111,6 +111,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
+                codigo: z.number().optional(),
                 id: z.coerce.string(),
                 valor: z.coerce.number(),
                 aplicacao: z.coerce.string(),
@@ -145,7 +146,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { id, valor, aplicacao, tipo_serv, ativo } = request.body;
+        const { codigo, id, valor, aplicacao, tipo_serv, ativo } = request.body;
 
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
@@ -155,7 +156,7 @@ const servicesRoute: FastifyPluginAsyncZod = async (server) => {
         const verify = await select.findByParams( dbName, { id:id });
         if( verify.length > 0 ) return reply.status(400).send({ success: true , message:`Service ID ${id} already exists.`}) 
         try {
-            const result = await insert.insert(dbName, {  id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
+            const result = await insert.insert(dbName, { ...(codigo !== undefined ? { codigo } : {}), id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo });
             const item = { codigo: result.insertId, id, valor, aplicacao, tipo_serv, data_cadastro, data_recadastro, ativo };
             await publishMessage(empresa, 'servico.inserido', item, source);
             return reply.status(201).send(item);

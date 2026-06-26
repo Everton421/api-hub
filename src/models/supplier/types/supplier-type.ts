@@ -1,5 +1,5 @@
 export type SupplierType = {
-    codigo: number;
+    codigo?: number;
     id: string;
     celular: string;
     nome: string;

@@ -148,6 +148,7 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
+                codigo: z.number().optional(),
                 id: z.string(),
                 celular: z.string(),
                 nome: z.string(),
@@ -181,7 +182,7 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { id, celular, nome, cep, endereco, ie, numero,   cidade, vendedor, estado, bairro, ativo } = request.body;
+        const { codigo, id, celular, nome, cep, endereco, ie, numero,   cidade, vendedor, estado, bairro, ativo } = request.body;
         let { cnpj } = request.body
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
@@ -214,6 +215,7 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         }
         try {
             const result = await insert.insert(dbName, { 
+                ...(codigo !== undefined ? { codigo } : {}),
                 id, 
                 celular, 
                 nome, 

@@ -1,5 +1,5 @@
 export type VehicleType = {
-    codigo: number;
+    codigo?: number;
     id: string;
     cliente: number;
     placa: string;
@@ -12,5 +12,3 @@ export type VehicleType = {
     data_recadastro: string;
     ativo: 'S' | 'N';
 };
-
-export type VehicleInsert = Omit<VehicleType, 'codigo'>;

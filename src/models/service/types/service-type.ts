@@ -1,5 +1,5 @@
 export type ServiceType = {
-    codigo: number;
+    codigo?: number;
     id: string;
     valor: number;
     aplicacao: string;

@@ -106,6 +106,7 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
+                codigo: z.number().optional(),
                 id: z.string(),
                 descricao: z.string(),
                 ativo: z.enum(['S', 'N']).default('S')
@@ -136,7 +137,7 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { id, descricao, ativo } = request.body;
+        const { codigo, id, descricao, ativo } = request.body;
 
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
@@ -150,7 +151,7 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
         }
 
         try {
-            const result = await insert.insert(dbName, { id, descricao, ativo, data_cadastro, data_recadastro });
+            const result = await insert.insert(dbName, { ...(codigo !== undefined ? { codigo } : {}), id, descricao, ativo, data_cadastro, data_recadastro });
             const item = { codigo: result.insertId, id, descricao, ativo, data_cadastro, data_recadastro };
             await publishMessage(empresa, 'marca.inserido', item, source);
             return reply.status(201).send(item);

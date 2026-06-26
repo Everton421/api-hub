@@ -120,6 +120,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
+                codigo: z.number().optional(),
                 id: z.coerce.string(),
                 cliente: z.coerce.number(),
                 placa: z.coerce.string(),
@@ -162,7 +163,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { id, cliente, placa, marca, modelo, ano, cor, combustivel, ativo } = request.body;
+        const { codigo, id, cliente, placa, marca, modelo, ano, cor, combustivel, ativo } = request.body;
 
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
@@ -173,7 +174,7 @@ const getVehicleRoute: FastifyPluginAsyncZod = async (server) => {
 
         if( verify.length >  0) return reply.status(400).send({ success: false, message: `vehicle ID ${id} already exists.`}) 
         try {
-            const result = await insert.insert(dbName, { id, cliente, placa, marca, modelo, ano, cor, combustivel, data_cadastro, data_recadastro, ativo });
+            const result = await insert.insert(dbName, { ...(codigo !== undefined ? { codigo } : {}), id, cliente, placa, marca, modelo, ano, cor, combustivel, data_cadastro, data_recadastro, ativo });
             const item = { codigo: result.insertId, id, cliente, placa, marca, modelo, ano, cor, combustivel, data_cadastro, data_recadastro, ativo };
             await publishMessage(empresa, 'veiculo.inserido', item, source);
             return reply.status(200).send(item);

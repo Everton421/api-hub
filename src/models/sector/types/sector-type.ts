@@ -1,5 +1,5 @@
 export type SectorType = {
-    codigo: number;
+    codigo?: number;
     id: string;
     data_cadastro: string;
     data_recadastro: string;

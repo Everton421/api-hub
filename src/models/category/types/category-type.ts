@@ -1,5 +1,5 @@
 export type CategoryType = {
-    codigo: number;
+    codigo?: number;
     descricao: string;
     id: string;
     data_cadastro: string;

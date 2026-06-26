@@ -10,7 +10,7 @@ import { type ProductType } from '../../models/product/types/product-type.ts';
 import { SelectPhoto } from '../../models/photo/select.ts';
 import { type PhotoType } from '../../models/photo/types/photo-type.ts';
 
-type productTypeAndPhotos  = ProductType & { fotos: PhotoType[] }
+type productTypeAndPhotos  = ProductType & { fotos: PhotoType[]; codigo: number }
 const productResponseSchema = z.object({
     codigo: z.number(),
     id: z.coerce.string(),
@@ -214,6 +214,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.object({
+                codigo: z.number().optional(),
                 id: z.coerce.string(),
                 estoque: z.coerce.number().default(0),
                 preco: z.coerce.string().default('0'),
@@ -268,8 +269,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 ...rest,
                 origem: String(origem),
                 data_cadastro,
-                data_recadastro,
-                codigo: 0
+                data_recadastro
             };
 
             const result = await insert.insert(dbName, productData);
