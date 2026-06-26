@@ -94,7 +94,8 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             querystring: z.object({
                 produto: z.coerce.number().optional(),
-                setor: z.coerce.number().optional()
+                setor: z.coerce.number().optional(),
+                search: z.string().optional()
             }),
             response: {
                 200: z.array(productSectorResponseSchema),
@@ -109,19 +110,13 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { produto, setor } = request.query;
+        const { produto, setor, search } = request.query;
 
-        if (!produto) {
-            return reply.status(400).send({ success: false, message: 'Product code is required' });
-        }
-
+        console.log(request.query)
         try {
             let result;
-            if (setor) {
-                result = await select.findByProductAndSector(dbName, produto, setor);
-            } else {
-                result = await select.findByProduct(dbName, produto);
-            }
+                result = await select.findByParams(dbName,{ produto, search, setor});
+
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error searching product sectors:', e);
