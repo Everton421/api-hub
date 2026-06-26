@@ -11,6 +11,7 @@ type ProductMovementQuery = {
     codigo: number;
     usuario: number;
     ent_sai: string;
+    search:string
 };
 
 export class SelectProductMovement {
@@ -40,7 +41,7 @@ export class SelectProductMovement {
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
-
+  
         const [result] = await conn.query(sql, values);
         return result as ProductMovementType[];
     }
@@ -103,7 +104,8 @@ export class SelectProductMovement {
             data_recadastro,
             codigo,
             usuario,
-            ent_sai
+            ent_sai,
+            search
         } = params;
 
         let sql = ` SELECT 
@@ -150,6 +152,21 @@ export class SelectProductMovement {
             conditions.push("mp.historico LIKE ?");
             values.push(`%${historico.toLowerCase()}%`);
         }
+
+       
+    if (search) {
+      const terms = search.trim().split(/\s+/).filter(t => t.length > 0);
+      if (terms.length > 0) {
+        const termConditions = terms.map(() =>
+          '(mp.historico LIKE ? OR p.descricao LIKE ? OR p.num_original LIKE ? OR p.num_fabricante LIKE ?)'
+        );
+        conditions.push( termConditions.join(' AND ')  );
+        terms.forEach(term => {
+          values.push(`%${term.toLocaleLowerCase()}%`, `%${term}%`, `%${term}%`, `%${term}%`);
+        });
+      }
+    }
+
         if (data_recadastro) {
             conditions.push("mp.data_recadastro > ?");
             values.push(data_recadastro);
@@ -158,7 +175,6 @@ export class SelectProductMovement {
         if (conditions.length > 0) {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
-
         const [result] = await conn.query(sql, values);
         return result as ProductMovementType[];
     }

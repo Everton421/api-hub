@@ -8,18 +8,19 @@ import { publishMessage } from '../../services/broker/publish-message.ts';
 import { type ProductMovementType } from '../../models/product-movement/types/product-movement-type.ts';
 
 const productMovementResponseSchema = z.object({
-    codigo: z.number(),
-    setor: z.number(),
-    produto: z.number(),
+    codigo: z.coerce.number(),
+    setor: z.coerce.number(),
+    id:z.string(),
+    produto: z.coerce.number(),
     unidade_medida: z.string(),
     ent_sai: z.string(),
-    quantidade: z.number(),
+    quantidade: z.coerce.number(),
     tipo: z.string(),
     historico: z.string(),
     data_recadastro: z.string(),
-    usuario: z.number(),
-    id_setor: z.number().optional(),
-    id_produto: z.number().optional()
+    usuario: z.coerce.number(),
+    id_setor: z.string().optional(),
+    id_produto: z.string().optional()
 });
 
 const productMovementBodySchema = z.object({
@@ -92,7 +93,8 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                 data_recadastro: z.string().optional(),
                 usuario: z.coerce.number().optional(),
                 ent_sai: z.string().optional(),
-                limit: z.coerce.number().optional()
+                limit: z.coerce.number().optional(),
+                search: z.string().optional()
             }),
             response: {
                 200: z.array(productMovementResponseSchema),
