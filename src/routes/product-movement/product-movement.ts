@@ -13,7 +13,7 @@ const productMovementResponseSchema = z.object({
     produto: z.number(),
     unidade_medida: z.string(),
     ent_sai: z.string(),
-    quantidade: z.string(),
+    quantidade: z.number(),
     tipo: z.string(),
     historico: z.string(),
     data_recadastro: z.string(),
@@ -23,10 +23,9 @@ const productMovementResponseSchema = z.object({
 });
 
 const productMovementBodySchema = z.object({
-    codigo: z.number(),
     setor: z.number(),
     produto: z.number(),
-    quantidade: z.string(),
+    quantidade: z.number(),
     unidade_medida: z.string(),
     tipo: z.string(),
     historico: z.string(),
@@ -87,7 +86,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                 codigo: z.coerce.number().optional(),
                 setor: z.coerce.number().optional(),
                 produto: z.coerce.number().optional(),
-                quantidade: z.string().optional(),
+                quantidade: z.coerce.number().optional(),
                 tipo: z.string().optional(),
                 historico: z.string().optional(),
                 data_recadastro: z.string().optional(),
@@ -151,13 +150,11 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         const source = request.headers.source as string || 'api_internal';
 
         const data_recadastro = dateService.obterDataHoraAtual();
-        const { codigo, usuario} = request.body
+        const {  usuario} = request.body
         const insert = new InsertProductMovement();
         const select = new SelectProductMovement();
 
-                const verify = await select.findByCodeAndUser(dbName, codigo, usuario  )
 
-                    if(verify.length > 0 ) return reply.status(400).send({ success : false, message:`Moviment CODE: ${codigo} `})
         try {
             const movementData = {
                 ...request.body,
@@ -219,14 +216,8 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                     data_recadastro
                 };
 
-                const verify = await select.findByCodeAndUser(dbName,    movement.codigo,  movement.usuario  )
-                console.log(verify)
-                if (verify.length > 0) {
-                    console.log(` o movimento: ${movement.codigo} ja foi registrado  `)
 
-                } else {
-
-                    const result = await insert.insertWithCode(dbName, movementData);
+                    const result = await insert.insert(dbName, movementData);
                     const item: ProductMovementType = {
                         ...movementData,
                         codigo: result.insertId
@@ -234,7 +225,6 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                     results.push(item);
 
                     await publishMessage(empresa, 'movimentosprodutos.inserido', item, source);
-                }
 
             }
 

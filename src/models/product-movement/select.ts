@@ -4,7 +4,7 @@ import { type ProductMovementType } from "./types/product-movement-type.ts";
 type ProductMovementQuery = {
     setor: number;
     produto: number;
-    quantidade: string;
+    quantidade: number;
     tipo: string;
     historico: string;
     data_recadastro: string;

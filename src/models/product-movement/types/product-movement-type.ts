@@ -4,7 +4,7 @@ export type ProductMovementType = {
     produto: number;
     unidade_medida: string;
     ent_sai: string;
-    quantidade: string;
+    quantidade: number;
     tipo: string;
     historico: string;
     data_recadastro: string;

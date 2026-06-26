@@ -262,9 +262,8 @@ export class CompanyStructure {
                 data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
               usuario  int(10) NOT NULL,
               ent_sai  char(1) NOT NULL DEFAULT '',
-              PRIMARY KEY ( id ),
-              UNIQUE KEY  codigo  ( codigo , usuario )
-            ) ENGINE=InnoDB   DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+              PRIMARY KEY ( codigo )
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
             `,
       `CREATE TABLE IF NOT EXISTS ??.locais (
               codigo  int(11) NOT NULL AUTO_INCREMENT,
