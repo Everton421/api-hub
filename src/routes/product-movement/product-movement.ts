@@ -6,12 +6,17 @@ import { InsertProductMovement } from '../../models/product-movement/insert.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 import { type ProductMovementType } from '../../models/product-movement/types/product-movement-type.ts';
+import { SelectProduct } from '../../models/product/select.ts';
 
 const productMovementResponseSchema = z.object({
     codigo: z.coerce.number(),
     setor: z.coerce.number(),
     id:z.string(),
-    produto: z.coerce.number(),
+    produto: z.object({
+                                codigo: z.coerce.number(), 
+                                id: z.coerce.string(), 
+                                descricao: z.coerce.string(),
+           }),
     unidade_medida: z.string(),
     ent_sai: z.string(),
     quantidade: z.coerce.number(),
@@ -59,6 +64,8 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             }
         }
     }, async (request, reply) => {
+        const selectProduct = new SelectProduct();
+
         const select = new SelectProductMovement();
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
@@ -66,11 +73,26 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         const { data_recadastro, limit, usuario } = request.query;
 
         try {
-            let result = await select.findAll(dbName, { data_recadastro: data_recadastro, usuario });
-            if (limit && result.length > limit) {
-                result = result.slice(0, limit);
+            let resultMoviment = await select.findAll(dbName, { data_recadastro: data_recadastro, usuario });
+            if (limit && resultMoviment.length > limit) {
+                resultMoviment = resultMoviment.slice(0, limit);
             }
-            return reply.status(200).send(result);
+    let  resultMovimentRequest:any[] = [] ;
+
+                for( const mov of resultMoviment ){
+                    const produto = mov.produto;
+                    const [product] = await selectProduct.findByCode(dbName, produto );
+                     resultMovimentRequest.push(   {
+                         ...mov,
+                        produto:{
+                                codigo: product.codigo,
+                                id:product.id,
+                                descricao: product.descricao
+                        }
+                     })
+                }
+            return reply.status(200).send(resultMovimentRequest);
+
         } catch (e) {
             console.error('Error fetching product movements:', e);
             return reply.status(500).send({ success: false, message: 'Error fetching product movements' });
@@ -105,6 +127,8 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
             }
         }
     }, async (request, reply) => {
+        const selectProduct = new SelectProduct();
+
         const select = new SelectProductMovement();
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
@@ -112,11 +136,26 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         const { limit, ...searchParams } = request.query;
 
         try {
-            let result = await select.findByParams(dbName, searchParams);
-            if (limit && result.length > limit) {
-                result = result.slice(0, limit);
+            let resultMoviment = await select.findByParams(dbName, searchParams);
+            if (limit && resultMoviment.length > limit) {
+                resultMoviment = resultMoviment.slice(0, limit);
             }
-            return reply.status(200).send(result);
+
+                let  resultMovimentRequest:any[] = [] ;
+
+                for( const mov of resultMoviment ){
+                    const produto = mov.produto;
+                    const [product] = await selectProduct.findByCode(dbName, produto );
+                     resultMovimentRequest.push(   {
+                         ...mov,
+                        produto:{
+                                codigo: product.codigo,
+                                id:product.id,
+                                descricao: product.descricao
+                        }
+                     })
+                }
+            return reply.status(200).send(resultMovimentRequest);
         } catch (e) {
             console.error('Error searching product movements:', e);
             return reply.status(400).send({ success: false, message: 'Error searching product movements' });
