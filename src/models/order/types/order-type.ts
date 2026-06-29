@@ -25,11 +25,12 @@ export type OrderType = {
     tipo: number;
     observacoes: string;
     operacao: 'V' | 'C' // venda ou compra
-    fornecedor:number
+    fornecedor:number,
+    setor: number;
 };
 
 export type OrderReceivedType = {
-    codigo: number;
+    codigo?: number;
     id: string;
     id_externo?: string;
     id_interno?: string;
@@ -48,6 +49,7 @@ export type OrderReceivedType = {
     total_servicos?: string;
     totalSemDesconto?: string;
     operacao: 'V' | 'C' // venda ou compra
+    setor?: number;
     fornecedor?: {
          codigo: number;
          nome?: string;
@@ -73,6 +75,13 @@ export type OrderReceivedType = {
     parcelas: ParcelOrderType[];
 };
 
+export type OrderSeriesType = {
+    lote_serie: number;
+    quantidade: number;
+    serie?: string;
+    lote?: string;
+};
+
 export type ProductOrderType = {
     codigo: number;
     preco: number;
@@ -85,6 +94,7 @@ export type ProductOrderType = {
     descricao?: string;
     quantidade_separada?: number;
     quantidade_faturada?: number;
+    series?: OrderSeriesType[];
 };
 
 export type ServiceOrderType = {

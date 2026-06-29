@@ -21,8 +21,10 @@ const productOrderSchema = z.object({
     sequencia:z.number().nullable(),
      descricao: z.string().optional(),
      id: z.union([z.number(), z.string()]).optional(),
+     controle_lote_serie:z.enum(['S','N']),
     quantidade_separada: z.union([z.number(), z.string()]).optional(),
-    quantidade_faturada: z.union([z.number(), z.string()]).optional()
+    quantidade_faturada: z.union([z.number(), z.string()]).optional(),
+    lote_serie: z.number().optional()
 });
 
 const serviceOrderSchema = z.object({
@@ -81,6 +83,7 @@ const orderResponseSchema = z.object({
     parcelas: z.array(parcelOrderSchema).optional(),
     cliente: clientSchema.nullish(),
     operacao: z.enum([ 'V' , 'C']).describe('V= venda, C = compra '),
+    setor: z.number().optional(),
     fornecedor:supplierSchema.nullish(),
 });
          
@@ -93,7 +96,6 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 source: z.string().optional()
             }),
             body: z.array(z.object({
-                codigo: z.number(),
                 id: z.coerce.string(),
                 id_externo: z.coerce.string().default('0'),
                 id_interno: z.coerce.string().default('0'),
@@ -123,6 +125,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 tipo: z.number(),
                 observacoes: z.string(),
                 observacoes2: z.string(),
+                setor: z.number().optional(),
                 produtos: z.array(productOrderSchema) ,
                 servicos: z.array(serviceOrderSchema) ,
                 parcelas: z.array(parcelOrderSchema) 
@@ -130,7 +133,8 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 201: z.object({
                     results: z.array(z.object({
-                        codigo: z.number(),
+                        id: z.string(),
+                        codigo: z.number().optional(),
                         status: z.string()
                     }))
                 }),
@@ -163,34 +167,36 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         }
 
         try {
-            const results = await Promise.all(request.body.map(async (p:OrderReceivedType) => {
+            const results = await Promise.all(request.body.map(async (p) => {
                 let status: string;
+                let codigo: number | undefined;
 
-                const validPedido = await selectPedido.exists(empresa, p.codigo);
+                const validPedido = await selectPedido.existsByExternalId(empresa, p.id, p.operacao);
 
                 if (validPedido) {
-                    const existingOrder = await selectPedido.findByCode(empresa, p.codigo);
+                    const existingOrder = await selectPedido.findByExternalId(empresa, p.id, p.operacao);
                     if (existingOrder.length > 0) {
                         const existingRecadastro = existingOrder[0].data_recadastro;
                         
                         if (p.data_recadastro && p.data_recadastro > existingRecadastro) {
-                            console.log(`Atualizando pedido ${p.codigo}`);
-                            await updatePedido.update(empresa, p  , p.codigo);
+                            console.log(`Atualizando pedido id=${p.id} operacao=${p.operacao}`);
+                            await updatePedido.updateByExternalId(empresa, p as unknown as OrderReceivedType, p.id, p.operacao);
                             await publishMessage(cnpj, 'pedido.atualizado', p, source);
                             status = 'atualizado';
                         } else {
-                            status = `O pedido ${p.codigo} se encontra atualizado`;
+                            status = `O pedido id=${p.id} se encontra atualizado`;
                         }
                     } else {
-                        status = `Pedido ${p.codigo} não encontrado para atualização`;
+                        status = `Pedido id=${p.id} não encontrado para atualização`;
                     }
                 } else {
-                    await insertPedido.create(empresa, p as OrderReceivedType);
-                    await publishMessage(cnpj, 'pedido.inserido', p, source);
+                    const result = await insertPedido.create(empresa, p as unknown as OrderReceivedType);
+                    codigo = result.insertId;
+                    await publishMessage(cnpj, 'pedido.inserido', { ...p, internalCodigo: codigo }, source);
                     status = 'inserido';
                 }
 
-                return { codigo: p.codigo, status };
+                return { id: p.id, codigo, status };
             }));
 
             return reply.status(201).send({ results });
@@ -224,7 +230,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
             }),
             response: {
-                200: z.array(orderResponseSchema),
+              //  200: z.array(orderResponseSchema),
                 400: z.object({
                     success: z.boolean(),
                     message: z.string()
@@ -326,7 +332,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
              
 
                 try {
-                    produtos = await selectOrderItems.findProductsByOrder(dbName, i.codigo);
+                    produtos = await selectOrderItems.findProductsWithSeriesByOrder(dbName, i.codigo);
                 } catch (e) { console.log(`Erro ao buscar os produtos do pedido ${i.codigo}`); }
 
                 try {
@@ -423,7 +429,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 }
 
                 try {
-                    produtos = await selectOrderItems.findProductsByOrder(dbName, i.codigo);
+                    produtos = await selectOrderItems.findProductsWithSeriesByOrder(dbName, i.codigo);
                 } catch (e) { console.log(`Erro ao buscar os produtos do pedido ${i.codigo}`); }
 
                 try {

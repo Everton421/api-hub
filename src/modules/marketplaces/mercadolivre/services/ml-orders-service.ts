@@ -33,14 +33,14 @@ export class MlOrdersService {
 
         const localOrder = await this.mapToLocalOrder(database, mlOrder, buyerCode);
 
-        const orderExists = await new SelectOrder().exists(database, localOrder.codigo);
+        const orderExists = await new SelectOrder().existsByExternalId(database, localOrder.id, 'V');
 
         if (orderExists) {
-            await new UpdateOrder().update(database, localOrder, localOrder.codigo);
+            await new UpdateOrder().updateByExternalId(database, localOrder, localOrder.id, 'V');
             await publishMessage(cnpj, 'pedido.atualizado', localOrder, 'ml_integration');
         } else {
-            await new InsertOrder().create(database, localOrder);
-            await publishMessage(cnpj, 'pedido.inserido', localOrder, 'ml_integration');
+            const result = await new InsertOrder().create(database, localOrder);
+            await publishMessage(cnpj, 'pedido.inserido', { ...localOrder, internalCodigo: result.insertId }, 'ml_integration');
         }
     }
 
@@ -58,7 +58,7 @@ export class MlOrdersService {
         const buyerName = `${mlBuyer.first_name} ${mlBuyer.last_name}`.trim() || mlBuyer.nickname;
 
         const existing = await selectClient.findByParams(database, { nome: buyerName });
-        if (existing.length > 0) {
+        if (existing.length > 0 && existing[0].codigo) {
             return existing[0].codigo;
         }
 
@@ -101,6 +101,7 @@ export class MlOrdersService {
                 desconto: 0,
                 total: item.full_unit_price * item.quantity,
                 descricao: item.item.title,
+                sequencia: 1,
                 id: item.item.id
             });
         }
@@ -117,10 +118,10 @@ export class MlOrdersService {
         const dataRecadastro = mlOrder.last_updated?.replace('T', ' ').split('.')[0] || new Date().toISOString().replace('T', ' ').split('.')[0];
 
         return {
-            codigo: mlOrder.id,
             id: String(mlOrder.id),
             id_externo: String(mlOrder.id),
             id_interno: String(mlOrder.id),
+            operacao: 'V',
             situacao,
             situacao_separacao: 'N',
             contato: mlOrder.buyer.nickname,

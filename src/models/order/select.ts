@@ -16,12 +16,34 @@ export class SelectOrder {
         return result as OrderType[];
     }
 
+    async findByExternalId(dbName: string, externalId: string, operation: 'V' | 'C'): Promise<OrderType[]> {
+        const sql = `SELECT p.*, c.id as cliente_id, c.nome as cliente_nome,
+            DATE_FORMAT(p.data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(p.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+            CONVERT(p.observacoes USING utf8) AS observacoes
+        FROM ${dbName}.pedidos p 
+        left JOIN ${dbName}.clientes c ON c.codigo = p.cliente 
+        WHERE p.id = ? AND p.operacao = ?`;
+
+        const [result] = await conn.query(sql, [externalId, operation]);
+        return result as OrderType[];
+    }
+
     async exists(dbName: string, code: number): Promise<boolean> {
         const sql = `SELECT COUNT(*) as count
         FROM ${dbName}.pedidos
         WHERE codigo = ?`;
 
         const [result] = await conn.query(sql, [code]);
+        return (result as any)[0].count > 0;
+    }
+
+    async existsByExternalId(dbName: string, externalId: string, operation: 'V' | 'C'): Promise<boolean> {
+        const sql = `SELECT COUNT(*) as count
+        FROM ${dbName}.pedidos
+        WHERE id = ? AND operacao = ?`;
+
+        const [result] = await conn.query(sql, [externalId, operation]);
         return (result as any)[0].count > 0;
     }
 

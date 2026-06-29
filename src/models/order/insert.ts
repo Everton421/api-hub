@@ -21,7 +21,6 @@ export class InsertOrder {
         const insertOrderItems = new InsertOrderItems();
 
         const {
-            codigo,
             forma_pagamento = 0,
             descontos = 0,
             observacoes = '',
@@ -29,7 +28,6 @@ export class InsertOrder {
             total_geral,
             total_produtos,
             total_servicos = 0,
-            totalSemDesconto,
             situacao = 'EA',
             situacao_separacao = 'N',
             tipo ,
@@ -44,7 +42,8 @@ export class InsertOrder {
             id_interno,
             frete ,
             fornecedor,
-            operacao
+            operacao,
+            setor = 0
         } = data;
 
         const servicos = data.servicos || [];
@@ -53,7 +52,6 @@ export class InsertOrder {
         const cliente = data.cliente;
 
         const sql = `INSERT INTO ${dbName}.pedidos (
-            codigo,
             id,
             id_externo,
             id_interno,
@@ -77,11 +75,11 @@ export class InsertOrder {
             tipo,
             observacoes,
             fornecedor,
+            setor,
             operacao
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? )`;
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         const values = [
-            codigo,
             id,
             id_externo,
             id_interno || '',
@@ -105,32 +103,33 @@ export class InsertOrder {
             tipo,
             observacoes,
             fornecedor?.codigo || 0,
+            setor,
             operacao
-
         ];
 
         const [result] = await conn.query(sql, values);
+        const insertId = (result as any).insertId;
 
         let status: boolean | null = null;
         if (servicos.length > 0) {
             try {
-                await insertOrderItems.insertServices(servicos, codigo, dbName);
+                await insertOrderItems.insertServices(servicos, insertId, dbName);
                 status = true;
             } catch (e) { console.log(e); }
         }
         if (produtos.length > 0) {
             try {
-                await insertOrderItems.insertProducts(produtos, dbName, codigo, Number(total_produtos) ?? 0, Number(frete) ?? 0);
+                await insertOrderItems.insertProducts(produtos, dbName, insertId, Number(total_produtos) ?? 0, Number(frete) ?? 0);
                 status = true;
             } catch (e) { console.log(e); }
         }
         if (parcelas.length > 0) {
             try {
-                await insertOrderItems.insertInstallments(parcelas, dbName, codigo);
+                await insertOrderItems.insertInstallments(parcelas, dbName, insertId);
                 status = true;
             } catch (e) { console.log(e); }
         }
 
-        return { insertId: codigo, status: status ?? false };
+        return { insertId, status: status ?? false };
     }
 }

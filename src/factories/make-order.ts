@@ -20,12 +20,6 @@ export class MakeOrder {
     private selectClient = new SelectClient();
     private insertOrderItems = new InsertOrderItems();
 
-    private async getLastOrderCode(dbName: string): Promise<number> {
-        const sql = `SELECT MAX(codigo) as maxCode FROM ${dbName}.pedidos`;
-        const [result] = await conn.query(sql);
-        return (result as any)[0].maxCode || 0;
-    }
-
     private async getProducts(dbName: string, limit: number = 5) {
         const products = await this.selectProduct.findByParams(dbName, { ativo: "S", limit });
         return products;
@@ -38,11 +32,10 @@ export class MakeOrder {
 
     private async insertOrder(
         dbName: string,
-        orderCode: number,
         clientCode: number,
         products: { codigo: number; preco: string; descricao: string }[],
         status: OrderStatus
-    ): Promise<void> {
+    ): Promise<number> {
         const data_cadastro = this.dateService.obterDataAtual();
         const data_recadastro = this.dateService.obterDataHoraAtual();
         const id = randomUUID();
@@ -61,20 +54,20 @@ export class MakeOrder {
                 desconto,
                 total: parseFloat(total.toFixed(2)),
                 descricao: p.descricao,
+                sequencia: 1,
                 quantidade_separada: 0,
                 quantidade_faturada: 0
             };
         });
 
         const sql = `INSERT INTO ${dbName}.pedidos (
-            codigo, id, id_externo, id_interno, vendedor, situacao, situacao_separacao,
+            id, id_externo, id_interno, vendedor, situacao, situacao_separacao,
             contato, descontos, frete, forma_pagamento, quantidade_parcelas,
             total_geral, total_produtos, total_servicos, cliente,
             veiculo, data_cadastro, data_recadastro, tipo_os, enviado, tipo, observacoes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         const values = [
-            orderCode,
             id,
             0,
             "",
@@ -99,13 +92,16 @@ export class MakeOrder {
             ""
         ];
 
-        await conn.query(sql, values);
+        const [result] = await conn.query(sql, values);
+        const orderCode = (result as any).insertId as number;
 
         if (orderProducts.length > 0) {
             await this.insertOrderItems.insertProducts(orderProducts, dbName, orderCode, totalProdutos, 0);
         }
 
         await this.insertInstallments(dbName, orderCode, totalProdutos);
+
+        return orderCode;
     }
 
     private async insertInstallments(dbName: string, orderCode: number, total: number): Promise<void> {
@@ -134,16 +130,14 @@ export class MakeOrder {
             return { success: false, message: "Nenhum cliente encontrado. Crie clientes primeiro.", orders: [] };
         }
 
-        const lastCode = await this.getLastOrderCode(empresa);
         const statuses: OrderStatus[] = ["EA", "FI", "RE", "FP"];
         const results: { codigo: number; situacao: string }[] = [];
 
         for (let i = 0; i < statuses.length; i++) {
-            const orderCode = lastCode + i + 1;
             const randomProducts = faker.helpers.arrayElements(products, { min: 1, max: Math.min(3, products.length) });
             const randomClient = faker.helpers.arrayElement(clients);
 
-            await this.insertOrder(empresa, orderCode, randomClient.codigo, randomProducts, statuses[i]);
+            const orderCode = await this.insertOrder(empresa, randomClient.codigo!, randomProducts, statuses[i]);
             results.push({ codigo: orderCode, situacao: statuses[i] });
         }
 
@@ -165,12 +159,10 @@ export class MakeOrder {
             return { success: false, message: "Nenhum cliente encontrado." };
         }
 
-        const lastCode = await this.getLastOrderCode(empresa);
-        const orderCode = lastCode + 1;
         const randomProducts = faker.helpers.arrayElements(products, { min: 1, max: Math.min(3, products.length) });
         const randomClient = faker.helpers.arrayElement(clients);
 
-        await this.insertOrder(empresa, orderCode, randomClient.codigo, randomProducts, status);
+        const orderCode = await this.insertOrder(empresa, randomClient.codigo!, randomProducts, status);
 
         return { success: true, message: `Pedido ${orderCode} criado com status ${status}.`, codigo: orderCode };
     }

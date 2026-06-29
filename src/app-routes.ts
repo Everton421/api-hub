@@ -23,6 +23,7 @@ import { getVehicleRoute } from "./routes/vehicle/vehicle.ts";
 import { categoryRoute } from "./routes/category/category.ts";
 import { photosRoute } from "./routes/photo/photo.ts";
 import { ordersRoute } from "./routes/order/order.ts";
+import orderSeriesRoute from "./routes/order/order-series.ts";
 import { perfilRoute } from "./routes/perfil/perfil.ts";
  
 import   cors   from '@fastify/cors'
@@ -119,6 +120,7 @@ server.register(loginRoute);
  server.register(productMovementsRoute); 
  server.register(photosRoute);
  server.register(ordersRoute);
+ server.register(orderSeriesRoute);
  server.register(perfilRoute);
  server.register(lotesSeriesRoute);
  server.register(loteSerieSetorRoute);

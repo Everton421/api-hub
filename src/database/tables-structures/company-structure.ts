@@ -98,7 +98,7 @@ export class CompanyStructure {
             );`,
 
       `CREATE TABLE IF NOT EXISTS ??.pedidos (
-                codigo bigint(20)  unsigned NOT NULL DEFAULT 0,
+                codigo bigint(20)  unsigned NOT NULL AUTO_INCREMENT,
                 id  varchar(255) NOT NULL DEFAULT '0',
                 id_externo  varchar(255) DEFAULT NULL,
                 id_interno  varchar(255) DEFAULT NULL,
@@ -122,8 +122,10 @@ export class CompanyStructure {
                 enviado  enum('N','S') NOT NULL DEFAULT 'S',
                 tipo  int(11) NOT NULL DEFAULT 1, 
                 fornecedor  int(11) DEFAULT 0,
+                setor  int(11) DEFAULT 0,
                 operacao  enum('V','C') DEFAULT 'V' COMMENT 'V =VENDA; C = COMPRA',
                 PRIMARY KEY (codigo),
+                UNIQUE KEY uk_id_operacao (id, operacao),
                 KEY id (id) USING BTREE
             );`,
       `CREATE TABLE IF NOT EXISTS ??.produtos_pedido (
@@ -152,6 +154,16 @@ export class CompanyStructure {
                 valor decimal(10,2) NOT NULL DEFAULT 0.00,
                 vencimento date NOT NULL DEFAULT '0000-00-00' 
         
+            );`,
+      `CREATE TABLE IF NOT EXISTS ??.pedido_series (
+                pedido bigint(20) unsigned NOT NULL,
+                produto int(10) unsigned NOT NULL,
+                lote_serie int(10) unsigned NOT NULL,
+                quantidade decimal(10,2) NOT NULL DEFAULT 0.00,
+                PRIMARY KEY (pedido, produto, lote_serie),
+                KEY idx_pedido (pedido),
+                KEY idx_produto (produto),
+                KEY idx_lote_serie (lote_serie)
             );`,
       `CREATE TABLE IF NOT EXISTS ??.usuarios (
                 codigo  int(10)  NOT NULL AUTO_INCREMENT,

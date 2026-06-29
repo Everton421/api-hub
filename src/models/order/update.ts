@@ -3,6 +3,7 @@ import { type OrderReceivedType } from "./types/order-type.ts";
 import { DeleteOrderItems } from "./delete.ts";
 import { InsertOrderItems } from "./insert-items.ts";
 import { SelectOrderItems } from "./select-items.ts";
+import { SelectOrder } from "./select.ts";
 
 export class UpdateOrder {
     async updateOrderTable(dbName: string, data: OrderReceivedType, orderCode: number): Promise<{ affectedRows: number }> {
@@ -27,6 +28,7 @@ export class UpdateOrder {
             situacao_separacao = ?,
             id_interno = ?,
             id_externo = ?,
+            setor = ?,
             operacao = ? 
 
         WHERE codigo = ?`;
@@ -55,12 +57,23 @@ export class UpdateOrder {
             data.situacao_separacao ?? 'N',
             data.id_interno ?? '',
             data.id_externo ?? 0,
+            data.setor ?? 0,
             data.operacao,
             orderCode
         ];
 
         const [result] = await conn.query(sql, values);
         return { affectedRows: (result as any).affectedRows };
+    }
+
+    async updateByExternalId(dbName: string, data: OrderReceivedType, externalId: string, operation: 'V' | 'C'): Promise<number> {
+        const selectOrder = new SelectOrder();
+        const existing = await selectOrder.findByExternalId(dbName, externalId, operation);
+        if (existing.length === 0) {
+            throw new Error(`Pedido com id ${externalId} e operação ${operation} não encontrado`);
+        }
+        const orderCode = existing[0].codigo;
+        return this.update(dbName, data, orderCode);
     }
 
     async update(dbName: string, data: OrderReceivedType, orderCode: number): Promise<number> {
