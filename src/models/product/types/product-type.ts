@@ -16,6 +16,7 @@ export type ProductType = {
     cst: string;
     tipo: number;
     caracteristica: number;
+    controle_lote_serie: 'S' | 'N';
     data_cadastro: string;
     data_recadastro: string;
     observacoes1: string;

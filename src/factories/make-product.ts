@@ -90,7 +90,8 @@ export class MakeProduct {
             observacoes3: '',
             caracteristica: 0,
             ativo: 'S',
-            cst: '00'
+            cst: '00',
+            controle_lote_serie: 'N'
         })
         if(!resultInsertProduct.insertId || resultInsertProduct.insertId === 0  ){
             return { success: false, message: "Erro ao tentar registrar produto."}
@@ -166,7 +167,8 @@ export class MakeProduct {
             observacoes3: '',
             caracteristica: 0,
             ativo: 'S',
-            cst: '00'
+            cst: '00',
+            controle_lote_serie: 'N'
         })
 
                if(!resultInsertProduct.insertId || resultInsertProduct.insertId === 0  ){

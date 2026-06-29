@@ -3,8 +3,8 @@ import { type LotesSeriesInput } from "./types/lotes-series-type.ts";
 
 export class InsertLotesSeries {
     async insert(dbName: string, data: LotesSeriesInput): Promise<{ insertId: number }> {
-        const columns = ['produto', 'lote', 'serie'];
-        const values = [data.produto, data.lote ?? null, data.serie ?? null];
+        const columns = ['produto', 'lote', 'serie', 'data_cadastro', 'data_recadastro'];
+        const values = [data.produto, data.lote ?? null, data.serie ?? null, data.data_cadastro, data.data_recadastro];
 
         if (data.codigo != null) {
             columns.unshift('codigo');

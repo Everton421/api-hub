@@ -7,6 +7,7 @@ import { SelectCategory } from "../../models/category/select.ts";
 import { InsertCategory } from "../../models/category/insert.ts";
 import { publishMessage } from "../../services/broker/publish-message.ts";
 import { UpdateCategory } from "../../models/category/update.ts";
+import { DeleteCategory } from "../../models/category/delete.ts";
 
 export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
     server.get('/bulk/categorias' ,  {
@@ -181,6 +182,47 @@ export const categoryRoute : FastifyPluginAsyncZod = async ( server )=>{
                 return reply.status(400).send({ success: false, message: 'Error inserting category' });
             }
         });
+
+         server.delete('/categorias/:codigo', {
+                schema: {
+                    tags: ['categorias'],
+                    headers: z.object({
+                        token: z.string(),
+                        source: z.string().optional()
+                    }),
+                    params: z.object({ codigo: z.coerce.number() }),
+                    response: {
+                        200: z.object({ success: z.boolean(), message: z.string() }),
+                        400: z.object({ success: z.boolean(), message: z.string() }),
+                        404: z.object({ success: z.boolean(), message: z.string() })
+                    }
+                }
+            }, async (request, reply) => {
+                const decodedToken = DecodedToken(String(request.headers.token));
+                if (!decodedToken.payload?.cnpj) {
+                    return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+                }
+                const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+                const dbName = `\`${empresa}\``;
+                const source = request.headers.source as string || 'api_internal';
+                const { codigo } = request.params;
+
+                try {
+                    const select = new SelectCategory();
+                    const existing = await select.findByCode(dbName, codigo, 1);
+                    if (existing.length === 0) {
+                        return reply.status(404).send({ success: false, message: 'Category not found' });
+                    }
+
+                    const deleteModel = new DeleteCategory();
+                    await deleteModel.delete(dbName, codigo);
+                    await publishMessage(empresa, 'categoria.deletado', { codigo }, source);
+                    return reply.status(200).send({ success: true, message: 'Category deleted successfully' });
+                } catch (e) {
+                    console.error('Error deleting category:', e);
+                    return reply.status(400).send({ success: false, message: 'Error deleting category' });
+                }
+            });
 
          server.put('/categorias', {
                 schema: {

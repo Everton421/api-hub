@@ -4,6 +4,7 @@ import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectClient } from '../../models/client/select.ts';
 import { InsertClient } from '../../models/client/insert.ts';
 import { UpdateClient } from '../../models/client/update.ts';
+import { DeleteClient } from '../../models/client/delete.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
@@ -255,6 +256,47 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         } catch (e) {
             console.error('Error inserting client:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting client' });
+        }
+    });
+
+    server.delete('/clientes/:codigo', {
+        schema: {
+            tags: ['clientes'],
+            headers: z.object({
+                token: z.string(),
+                source: z.string().optional()
+            }),
+            params: z.object({ codigo: z.coerce.number() }),
+            response: {
+                200: z.object({ success: z.boolean(), message: z.string() }),
+                400: z.object({ success: z.boolean(), message: z.string() }),
+                404: z.object({ success: z.boolean(), message: z.string() })
+            }
+        }
+    }, async (request, reply) => {
+        const decodedToken = DecodedToken(String(request.headers.token));
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const source = request.headers.source as string || 'api_internal';
+        const { codigo } = request.params;
+
+        try {
+            const select = new SelectClient();
+            const existing = await select.findByCode(dbName, codigo);
+            if (existing.length === 0) {
+                return reply.status(404).send({ success: false, message: 'Client not found' });
+            }
+
+            const deleteModel = new DeleteClient();
+            await deleteModel.delete(dbName, codigo);
+            await publishMessage(empresa, 'cliente.deletado', { codigo }, source);
+            return reply.status(200).send({ success: true, message: 'Client deleted successfully' });
+        } catch (e) {
+            console.error('Error deleting client:', e);
+            return reply.status(400).send({ success: false, message: 'Error deleting client' });
         }
     });
 

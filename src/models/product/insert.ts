@@ -22,7 +22,8 @@ export class InsertProduct {
             'observacoes1',
             'observacoes2',
             'observacoes3',
-            'caracteristica'
+            'caracteristica',
+            'controle_lote_serie'
         ];
 
         const values = [
@@ -44,7 +45,8 @@ export class InsertProduct {
             data.observacoes1,
             data.observacoes2,
             data.observacoes3,
-            data.caracteristica
+            data.caracteristica,
+            data.controle_lote_serie
         ];
 
         if (data.codigo != null) {

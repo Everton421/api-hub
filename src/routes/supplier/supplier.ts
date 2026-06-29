@@ -4,6 +4,7 @@ import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectSupplier } from '../../models/supplier/select.ts';
 import { InsertSupplier } from '../../models/supplier/insert.ts';
 import { UpdateSupplier } from '../../models/supplier/update.ts';
+import { DeleteSupplier } from '../../models/supplier/delete.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
@@ -206,6 +207,48 @@ const getSuppliersRoute: FastifyPluginAsyncZod = async (server) => {
         } catch (e) {
             console.error('Error inserting supplier:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting supplier' });
+        }
+    });
+
+    /* ---- DELETE /fornecedores/:codigo ---- */
+    server.delete('/fornecedores/:codigo', {
+        schema: {
+            tags: ['fornecedores'],
+            headers: z.object({
+                token: z.string(),
+                source: z.string().optional()
+            }),
+            params: z.object({ codigo: z.coerce.number() }),
+            response: {
+                200: z.object({ success: z.boolean(), message: z.string() }),
+                400: z.object({ success: z.boolean(), message: z.string() }),
+                404: z.object({ success: z.boolean(), message: z.string() })
+            }
+        }
+    }, async (request, reply) => {
+        const decodedToken = DecodedToken(String(request.headers.token));
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const source = request.headers.source as string || 'api_internal';
+        const { codigo } = request.params;
+
+        try {
+            const select = new SelectSupplier();
+            const existing = await select.findByCode(dbName, codigo);
+            if (existing.length === 0) {
+                return reply.status(404).send({ success: false, message: 'Supplier not found' });
+            }
+
+            const deleteModel = new DeleteSupplier();
+            await deleteModel.delete(dbName, codigo);
+            await publishMessage(empresa, 'fornecedor.deletado', { codigo }, source);
+            return reply.status(200).send({ success: true, message: 'Supplier deleted successfully' });
+        } catch (e) {
+            console.error('Error deleting supplier:', e);
+            return reply.status(400).send({ success: false, message: 'Error deleting supplier' });
         }
     });
 

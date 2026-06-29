@@ -4,6 +4,7 @@ import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectBrand } from '../../models/brand/select.ts';
 import { InsertBrand } from '../../models/brand/insert.ts';
 import { UpdateBrand } from '../../models/brand/update.ts';
+import { DeleteBrand } from '../../models/brand/delete.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
@@ -158,6 +159,47 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
         } catch (e) {
             console.error('Error inserting brand:', e);
             return reply.status(400).send({ success: false, message: 'Error inserting brand' });
+        }
+    });
+
+    server.delete('/marcas/:codigo', {
+        schema: {
+            tags: ['marcas'],
+            headers: z.object({
+                token: z.string(),
+                source: z.string().optional()
+            }),
+            params: z.object({ codigo: z.coerce.number() }),
+            response: {
+                200: z.object({ success: z.boolean(), message: z.string() }),
+                400: z.object({ success: z.boolean(), message: z.string() }),
+                404: z.object({ success: z.boolean(), message: z.string() })
+            }
+        }
+    }, async (request, reply) => {
+        const decodedToken = DecodedToken(String(request.headers.token));
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const source = request.headers.source as string || 'api_internal';
+        const { codigo } = request.params;
+
+        try {
+            const select = new SelectBrand();
+            const existing = await select.findByCode(dbName, codigo);
+            if (existing.length === 0) {
+                return reply.status(404).send({ success: false, message: 'Brand not found' });
+            }
+
+            const deleteModel = new DeleteBrand();
+            await deleteModel.delete(dbName, codigo);
+            await publishMessage(empresa, 'marca.deletado', { codigo }, source);
+            return reply.status(200).send({ success: true, message: 'Brand deleted successfully' });
+        } catch (e) {
+            console.error('Error deleting brand:', e);
+            return reply.status(400).send({ success: false, message: 'Error deleting brand' });
         }
     });
 

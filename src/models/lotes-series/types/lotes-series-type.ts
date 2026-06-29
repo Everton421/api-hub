@@ -1,8 +1,10 @@
 export type LotesSeriesType = {
-    codigo?: number;
+    codigo: number;
     produto: number;
     lote: string | null;
     serie: string | null;
+    data_cadastro: string;
+    data_recadastro: string;
 };
 
 export type LotesSeriesInput = {
@@ -10,4 +12,6 @@ export type LotesSeriesInput = {
     produto: number;
     lote?: string | null;
     serie?: string | null;
+    data_cadastro?: string;
+    data_recadastro?: string;
 };

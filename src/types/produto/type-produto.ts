@@ -23,7 +23,8 @@ export type ProdutoBanco =
         observacoes1:string,  
         observacoes2:string, 
         observacoes3:string,
-        caracteristica:number
+        caracteristica:number,
+        controle_lote_serie: 'S' | 'N',
         tipo:number 
           fotos: any     
 }       
@@ -48,7 +49,8 @@ export type ProdutoCompleto =
         data_recadastro:string, 
         observacoes1:string,  
         observacoes2:string, 
-        observacoes3:string, 
+        observacoes3:string,
+        controle_lote_serie: 'S' | 'N', 
         tipo:number 
         
 } 

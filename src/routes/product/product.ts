@@ -34,6 +34,7 @@ const productResponseSchema = z.object({
     observacoes2: z.string(),
     observacoes3: z.string(),
     tipo: z.number(),
+    controle_lote_serie: z.enum(['S', 'N']).default('N'),
     fotos: z.array(
             z.object({
                 produto: z.number(),
@@ -230,6 +231,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 class_fiscal: z.string().default(''),
                 cst: z.string().default(''),
                 caracteristica: z.number().default(0),
+                controle_lote_serie: z.enum(['S', 'N']).default('N'),
                 observacoes1: z.string().default(''),
                 observacoes2: z.string().default(''),
                 observacoes3: z.string().default(''),
@@ -273,7 +275,8 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             };
 
             const result = await insert.insert(dbName, productData);
-            const item = { ...productData, codigo: result.insertId , fotos:[]};
+            const fotosPost: PhotoType[] = [];
+            const item = { ...productData, codigo: result.insertId , fotos: fotosPost};
 
             await publishMessage(empresa, 'produto.inserido', item, source);
             return reply.status(201).send(item);
@@ -308,6 +311,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 cst: z.string().default(''),
                 tipo: z.number().default(0),
                 caracteristica: z.number().default(0),
+                controle_lote_serie: z.enum(['S', 'N']).default('N'),
                 observacoes1: z.string().default(''),
                 observacoes2: z.string().default(''),
                 observacoes3: z.string().default('')
@@ -359,7 +363,8 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             const result = await update.update(dbName, productData);
 
             if (result.affectedRows > 0) {
-                const item = { ...productData, fotos:[] };
+                const fotosPut: PhotoType[] = [];
+                const item = { ...productData, fotos: fotosPut };
                 await publishMessage(empresa, 'produto.atualizado', item, source);
                 return reply.status(200).send(item);
             }

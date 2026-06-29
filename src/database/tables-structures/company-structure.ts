@@ -32,6 +32,7 @@ export class CompanyStructure {
                   observacoes3  blob DEFAULT NULL,
                   tipo  int(10) NOT NULL DEFAULT 0,
                   caracteristica int(10) NOT NULL DEFAULT 0,
+                  controle_lote_serie enum('S','N') DEFAULT 'N',
                   PRIMARY KEY ( codigo )
               );`,
       `CREATE TABLE IF NOT EXISTS ??.servicos (
@@ -372,6 +373,8 @@ export class CompanyStructure {
             produto int(10) unsigned NOT NULL DEFAULT 0,
             lote varchar(50) DEFAULT NULL,
             serie varchar(50) DEFAULT NULL,
+            data_cadastro date NOT NULL DEFAULT '2000-01-01',
+            data_recadastro datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
             PRIMARY KEY (codigo),
             UNIQUE KEY prod_lote_serie (produto, lote, serie),
             KEY serie (serie)

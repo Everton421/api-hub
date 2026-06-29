@@ -23,7 +23,8 @@ export class UpdateProduct {
             observacoes1 = ?,
             observacoes2 = ?,
             observacoes3 = ?,
-            caracteristica = ?
+            caracteristica = ?,
+            controle_lote_serie = ?
         WHERE codigo = ?`;
 
         const values = [
@@ -47,6 +48,7 @@ export class UpdateProduct {
             data.observacoes2,
             data.observacoes3,
             data.caracteristica,
+            data.controle_lote_serie,
             data.codigo
         ];
 
