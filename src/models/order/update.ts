@@ -97,8 +97,11 @@ export class UpdateOrder {
 
         const productCount = await selectOrderItems.countProductsByOrder(dbName, orderCode);
         if (productCount > 0) {
-            await deleteOrderItems.deleteProducts(dbName, orderCode);
+            await deleteOrderItems.deleteProducts(dbName, orderCode);            
+            await deleteOrderItems.deleteSeriesOrder(dbName, orderCode);
         }
+
+
         if (produtos.length > 0) {
             await insertOrderItems.insertProducts(produtos, dbName, orderCode, Number(data.total_produtos) ?? 0, Number(data.frete) ?? 0);
         }

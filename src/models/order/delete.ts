@@ -6,6 +6,11 @@ export class DeleteOrderItems {
         const [result] = await conn.query(sql, [orderCode]);
         return { affectedRows: (result as any).affectedRows };
     }
+   async deleteSeriesOrder(dbName: string, orderCode: number): Promise<{ affectedRows: number }> {
+        const sql = `DELETE FROM ${dbName}.pedido_series WHERE pedido = ?`;
+        const [result] = await conn.query(sql, [orderCode]);
+        return { affectedRows: (result as any).affectedRows };
+    }
 
     async deleteServices(dbName: string, orderCode: number): Promise<{ affectedRows: number }> {
         const sql = `DELETE FROM ${dbName}.servicos_pedido WHERE pedido = ?`;

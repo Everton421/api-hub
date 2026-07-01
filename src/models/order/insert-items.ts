@@ -21,8 +21,24 @@ export class InsertOrderItems {
                 sequencia,
                 quantidade_separada = 0,
                 quantidade_faturada = 0
+                  
             } = p;
-         
+            const series = products[i].series
+
+            if(series && series.length > 0 ){
+                for( const s of series ){
+
+                const sqlInsertSerie = ` INSERT INTO ${dbName}.pedido_series
+                set pedido = ?,
+                    produto = ?,
+                    lote_serie = ?,
+                    quantidade =?
+                 `  
+                    const valuesSeries = [orderCode, codigo, s.lote_serie, s.quantidade]
+                 await conn.query(sqlInsertSerie,valuesSeries )
+                }
+            }
+
             const productValue = quantidade * preco;
             const factor = productValue / totalProducts;
             const freight = factor * totalFreight;
@@ -41,7 +57,9 @@ export class InsertOrderItems {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
             const values = [orderCode, codigo, sequencia, desconto, quantidade, preco, freight, total, quantidade_separada, quantidade_faturada];
+            
             await conn.query(sql, values);
+
         }
     }
 
