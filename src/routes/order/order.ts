@@ -24,7 +24,15 @@ const productOrderSchema = z.object({
      controle_lote_serie:z.enum(['S','N']),
     quantidade_separada: z.union([z.number(), z.string()]).optional(),
     quantidade_faturada: z.union([z.number(), z.string()]).optional(),
-    lote_serie: z.number().optional()
+    lote_serie: z.number().optional(),
+    series: z.array(
+        z.object({
+            lote_serie: z.number(),
+            quantidade: z.string() ,
+            serie: z.string(),
+            lote: z.string().nullable()
+        })
+    )
 });
 
 const serviceOrderSchema = z.object({
@@ -449,6 +457,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     fornecedor
                 };
             }));
+            console.log(orcamentos_registrados[0].produtos[0])
             return reply.status(200).send(orcamentos_registrados[0]);
         } catch (error) {
             console.error('Erro ao buscar orçamentos:', error);
