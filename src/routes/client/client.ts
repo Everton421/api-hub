@@ -11,19 +11,19 @@ import { publishMessage } from '../../services/broker/publish-message.ts';
 const clientResponseSchema = z.object({
     codigo: z.number(),
     id: z.string(),
-    celular: z.string(),
+    celular: z.string().nullable(),
     nome: z.string(),
     cep: z.string(),
-    endereco: z.string(),
-    ie: z.string(),
+    endereco: z.string().nullable(),
+    ie: z.string().nullable(),
     numero: z.string(),
     cnpj: z.string(),
-    cidade: z.string(),
+    cidade: z.string().nullable(),
     data_cadastro: z.string(),
     data_recadastro: z.string().nullable(),
     vendedor: z.number(),
-    estado: z.string(),
-    bairro: z.string(),
+    estado: z.string().nullable(),
+    bairro: z.string().nullable(),
     ativo: z.string()
 });
 
