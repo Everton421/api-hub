@@ -178,8 +178,8 @@ server.get('/empresa', {
                          nome_empresa: z.string().max(255),
                          email_empresa:z.string().max(255),
                          telefone_empresa: z.string().max(255),
-                         dados_teste: z.boolean().default( true ),
-                         tipo_contrato: z.enum([ 'T' , 'N']).default("T"),
+                         dados_teste: z.boolean().default( true ).describe("Registra dados ficticios na empresa"),
+                         tipo_contrato: z.enum([ 'T' , 'N']).default("T").describe("T=teste, N= normal"),
                     })
 
                 })
@@ -263,11 +263,15 @@ server.get('/empresa', {
                                                 /// //////////////// 
                                                 ///   items de teste
                                                 
+                                                if(dados_teste){
                                                   await factoryProduct.createByFakeStoreApi( dbName, 5)
                                                   await makeService.createService( dbName,3)
                                                   await makeClient.create(dbName, 5)
                                                   await makeOrder.create(dbName,'EA');
-                                                /// //////////
+                                                }
+
+                                                  /// //////////
+
                                const userCompanyRegister = await insertUsersCompany.insert(dbName, objUser)
                                const userCompanyId = userCompanyRegister.insertId;
                             const secret = process.env.SECRET;
