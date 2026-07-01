@@ -121,6 +121,17 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
             try {
                 await connInstance.query('START TRANSACTION');
 
+                const previousSeries = await orderSeriesModel.findByOrder(empresa, codigo);
+
+                if (previousSeries.length > 0) {
+                    for (const ps of previousSeries) {
+                        const sql = `UPDATE ${empresa}.lote_serie_setor
+                            SET estoque = estoque + ?
+                            WHERE setor = ? AND lote_serie = ?`;
+                        await conn.query(sql, [ps.quantidade, order.setor, ps.lote_serie]);
+                    }
+                }
+
                 await orderSeriesModel.deleteByOrder(empresa, codigo);
 
                 let totalSeriesRegistradas = 0;
