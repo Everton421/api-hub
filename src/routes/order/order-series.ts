@@ -213,7 +213,8 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                 codigo: z.coerce.number()
             }),
             querystring: z.object({
-                setor: z.coerce.number().optional()
+                setor: z.coerce.number().optional(),
+                serie: z.coerce.string().optional()
             }),
             response: {
                 200: z.array(z.object({
@@ -254,6 +255,7 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
         const dbName = `\`${empresa}\``;
         const { codigo } = request.params;
         const { setor: querySetor } = request.query;
+        const { serie } = request.query;
 
         try {
             const existingOrder = await selectPedido.findByCode(dbName, codigo);
@@ -282,12 +284,17 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                     };
                 }
 
-                const sql = `SELECT lss.lote_serie, ls.serie, ls.lote, lss.estoque
+                let sql = `SELECT lss.lote_serie, ls.serie, ls.lote, lss.estoque
                 FROM ${dbName}.lote_serie_setor lss
                 JOIN ${dbName}.lotes_series ls ON ls.codigo = lss.lote_serie
                 WHERE lss.produto = ? AND lss.setor = ? AND lss.estoque > 0`;
+                const valuesQuery:any[] = [p.codigo, setor]
+                if(serie){
+                    sql +=' AND ls.serie = ? ';
+                    valuesQuery.push(serie)
+                }
 
-                const [seriesRows] = await conn.query(sql, [p.codigo, setor]);
+                const [seriesRows] = await conn.query(sql, valuesQuery);
                 const seriesDisponiveis = seriesRows as { lote_serie: number; serie: string; lote: string; estoque: number }[];
 
                 return {
