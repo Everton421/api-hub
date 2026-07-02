@@ -59,6 +59,10 @@ export class SelectLoteSerieSetor {
             values.push(filters.setor);
         }
 
+        if(filters.serie){
+            conditions.push('ls.serie = ?');
+            values.push(filters.serie);
+        }
 
         if (filters.produto && filters.produto > 0 ) {
             conditions.push('lss.produto = ?');
