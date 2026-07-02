@@ -8,14 +8,19 @@ import { SelectLoteSerieSetor } from '../../models/lote-serie-setor/select.ts';
 import { conn } from '../../database/databaseConfig.ts';
 import { DateService } from '../../utils/dateService.ts';
 
-const separacaoItemSchema = z.object({
-    produto: z.number(),
-    quantidade_separada: z.number(),
-    series: z.array(z.object({
-        lote_serie: z.number(),
-        quantidade: z.number()
-    })).optional()
-});
+const separacaoItemSchema =  z.object({
+  itens: z.array(
+        z.object({
+            produto: z.number(),
+            quantidade_separada: z.number(),
+            series: z.array(z.object({
+                lote_serie: z.number(),
+                quantidade: z.number()
+            })).optional()
+        }) 
+    ),
+    setor: z.number()
+})
 
 const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
     server.post('/pedidos/:codigo/separar', {
@@ -28,9 +33,7 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
             params: z.object({
                 codigo: z.coerce.number()
             }),
-            body: z.object({
-                itens: z.array(separacaoItemSchema)
-            }),
+            body: separacaoItemSchema ,
             response: {
                 200: z.object({
                     success: z.boolean(),
@@ -69,7 +72,7 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = `\`${cnpj}\``;
         const source = request.headers.source as string || 'api_internal';
         const { codigo } = request.params;
-        const { itens } = request.body;
+        const { itens, setor } = request.body;
 
         try {
             const existingOrder = await selectPedido.findByCode(empresa, codigo);
@@ -175,8 +178,8 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                     situacaoSeparacao = 'N';
                 }
 
-                const sqlUpdateOrder = `UPDATE ${empresa}.pedidos SET situacao_separacao = ? WHERE codigo = ?`;
-                await conn.query(sqlUpdateOrder, [situacaoSeparacao, codigo]);
+                const sqlUpdateOrder = `UPDATE ${empresa}.pedidos SET situacao_separacao = ? , setor = ? WHERE codigo = ?`;
+                await conn.query(sqlUpdateOrder, [situacaoSeparacao, setor, codigo]);
 
                 await connInstance.query('COMMIT');
 
