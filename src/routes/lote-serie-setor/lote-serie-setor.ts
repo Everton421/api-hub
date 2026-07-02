@@ -39,7 +39,7 @@ const loteSerieSetorRoute: FastifyPluginAsyncZod = async (server) => {
                 setor: z.coerce.number().optional(),
                 produto: z.coerce.number().optional(),
                 lote_serie: z.coerce.number().optional(),
-                estoque_filter: z.enum(['positivo', 'negativo', 'zerado', 'todos']).optional()
+                situacao_estoque: z.enum(['positivo', 'negativo', 'zerado', 'todos']).optional()
             }),
             response: {
                 200: z.array(loteSerieSetorResponseSchema),
@@ -54,14 +54,14 @@ const loteSerieSetorRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { setor, produto, lote_serie, estoque_filter } = request.query;
+        const { setor, produto, lote_serie,  situacao_estoque } = request.query;
 
         try {
             const result = await select.findByFilters(dbName, {
                 setor,
                 produto,
                 lote_serie,
-                estoqueFilter: estoque_filter
+                estoqueFilter: situacao_estoque
             });
             return reply.status(200).send(result);
         } catch (e) {
