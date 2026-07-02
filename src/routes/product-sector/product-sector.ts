@@ -11,11 +11,11 @@ const productSectorResponseSchema = z.object({
     setor: z.number(),
     produto: z.number(),
     estoque: z.number(),
-    local_produto: z.string(),
-    local1_produto: z.string(),
-    local2_produto: z.string(),
-    local3_produto: z.string(),
-    local4_produto: z.string(),
+    local_produto: z.string().nullable(),
+    local1_produto: z.string().nullable(),
+    local2_produto: z.string().nullable(),
+    local3_produto: z.string().nullable(),
+    local4_produto: z.string().nullable(),
     data_recadastro: z.string(),
     id_produto: z.string(),
     id_setor: z.string()
@@ -36,11 +36,11 @@ const productSectorOfflineBodySchema = z.array(z.object({
     setor: z.number(),
     produto: z.number(),
     estoque: z.number(),
-    local_produto: z.string().default(''),
-    local1_produto: z.string().default(''),
-    local2_produto: z.string().default(''),
-    local3_produto: z.string().default(''),
-    local4_produto: z.string().default(''),
+    local_produto: z.string().default('').nullable(),
+    local1_produto: z.string().default('').nullable(),
+    local2_produto: z.string().default('').nullable(),
+    local3_produto: z.string().default('').nullable(),
+    local4_produto: z.string().default('').nullable(),
     data_recadastro: z.string().optional()
 }));
 
