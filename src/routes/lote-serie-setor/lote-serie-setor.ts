@@ -9,7 +9,9 @@ const loteSerieSetorResponseSchema = z.object({
     setor: z.number(),
     produto: z.number(),
     lote_serie: z.number(),
-    estoque: z.number()
+    estoque: z.number(),
+    lote:z.string().nullable(),
+    serie:z.string().nullable(),
 });
 
 const loteSerieSetorBodySchema = z.object({
@@ -36,7 +38,8 @@ const loteSerieSetorRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 setor: z.coerce.number().optional(),
                 produto: z.coerce.number().optional(),
-                lote_serie: z.coerce.number().optional()
+                lote_serie: z.coerce.number().optional(),
+                estoque_filter: z.enum(['positivo', 'negativo', 'zerado', 'todos']).optional()
             }),
             response: {
                 200: z.array(loteSerieSetorResponseSchema),
@@ -51,21 +54,15 @@ const loteSerieSetorRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { setor, produto, lote_serie } = request.query;
+        const { setor, produto, lote_serie, estoque_filter } = request.query;
 
         try {
-            let result;
-            if (setor && lote_serie) {
-                result = await select.findBySectorAndLoteSerie(dbName, setor, lote_serie);
-            } else if (setor) {
-                result = await select.findBySector(dbName, setor);
-            } else if (produto) {
-                result = await select.findByProduct(dbName, produto);
-            } else if (lote_serie) {
-                result = await select.findByLoteSerie(dbName, lote_serie);
-            } else {
-                result = await select.findAll(dbName);
-            }
+            const result = await select.findByFilters(dbName, {
+                setor,
+                produto,
+                lote_serie,
+                estoqueFilter: estoque_filter
+            });
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error searching lote-serie-setor:', e);

@@ -1,6 +1,14 @@
 import { conn } from "../../database/databaseConfig.ts";
 import { type LoteSerieSetorType } from "./types/lote-serie-setor-type.ts";
 
+type resultLoteSerieSearch = {
+        setor: number;
+    produto: number;
+    lote_serie: number;
+    estoque: number;
+    serie:string | null
+    lote: string | null
+}
 export class SelectLoteSerieSetor {
     async findAll(dbName: string): Promise<LoteSerieSetorType[]> {
         const sql = `SELECT * FROM ${dbName}.lote_serie_setor`;
@@ -30,5 +38,58 @@ export class SelectLoteSerieSetor {
         const sql = `SELECT * FROM ${dbName}.lote_serie_setor WHERE setor = ? AND lote_serie = ?`;
         const [result] = await conn.query(sql, [setor, loteSerie]);
         return result as LoteSerieSetorType[];
+    }
+
+    async findByFilters(
+        dbName: string,
+        filters: {
+            setor?: number;
+            produto?: number;
+            lote_serie?: number;
+            serie?:string;
+            lote?:string;
+            estoqueFilter?: 'positivo' | 'negativo' | 'zerado' | 'todos';
+        }
+    ): Promise<resultLoteSerieSearch[]> {
+        const conditions: string[] = [];
+        const values: (number | string)[] = [];
+
+        if (filters.setor && filters.setor > 0 ) {
+            conditions.push('lss.setor = ?');
+            values.push(filters.setor);
+        }
+
+
+        if (filters.produto && filters.produto > 0 ) {
+            conditions.push('lss.produto = ?');
+            values.push(filters.produto);
+        }
+
+        if (filters.lote_serie !== undefined) {
+            conditions.push('lss.lote_serie = ?');
+            values.push(filters.lote_serie);
+        }
+
+        if (filters.estoqueFilter && filters.estoqueFilter !== 'todos') {
+            if (filters.estoqueFilter === 'positivo') {
+                conditions.push('lss.estoque > 0');
+            } else if (filters.estoqueFilter === 'negativo') {
+                conditions.push('lss.estoque < 0');
+            } else if (filters.estoqueFilter === 'zerado') {
+                conditions.push('lss.estoque = 0');
+            }
+        }
+
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const sql = `SELECT 
+                            lss.*,
+                            ls.lote,
+                            ls.serie
+                 FROM ${dbName}.lote_serie_setor lss 
+                 JOIN ${dbName}.lotes_series ls on ls.codigo = lss.lote_serie
+                 ${whereClause}`;
+
+        const [result] = await conn.query(sql, values);
+        return result as resultLoteSerieSearch[];
     }
 }
