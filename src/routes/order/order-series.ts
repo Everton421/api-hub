@@ -219,14 +219,14 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                 200: z.array(z.object({
                     codigo: z.number(),
                     descricao: z.string().optional(),
-                    quantidade: z.number(),
-                    quantidade_separada: z.number().optional(),
+                    quantidade: z.coerce.number(),
+                    quantidade_separada: z.coerce.number().optional(),
                     controle_lote_serie: z.string().optional(),
                     series_disponiveis: z.array(z.object({
-                        lote_serie: z.number(),
+                        lote_serie: z.coerce.number(),
                         serie: z.string().nullable(),
                         lote: z.string().nullable(),
-                        estoque: z.number()
+                        estoque: z.coerce.number()
                     }))
                 })),
                 400: z.object({
@@ -304,13 +304,81 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                     }))
                 };
             }));
-
+            console.log(result)
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Erro ao buscar séries disponíveis:', e);
             return reply.status(500).send({ success: false, message: 'Erro interno ao buscar séries disponíveis' });
         }
     });
+
+      server.get('/pedidos/:codigo/lotes-series', {
+        schema: {
+            tags: ['pedidos'],
+            headers: z.object({
+                token: z.string()
+            }),
+            params: z.object({
+                codigo: z.coerce.number()
+            }),
+            response: {
+                200: z.array(z.object({
+                        lote_serie: z.coerce.number(),
+                        serie: z.string().nullable(),
+                        lote: z.string().nullable(),
+                        quantidade: z.coerce.number(),
+                        produto: z.coerce.number()
+                })),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const selectPedido = new SelectOrder();
+
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const { codigo } = request.params;
+
+        try {
+            const existingOrder = await selectPedido.findByCode(dbName, codigo);
+            if (existingOrder.length === 0) {
+                return reply.status(400).send({ success: false, message: `Pedido ${codigo} não encontrado` });
+            }
+
+
+                const sql = `select 
+                        ls.codigo as lote_serie,
+                        ls.serie ,
+                        ls.lote,
+                        pls.produto,
+                        pls.quantidade
+                        from ${dbName}.lotes_series ls 
+                            join ${dbName}.pedido_series pls on pls.lote_serie = ls.codigo
+                            where pls.pedido = ? `;
+
+                const [rows] = await conn.query(sql, codigo);
+                const loteSerie = rows as  { lote_serie:number, serie:string | null, lote:string | null, produto:number, quantidade:number }[]
+            console.log(rows)
+            return reply.status(200).send(loteSerie);
+        } catch (e) {
+            console.error('Erro ao buscar séries disponíveis:', e);
+            return reply.status(500).send({ success: false, message: 'Erro interno ao buscar séries disponíveis' });
+        }
+    });
+
 };
 
 export { orderSeriesRoute };
