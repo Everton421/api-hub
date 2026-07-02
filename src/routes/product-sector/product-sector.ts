@@ -165,7 +165,6 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
 
             if (existing.length > 0) {
                 const resultVerify = existing[0];
-                if (new Date(data_recadastro) > new Date(resultVerify.data_recadastro)) {
                     const objInsert = {
                         setor,
                         produto,
@@ -181,9 +180,6 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                     const [updated] = await select.findByProductAndSector(dbName, produto, setor);
                     await publishMessage(empresa, 'produtosetor.atualizado', updated, source);
                     return reply.status(200).send({ success: true, message: 'Stock updated successfully' });
-                } else {
-                    return reply.status(200).send({ success: true, message: 'No update needed - sent date is older or equal' });
-                }
             } else {
                 const objInsert = {
                     setor,
@@ -261,7 +257,6 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
 
                 if (existing.length > 0) {
                     const resultVerify = existing[0];
-                    if (new Date(data_recadastro) > new Date(resultVerify.data_recadastro)) {
                         const objInsert = {
                             setor: item.setor,
                             produto: item.produto,
@@ -277,7 +272,6 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                         const [updated] = await select.findByProductAndSector(dbName, item.produto, item.setor);
                         await publishMessage(empresa, 'produtosetor.atualizado', updated, source);
                         updatedItens.push({ produto: item.produto });
-                    }
                 } else {
                     const objInsert = {
                         setor: item.setor,
