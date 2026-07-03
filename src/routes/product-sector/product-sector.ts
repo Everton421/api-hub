@@ -169,11 +169,11 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                         setor,
                         produto,
                         estoque,
-                        local_produto,
-                        local1_produto,
-                        local2_produto,
-                        local3_produto,
-                        local4_produto,
+                        local_produto: local_produto || '',
+                        local1_produto: local1_produto || '',
+                        local2_produto: local2_produto || '' ,
+                        local3_produto: local3_produto || '',
+                        local4_produto: local4_produto || '',
                         data_recadastro
                     };
                     await insert.insertOrUpdate(dbName, objInsert);
@@ -185,11 +185,11 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                     setor,
                     produto,
                     estoque,
-                    local_produto,
-                    local1_produto,
-                    local2_produto,
-                    local3_produto,
-                    local4_produto,
+                    local_produto: local_produto || '',
+                    local1_produto: local1_produto || '',
+                    local2_produto: local2_produto || '' ,
+                    local3_produto: local3_produto || '',
+                    local4_produto: local4_produto || '',
                     data_recadastro
                 };
                 await insert.insertOrUpdate(dbName, objInsert);
@@ -261,11 +261,11 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                             setor: item.setor,
                             produto: item.produto,
                             estoque: item.estoque,
-                            local_produto: item.local_produto,
-                            local1_produto: item.local1_produto,
-                            local2_produto: item.local2_produto,
-                            local3_produto: item.local3_produto,
-                            local4_produto: item.local4_produto,
+                            local_produto: item.local_produto || '',
+                            local1_produto: item.local1_produto || '',
+                            local2_produto: item.local2_produto || '',
+                            local3_produto: item.local3_produto || '',
+                            local4_produto: item.local4_produto || '',
                             data_recadastro
                         };
                         await insert.insertOrUpdate(dbName, objInsert);
@@ -277,11 +277,11 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                         setor: item.setor,
                         produto: item.produto,
                         estoque: item.estoque,
-                        local_produto: item.local_produto,
-                        local1_produto: item.local1_produto,
-                        local2_produto: item.local2_produto,
-                        local3_produto: item.local3_produto,
-                        local4_produto: item.local4_produto,
+                        local_produto: item.local_produto || '',
+                        local1_produto: item.local1_produto || '' ,
+                        local2_produto: item.local2_produto || '' ,
+                        local3_produto: item.local3_produto || '' ,
+                        local4_produto: item.local4_produto || '' ,
                         data_recadastro
                     };
                     await insert.insertOrUpdate(dbName, objInsert);
