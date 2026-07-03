@@ -7,6 +7,7 @@ import { SelectOrderItems } from '../../models/order/select-items.ts';
 import { SelectLoteSerieSetor } from '../../models/lote-serie-setor/select.ts';
 import { conn } from '../../database/databaseConfig.ts';
 import { DateService } from '../../utils/dateService.ts';
+import { publishMessage } from '../../services/broker/publish-message.ts';
 
 const separacaoItemSchema =  z.object({
   itens: z.array(
@@ -182,7 +183,9 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                 await conn.query(sqlUpdateOrder, [situacaoSeparacao, setor, codigo]);
 
                 await connInstance.query('COMMIT');
-
+                            
+                await publishMessage(cnpj, 'pedido.separado', { pedido: codigo, situacao_separacao: situacaoSeparacao, itens_processados: itens.length, series_registradas: totalSeriesRegistradas }, source);
+                
                 return reply.status(200).send({
                     success: true,
                     message: 'Separação realizada com sucesso',
