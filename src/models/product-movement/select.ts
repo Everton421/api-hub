@@ -144,7 +144,7 @@ export class SelectProductMovement {
             conditions.push("mp.usuario = ?");
             values.push(usuario);
         }
-        if (ent_sai) {
+        if (ent_sai != '*') {
             conditions.push("mp.ent_sai = ?");
             values.push(ent_sai);
         }

@@ -128,7 +128,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                 historico: z.string().optional(),
                 data_recadastro: z.string().optional(),
                 usuario: z.coerce.number().optional(),
-                ent_sai: z.string().optional(),
+                ent_sai: z.enum(['E','S', '*']).default('*').optional().describe('E = Entrada, S = Saida, * = Todos'),
                 limit: z.coerce.number().optional(),
                 search: z.string().optional()
             }),
