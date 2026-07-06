@@ -130,7 +130,7 @@ const lotesSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                 data_cadastro,
                 data_recadastro
             };
-            await publishMessage(empresa, 'lotesseriel.inserido', item, source);
+            await publishMessage(empresa, 'lotesserie.inserido', item, source);
             return reply.status(201).send(item);
         } catch (e) {
             console.error('Error inserting lotes-series:', e);
@@ -182,7 +182,7 @@ const lotesSeriesRoute: FastifyPluginAsyncZod = async (server) => {
             await update.update(dbName, updateData);
 
             const [updated] = await select.findByCode(dbName, codigo);
-            await publishMessage(empresa, 'lotesseriel.atualizado', updated, source);
+            await publishMessage(empresa, 'lotesserie.atualizado', updated, source);
             return reply.status(200).send(updated);
         } catch (e) {
             console.error('Error updating lotes-series:', e);
@@ -268,7 +268,7 @@ const lotesSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                             data_cadastro,
                             data_recadastro
                         };
-                        await publishMessage(empresa, 'lotesseriel.inserido', inserted, source);
+                        await publishMessage(empresa, 'lotesserie.inserido', inserted, source);
                         itens.push({ codigo: result.insertId, acao: 'inserido' });
                     }
                 } else {
@@ -289,7 +289,7 @@ const lotesSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                         data_cadastro,
                         data_recadastro
                     };
-                    await publishMessage(empresa, 'lotesseriel.inserido', inserted, source);
+                    await publishMessage(empresa, 'lotesserie.inserido', inserted, source);
                     itens.push({ codigo: result.insertId, acao: 'inserido' });
                 }
             }
