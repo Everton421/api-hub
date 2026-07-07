@@ -8,10 +8,10 @@ import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 
 const lotesSeriesResponseSchema = z.object({
-    codigo: z.number(),
-    produto: z.number(),
-    lote: z.string().nullable(),
-    serie: z.string().nullable(),
+    codigo: z.coerce.number(),
+    produto: z.coerce.number(),
+    lote: z.coerce.string().nullable(),
+    serie: z.coerce.string().nullable(),
     data_cadastro: z.string(),
     data_recadastro: z.string()
 });
@@ -47,7 +47,8 @@ const lotesSeriesRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 codigo: z.coerce.number().optional(),
                 produto: z.coerce.number().optional(),
-                serie: z.string().optional()
+                serie: z.string().optional(),
+                lote: z.string().optional()
             }),
             response: {
                 200: z.array(lotesSeriesResponseSchema),
@@ -62,19 +63,10 @@ const lotesSeriesRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { codigo, produto, serie } = request.query;
 
         try {
-            let result;
-            if (codigo) {
-                result = await select.findByCode(dbName, codigo);
-            } else if (produto) {
-                result = await select.findByProduct(dbName, produto);
-            } else if (serie) {
-                result = await select.findBySerie(dbName, serie);
-            } else {
-                result = await select.findAll(dbName);
-            }
+            
+             let  result = await select.findByFilters(dbName,request.query );
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error searching lotes-series:', e);
