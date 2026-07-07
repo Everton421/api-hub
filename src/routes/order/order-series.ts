@@ -185,7 +185,7 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                 await connInstance.query('COMMIT');
                 
                             
-                await publishMessage(cnpj, 'pedido.separado', { pedido: codigo, tip:order.tipo ,situacao_separacao: situacaoSeparacao, itens_processados: itens.length, series_registradas: totalSeriesRegistradas }, source);
+                await publishMessage(cnpj, 'pedido.separado', { pedido: codigo, tipo:order.tipo ,situacao_separacao: situacaoSeparacao, itens_processados: itens.length, series_registradas: totalSeriesRegistradas }, source);
                 
                 return reply.status(200).send({
                     success: true,
