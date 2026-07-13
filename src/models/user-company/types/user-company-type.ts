@@ -16,5 +16,8 @@ export type NewUserCompany = Omit<UserCompany, "codigo" | "tipo_contrato" | "dat
 
 export type UserCompanyQuery = {
     codigo?: number;
-    limit?: number;
+    nome?:   string;
+    email?:  string
+    limit?:  number;
+    ativo?: 'S' | 'N'
 };

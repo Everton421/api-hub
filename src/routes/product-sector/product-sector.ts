@@ -177,6 +177,7 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                         data_recadastro
                     };
                     await insert.insertOrUpdate(dbName, objInsert);
+
                     const [updated] = await select.findByProductAndSector(dbName, produto, setor);
                     await publishMessage(empresa, 'produtosetor.atualizado', updated, source);
                     return reply.status(200).send({ success: true, message: 'Stock updated successfully' });
@@ -194,6 +195,7 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
                 };
                 await insert.insertOrUpdate(dbName, objInsert);
                 const [newResult] = await select.findByProductAndSector(dbName, produto, setor);
+                
                 await publishMessage(empresa, 'produtosetor.atualizado', newResult, source);
                 return reply.status(200).send({ success: true, message: 'Stock updated successfully' });
             }

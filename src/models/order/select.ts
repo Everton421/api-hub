@@ -3,7 +3,7 @@ import { type OrderType } from "./types/order-type.ts";
 
 export class SelectOrder {
     async findByCode(dbName: string, code: number): Promise<OrderType[]> {
-        const sql = `SELECT p.*, c.id as cliente_id, c.nome as cliente_nome,
+        const sql = `SELECT p.*,
             DATE_FORMAT(p.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(p.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
             CONVERT(p.observacoes USING utf8) AS observacoes
@@ -120,7 +120,8 @@ export class SelectOrder {
         id?: string;
         situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP'| 'BM' | '*',
         situacao_separacao?: 'I' | 'P' | 'N',
-        orderBy?: "id_externo" | "codigo" | "id_interno" | "id" | "nome" | "data_recadastro"
+        orderBy?: "id_externo" | "codigo" | "id_interno" | "id" | "nome" | "data_recadastro",
+        filial?:number
     }): Promise<OrderType[]> {
         const {
             startDate,
@@ -136,7 +137,8 @@ export class SelectOrder {
             type,
             codigo, id, id_interno, id_externo,
             orderBy,
-            supplier
+            supplier,
+            filial
         } = params;
 
         const sql = `SELECT pe.*, 
@@ -192,6 +194,10 @@ export class SelectOrder {
         if (situacao && situacao != '*') {
             conditions.push("pe.situacao = ?");
             values.push(String(situacao));
+        }
+        if(filial && filial != undefined ){
+            conditions.push("pe.filial = ?");
+            values.push(Number(filial));
         }
 
         if (search) {

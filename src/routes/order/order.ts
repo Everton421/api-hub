@@ -1,5 +1,5 @@
 import { type FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import z from 'zod';
+import z, { number } from 'zod';
 import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectOrder } from '../../models/order/select.ts';
 import { InsertOrder } from '../../models/order/insert.ts';
@@ -65,12 +65,12 @@ const supplierSchema = z.object({
 const orderResponseSchema = z.object({
     codigo: z.union([z.number(), z.string()]),
     id: z.union([z.number(), z.string()]).optional(),
-    id_externo: z.union([z.number(), z.string()]).optional(),
-    id_interno: z.string().optional(),
+    id_externo: z.union([z.number(), z.string()]).nullable(),
+    id_interno: z.string().nullable(),
     vendedor: z.union([z.number(), z.string()]),
     situacao:z.enum([ 'EA' , 'FI' , 'RE' , 'AI' , 'FP', 'BM' ]).optional().describe(" EA = Em aberto/orcamento , FI = Faturado integralmente , AI = aprovado/pedido , FP = faturado parcialmente, BM = Baixado manualmente"),
     situacao_separacao: z.enum(['N','P','I']).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
-    contato: z.string().optional(),
+    contato: z.string().nullable(),
     descontos: z.union([z.number(), z.string()]).optional(),
     frete: z.union([z.number(), z.string()]).optional(),
     forma_pagamento: z.union([z.number(), z.string()]).optional(),
@@ -83,9 +83,9 @@ const orderResponseSchema = z.object({
     data_recadastro: z.string().optional(),
     tipo_os: z.union([z.number(), z.string()]).optional(),
     enviado: z.enum(['S' , 'N']).default('S').optional(),
-    tipo: z.union([z.number(), z.string()]).optional(),
+    tipo: z.union([z.number(), z.string()]).optional().describe('1 = venda, 6 = pedido de compra '),
     nome: z.string().optional(),
-    observacoes: z.string().optional(),
+    observacoes: z.string().nullable(),
     produtos: z.array(productOrderSchema).optional(),
     servicos: z.array(serviceOrderSchema).optional(),
     parcelas: z.array(parcelOrderSchema).optional(),
@@ -93,6 +93,7 @@ const orderResponseSchema = z.object({
     operacao: z.enum([ 'V' , 'C']).describe('V= venda, C = compra '),
     setor: z.number().optional(),
     fornecedor:supplierSchema.nullish(),
+    filial: z.coerce.number()
 });
          
 const ordersRoute: FastifyPluginAsyncZod = async (server) => {
@@ -122,10 +123,10 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 cliente: z.object({
                     codigo: z.number()
                 }).optional(),
-
                 fornecedor: z.object({
                     codigo: z.number()
                 }).optional(),
+                filial: z.number().default(0),
                 veiculo: z.number(),
                 data_cadastro: z.string(),
                 data_recadastro: z.string(),
@@ -235,7 +236,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 situacao_separacao: z.enum([ 'I' , 'P' , 'N' ]).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
                 orderBy: z.enum(["id_externo", "codigo", "id_interno", "id", "nome" , "data_recadastro"]).default('data_recadastro').describe("Ordena os pedidos atravéz do id_externo, codigo, id_interno, id e pelo nome do cliente ."),
                 operacao:z.enum(['V', 'C']).optional().describe('V= venda, C = compra '),
-
+                filial: z.coerce.number().optional()
             }),
             response: {
               //  200: z.array(orderResponseSchema),
@@ -264,7 +265,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const {  data_final, data_inicial ,operacao, search , tipo, vendedor, limit, situacao, situacao_separacao, orderBy} = request.query;
+        const { filial, data_final, data_inicial ,operacao, search , tipo, vendedor, limit, situacao, situacao_separacao, orderBy} = request.query;
 
         const {id_externo, id_interno, codigo  , id } = request.query;
 
@@ -300,7 +301,8 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                         codigo,
                         id,
                         id_interno,
-                        operation:operacao
+                        operation:operacao,
+                        filial 
                         });
 
             if (dados_orcamentos.length === 0) {
@@ -312,17 +314,15 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 let servicos: OrderItemService[] = [];
                 let parcelas: OrderInstallment[] = [];
                 let cliente: any;
-                let fornecedor: any;
+                let fornecedor: any = null;
 
                 if(i.operacao == 'C' && i.fornecedor > 0 ){
                         try{
                         const resultSupplier = await selectSupplier.findByCode(dbName, i.fornecedor);
-                        if(resultSupplier.length > 0){
-                        const { codigo, id, nome } =resultSupplier[0];
-                                fornecedor = {  codigo,  nome, id }
-                        }else{
-                            fornecedor = null;
-                        }
+                                if(resultSupplier.length > 0){
+                                const { codigo, id, nome } =resultSupplier[0];
+                                        fornecedor = {  codigo,  nome, id }
+                                } 
                             } catch (e) { console.log(`Erro ao buscar o fornecedor do pedido ${i.codigo} `, e); }
 
                 }
@@ -419,7 +419,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 let servicos: OrderItemService[] = [];
                 let parcelas: OrderInstallment[] = [];
                 let cliente: any;
-                let fornecedor: any;
+                let fornecedor: any = null;
 
                try {
                     const resultCliente = await selectCliente.findByCode(dbName, i.cliente);
@@ -430,7 +430,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
                    const resultSupplier = await selectSupplier.findByCode(dbName, i.fornecedor);
                    const { codigo, id, nome } =resultSupplier[0];
-                    fornecedor = resultSupplier.length > 0 ? {  codigo,  nome, id } : undefined;
+                    fornecedor = resultSupplier.length > 0 ? {  codigo,  nome, id } : null;
                
                 }catch(e){
 
@@ -457,7 +457,6 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                     fornecedor
                 };
             }));
-            console.log(orcamentos_registrados[0].produtos[0])
             return reply.status(200).send(orcamentos_registrados[0]);
         } catch (error) {
             console.error('Erro ao buscar orçamentos:', error);

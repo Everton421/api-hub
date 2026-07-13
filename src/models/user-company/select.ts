@@ -44,8 +44,21 @@ export class SelectUserCompany {
             conditions.push("codigo = ?");
             values.push(query.codigo);
         }
+        if(query.email){
+           conditions.push(' email LIKE ? ') 
+            values.push(`%${query.email}%`);
+        }
 
-        if (conditions.length > 0) {
+        if(query.nome){
+           conditions.push(' nome LIKE ? ') 
+            values.push(`%${query.nome}%`);
+        } 
+        if(query.ativo){
+         conditions.push('   ativo LIKE ? ') 
+            values.push(`%${query.ativo}%`);
+        }
+
+        if (conditions.length > 0) {    
             sql += " WHERE " + conditions.join(" AND ");
         }
 

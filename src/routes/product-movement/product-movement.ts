@@ -16,7 +16,7 @@ const productMovementResponseSchema = z.object({
                     id: z.coerce.string(), 
                     descricao: z.coerce.string(),
            }), 
-    id:z.string(),
+    id:z.coerce.string(),
     produto: z.object({
                     codigo: z.coerce.number(), 
                     id: z.coerce.string(), 

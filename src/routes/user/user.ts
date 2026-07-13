@@ -92,7 +92,10 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             querystring: z.object({
                 codigo: z.coerce.number().optional(),
-                limit: z.coerce.number().optional()
+                limit: z.coerce.number().optional(),
+                email: z.coerce.string().optional(),
+                nome: z.coerce.string().optional(),
+                ativo: z.enum(["S", "N"]).optional()
             }),
             response: {
                 200: z.array(z.object({
@@ -118,9 +121,9 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
         if (!dbName) {
             return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
         }
-
+        const { codigo, email, limit,nome, ativo } = request.query;
         try {
-            const result = await select.findByParams(dbName, request.query);
+            const result = await select.findByParams(dbName, { codigo, email, limit, nome, ativo });
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error searching users:', e);

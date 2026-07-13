@@ -124,6 +124,7 @@ export class CompanyStructure {
                 fornecedor  int(11) DEFAULT 0,
                 setor  int(11) DEFAULT 0,
                 operacao  enum('V','C') DEFAULT 'V' COMMENT 'V =VENDA; C = COMPRA',
+                filial  int(11) DEFAULT 0,
                 PRIMARY KEY (codigo),
                 UNIQUE KEY uk_id_operacao (id, operacao),
                 KEY id (id) USING BTREE
@@ -155,6 +156,16 @@ export class CompanyStructure {
                 vencimento date NOT NULL DEFAULT '0000-00-00' 
         
             );`,
+
+          `CREATE TABLE  IF NOT EXISTS  ??.filiais  (
+            codigo  int(10) NOT NULL AUTO_INCREMENT,
+            nome_fantasia  varchar(255) DEFAULT NULL,
+            razao_social  varchar(255) DEFAULT NULL,
+            cnpj  varchar(255) DEFAULT NULL,
+            ativo  char(1) NOT NULL DEFAULT 'S',
+            PRIMARY KEY ( codigo ) USING BTREE
+          );
+          `,
       `CREATE TABLE IF NOT EXISTS ??.pedido_series (
                 pedido bigint(20) unsigned NOT NULL,
                 produto int(10) unsigned NOT NULL,

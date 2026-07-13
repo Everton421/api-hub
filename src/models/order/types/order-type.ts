@@ -27,6 +27,7 @@ export type OrderType = {
     operacao: 'V' | 'C' // venda ou compra
     fornecedor:number,
     setor: number;
+    filial:number
 };
 
 export type OrderReceivedType = {
@@ -73,7 +74,9 @@ export type OrderReceivedType = {
     produtos: ProductOrderType[];
     servicos: ServiceOrderType[];
     parcelas: ParcelOrderType[];
-};
+    filial:number
+}
+;
 
 export type OrderSeriesType = {
     lote_serie: number;
