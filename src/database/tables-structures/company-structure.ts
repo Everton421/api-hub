@@ -9,6 +9,42 @@ export class CompanyStructure {
     const sqlTables = [
       `CREATE DATABASE IF NOT EXISTS ??;`
       ,
+      `CREATE TABLE  IF NOT EXISTS ??.requerimentos  (
+       codigo  int(10) unsigned NOT NULL AUTO_INCREMENT,
+       data_requerimento  date NOT NULL DEFAULT '0000-00-00',
+       requerente  int(10) unsigned NOT NULL DEFAULT 0,
+       data_efetuacao  date NOT NULL DEFAULT '0000-00-00',
+       responsavel  int(10) unsigned NOT NULL DEFAULT 0,
+       pedido  int(10)    ,
+       setor_origem  int(10) unsigned DEFAULT 0,
+       setor_destino  int(10) unsigned DEFAULT 0,
+       historico  text  ,
+       situacao  enum('A','C','E') NOT NULL DEFAULT 'A' COMMENT 'A = Em aberto; C = Cancelado; E = Efetuado',
+      PRIMARY KEY ( codigo ),
+      KEY  data_requerimento  ( data_requerimento ),
+      KEY  requerente  ( requerente ),
+      KEY  data_efetuacao  ( data_efetuacao ),
+      KEY  responsavel  ( responsavel ),
+      KEY  situacao  ( situacao )
+    ) ; `,
+     `CREATE TABLE IF NOT EXISTS ??.produtos_requerimento (
+       requerimento int(10) unsigned NOT NULL DEFAULT 0,
+       produto int(10) unsigned NOT NULL DEFAULT 0,
+       quantidade int(10) NOT NULL DEFAULT 0,
+       custo decimal(15,6) default '0.00', 
+      PRIMARY KEY ( requerimento , produto )
+    ) ;
+     `,
+    ` CREATE TABLE  IF NOT EXISTS ??.lotes_series_requerimento  (
+         requerimento int(10) unsigned NOT NULL DEFAULT 0,
+         produto int(10) unsigned NOT NULL DEFAULT 0,
+         lote_serie int(10) unsigned NOT NULL DEFAULT 0,
+         quantidade int(10) NOT NULL DEFAULT 0,
+        PRIMARY KEY ( requerimento , produto , lote_serie ),
+        KEY  lote_serie  ( lote_serie ),
+        KEY  requerimento  ( requerimento )
+      ); `
+      ,
       `CREATE TABLE IF NOT EXISTS ??.produtos (
                   codigo int(11) unsigned NOT NULL AUTO_INCREMENT,
                   id  varchar(255) NOT NULL DEFAULT 0,

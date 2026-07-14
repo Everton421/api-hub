@@ -39,6 +39,7 @@ import { mlNotificationsRoute } from "./modules/marketplaces/mercadolivre/routes
 import { lotesSeriesRoute } from "./routes/lotes-series/lotes-series.ts";
 import { loteSerieSetorRoute } from "./routes/lote-serie-setor/lote-serie-setor.ts";
 import { branchesCompanyRoute } from "./routes/branches-company/branches-company.ts";
+import requirementsRoute from "./routes/requirements/requirements.ts";
 let certPathEnv;
 if(process.env.PATH_CERT_CERT) certPathEnv = String(process.env.PATH_CERT_CERT)
 
@@ -138,6 +139,7 @@ server.register(marketplacesRoute);
 server.register(GetMlUserTestRoute);
 server.register(mlNotificationsRoute);
 server.register(branchesCompanyRoute);
+server.register(requirementsRoute);
 
 
  
