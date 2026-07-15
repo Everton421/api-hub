@@ -25,7 +25,8 @@ const requirementBodySchema = z.object({
     setor_origem: z.number(),
     setor_destino: z.number(),
     historico: z.string().optional(),
-    itens: z.array(requirementItemSchema)
+    itens: z.array(requirementItemSchema),
+    situacao: z.enum(['A', 'C', 'E']).default('A'),
 });
 
 const requirementUpdateBodySchema = z.object({
@@ -33,8 +34,8 @@ const requirementUpdateBodySchema = z.object({
     setor_origem: z.number().optional(),
     setor_destino: z.number().optional(),
     historico: z.string().optional(),
-    situacao: z.enum(['A', 'C', 'E']),
-    itens: z.array(requirementItemSchema).optional()
+    situacao: z.enum(['A', 'C', 'E']).default('A'),
+    itens: z.array(requirementItemSchema).optional(),
 });
 
 const requirementResponseSchema = z.object({
@@ -92,7 +93,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { requerente, setor_origem, setor_destino, historico, itens } = request.body;
+        const { requerente, setor_origem, setor_destino, historico, itens , situacao } = request.body;
 
         if (!itens || itens.length === 0) {
             return reply.status(400).send({ erro: true, msg: 'Informe ao menos um item' });
@@ -113,7 +114,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 setor_origem,
                 setor_destino,
                 historico: historico || '',
-                situacao: 'A'
+                situacao 
             });
 
             const codigoRequerimento = result.insertId;
