@@ -214,6 +214,13 @@ const getClientsRoute: FastifyPluginAsyncZod = async (server) => {
         if(verify.length > 0 ){
             return reply.status(400).send({ success:false, message: `Cliente ID ${id} already exists.`})
         }
+        if(codigo){
+            const verifyByCode = await select.findByParams(dbName, { codigo: codigo})
+             if(verifyByCode.length > 0 ){
+                return reply.status(400).send({ success:false, message: `Cliente Code ${codigo} already exists.`})
+            }
+        } 
+
         try {
             const result = await insert.insert(dbName, { 
                 ...(codigo !== undefined ? { codigo } : {}),
