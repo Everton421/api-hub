@@ -22,10 +22,12 @@ const requirementItemSchema = z.object({
 
 const requirementBodySchema = z.object({
     requerente: z.number(),
+    responsavel: z.number(),
     setor_origem: z.number(),
     setor_destino: z.number(),
     historico: z.string().optional(),
     itens: z.array(requirementItemSchema),
+    data_efetuacao: z.string().optional(),
     situacao: z.enum(['A', 'C', 'E']).default('A'),
 });
 
@@ -51,7 +53,6 @@ const requirementResponseSchema = z.object({
     situacao: z.enum(['A','C','E']),
     itens: z.array(z.object({
         produto: z.number(),
-        descricao: z.string(),
         quantidade: z.number(),
         custo: z.number().nullable(),
         lotes_series: z.array(z.object({
@@ -93,7 +94,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { requerente, setor_origem, setor_destino, historico, itens , situacao } = request.body;
+        const { requerente, setor_origem, setor_destino, responsavel,  historico, data_efetuacao,  itens , situacao } = request.body;
 
         if (!itens || itens.length === 0) {
             return reply.status(400).send({ erro: true, msg: 'Informe ao menos um item' });
@@ -108,8 +109,8 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             const result = await insertRequerimento.insert(dbName, {
                 data_requerimento,
                 requerente,
-                data_efetuacao: '0000-00-00',
-                responsavel: requerente,
+                data_efetuacao: data_efetuacao || '0000-00-00',
+                 responsavel,
                 pedido: null,
                 setor_origem,
                 setor_destino,
@@ -157,13 +158,13 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 codigo: codigoRequerimento,
                 data_requerimento,
                 requerente,
-                data_efetuacao: '0000-00-00',
-                responsavel: requerente,
+                data_efetuacao: data_efetuacao || '0000-00-00',
+                responsavel ,
                 pedido: null,
                 setor_origem,
                 setor_destino,
                 historico: historico || '',
-                situacao: "A",
+                situacao ,
                 itens: responseItens
             };
 
