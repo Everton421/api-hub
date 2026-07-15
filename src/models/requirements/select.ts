@@ -5,6 +5,7 @@ export class SelectRequirements {
     async findAll(
         dbName: string,
         filters: {
+            codigo?:number,
             situacao?: string;
             data_requerimento?: string;
             setor_origem?: number;
@@ -25,10 +26,16 @@ export class SelectRequirements {
             values.push(filters.data_requerimento);
         }
 
-        if (filters.setor_origem) {
+        if (filters.setor_origem  ) {
             conditions.push('setor_origem = ?');
             values.push(filters.setor_origem);
         }
+
+        if (filters.codigo  ) {
+            conditions.push('codigo = ?');
+            values.push(filters.codigo);
+        }
+        
 
         if (filters.setor_destino) {
             conditions.push('setor_destino = ?');
@@ -43,6 +50,7 @@ export class SelectRequirements {
             DATE_FORMAT(data_efetuacao, '%Y-%m-%d') AS data_efetuacao,
             DATE_FORMAT(data_requerimento, '%Y-%m-%d') AS data_requerimento
         FROM ${dbName}.requerimentos ${whereClause} ORDER BY codigo DESC ${limitClause}`;
+
         const [result] = await conn.query(sql, values);
         return result as Requirements[];
     }

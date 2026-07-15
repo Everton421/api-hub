@@ -16,6 +16,7 @@ const loteSerieItemSchema = z.object({
 const requirementItemSchema = z.object({
     produto: z.number(),
     quantidade: z.number(),
+    descricao: z.string().optional(),
     custo: z.number().optional().nullable(),
     lotes_series: z.array(loteSerieItemSchema).optional()
 });
@@ -43,22 +44,20 @@ const requirementUpdateBodySchema = z.object({
 const requirementResponseSchema = z.object({
     codigo: z.number(),
     data_requerimento: z.string(),
-    requerente: z.number(),
+    requerente: z.coerce.number(),
     data_efetuacao: z.string(),
-    responsavel: z.number(),
-    pedido: z.number().nullable(),
-    setor_origem: z.number(),
-    setor_destino: z.number(),
+    responsavel: z.coerce.number(),
+    pedido: z.coerce.number().nullable(),
+    setor_origem: z.coerce.number(),
+    setor_destino: z.coerce.number(),
     historico: z.string(),
     situacao: z.enum(['A','C','E']),
     itens: z.array(z.object({
-        produto: z.number(),
-        quantidade: z.number(),
-        custo: z.number().nullable(),
-        lotes_series: z.array(z.object({
-            lote_serie: z.number(),
-            quantidade: z.number()
-        }))
+        produto: z.coerce.number(),
+        descricao: z.string().optional(),
+        quantidade: z.coerce.number(),
+        custo: z.coerce.number().nullable(),
+        lotes_series:  z.array(loteSerieItemSchema)
     }))
 });
 
@@ -149,6 +148,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 responseItens.push({
                     produto: dbItem.produto,
                     quantidade: dbItem.quantidade,
+                    descricao: dbItem.descricao,
                     custo: dbItem.custo,
                     lotes_series: dbLotes.map(l => ({ lote_serie: l.lote_serie, quantidade: l.quantidade }))
                 });
@@ -184,11 +184,13 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 token: z.string()
             }),
             querystring: z.object({
-                situacao: z.string().optional(),
+                codigo: z.coerce.number().optional(),
+                situacao:  z.enum(['A','C','E']).optional(),
                 data_requerimento: z.string().optional(),
                 setor_origem: z.coerce.number().optional(),
                 setor_destino: z.coerce.number().optional(),
                 limit: z.coerce.number().optional()
+
             }),
             response: {
                 200: z.array(requirementResponseSchema),
