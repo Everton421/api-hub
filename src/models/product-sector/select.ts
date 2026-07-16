@@ -1,5 +1,5 @@
 import { conn } from "../../database/databaseConfig.ts";
-import { type ProductSectorType } from "./types/product-sector-type.ts";
+import { type ProductSectorType, type GroupedProductSectorType } from "./types/product-sector-type.ts";
    type queryByParams={
             setor:number,
             produto:number,
@@ -114,6 +114,94 @@ export class SelectProductSector {
             sql = sql + ' WHERE ' + conditions.join(' AND ')
         const [result] = await conn.query(sql, values);
         return result as ProductSectorType[];
+    }
+
+    async findByParamsGrouped(dbName: string, query: Partial<queryByParams>): Promise<GroupedProductSectorType[]> {
+        const { produto, search, setor } = query;
+
+        let sql = ` SELECT 
+            ps.setor,
+            ps.produto,
+            ps.estoque,
+            ps.local_produto,
+            ps.local1_produto,
+            ps.local2_produto,
+            ps.local3_produto,
+            ps.local4_produto,
+            s.descricao AS setor_descricao,
+            s.id AS id_setor,
+            s.ativo AS setor_ativo,
+            p.descricao AS produto_descricao,
+            p.id AS id_produto
+         FROM ${dbName}.produto_setor ps 
+         JOIN ${dbName}.setores s ON s.codigo = ps.setor
+         JOIN ${dbName}.produtos p ON p.codigo = ps.produto`;
+
+        const values: any[] = [];
+        const conditions: string[] = [];
+
+        conditions.push('s.ativo = ?');
+        values.push('S');
+
+        if (produto) {
+            conditions.push('ps.produto = ?');
+            values.push(produto);
+        }
+        if (setor) {
+            conditions.push('ps.setor = ?');
+            values.push(setor);
+        }
+
+        if (search) {
+            const terms = search.trim().split(/\s+/).filter(t => t.length > 0);
+            if (terms.length > 0) {
+                const termConditions = terms.map(() =>
+                    '(s.descricao LIKE ? OR p.descricao LIKE ?)'
+                );
+                conditions.push(`(${termConditions.join(' AND ')})`);
+                terms.forEach(term => {
+                    values.push(`%${term.toLocaleLowerCase()}%`, `%${term.toLowerCase()}%`);
+                });
+            }
+        }
+
+        sql = sql + ' WHERE ' + conditions.join(' AND ');
+
+        const [rows] = await conn.query(sql, values) as [any[], any];
+
+        const productMap = new Map<number, GroupedProductSectorType>();
+
+        for (const row of rows) {
+            const produtoCodigo = row.produto;
+
+            if (!productMap.has(produtoCodigo)) {
+                productMap.set(produtoCodigo, {
+                    produto: {
+                        codigo: produtoCodigo,
+                        descricao: row.produto_descricao,
+                        id: row.id_produto
+                    },
+                    setor: []
+                });
+            }
+
+            const grouped = productMap.get(produtoCodigo)!;
+
+            grouped.setor.push({
+                codigo: row.setor,
+                descricao: row.setor_descricao,
+                ativo: row.setor_ativo,
+                id: row.id_setor,
+                estoque: row.estoque,
+                local_produto: row.local_produto,
+                local1_produto: row.local1_produto,
+                local2_produto: row.local2_produto,
+                local3_produto: row.local3_produto,
+                local4_produto: row.local4_produto
+            });
+        }
+
+        return Array.from(productMap.values());
     }
 
 }

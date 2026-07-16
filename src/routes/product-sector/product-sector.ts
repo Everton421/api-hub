@@ -124,6 +124,59 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
+    server.get('/produtos-setor/search-grouped', {
+        schema: {
+            tags: ['produtos-setor'],
+            headers: z.object({
+                token: z.string()
+            }),
+            querystring: z.object({
+                produto: z.coerce.number().optional(),
+                setor: z.coerce.number().optional(),
+                search: z.string().optional()
+            }),
+            response: {
+                200: z.array(z.object({
+                    produto: z.object({
+                        codigo: z.number(),
+                        descricao: z.string(),
+                        id: z.string()
+                    }),
+                    setor: z.array(z.object({
+                        codigo: z.number(),
+                        descricao: z.string(),
+                        ativo: z.string(),
+                        id: z.string(),
+                        estoque: z.number(),
+                        local_produto: z.string().nullable(),
+                        local1_produto: z.string().nullable(),
+                        local2_produto: z.string().nullable(),
+                        local3_produto: z.string().nullable(),
+                        local4_produto: z.string().nullable()
+                    }))
+                })),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const select = new SelectProductSector();
+        const decodedToken = DecodedToken(String(request.headers.token));
+        const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const { produto, setor, search } = request.query;
+
+        try {
+            const result = await select.findByParamsGrouped(dbName, { produto, search, setor });
+            return reply.status(200).send(result);
+        } catch (e) {
+            console.error('Error searching grouped product sectors:', e);
+            return reply.status(400).send({ success: false, message: 'Error searching grouped product sectors' });
+        }
+    });
+
     server.put('/produtos-setor', {
         schema: {
             tags: ['produtos-setor'],
