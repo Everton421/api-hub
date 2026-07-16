@@ -1,67 +1,75 @@
 
-import amqp, { type Channel, type ChannelModel } from 'amqplib'; 
+import amqp, { type Channel, type ChannelModel } from 'amqplib';
 
-    let connectionRabbitMQ: ChannelModel | null = null;
-    let channel: Channel | null = null
-        const exchange = process.env.EXCHANGE_NAME
+let connectionRabbitMQ: ChannelModel | null = null;
+let channel: Channel | null = null;
+const exchange = process.env.EXCHANGE_NAME;
 
-        export async function connectRabbitMQ(){
-            const broker_url = process.env.BROKER_URL;
-                if(!exchange ) throw new Error("process.env.EXCHANGE_NAME não configurada ");
-                if( !broker_url ) throw new Error("process.env.BROKER_URL não configurada ");
-        
-                if( connectionRabbitMQ && channel){
-                    return;
-                }
+function cleanupConnection() {
+    if (connectionRabbitMQ) {
+        connectionRabbitMQ.removeAllListeners();
+    }
+    connectionRabbitMQ = null;
+    channel = null;
+}
 
-            try{
-                 
-                 connectionRabbitMQ = await amqp.connect( broker_url);
-                 channel = await connectionRabbitMQ.createChannel();
-                    await channel.assertExchange( exchange, 'topic', { durable:true } )
+export async function connectRabbitMQ(): Promise<void> {
+    const broker_url = process.env.BROKER_URL;
+    if (!exchange) throw new Error("process.env.EXCHANGE_NAME não configurada ");
+    if (!broker_url) throw new Error("process.env.BROKER_URL não configurada ");
 
-                     connectionRabbitMQ.on('close', ()=>{
-                                console.warn("[ RabbitMQ ] conexao fechada. Tentando reconectar ...");
-                            })
+    if (connectionRabbitMQ && channel) {
+        return;
+    }
 
-                     connectionRabbitMQ.on('error', ( err )=>{
-                                console.error("[ RabbitMQ ] Erro na Conexão: ", err);
-                            })
-                   }catch(e){
-                    connectionRabbitMQ = null;
-                    channel = null;
-                    console.log(" [ RabbitMQ] Falha ao conectar. Tentando novamente...")
-                        setTimeout(connectRabbitMQ, 5000)
-                    }
+    try {
+        cleanupConnection();
 
-                }
+        connectionRabbitMQ = await amqp.connect(broker_url, {
+            heartbeat: 30,
+        });
+        channel = await connectionRabbitMQ.createChannel();
+        await channel.assertExchange(exchange, 'topic', { durable: true });
 
+        connectionRabbitMQ.on('close', () => {
+            console.warn("[ RabbitMQ ] Conexão fechada. Tentando reconectar...");
+            cleanupConnection();
+            setTimeout(connectRabbitMQ, 5000);
+        });
 
-export async  function publishExchangeMessage(   routingKey: string, data: any): Promise<boolean> {
-            if (!channel || !connectionRabbitMQ) {
-                console.warn("⚠️ [RabbitMQ] Sem conexão ativa. Mensagem não enviada.");
-                return false;
+        connectionRabbitMQ.on('error', (err) => {
+            console.error("[ RabbitMQ ] Erro na Conexão:", err);
+            cleanupConnection();
+            if (connectionRabbitMQ) {
+                connectionRabbitMQ.close().catch(() => {});
             }
-                if(!exchange ) throw new Error("process.env.EXCHANGE_NAME não configurada ");
+            cleanupConnection();
+            setTimeout(connectRabbitMQ, 5000);
+        });
 
-            try {
-                    const buffer = Buffer.from(JSON.stringify(data));
+        console.log("[ RabbitMQ ] Conectado com sucesso.");
+    } catch (e) {
+        cleanupConnection();
+        console.log(" [ RabbitMQ] Falha ao conectar. Tentando novamente...");
+        setTimeout(connectRabbitMQ, 5000);
+    }
+}
 
-                return  channel.publish(exchange, routingKey, buffer,
-                    {
-                        persistent: true
-                    }
-                );
+export async function publishExchangeMessage(routingKey: string, data: any): Promise<boolean> {
+    if (!channel || !connectionRabbitMQ) {
+        console.warn("[RabbitMQ] Sem conexão ativa. Mensagem não enviada.");
+        return false;
+    }
+    if (!exchange) throw new Error("process.env.EXCHANGE_NAME não configurada ");
 
-            } catch (error) {
-                console.error("❌ [RabbitMQ] Erro ao tentar publicar:", error);
-                return false;
-            }
-        
-        }
+    try {
+        const buffer = Buffer.from(JSON.stringify(data));
 
-
-
-
-
-  
+        return channel.publish(exchange, routingKey, buffer, {
+            persistent: true,
+        });
+    } catch (error) {
+        console.error("[RabbitMQ] Erro ao tentar publicar:", error);
+        return false;
+    }
+}
