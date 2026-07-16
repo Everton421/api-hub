@@ -38,7 +38,7 @@ export async function sendWebhooks(cnpj: string, evento: string, data: any, sour
                     'Content-Type': 'application/json',
                     'X-Webhook-Signature': signature
                 },
-                timeout: 10000
+                timeout: 20000
             });
 
             await update.updateStatus(webhook.codigo, response.status, null);

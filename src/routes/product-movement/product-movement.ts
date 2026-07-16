@@ -203,6 +203,8 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                         historico: z.string(),
                         data_recadastro: z.string(),
                         usuario: z.coerce.number(),
+                        setor:z.coerce.number(),
+                        produto:z.coerce.number(),
                 }),
                 400: z.object({
                     success: z.boolean(),
@@ -232,13 +234,11 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
                 ...request.body,
                 data_recadastro
             };
-
             const result = await insert.insert(dbName, movementData);
             const item: ProductMovementType = {
                 ...movementData,
                 codigo: result.insertId
             };
-
             await publishMessage(empresa, 'movimentosprodutos.inserido', item, source);
             return reply.status(201).send(item);
         } catch (e) {
