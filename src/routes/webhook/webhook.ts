@@ -6,6 +6,7 @@ import { SelectWebhook } from '../../models/webhook/select.ts';
 import { InsertWebhook } from '../../models/webhook/insert.ts';
 import { UpdateWebhook } from '../../models/webhook/update.ts';
 import { DeleteWebhook } from '../../models/webhook/delete.ts';
+import axios, { isAxiosError } from 'axios';
 
 const webhookResponseSchema = z.object({
     codigo: z.number(),
@@ -53,6 +54,45 @@ const webhookRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(400).send({ success: false, message: 'Error fetching webhooks' });
         }
     });
+
+    server.get('/webhooks/health',{
+  
+        schema: {
+            tags: ['webhooks'],
+            headers: z.object({
+                token: z.string()
+            }),
+       
+            response: {
+                200: z.object({ ok: z.boolean()}),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                404: z.object({ })
+            }
+        }
+    }, async (request, reply) => {
+             const select = new SelectWebhook();
+        const decodedToken = DecodedToken(String(request.headers.token));
+        const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
+
+        if (!empresa) {
+            return reply.status(400).send({ success: false, message: 'CNPJ not found in token' });
+        }
+
+        try {
+                const result = await select.findByCnpj(empresa);
+                const resultHealt = await axios.get(`${result[0].url}/health`);
+            return reply.status(200).send({ok:true })
+
+        } catch (e) {
+            if( isAxiosError(e) && e.status == 404 ) return reply.status(404).send()
+            console.error('Error fetching webhooks:', e);
+            return reply.status(400).send({ success: false, message: 'Error fetching webhooks' });
+        }
+    });
+      
 
     server.get('/webhooks/:codigo', {
         schema: {
