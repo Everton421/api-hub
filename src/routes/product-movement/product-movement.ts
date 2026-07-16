@@ -219,7 +219,7 @@ const productMovementsRoute: FastifyPluginAsyncZod = async (server) => {
         if (!decodedToken.payload?.cnpj) {
             return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
         }
-
+ 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
