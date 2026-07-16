@@ -1,6 +1,7 @@
 import { connectRabbitMQ, publishExchangeMessage } from "../../broker-connection/broker.ts";
+import { sendWebhooks } from "../webhook/webhook-dispatcher.ts";
 
- 
+
 
 /**
  * 
@@ -38,6 +39,10 @@ export async function publishMessage(cnpj: string, evento: string, data: any, so
 
     if (enviado) console.log("✅ Mensagem enviada com sucesso!");
     else console.error("❌ Falha no envio.");
+
+    void sendWebhooks(cnpjCliente, evento, data, source).catch(err => {
+        console.error('[Webhook] Erro ao enviar webhooks:', err);
+    });
 
     return enviado;
 }

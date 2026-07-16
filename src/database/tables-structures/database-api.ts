@@ -66,6 +66,22 @@ CREATE TABLE IF NOT EXISTS ??.empresas  (
                     PRIMARY KEY ( Id )
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
                
+               `,
+               `
+                CREATE TABLE IF NOT EXISTS ??.webhooks (
+                                codigo  int(11) NOT NULL AUTO_INCREMENT,
+                                cnpj  varchar(255) NOT NULL,
+                                url  varchar(500) NOT NULL,
+                                eventos  text NOT NULL COMMENT 'eventos separados por virgula',
+                                secret  varchar(255) NOT NULL,
+                                ativo  char(1) NOT NULL DEFAULT 'S',
+                                ultimo_status  int(11) DEFAULT NULL,
+                                ultimo_erro  text DEFAULT NULL,
+                                data_cadastro  datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                data_recadastro  datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                PRIMARY KEY (codigo),
+                                KEY idx_cnpj (cnpj)
+                            ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
                `
 
         ]
