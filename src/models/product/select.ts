@@ -207,4 +207,37 @@ export class SelectProduct {
         const [result] = await conn.query(sql, values);
         return result as ProductType[];
     }
+
+        /**
+         *  Consulta codigo [ OU ] id do prduto,  
+         * @param dbName 
+         * @param params 
+         * @returns 
+         */
+    async searchProductByUniqueParams(dbName: string, params: {
+        code?: number, id?:string
+    }){
+        const { code, id } = params;
+         let sql = `SELECT  codigo, id FROM ${dbName}.produtos`
+         
+         const fields=[];
+         const values=[];
+         if(code != undefined){
+            fields.push( ' codigo = ? ');
+            values.push(code)
+         }
+
+         if(id != undefined){
+            fields.push( ' id = ? ');
+            values.push(id)
+         }
+
+         if(fields.length > 0 ){
+            sql += ' WHERE '+ fields.join(' OR ');
+         }
+
+        const [result] = await conn.query(sql, values);
+         return result as { codigo:number , id:string }[]
+
+    }
 }

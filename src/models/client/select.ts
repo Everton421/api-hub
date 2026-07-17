@@ -77,6 +77,26 @@ export class SelectClient {
         return result as ClientType[];
     }
 
+    async searchClientByUniqueParams(dbName: string, params: { code?: number, id?: string }): Promise<{ codigo: number, id: string }[]> {
+        const { code, id } = params;
+        let sql = `SELECT codigo, id FROM ${dbName}.clientes`;
+        const fields = [];
+        const values = [];
+        if (code != undefined) {
+            fields.push(' codigo = ? ');
+            values.push(code);
+        }
+        if (id != undefined) {
+            fields.push(' id = ? ');
+            values.push(id);
+        }
+        if (fields.length > 0) {
+            sql += ' WHERE ' + fields.join(' OR ');
+        }
+        const [result] = await conn.query(sql, values);
+        return result as { codigo: number, id: string }[];
+    }
+
     async findByParams(dbName: string, params: {
         nome?: string;
         cnpj?: string;

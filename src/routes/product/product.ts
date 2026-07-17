@@ -195,8 +195,9 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
 
             let product = result[0] as any;
 
-                if(result.length > 0 ){
-                    const fotos = await selectPhoto.findByProduct(dbName, result[0]?.codigo);
+                if(result && result.length > 0 ){
+                    
+                    const fotos = await selectPhoto.findByProduct(dbName, result[0].codigo!);
                     product.fotos = fotos
             }
 
@@ -260,11 +261,22 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
 
         const data_cadastro = dateService.obterDataAtual();
         const data_recadastro = dateService.obterDataHoraAtual();
-        const { id } = request.body
+        const { id, codigo } = request.body
         const insert = new InsertProduct();
         const select = new SelectProduct();
-        const verify = await select.findByParams( dbName, { id: id})
-        if(verify.length > 0 ) return reply.status(400).send({ success: false, message: `Product ID: ${id} already exists.`})
+        
+        if( codigo != undefined || id != undefined){
+      
+            const verifyExistsProduct = await select.searchProductByUniqueParams( dbName, { id: id, code: codigo});
+            if(verifyExistsProduct.length > 0 ){
+                const  codigoVerifiedProduct  = verifyExistsProduct[0].codigo;
+                const  idVerifiedProduct  = verifyExistsProduct[0].id;
+                if(codigo == codigoVerifiedProduct) return reply.status(400).send({ success: false, message: `Product Code: ${codigo} already exists.`})
+                if(id == idVerifiedProduct) return reply.status(400).send({ success: false, message: `Product ID: ${id} already exists.`})
+            }
+      
+        }
+
         try {
             const { origem, ...rest } = request.body;
             const productData: ProductType = {
@@ -347,7 +359,6 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         if (existing.length === 0) {
             return reply.status(400).send({ success: false, message: 'Product not found' });
         }
-
         const data_cadastro = existing[0].data_cadastro;
         const data_recadastro = dateService.obterDataHoraAtual();
 
@@ -366,7 +377,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 const fotosPut: PhotoType[] = [];
                 const item = { ...productData, fotos: fotosPut };
                 await publishMessage(empresa, 'produto.atualizado', item, source);
-                return reply.status(200).send(item);
+                return reply.status(200).send(item as any);
             }
 
             return reply.status(400).send({ success: false, message: 'No rows affected' });

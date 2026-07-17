@@ -73,12 +73,12 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 201: requirementResponseSchema,
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -87,7 +87,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'Token inválido' });
+            return reply.status(400).send({ success: true, message: 'Token inválido' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -96,7 +96,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const { requerente, setor_origem, setor_destino, responsavel,  historico, data_efetuacao,  itens , situacao } = request.body;
 
         if (!itens || itens.length === 0) {
-            return reply.status(400).send({ erro: true, msg: 'Informe ao menos um item' });
+            return reply.status(400).send({ success: true, message: 'Informe ao menos um item' });
         }
 
         try {
@@ -173,7 +173,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(201).send(created);
         } catch (e) {
             console.error('Error creating requirement:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro ao criar requerimento' });
+            return reply.status(500).send({ success: true, message: 'Erro ao criar requerimento' });
         }
     });
 
@@ -196,11 +196,11 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 200: z.array(requirementResponseSchema),
                 400: z.object({
                     erro: z.boolean(),
-                    msg: z.string()
+                    message: z.string()
                 }),
                 500: z.object({
                     erro: z.boolean(),
-                    msg: z.string()
+                    message: z.string()
                 })
             }
         }
@@ -208,7 +208,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'Token inválido' });
+            return reply.status(400).send({ erro: true, message: 'Token inválido' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -242,7 +242,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error listing requirements:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro ao listar requerimentos' });
+            return reply.status(500).send({ erro: true, message: 'Erro ao listar requerimentos' });
         }
     });
 
@@ -259,15 +259,15 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 200: requirementResponseSchema,
                 400: z.object({
                     erro: z.boolean(),
-                    msg: z.string()
+                    message: z.string()
                 }),
                 404: z.object({
                     erro: z.boolean(),
-                    msg: z.string()
+                    message: z.string()
                 }),
                 500: z.object({
                     erro: z.boolean(),
-                    msg: z.string()
+                    message: z.string()
                 })
             }
         }
@@ -275,7 +275,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'Token inválido' });
+            return reply.status(400).send({ erro: true, message: 'Token inválido' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -289,7 +289,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             const [requirement] = await select.findByCode(dbName, codigo);
 
             if (!requirement) {
-                return reply.status(404).send({ erro: true, msg: 'Requerimento não encontrado' });
+                return reply.status(404).send({ erro: true, message: 'Requerimento não encontrado' });
             }
 
             const dbItens = await selectItems.findByRequerimento(dbName, codigo);
@@ -308,7 +308,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send({ ...requirement, itens });
         } catch (e) {
             console.error('Error fetching requirement:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro ao buscar requerimento' });
+            return reply.status(500).send({ erro: true, message: 'Erro ao buscar requerimento' });
         }
     });
 
@@ -326,16 +326,16 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             response: {
                 200: requirementResponseSchema,
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 404: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -343,7 +343,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'Token inválido' });
+            return reply.status(400).send({ success: true, message: 'Token inválido' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -357,7 +357,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             const [existing] = await select.findByCode(dbName, codigo);
 
             if (!existing) {
-                return reply.status(404).send({ erro: true, msg: 'Requerimento não encontrado' });
+                return reply.status(404).send({ success: true, message: 'Requerimento não encontrado' });
             }
 
             if (Object.keys(updateFields).length > 0) {
@@ -415,7 +415,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error updating requirement:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro ao atualizar requerimento' });
+            return reply.status(500).send({ success: true, message: 'Erro ao atualizar requerimento' });
         }
     });
 
@@ -435,16 +435,16 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                     message: z.string()
                 }),
                 400: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 404: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 }),
                 500: z.object({
-                    erro: z.boolean(),
-                    msg: z.string()
+                    success: z.boolean(),
+                    message: z.string()
                 })
             }
         }
@@ -452,7 +452,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
 
         if (!decodedToken.payload?.cnpj) {
-            return reply.status(400).send({ erro: true, msg: 'Token inválido' });
+            return reply.status(400).send({ success: true, message: 'Token inválido' });
         }
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
@@ -465,15 +465,15 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             const [existing] = await select.findByCode(dbName, codigo);
 
             if (!existing) {
-                return reply.status(404).send({ erro: true, msg: 'Requerimento não encontrado' });
+                return reply.status(404).send({ success: true, message: 'Requerimento não encontrado' });
             }
 
             if (existing.situacao === 'E') {
-                return reply.status(400).send({ erro: true, msg: 'Requerimento efetuado não pode ser cancelado' });
+                return reply.status(400).send({ success: true, message: 'Requerimento efetuado não pode ser cancelado' });
             }
 
             if (existing.situacao === 'C') {
-                return reply.status(400).send({ erro: true, msg: 'Requerimento já está cancelado' });
+                return reply.status(400).send({ success: true, message: 'Requerimento já está cancelado' });
             }
 
             const update = new UpdateRequirements();
@@ -484,7 +484,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send({ success: true, message: 'Requerimento cancelado com sucesso' });
         } catch (e) {
             console.error('Error cancelling requirement:', e);
-            return reply.status(500).send({ erro: true, msg: 'Erro ao cancelar requerimento' });
+            return reply.status(500).send({ success: true, message: 'Erro ao cancelar requerimento' });
         }
     });
 };
