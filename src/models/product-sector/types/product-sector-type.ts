@@ -30,6 +30,7 @@ export type GroupedProductSectorType = {
         codigo: number;
         descricao: string;
         id: string;
+        controle_lote_serie: 'S' | 'N'
     };
     setor: GroupedSetorType[];
 };

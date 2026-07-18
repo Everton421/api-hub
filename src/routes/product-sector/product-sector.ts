@@ -133,14 +133,19 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
             querystring: z.object({
                 produto: z.coerce.number().optional(),
                 setor: z.coerce.number().optional(),
-                search: z.string().optional()
+                search: z.string().optional(),
+                limit: z.coerce.number().optional().default(20),
+                num_fabricante: z.coerce.string().optional(),
+                num_original:z.coerce.string().optional(), 
+                sku:z.coerce.string().optional()
             }),
             response: {
                 200: z.array(z.object({
                     produto: z.object({
                         codigo: z.number(),
                         descricao: z.string(),
-                        id: z.string()
+                        id: z.string(),
+                        controle_lote_serie: z.enum(['S' , 'N'])
                     }),
                     setor: z.array(z.object({
                         codigo: z.number(),
@@ -166,10 +171,10 @@ const productSectorRoute: FastifyPluginAsyncZod = async (server) => {
         const decodedToken = DecodedToken(String(request.headers.token));
         const empresa = decodedToken.payload?.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { produto, setor, search } = request.query;
+        const { produto, setor, search,limit ,num_original ,sku, num_fabricante} = request.query;
 
         try {
-            const result = await select.findByParamsGrouped(dbName, { produto, search, setor });
+            const result = await select.findByParamsGrouped(dbName, { produto, limit, search, setor, num_fabricante, num_original ,sku });
             return reply.status(200).send(result);
         } catch (e) {
             console.error('Error searching grouped product sectors:', e);

@@ -4,6 +4,10 @@ import { type ProductSectorType, type GroupedProductSectorType } from "./types/p
             setor:number,
             produto:number,
             search:string,
+             num_fabricante:string ,
+             num_original:string,
+              sku :string,
+            limit:number
     }
 export class SelectProductSector {
     async findAll(dbName: string, dataRecadastro?: string): Promise<ProductSectorType[]> {
@@ -117,7 +121,7 @@ export class SelectProductSector {
     }
 
     async findByParamsGrouped(dbName: string, query: Partial<queryByParams>): Promise<GroupedProductSectorType[]> {
-        const { produto, search, setor } = query;
+        const { produto, search, setor, limit , num_fabricante ,num_original, sku } = query;
 
         let sql = ` SELECT 
             ps.setor,
@@ -132,7 +136,8 @@ export class SelectProductSector {
             s.id AS id_setor,
             s.ativo AS setor_ativo,
             p.descricao AS produto_descricao,
-            p.id AS id_produto
+            p.id AS id_produto,
+            p.controle_lote_serie
          FROM ${dbName}.produto_setor ps 
          JOIN ${dbName}.setores s ON s.codigo = ps.setor
          JOIN ${dbName}.produtos p ON p.codigo = ps.produto`;
@@ -151,8 +156,22 @@ export class SelectProductSector {
             conditions.push('ps.setor = ?');
             values.push(setor);
         }
-
-        if (search) {
+        
+    if(num_fabricante){
+        conditions.push(' p.num_fabricante = ? ')
+        values.push(num_fabricante);
+    }   
+    if(num_original){
+        conditions.push(' p.num_original = ? ')
+        values.push(num_original);
+        }     
+    if(sku){
+        conditions.push(' p.sku = ? ')
+        values.push(sku);
+    } 
+   
+   
+   if (search) {
             const terms = search.trim().split(/\s+/).filter(t => t.length > 0);
             if (terms.length > 0) {
                 const termConditions = terms.map(() =>
@@ -165,8 +184,11 @@ export class SelectProductSector {
             }
         }
 
-        sql = sql + ' WHERE ' + conditions.join(' AND ');
-
+        sql = sql + ' WHERE ' + conditions.join(' AND ') ;
+        if(limit){
+            sql+=` limit ${limit}  `
+        }
+        console.log(sql)
         const [rows] = await conn.query(sql, values) as [any[], any];
 
         const productMap = new Map<number, GroupedProductSectorType>();
@@ -179,7 +201,8 @@ export class SelectProductSector {
                     produto: {
                         codigo: produtoCodigo,
                         descricao: row.produto_descricao,
-                        id: row.id_produto
+                        id: row.id_produto,
+                        controle_lote_serie: row.controle_lote_serie
                     },
                     setor: []
                 });
