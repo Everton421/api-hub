@@ -100,7 +100,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         if (!itens || itens.length === 0) {
             return reply.status(400).send({ success: true, message: 'Informe ao menos um item' });
         }
-        if(codigo){
+        if(codigo && codigo > 0 ){
             const verifyExistsByCode = await selectRequirements.verifyExistsByCode(dbName, codigo)
             if(verifyExistsByCode.length > 0 ) return reply.status(400).send({ success: false, message:  `Requirement Code: ${codigo} already exists.` });
         }
