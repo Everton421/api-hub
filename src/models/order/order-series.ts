@@ -1,3 +1,4 @@
+import { ResultSetHeader } from "mysql2";
 import { conn } from "../../database/databaseConfig.ts";
 
 export type OrderSeriesRow = {
@@ -41,9 +42,10 @@ export class OrderSeries {
         return result as OrderSeriesWithDetails[];
     }
 
-    async deleteByOrder(dbName: string, pedido: number): Promise<void> {
+    async deleteByOrder(dbName: string, pedido: number)  {
         const sql = `DELETE FROM ${dbName}.pedido_series WHERE pedido = ?`;
-        await conn.query(sql, [pedido]);
+       const data =  await conn.query(sql, [pedido]) as ResultSetHeader[] ;
+        return data;
     }
 
     async deleteByOrderAndProduct(dbName: string, pedido: number, produto: number): Promise<void> {

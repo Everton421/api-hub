@@ -136,8 +136,8 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                     }
                 }
 
-                await orderSeriesModel.deleteByOrder(empresa, codigo);
-
+               const resultDeleteSeries = await orderSeriesModel.deleteByOrder(empresa, codigo);
+                
                 let totalSeriesRegistradas = 0;
 
                 for (const item of itens) {

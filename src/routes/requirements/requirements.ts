@@ -7,6 +7,7 @@ import { SelectRequirements, SelectItemsRequirements } from '../../models/requir
 import { InsertItemsRequirements, DeleteItemsRequirements } from '../../models/requirements/items-requirements.ts';
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
+import { conn } from '../../database/databaseConfig.ts';
 
 const loteSerieItemSchema = z.object({
     lote_serie: z.number(),
@@ -101,8 +102,24 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(400).send({ success: true, message: 'Informe ao menos um item' });
         }
         if(codigo && codigo > 0 ){
-            const verifyExistsByCode = await selectRequirements.verifyExistsByCode(dbName, codigo)
-            if(verifyExistsByCode.length > 0 ) return reply.status(400).send({ success: false, message:  `Requirement Code: ${codigo} already exists.` });
+
+                    const sql = `SELECT  
+                    codigo
+                    FROM ${dbName}.requerimentos WHERE codigo = '${codigo}';`;
+            
+                console.log(sql)
+                    const [result] = await conn.query(sql);
+
+            const verifyExistsByCode = result as any[];
+
+             if(verifyExistsByCode.length > 0 ) {
+                 return reply.status(400).send({ success: false, message:  `Requirement Code: ${codigo} already exists.` });
+                 }
+
+            //if(verifyExistsByCode.length > 0 ) {
+            //    return reply.status(400).send({ success: false, message:  `Requirement Code: ${codigo} already exists.` });
+            //    }
+
         }
 
         try {
