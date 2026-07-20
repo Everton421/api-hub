@@ -10,6 +10,7 @@ export class SelectRequirements {
             data_requerimento?: string;
             setor_origem?: number;
             setor_destino?: number;
+            search?:string
             limit?: number;
         }
     ): Promise<Requirements[]> {
@@ -42,6 +43,19 @@ export class SelectRequirements {
             values.push(filters.setor_destino);
         }
 
+        if(filters.search){
+        
+                const arrayString = filters.search.split(' ').map((i)=>{
+                    return `%${i}%`
+                });
+                 if(arrayString.length > 0 ){
+                    for(const i of arrayString){
+                        conditions.push(' historico like  ? ')
+                        values.push(i);
+                    }
+                 }
+            }
+
         const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
         const limitClause = filters.limit ? `LIMIT ${filters.limit}` : '';
 
@@ -50,6 +64,7 @@ export class SelectRequirements {
             DATE_FORMAT(data_efetuacao, '%Y-%m-%d') AS data_efetuacao,
             DATE_FORMAT(data_requerimento, '%Y-%m-%d') AS data_requerimento
         FROM ${dbName}.requerimentos ${whereClause} ORDER BY codigo DESC ${limitClause}`;
+            
 
         const [result] = await conn.query(sql, values);
         return result as Requirements[];
@@ -60,6 +75,15 @@ export class SelectRequirements {
         *,
             DATE_FORMAT(data_efetuacao, '%Y-%m-%d') AS data_efetuacao,
             DATE_FORMAT(data_requerimento, '%Y-%m-%d') AS data_requerimento
+        FROM ${dbName}.requerimentos WHERE codigo = ?`;
+        const [result] = await conn.query(sql, [codigo]);
+        return result as Requirements[];
+    }
+
+
+    async verifyExistsByCode(dbName: string, codigo: number): Promise<{codigo:number}[]> {
+        const sql = `SELECT  
+        codigo
         FROM ${dbName}.requerimentos WHERE codigo = ?`;
         const [result] = await conn.query(sql, [codigo]);
         return result as Requirements[];

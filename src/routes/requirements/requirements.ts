@@ -23,6 +23,7 @@ const requirementItemSchema = z.object({
 
 const requirementBodySchema = z.object({
     requerente: z.number(),
+    codigo: z.number().optional(),
     responsavel: z.number(),
     setor_origem: z.number(),
     setor_destino: z.number(),
@@ -93,10 +94,15 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const source = request.headers.source as string || 'api_internal';
-        const { requerente, setor_origem, setor_destino, responsavel,  historico, data_efetuacao,  itens , situacao } = request.body;
+        const { requerente, setor_origem, setor_destino, responsavel,  historico, data_efetuacao, codigo ,itens , situacao } = request.body;
+        const selectRequirements = new SelectRequirements();
 
         if (!itens || itens.length === 0) {
             return reply.status(400).send({ success: true, message: 'Informe ao menos um item' });
+        }
+        if(codigo){
+            const verifyExistsByCode = await selectRequirements.verifyExistsByCode(dbName, codigo)
+            if(verifyExistsByCode.length > 0 ) return reply.status(400).send({ success: false, message:  `Requirement Code: ${codigo} already exists.` });
         }
 
         try {
@@ -106,6 +112,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             const data_requerimento = dateService.obterDataAtual();
 
             const result = await insertRequerimento.insert(dbName, {
+                codigo,
                 data_requerimento,
                 requerente,
                 data_efetuacao: data_efetuacao || '0000-00-00',
@@ -189,8 +196,8 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 data_requerimento: z.string().optional(),
                 setor_origem: z.coerce.number().optional(),
                 setor_destino: z.coerce.number().optional(),
-                limit: z.coerce.number().optional()
-
+                limit: z.coerce.number().optional(),
+                search: z.string().optional()
             }),
             response: {
                 200: z.array(requirementResponseSchema),
@@ -214,7 +221,6 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
         const filters = request.query;
-
         try {
             const select = new SelectRequirements();
             const selectItems = new SelectItemsRequirements();
