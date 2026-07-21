@@ -56,21 +56,28 @@ export class SelectRequirements {
             conditions.push('setor_destino = ?');
             values.push(filters.setor_destino);
         }
+     
+
+
+        let searchConditions =[ ];
 
         if(filters.search){
-        
                 const arrayString = filters.search.split(' ').map((i)=>{
-                    return `%${i}%`
+                    return `'%${i}%'`
                 });
                  if(arrayString.length > 0 ){
                     for(const i of arrayString){
-                        conditions.push(' historico like  ? ')
-                        values.push(i);
+                        searchConditions.push(`  historico like  ${i} `);  
+                        searchConditions.push(`  codigo like  ${arrayString} `);  
+
                     }
+                 } else{
                  }
             }
+       
+            
+        const whereClause = conditions.length > 0 || searchConditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}  ${searchConditions.join(' OR ')}` : '';
 
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
         const limitClause = filters.limit ? `LIMIT ${filters.limit}` : '';
 
         const sql = `SELECT  
@@ -79,7 +86,6 @@ export class SelectRequirements {
             DATE_FORMAT(data_requerimento, '%Y-%m-%d') AS data_requerimento
         FROM ${dbName}.requerimentos ${whereClause} ORDER BY codigo DESC ${limitClause}`;
             
-
         const [result] = await conn.query(sql, values);
         return result as Requirements[];
     }
