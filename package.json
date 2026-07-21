@@ -11,9 +11,8 @@
     "teste:all": "node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings --experimental-test-coverage --test ",
     "teste:seed": " node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings src/database/seed.ts",
     "teste:factory": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/teste-factory.ts",
-    "teste:send-message-web-hook": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/services/__test__/send-message-web-hook.test.ts" 
-
-    
+    "teste:send-message-web-hook": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/services/__test__/send-message-web-hook.test.ts", 
+    "teste:hash-password": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/test-password.test.ts" 
   },
   "keywords": [],
   "author": "",

@@ -4,6 +4,7 @@ import { DecodedToken } from '../../services/decoded-token/decodedToken.ts';
 import { SelectUserCompany } from '../../models/user-company/select.ts';
 import { InsertUserApi } from '../../models/user-api/insert.ts';
 import { InsertUserCompany } from '../../models/user-company/insert.ts';
+import { PasswordService } from '../../services/password/password.ts';
 
 const usersRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/bulk/usuarios', {
@@ -175,12 +176,15 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
 
         const insertUserApi = new InsertUserApi();
         const insertUserCompany = new InsertUserCompany();
+        const passwordService = new PasswordService();
 
         try {
-            const resultUserApi = await insertUserApi.insert({ nome, email, cnpj, senha, responsavel, telefone });
+            const senhaHash = await passwordService.hash(senha);
+
+            const resultUserApi = await insertUserApi.insert({ nome, email, cnpj, senha: senhaHash, responsavel, telefone });
             const userApiCode = resultUserApi.insertId;
 
-            const resultUserCompany = await insertUserCompany.insert(dbName, { nome, email, cnpj, senha, responsavel, ativo , codigo_perfil});
+            const resultUserCompany = await insertUserCompany.insert(dbName, { nome, email, cnpj, senha: senhaHash, responsavel, ativo , codigo_perfil});
             const userCompanyCode = resultUserCompany.insertId;
 
             return reply.status(200).send({

@@ -19,10 +19,4 @@ export class SelectUserApi {
         const [result] = await conn.query(sql, [email, recoveryCode]);
         return result as UserApi[];
     }
-
-    async findByEmailAndPassword(email: string, password: string): Promise<UserApi[]> {
-        const sql = `SELECT * FROM ${db_api}.usuarios WHERE email = ? AND senha = ?`;
-        const [result] = await conn.query(sql, [email, password]);
-        return result as UserApi[];
-    }
 }

@@ -15,6 +15,7 @@ import { MakeProduct } from "../../factories/make-product.ts";
 import { MakeService } from "../../factories/make-service.ts";
 import { MakeClient } from "../../factories/make-client.ts";
 import { MakeOrder } from "../../factories/make-order.ts";
+import { PasswordService } from "../../services/password/password.ts";
 
 
     type newUserOmitCode = Omit<UsuarioApi, "codigo">;
@@ -207,10 +208,12 @@ server.get('/empresa', {
 
             let responsavel: string = "S";
             const ativo = 'S'
+            const passwordService = new PasswordService();
 
                 cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
-                const codigo_perfil = 0 ; 
-                    let objUser: newUser = { nome, email, cnpj, senha, responsavel, telefone, ativo , codigo_perfil };
+                const codigo_perfil = 0 ;
+                    const senhaHash = await passwordService.hash(senha);
+                    let objUser: newUser = { nome, email, cnpj, senha: senhaHash, responsavel, telefone, ativo , codigo_perfil };
                         
                     // Regex para remover caracteres não numéricos
                     cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
@@ -282,11 +285,10 @@ server.get('/empresa', {
                                 const payload = {
                                                       cnpj: cnpj,
                                                       email: email,
-                                                      senha: senha,
                                                       codigo:userCompanyId
                                                     }
                                                     const token = jwt.sign(
-                                                      payload, secret
+                                                      payload, secret, { expiresIn: '24h' }
                                                     )
                               return reply.status(200).send( { success: true, message: "Empresa registrada com sucesso!" } );
                                     }

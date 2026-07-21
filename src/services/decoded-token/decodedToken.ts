@@ -4,7 +4,6 @@ import Jwt from "jsonwebtoken";
 type decoded = {
     cnpj: string,
     email: string,
-    senha: string,
     codigo: number
     iat: number
 }

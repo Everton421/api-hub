@@ -20,15 +20,6 @@ export class SelectUserCompany {
         return result as UserCompany[];
     }
 
-    async findByEmailAndPassword(company: string, email: string, password: string): Promise<UserCompany[]> {
-        const sql = `SELECT u.*, e.tipo_contrato, DATE_FORMAT(e.data_contrato, '%Y-%m-%d') AS data_contrato, e.dias_contrato
-                     FROM ${company}.usuarios u
-                     JOIN ${db_api}.empresas e ON u.cnpj = e.cnpj
-                     WHERE u.email = ? AND u.senha = ?`;
-        const [result] = await conn.query(sql, [email, password]);
-        return result as UserCompany[];
-    }
-
     async findByEmailAndName(company: string, email: string, name: string): Promise<UserCompany[]> {
         const sql = `SELECT * FROM ${company}.usuarios WHERE email = ? AND nome = ?`;
         const [result] = await conn.query(sql, [email, name]);
