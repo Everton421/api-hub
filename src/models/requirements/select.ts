@@ -20,6 +20,25 @@ export class SelectRequirements {
         const conditions: string[] = [];
         const values: (string | number)[] = [];
 
+        let searchConditions =[ ];
+
+           if(filters.search){
+                const arrayString = filters.search.split(' ').map((i)=>{
+                    return `%${i}%`
+                });
+                 if(arrayString.length > 0 ){
+                    for(const i of arrayString){
+                        searchConditions.push(`  historico like  ? `);
+                        values.push(i);
+                        searchConditions.push(`  codigo like  ? `);  
+                        values.push(i);
+
+                    }
+                    if( searchConditions.length > 0 ){
+                        conditions.push(searchConditions.join(' OR '))
+                    }
+                 } 
+            }
         if (filters.situacao) {
             conditions.push('situacao = ?');
             values.push(filters.situacao);
@@ -56,27 +75,10 @@ export class SelectRequirements {
             conditions.push('setor_destino = ?');
             values.push(filters.setor_destino);
         }
-     
 
 
-        let searchConditions =[ ];
-
-        if(filters.search){
-                const arrayString = filters.search.split(' ').map((i)=>{
-                    return `'%${i}%'`
-                });
-                 if(arrayString.length > 0 ){
-                    for(const i of arrayString){
-                        searchConditions.push(`  historico like  ${i} `);  
-                        searchConditions.push(`  codigo like  ${arrayString} `);  
-
-                    }
-                 } else{
-                 }
-            }
-       
-            
-        const whereClause = conditions.length > 0 || searchConditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}  ${searchConditions.join(' OR ')}` : '';
+           
+        const whereClause = conditions.length > 0 || searchConditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}  ` : '';
 
         const limitClause = filters.limit ? `LIMIT ${filters.limit}` : '';
 
