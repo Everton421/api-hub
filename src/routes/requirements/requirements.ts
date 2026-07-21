@@ -211,6 +211,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 codigo: z.coerce.number().optional(),
                 situacao:  z.enum(['A','C','E']).optional(),
                 data_requerimento: z.string().optional(),
+                alterado_apos: z.coerce.string().optional(),
                 setor_origem: z.coerce.number().optional(),
                 setor_destino: z.coerce.number().optional(),
                 limit: z.coerce.number().optional(),

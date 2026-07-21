@@ -8,6 +8,7 @@ export class SelectRequirements {
             codigo?:number,
             situacao?: string;
             data_requerimento?: string;
+            alterado_apos?:string;
             setor_origem?: number;
             setor_destino?: number;
             search?:string
@@ -21,7 +22,10 @@ export class SelectRequirements {
             conditions.push('situacao = ?');
             values.push(filters.situacao);
         }
-
+        if(filters.alterado_apos){
+            conditions.push('data_requerimento >= ?');
+            values.push(filters.alterado_apos);
+        }
         if (filters.data_requerimento) {
             conditions.push('data_requerimento = ?');
             values.push(filters.data_requerimento);
