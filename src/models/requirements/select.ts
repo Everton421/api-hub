@@ -12,6 +12,8 @@ export class SelectRequirements {
             setor_origem?: number;
             setor_destino?: number;
             search?:string
+            requerente?:number
+            responsavel?:number
             limit?: number;
         }
     ): Promise<Requirements[]> {
@@ -40,7 +42,15 @@ export class SelectRequirements {
             conditions.push('codigo = ?');
             values.push(filters.codigo);
         }
-        
+       if (filters.requerente && filters.requerente > 0) {
+            conditions.push(' requerente = ? ');
+            values.push(filters.requerente);
+        }
+          if (filters.responsavel && filters.responsavel > 0) {
+            conditions.push(' responsavel = ? ');
+            values.push(filters.responsavel);
+        }
+          
 
         if (filters.setor_destino) {
             conditions.push('setor_destino = ?');

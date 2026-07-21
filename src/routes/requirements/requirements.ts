@@ -214,6 +214,8 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 alterado_apos: z.coerce.string().optional(),
                 setor_origem: z.coerce.number().optional(),
                 setor_destino: z.coerce.number().optional(),
+                requerente: z.coerce.number().optional(),
+                responsavel: z.coerce.number().optional(),
                 limit: z.coerce.number().optional(),
                 search: z.string().optional()
             }),
