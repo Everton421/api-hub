@@ -8,9 +8,18 @@ import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 import { type ProductType } from '../../models/product/types/product-type.ts';
 import { SelectPhoto } from '../../models/photo/select.ts';
+import { InsertPhoto } from '../../models/photo/insert.ts';
+import { UpdatePhoto } from '../../models/photo/update.ts';
 import { type PhotoType } from '../../models/photo/types/photo-type.ts';
 
 type productTypeAndPhotos  = ProductType & { fotos: PhotoType[]; codigo: number }
+
+const photoInputSchema = z.object({
+    sequencia: z.number(),
+    descricao: z.string().default(''),
+    link: z.string().default(''),
+    foto: z.string()
+});
 const productResponseSchema = z.object({
     codigo: z.number(),
     id: z.coerce.string(),
@@ -277,6 +286,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 observacoes2: z.string().default(''),
                 observacoes3: z.string().default(''),
                 tipo: z.number().default(0),
+                fotos: z.array(photoInputSchema).optional().default([])
 
             }),
             response: {
@@ -318,7 +328,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         }
 
         try {
-            const { origem, ...rest } = request.body;
+            const { origem, fotos, ...rest } = request.body;
             const productData: ProductType = {
                 ...rest,
                 origem: String(origem),
@@ -327,7 +337,23 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             };
 
             const result = await insert.insert(dbName, productData);
+            const insertPhoto = new InsertPhoto();
             const fotosPost: PhotoType[] = [];
+
+            for (const foto of fotos) {
+                const photoData: Omit<PhotoType, 'codigo'> = {
+                    produto: result.insertId,
+                    sequencia: foto.sequencia,
+                    descricao: foto.descricao,
+                    link: foto.link,
+                    foto: foto.foto,
+                    data_cadastro,
+                    data_recadastro
+                };
+                const photoResult = await insertPhoto.insert(dbName, photoData);
+                fotosPost.push({ ...photoData, codigo: photoResult.insertId });
+            }
+
             const item = { ...productData, codigo: result.insertId , fotos: fotosPost};
 
             await publishMessage(empresa, 'produto.inserido', item, source);
@@ -366,7 +392,8 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 controle_lote_serie: z.enum(['S', 'N']).default('N'),
                 observacoes1: z.string().default(''),
                 observacoes2: z.string().default(''),
-                observacoes3: z.string().default('')
+                observacoes3: z.string().default(''),
+                fotos: z.array(photoInputSchema).optional().default([])
             }),
             response: {
                 200: productResponseSchema,
@@ -403,7 +430,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         const data_recadastro = dateService.obterDataHoraAtual();
 
         try {
-            const { origem, ...rest } = request.body;
+            const { origem, fotos, ...rest } = request.body;
             const productData: ProductType = {
                 ...rest,
                 origem: String(origem),
@@ -414,7 +441,26 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             const result = await update.update(dbName, productData);
 
             if (result.affectedRows > 0) {
+                const updatePhoto = new UpdatePhoto();
+                const insertPhoto = new InsertPhoto();
+
+                await updatePhoto.deleteByProduct(dbName, codigo);
+
                 const fotosPut: PhotoType[] = [];
+                for (const foto of fotos) {
+                    const photoData: Omit<PhotoType, 'codigo'> = {
+                        produto: codigo,
+                        sequencia: foto.sequencia,
+                        descricao: foto.descricao,
+                        link: foto.link,
+                        foto: foto.foto,
+                        data_cadastro,
+                        data_recadastro
+                    };
+                    const photoResult = await insertPhoto.insert(dbName, photoData);
+                    fotosPut.push({ ...photoData, codigo: photoResult.insertId });
+                }
+
                 const item = { ...productData, fotos: fotosPut };
                 await publishMessage(empresa, 'produto.atualizado', item, source);
                 return reply.status(200).send(item as any);
