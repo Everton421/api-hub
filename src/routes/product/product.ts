@@ -158,6 +158,46 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
+    server.get('/produtos/last-codigo', {
+        schema: {
+            tags: ['produtos'],
+            headers: z.object({
+                token: z.string()
+            }),
+            response: {
+                200: z.object({
+                    codigo: z.number()
+                }),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+
+        try {
+            const select = new SelectProduct();
+            const result = await select.findLastInsertedCode(dbName);
+            return reply.status(200).send({ codigo: result.codigo ?? 0 });
+        } catch (e) {
+            console.error('Error fetching last product code:', e);
+            return reply.status(500).send({ success: false, message: 'Error fetching last product code' });
+        }
+    });
+
     server.get('/produtos/:codigo', {
         schema: {
             tags: ['produtos'],

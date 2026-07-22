@@ -3,6 +3,64 @@
 ## Overview
 This is a Node.js/TypeScript Fastify API with MySQL database, RabbitMQ message broker, and Mercado Livre integration.
 
+## Libraries and Dependencies
+
+### Core
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `fastify` | ^5.6.1 | HTTP framework |
+| `typescript` | ^5.9.3 | Type checking |
+
+### Fastify Plugins
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `@fastify/cors` | ^11.1.0 | CORS middleware |
+| `@fastify/swagger` | ^9.5.2 | OpenAPI spec generation |
+| `@scalar/fastify-api-reference` | ^1.36.2 | API docs UI at `/docs` |
+| `fastify-type-provider-zod` | ^6.0.0 | Zod validation/serialization |
+
+### Validation
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `zod` | ^4.1.11 | Schema validation (v4) |
+
+### Database
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `mysql2` | ^3.15.1 | MySQL driver (promise pool) |
+
+### Message Broker
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `amqplib` | ^1.0.3 | RabbitMQ client |
+
+### Authentication and Security
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `jsonwebtoken` | ^9.0.3 | JWT create/verify |
+| `argon2` | ^0.44.0 | Password hashing |
+
+### HTTP Client
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `axios` | ^1.13.5 | External API calls |
+
+### Date Handling
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `dayjs` | ^1.11.20 | Date manipulation |
+
+### Testing
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `@faker-js/faker` | ^10.4.0 | Fake data generation |
+
+### Utilities
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `dotenv` | ^17.2.3 | Env var loading |
+| `pino-pretty` | ^13.1.1 | Log formatting |
+
 ## Build/Lint/Test Commands
 
 ### Development
@@ -49,12 +107,17 @@ npx tsc --noEmit
 ```
 src/
 ├── __test__/           # Test files
-├── broker/             # RabbitMQ connections and publishers
-├── config/             # Configuration (multer, etc.)
-├── controllers/         # Business logic controllers
+├── broker-connection/  # RabbitMQ connection and publishing
 ├── database/           # Database config, seeds, table structures
-├── middleware/          # Express/Fastify middleware
+├── factories/          # Test data factories (faker)
+├── middleware/          # Legacy Express middleware (not used by Fastify)
 ├── models/             # Data access layer (select, insert, update, types)
+├── modules/            # Feature modules
+│   └── marketplaces/
+│       └── mercadolivre/
+│           ├── routes/
+│           ├── services/
+│           └── types/
 ├── routes/             # Fastify route definitions
 ├── services/           # Utility services
 ├── types/              # Shared TypeScript type definitions
@@ -97,6 +160,22 @@ import { type OrderType, type OrderReceivedType } from "./types/order-type.ts";
 
 // Relative paths use `.ts` extension
 import { SelectOrder } from "../../models/order/select.ts";
+```
+
+### Multi-Tenant Architecture
+
+Each company has its own database named by CNPJ. The shared API database stores webhooks, ML accounts, and user credentials.
+
+```typescript
+// Tenant database (company-specific)
+const dbName = `\`${cnpj}\``;
+const sql = `SELECT * FROM ${dbName}.pedidos WHERE codigo = ?`;
+const [result] = await conn.query(sql, [code]);
+
+// Shared API database
+import { db_api } from "../../database/databaseConfig.ts";
+const sql = `SELECT * FROM ${db_api}.webhooks WHERE id = ?`;
+const [result] = await conn.query(sql, [id]);
 ```
 
 ### Fastify Routes Pattern
@@ -208,19 +287,27 @@ if (!requiredValue) {
 
 ### Authentication Pattern
 
-JWT token validation using the `DecodedToken` service:
+JWT token validation via headers (no middleware - decoded in each handler):
 
 ```typescript
+// Route schema
+headers: z.object({
+    token: z.string(),
+    source: z.string().optional()
+})
+
+// Handler
 import { DecodedToken } from "../../services/decoded-token/decodedToken.ts";
 
 const decodedToken = DecodedToken(String(request.headers.token));
 
 if (!decodedToken.payload?.cnpj) {
-    return reply.status(401).send({ erro: true, msg: 'Token inválido' });
+    return reply.status(401).send({ success: false, message: 'Token inválido' });
 }
 
 const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
 const dbName = `\`${empresa}\``;
+const source = request.headers.source as string || 'api_internal';
 ```
 
 ### Date Handling
@@ -253,7 +340,7 @@ Success responses return the actual data directly or with status wrapper:
 ### Broker/Message Publishing
 
 ```typescript
-import { publishMessage } from "../../services/broker/publish-message.ts";
+import { publishMessage } from "../../broker-connection/publish-message.ts";
 
 // Routing key pattern: tenant.{CNPJ}.{resource}.{action}
 await publishMessage(cnpj, 'pedido.atualizado', payload, source);
@@ -264,11 +351,70 @@ await publishMessage(cnpj, 'pedido.atualizado', payload, source);
 ## Environment Variables
 
 Required in `.env`:
-- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`
+
+### Database
+- `DB_HOST` - MySQL host
+- `DB_PORT` - MySQL port
+- `DB_USER` - MySQL username
+- `DB_PASSWORD` - MySQL password
 - `DB_API` - Main API database name
-- `SECRET` - JWT secret key
-- `PORT_API` - Server port
-- `BROKER_URL`, `EXCHANGE_NAME` - RabbitMQ settings
+
+### Authentication
+- `SECRET` - JWT signing secret
+
+### Server
+- `PORT_API` - Server port (default: 8000)
+
+### Message Broker
+- `BROKER_URL` - RabbitMQ connection URL
+- `EXCHANGE_NAME` - RabbitMQ exchange name
+
+### Email (Optional)
+- `MAIL` - Sender email address
+- `HOST_MAIL` - SMTP host
+- `PASSWORD_MAIL` - SMTP password
+
+### HTTPS (Optional)
+- `PATH_CERT_KEY` - SSL key file path
+- `PATH_CERT_CERT` - SSL certificate file path
+
+### Mercado Livre Integration (Optional)
+- `APP_ID_ML` - ML app client ID
+- `SECRET_ML` - ML app secret
+- `ML_API_URL` - ML API base URL
+- `REDIRECT_URI_ML` - ML OAuth callback URL
+- `SECRET_ML_ENCODE_STATE` - Secret for encoding ML OAuth state
+- `PROJECT_URL` - Public project URL
+- `FRONT_END_URL` - Frontend URL
+
+### Testing
+- `DB_TEST_API` - Test database name
+
+---
+
+## Mercado Livre Module
+
+Located at `src/modules/marketplaces/mercadolivre/`. This module handles ML integration including OAuth2 flow, orders, items, and inventory.
+
+### Structure
+```
+modules/marketplaces/mercadolivre/
+├── routes/           # ML-specific routes
+├── services/         # ML API services
+│   ├── ml-auth-service.ts       # OAuth2 flow, token exchange
+│   ├── ml-orders-service.ts     # Orders integration
+│   ├── ml-tools-service.ts      # Utilities
+│   ├── post-itens-ml.ts         # Post items to ML
+│   ├── update-ml-itens.ts       # Update ML listings
+│   ├── update-ml-itens-inventory.ts
+│   ├── get-itens-ml-service.ts  # Fetch ML items
+│   └── get-test-user.ts         # Get ML test user
+└── types/            # ML-specific types
+```
+
+### Key Services
+- `ml-auth-service.ts`: Handles OAuth2 with PKCE, token exchange, token refresh
+- `ml-orders-service.ts`: Order synchronization
 
 ---
 
@@ -290,3 +436,33 @@ Required in `.env`:
 1. Create in `src/services/{service-name}/`
 2. Export as named function or class
 3. Import where needed
+
+---
+
+## Deployment
+
+### PM2 (Production)
+```bash
+# Start with PM2
+pm2 start ecosystem.config.cjs
+
+# View logs
+pm2 logs api
+
+# Restart
+pm2 restart api
+```
+
+### Docker
+```bash
+# Build and run
+docker-compose up -d
+
+# View logs
+docker-compose logs -f api
+```
+
+### Development
+```bash
+npm run dev
+```
