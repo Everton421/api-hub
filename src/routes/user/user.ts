@@ -100,12 +100,12 @@ const usersRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             response: {
                 200: z.array(z.object({
-                    codigo: z.number(),
-                    nome: z.string(),
-                    email: z.string(),
-                    cnpj: z.string(),
-                    responsavel: z.string(),
-                    ativo: z.string()
+                    codigo: z.coerce.number(),
+                    nome: z.coerce.string(),
+                    email: z.coerce.string(),
+                    cnpj: z.coerce.string(),
+                    responsavel: z.coerce.string(),
+                    ativo: z.coerce.string()
                 })),
                 400: z.object({
                     success: z.boolean(),
