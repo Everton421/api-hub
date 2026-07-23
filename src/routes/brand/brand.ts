@@ -148,7 +148,7 @@ const getBrandsRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 codigo: z.number().optional(),
-                id: z.string(),
+                id: z.coerce.string(),
                 descricao: z.string(),
                 ativo: z.enum(['S', 'N']).default('S')
             }),
