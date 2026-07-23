@@ -195,7 +195,7 @@ export class SelectOrder {
             conditions.push("pe.situacao = ?");
             values.push(String(situacao));
         }
-        if(filial && filial != undefined ){
+        if(filial){
             conditions.push("pe.filial = ?");
             values.push(Number(filial));
         }
@@ -240,8 +240,8 @@ export class SelectOrder {
             values.push(Number(limit));
         }
 
-     //   console.log(finalSql)
-     //   console.log(values)
+        console.log(finalSql)
+        console.log(values)
 
         const [result] = await conn.query(finalSql, values);
         return result as OrderType[];

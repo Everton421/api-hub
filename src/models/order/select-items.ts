@@ -47,7 +47,6 @@ export class SelectOrderItems {
         JOIN ${dbName}.lotes_series ls ON ls.codigo = ps.lote_serie
         WHERE ps.pedido = ?`;
 
-        console.log(sqlSeries)
         
         const [seriesResult] = await conn.query(sqlSeries, [orderCode]);
         const seriesList = seriesResult as { produto: number; lote_serie: number; quantidade: number; serie: string; lote: string }[];
