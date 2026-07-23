@@ -175,11 +175,11 @@ export class SelectProductSector {
             const terms = search.trim().split(/\s+/).filter(t => t.length > 0);
             if (terms.length > 0) {
                 const termConditions = terms.map(() =>
-                    '(s.descricao LIKE ? OR p.descricao LIKE ?)'
+                    '(s.descricao LIKE ? OR p.descricao LIKE ? OR p.codigo LIKE ? OR p.id LIKE )'
                 );
                 conditions.push(`(${termConditions.join(' AND ')})`);
                 terms.forEach(term => {
-                    values.push(`%${term.toLocaleLowerCase()}%`, `%${term.toLowerCase()}%`);
+                    values.push(`%${term.toLocaleLowerCase()}%`, `%${term.toLowerCase()}%`, `%${term.toLowerCase()}%`,`%${term.toLowerCase()}%`,);
                 });
             }
         }
