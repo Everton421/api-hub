@@ -98,6 +98,46 @@ const sectorsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
+    server.get('/setores/last-codigo', {
+        schema: {
+            tags: ['setores'],
+            headers: z.object({
+                token: z.string()
+            }),
+            response: {
+                200: z.object({
+                    codigo: z.number()
+                }),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+
+        try {
+            const select = new SelectSector();
+            const result = await select.findLastInsertedCode(dbName);
+            return reply.status(200).send({ codigo: result.codigo ?? 0 });
+        } catch (e) {
+            console.error('Error fetching last sector code:', e);
+            return reply.status(500).send({ success: false, message: 'Error fetching last sector code' });
+        }
+    });
+
     server.post('/setores', {
         schema: {
             tags: ['setores'],

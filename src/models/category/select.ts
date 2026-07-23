@@ -84,7 +84,7 @@ export class SelectCategory {
         }
         if (id) {
             conditions.push(" id = ? ");
-            values.push(Number(id));
+            values.push(  id );
         }
         if (ativo) {
             conditions.push(" ativo = ? ");

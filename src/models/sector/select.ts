@@ -92,4 +92,10 @@ export class SelectSector {
         const [result] = await conn.query(sql, values);
         return result as SectorType[];
     }
+
+    async findLastInsertedCode(dbName: string): Promise<{ codigo: number }> {
+        const sql = `SELECT MAX(codigo) as codigo FROM ${dbName}.setores`;
+        const [result] = await conn.query(sql);
+        return (result as any)[0];
+    }
 }
