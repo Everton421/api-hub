@@ -67,7 +67,7 @@ export class SelectSector {
         }
         if (id) {
             conditions.push("id = ?");
-            values.push(Number(id));
+            values.push(  id );
         }
         if (descricao) {
             conditions.push("descricao LIKE ?");
