@@ -240,8 +240,6 @@ export class SelectOrder {
             values.push(Number(limit));
         }
 
-        console.log(finalSql)
-        console.log(values)
 
         const [result] = await conn.query(finalSql, values);
         return result as OrderType[];

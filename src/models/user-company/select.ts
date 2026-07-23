@@ -48,15 +48,18 @@ export class SelectUserCompany {
          conditions.push('   ativo LIKE ? ') 
             values.push(`%${query.ativo}%`);
         }
+        if(query.search){
+           conditions.push('   codigo LIKE ?  OR nome like ? or  email like ? ') 
+            values.push(`%${query.search}%`, `%${query.search}%`, `%${query.search}%`);
+        }
 
         if (conditions.length > 0) {    
             sql += " WHERE " + conditions.join(" AND ");
         }
-
+       
         const limit = query.limit ?? 100;
         sql += " LIMIT ?";
         values.push(limit);
-
         const [result] = await conn.query(sql, values);
         return result as UserCompany[];
     }

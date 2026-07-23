@@ -20,4 +20,5 @@ export type UserCompanyQuery = {
     email?:  string
     limit?:  number;
     ativo?: 'S' | 'N'
+    search?: string 
 };
