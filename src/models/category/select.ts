@@ -112,4 +112,10 @@ export class SelectCategory {
 
         return result as CategoryType[];
     }
+
+    async findLastInsertedCode(dbName: string): Promise<{ codigo: number }> {
+        const sql = `SELECT MAX(codigo) as codigo FROM ${dbName}.categorias`;
+        const [result] = await conn.query(sql);
+        return (result as any)[0];
+    }
 }

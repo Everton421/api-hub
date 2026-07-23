@@ -28,8 +28,7 @@ export class SelectPhoto {
            coalesce(DATE_FORMAT( data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00' )  AS data_recadastro
          FROM ${dbName}.fotos_produtos 
            WHERE produto = ?`;
-
-        const [result] = await conn.query(sql, [productCode]);
+        const [result] = await conn.query(sql,  productCode );
         return result as PhotoType[];
     }
 

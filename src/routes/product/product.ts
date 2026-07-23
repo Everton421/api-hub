@@ -46,13 +46,13 @@ const productResponseSchema = z.object({
     controle_lote_serie: z.enum(['S', 'N']).default('N'),
     fotos: z.array(
             z.object({
-                produto: z.number(),
-                sequencia: z.number(),
-                descricao: z.string(),
-                link: z.string(),
-                foto: z.string(),
-                data_cadastro: z.string(),
-                data_recadastro: z.string()
+                produto: z.coerce.number(),
+                sequencia: z.coerce.number(),
+                descricao: z.coerce.string(),
+                link: z.coerce.string(),
+                foto: z.coerce.string(),
+                data_cadastro: z.coerce.string(),
+                data_recadastro: z.coerce.string()
             })
     )
 
@@ -154,7 +154,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
             let resultProductsSeachByParams = await select.findByParams(dbName, request.query) as productTypeAndPhotos[];
             if(resultProductsSeachByParams.length > 0 ){
 
-                 for( const p of resultProductsSeachByParams as any[] ) { 
+                 for( let p of resultProductsSeachByParams as any[] ) { 
                     const fotos = await selectPhoto.findByProduct(dbName, p.codigo);
                     p.fotos = fotos
                     productsResponseRequest.push(p);
