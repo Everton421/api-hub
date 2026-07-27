@@ -10,6 +10,7 @@ import { publishMessage } from '../../services/broker/publish-message.ts';
 import { conn } from '../../database/databaseConfig.ts';
 import { UpdateProductSector } from '../../models/product-sector/update.ts';
 import { SelectProductSector } from '../../models/product-sector/select.ts';
+import { InsertProductSector } from '../../models/product-sector/insert.ts';
 import { InsertLoteSerieSetor } from '../../models/lote-serie-setor/insert.ts';
 import { SelectProduct } from '../../models/product/select.ts';
 
@@ -562,6 +563,7 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
             const selectItems = new SelectItemsRequirements();
             const updateProductSector = new UpdateProductSector();
             const selectProductSector = new SelectProductSector();
+            const insertProductSector = new InsertProductSector();
             const insertLoteSerieSetor = new InsertLoteSerieSetor();
             const selectProduct = new SelectProduct();
 
@@ -594,13 +596,13 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
                 }
 
                 await updateProductSector.decrementStock(dbName, requirement.setor_origem, item.produto, item.quantidade);
-                await updateProductSector.incrementStock(dbName, requirement.setor_destino, item.produto, item.quantidade);
+                await insertProductSector.upsertIncrementStock(dbName, requirement.setor_destino, item.produto, item.quantidade);
 
                 const lotes = await selectItems.findLotesByRequerimentoAndProduto(dbName, codigo, item.produto);
 
                 for (const lote of lotes) {
                     await insertLoteSerieSetor.decrementStock(dbName, requirement.setor_origem, lote.lote_serie, lote.quantidade);
-                    await insertLoteSerieSetor.incrementStock(dbName, requirement.setor_destino, lote.lote_serie, lote.quantidade);
+                    await insertLoteSerieSetor.upsertIncrementStock(dbName, requirement.setor_destino, item.produto, lote.lote_serie, lote.quantidade);
                 }
             }
 

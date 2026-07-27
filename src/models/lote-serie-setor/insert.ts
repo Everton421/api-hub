@@ -27,4 +27,12 @@ export class InsertLoteSerieSetor {
                      WHERE setor = ? AND lote_serie = ?`;
         await conn.query(sql, [quantidade, setor, lote_serie]);
     }
+
+    async upsertIncrementStock(dbName: string, setor: number, produto: number, lote_serie: number, quantidade: number): Promise<void> {
+        const sql = `INSERT INTO ${dbName}.lote_serie_setor (setor, produto, lote_serie, estoque)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                estoque = estoque + VALUES(estoque)`;
+        await conn.query(sql, [setor, produto, lote_serie, quantidade]);
+    }
 }

@@ -54,4 +54,14 @@ export class InsertProductSector {
         const [result] = await conn.query(sql, values);
         return { affectedRows: (result as any).affectedRows };
     }
+
+    async upsertIncrementStock(dbName: string, setor: number, produto: number, quantidade: number): Promise<void> {
+        const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const sql = `INSERT INTO ${dbName}.produto_setor 
+            (setor, produto, estoque, local_produto, local1_produto, local2_produto, local3_produto, local4_produto, data_recadastro)
+            VALUES (?, ?, ?, '', '', '', '', '', ?)
+            ON DUPLICATE KEY UPDATE  
+                estoque = estoque + VALUES(estoque)`;
+        await conn.query(sql, [setor, produto, quantidade, now]);
+    }
 }
