@@ -8,6 +8,10 @@ import { InsertItemsRequirements, DeleteItemsRequirements } from '../../models/r
 import { DateService } from '../../utils/dateService.ts';
 import { publishMessage } from '../../services/broker/publish-message.ts';
 import { conn } from '../../database/databaseConfig.ts';
+import { UpdateProductSector } from '../../models/product-sector/update.ts';
+import { SelectProductSector } from '../../models/product-sector/select.ts';
+import { InsertLoteSerieSetor } from '../../models/lote-serie-setor/insert.ts';
+import { SelectProduct } from '../../models/product/select.ts';
 
 const loteSerieItemSchema = z.object({
     lote_serie: z.number(),
@@ -511,6 +515,130 @@ const requirementsRoute: FastifyPluginAsyncZod = async (server) => {
         } catch (e) {
             console.error('Error cancelling requirement:', e);
             return reply.status(500).send({ success: true, message: 'Erro ao cancelar requerimento' });
+        }
+    });
+
+    server.post('/requirements/:codigo/efetuar', {
+        schema: {
+            tags: ['requirements'],
+            headers: z.object({
+                token: z.string(),
+                source: z.string().optional()
+            }),
+            params: z.object({
+                codigo: z.coerce.number()
+            }),
+            response: {
+                200: requirementResponseSchema,
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                404: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const dateService = new DateService();
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Token inválido' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const source = request.headers.source as string || 'api_internal';
+        const { codigo } = request.params;
+
+        try {
+            const select = new SelectRequirements();
+            const selectItems = new SelectItemsRequirements();
+            const updateProductSector = new UpdateProductSector();
+            const selectProductSector = new SelectProductSector();
+            const insertLoteSerieSetor = new InsertLoteSerieSetor();
+            const selectProduct = new SelectProduct();
+
+            const [requirement] = await select.findByCode(dbName, codigo);
+
+            if (!requirement) {
+                return reply.status(404).send({ success: false, message: 'Requerimento não encontrado' });
+            }
+
+            if (requirement.situacao !== 'A') {
+                return reply.status(400).send({ success: false, message: 'Requerimento não está aberto para efetuação' });
+            }
+
+            const itens = await selectItems.findByRequerimento(dbName, codigo);
+
+            for (const item of itens) {
+                const [product] = await selectProduct.findByCode(dbName, item.produto);
+
+                if (!product) {
+                    return reply.status(400).send({ success: false, message: `Produto ${item.produto} não encontrado` });
+                }
+
+                const estoqueOrigem = await selectProductSector.findByProductAndSector(dbName, item.produto, requirement.setor_origem);
+
+                if (estoqueOrigem.length === 0 || estoqueOrigem[0].estoque < item.quantidade) {
+                    return reply.status(400).send({ 
+                        success: false, 
+                        message: `Estoque insuficiente no setor de origem para o produto ${item.produto} (${product.descricao}). Disponível: ${estoqueOrigem.length > 0 ? estoqueOrigem[0].estoque : 0}, Solicitado: ${item.quantidade}` 
+                    });
+                }
+
+                await updateProductSector.decrementStock(dbName, requirement.setor_origem, item.produto, item.quantidade);
+                await updateProductSector.incrementStock(dbName, requirement.setor_destino, item.produto, item.quantidade);
+
+                const lotes = await selectItems.findLotesByRequerimentoAndProduto(dbName, codigo, item.produto);
+
+                for (const lote of lotes) {
+                    await insertLoteSerieSetor.decrementStock(dbName, requirement.setor_origem, lote.lote_serie, lote.quantidade);
+                    await insertLoteSerieSetor.incrementStock(dbName, requirement.setor_destino, lote.lote_serie, lote.quantidade);
+                }
+            }
+
+            const update = new UpdateRequirements();
+            const data_efetuacao = dateService.obterDataAtual();
+            await update.update(dbName, { 
+                situacao: 'E', 
+                data_efetuacao,
+                codigo 
+            } as any);
+
+            const dbItens = await selectItems.findByRequerimento(dbName, codigo);
+            const responseItens = [];
+
+            for (const dbItem of dbItens) {
+                const dbLotes = await selectItems.findLotesByRequerimentoAndProduto(dbName, codigo, dbItem.produto);
+                responseItens.push({
+                    produto: dbItem.produto,
+                    quantidade: dbItem.quantidade,
+                    descricao: dbItem.descricao,
+                    custo: dbItem.custo,
+                    lotes_series: dbLotes.map(l => ({ lote_serie: l.lote_serie, quantidade: l.quantidade }))
+                });
+            }
+
+            const result = {
+                ...requirement,
+                situacao: 'E' as const,
+                data_efetuacao,
+                itens: responseItens
+            };
+
+            await publishMessage(empresa, 'requerimento.efetuado', result, source);
+
+            return reply.status(200).send(result);
+        } catch (e) {
+            console.error('Error fulfilling requirement:', e);
+            return reply.status(500).send({ success: false, message: 'Erro ao efetuar requerimento' });
         }
     });
 };

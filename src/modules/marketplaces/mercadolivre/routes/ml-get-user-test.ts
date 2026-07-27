@@ -9,7 +9,7 @@ export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.get('/ml/user_test', {
         schema: {
-            tags: ['ml/accounts'],
+            tags: ['ml'],
             headers: z.object({
                 token: z.string(),
                 ml_user_id: z.string(),

@@ -20,7 +20,7 @@ type state = {
 export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
     server.get('/ml/integration/callback',{
         schema: { 
-            tags: ['ml/integration'],
+            tags: ['ml'],
             querystring: z.object({
                 code: z.coerce.string(),
                 state:z.coerce.string(),
@@ -86,7 +86,7 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
 
     server.get('/ml/integration/getCode',{
         schema:{
-            tags:['ml/integration'],
+            tags:['ml'],
             description:"Retorna a url de autorização, para que o MercadoLivre autorize o App a acessar a conta do usuario. ",
             headers: z.object({
                 token: z.string()
@@ -154,7 +154,8 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
  }  );
  server.post("/ml/integration/finalizeIntegration", {
             schema:{
-                tags:['ml/integration'],
+                tags:['ml'],
+                
                 headers: z.object({
                     token:z.string()
                 }),

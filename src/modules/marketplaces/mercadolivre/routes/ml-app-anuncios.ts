@@ -19,7 +19,7 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
  
     server.post('/ml/app/anuncios/register', {
         schema: {
-            tags: ['ml/app/anuncios'],
+            tags: ['ml'],
             description: "Registar os dados de um anuncio no banco de dados ",
             headers: z.object({
                 token: z.string()
@@ -162,11 +162,9 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
          }
     });
 
-  
-
     server.get('/ml/app/anuncios', {
         schema: {
-            tags: ['ml/app/anuncios'],
+            tags: ['ml'],
             description:"Consulta os anuncios cadastrados.",
             headers: z.object({
                 token: z.string()
@@ -234,7 +232,7 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.get('/ml/app/anuncios/:id', {
         schema: {
-            tags: ['ml/app/anuncios'],
+            tags: ['ml'],
             description:"Consulta anuncio cadastrado pelo ID.",
             headers: z.object({
                 token: z.string()
@@ -274,7 +272,7 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.put('/ml/app/anuncios/update/:id', {
         schema: {
-            tags: ['ml/app/anuncios'],
+            tags: ['ml'],
             description: "Atualiza anuncio no banco de dados ",
             headers: z.object({
                 token: z.string()
@@ -327,7 +325,7 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.delete('/ml/app/anuncios/delete/:id', {
         schema: {
-            tags: ['ml/app/anuncios'],
+            tags: ['ml'],
             description: "Exclui anuncio no banco de dados ",
             headers: z.object({
                 token: z.string()

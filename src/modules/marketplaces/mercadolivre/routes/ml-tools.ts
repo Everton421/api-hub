@@ -8,7 +8,7 @@ export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.post('/ml/tools/predict-category', {
         schema: {
-            tags: ['ml/tools'],
+            tags: ['ml'],
             headers: z.object({
                 token: z.string()
             }),
@@ -45,7 +45,7 @@ export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.get('/ml/tools/status_vendedor', {
         schema: {
-            tags: ['ml/tools'],
+            tags: ['ml'],
             headers: z.object({
                 token: z.string(),
               ml_user_id: z.coerce.number(),

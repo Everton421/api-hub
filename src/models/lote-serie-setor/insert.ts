@@ -13,4 +13,18 @@ export class InsertLoteSerieSetor {
         const [result] = await conn.query(sql, values);
         return { affectedRows: (result as any).affectedRows };
     }
+
+    async incrementStock(dbName: string, setor: number, lote_serie: number, quantidade: number): Promise<void> {
+        const sql = `UPDATE ${dbName}.lote_serie_setor 
+                     SET estoque = estoque + ?
+                     WHERE setor = ? AND lote_serie = ?`;
+        await conn.query(sql, [quantidade, setor, lote_serie]);
+    }
+
+    async decrementStock(dbName: string, setor: number, lote_serie: number, quantidade: number): Promise<void> {
+        const sql = `UPDATE ${dbName}.lote_serie_setor 
+                     SET estoque = estoque - ?
+                     WHERE setor = ? AND lote_serie = ?`;
+        await conn.query(sql, [quantidade, setor, lote_serie]);
+    }
 }

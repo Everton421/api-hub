@@ -60,4 +60,18 @@ export class UpdateProductSector {
         const [result] = await conn.query(sql, [params.estoque, params.data_recadastro, params.produto, params.setor]);
         return { affectedRows: (result as any).affectedRows };
     }
+
+    async incrementStock(dbName: string, setor: number, produto: number, quantidade: number): Promise<void> {
+        const sql = `UPDATE ${dbName}.produto_setor 
+                     SET estoque = estoque + ?
+                     WHERE produto = ? AND setor = ?`;
+        await conn.query(sql, [quantidade, produto, setor]);
+    }
+
+    async decrementStock(dbName: string, setor: number, produto: number, quantidade: number): Promise<void> {
+        const sql = `UPDATE ${dbName}.produto_setor 
+                     SET estoque = estoque - ?
+                     WHERE produto = ? AND setor = ?`;
+        await conn.query(sql, [quantidade, produto, setor]);
+    }
 }

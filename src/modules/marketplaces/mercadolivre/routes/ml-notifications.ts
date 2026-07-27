@@ -6,7 +6,7 @@ import { MlOrdersService } from "../services/ml-orders-service.ts";
 export const mlNotificationsRoute: FastifyPluginAsyncZod = async (server) => {
     server.post('/ml/notifications', {
         schema: {
-            tags: ['ml/notifications'],
+            tags: ['ml'],
             description: "Recebe notificacoes do Mercado Livre (webhook)",
             body: z.object({
                 _id: z.string().optional(),

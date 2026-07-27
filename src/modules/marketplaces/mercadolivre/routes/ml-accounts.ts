@@ -7,7 +7,7 @@ export const mlAccountsRoute: FastifyPluginAsyncZod = async (server) => {
 
     server.get('/ml/accounts/:codigo', {
         schema: {
-            tags: ['ml/accounts'],
+            tags: ['ml'],
             headers: z.object({
                 token: z.string()
             }),

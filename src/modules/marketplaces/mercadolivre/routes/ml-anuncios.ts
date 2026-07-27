@@ -8,7 +8,7 @@ import { type IPublishItem, PostMlItemsService } from "../services/post-itens-ml
 export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
     server.post('/ml/anuncios/create', {
         schema: {
-            tags: ['ml/anuncios'],
+            tags: ['ml'],
             description: "Cria um novo anúncio no mercadolivre",
             headers: z.object({
                 token: z.string()
@@ -85,7 +85,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
   
     server.get('/ml/get/anuncios', {
         schema: {
-            tags: ['ml/anuncios'],
+            tags: ['ml'],
             description:"Consulta os anuncios do usuario no MercadoLivre.",
             headers: z.object({
                 token: z.string(),
