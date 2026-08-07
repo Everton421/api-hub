@@ -288,7 +288,7 @@ server.get('/empresa', {
                                                       codigo:userCompanyId
                                                     }
                                                     const token = jwt.sign(
-                                                      payload, secret, { expiresIn: '24h' }
+                                                      payload, secret 
                                                     )
                               return reply.status(200).send( { success: true, message: "Empresa registrada com sucesso!" } );
                                     }
