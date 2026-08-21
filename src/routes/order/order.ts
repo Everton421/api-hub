@@ -93,7 +93,14 @@ const orderResponseSchema = z.object({
     operacao: z.enum([ 'V' , 'C']).describe('V= venda, C = compra '),
     setor: z.number().optional(),
     fornecedor:supplierSchema.nullish(),
-    filial: z.coerce.number()
+    filial: z.coerce.number(),
+    usuario:z.coerce.number().default(0),
+    usuario_separacao:z.coerce.number().default(0),
+    inicio_separacao:z.string(),
+    fim_separacao:z.string(),
+    status_separacao: z.enum(['NAO INICIADA' , 'EM ANDAMENTO' , 'PAUSADA' , 'RECUSADA', 'CONCLUIDA']).default('NAO INICIADA'),
+    observacoes_separacao: z.string().nullable().optional()
+
 });
          
 const ordersRoute: FastifyPluginAsyncZod = async (server) => {
@@ -135,9 +142,16 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 observacoes: z.string(),
                 observacoes2: z.string(),
                 setor: z.number().optional(),
+                usuario: z.number().optional().default(0),
+                usuario_separacao: z.number().optional().default(0),
+                inicio_separacao:z.string().optional().default('2000-01-01 00:00:00'),
+                fim_separacao:z.string().optional().default('2000-01-01 00:00:00'),
+                status_separacao: z.enum(['NAO INICIADA' , 'EM ANDAMENTO' , 'PAUSADA' , 'CONCLUIDA', 'RECUSADA']).optional().default('NAO INICIADA'),
+
                 produtos: z.array(productOrderSchema) ,
                 servicos: z.array(serviceOrderSchema) ,
-                parcelas: z.array(parcelOrderSchema) 
+                parcelas: z.array(parcelOrderSchema),
+
             })),
             response: {
                 201: z.object({
@@ -215,6 +229,126 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
         }
     });
 
+    server.patch('/pedidos/:codigo', {
+        schema: {
+            tags: ['pedidos'],
+            headers: z.object({
+                token: z.string(),
+                source: z.string().optional()
+            }),
+            params: z.object({
+                codigo: z.coerce.number()
+            }),
+            body: z.object({
+                cliente: z.union([z.object({ codigo: z.coerce.number() }), z.coerce.number()]).optional(),
+                fornecedor: z.union([z.object({ codigo: z.coerce.number() }), z.coerce.number()]).optional(),
+                vendedor: z.coerce.number().optional(),
+                situacao: z.enum(['EA', 'FI', 'RE', 'AI', 'FP', 'BM']).optional(),
+                situacao_separacao: z.enum(['N', 'P', 'I']).optional(),
+                contato: z.string().optional(),
+                descontos: z.coerce.string().optional(),
+                frete: z.coerce.string().optional(),
+                forma_pagamento: z.coerce.number().optional(),
+                quantidade_parcelas: z.coerce.number().optional(),
+                total_geral: z.coerce.string().optional(),
+                total_produtos: z.coerce.string().optional(),
+                total_servicos: z.coerce.string().optional(),
+                veiculo: z.coerce.number().optional(),
+                data_cadastro: z.string().optional(),
+                data_recadastro: z.string().optional(),
+                tipo_os: z.coerce.number().optional(),
+                tipo: z.coerce.number().optional(),
+                observacoes: z.string().optional(),
+                operacao: z.enum(['V', 'C']).optional(),
+                setor: z.coerce.number().optional(),
+                usuario: z.coerce.number().optional(),
+                usuario_separacao: z.coerce.number().optional(),
+                inicio_separacao: z.string().optional(),
+                fim_separacao: z.string().optional(),
+                status_separacao: z.enum(['NAO INICIADA', 'EM ANDAMENTO', 'PAUSADA', 'RECUSADA', 'CONCLUIDA']).optional(),
+                observacoes_separacao: z.string().optional(),
+                filial: z.coerce.number().optional(),
+                id_interno: z.string().optional(),
+                id_externo: z.coerce.string().optional()
+            }).refine((body) => Object.keys(body).length > 0, {
+                message: 'Informe ao menos um campo para atualizar o pedido'
+            }),
+            response: {
+                200: orderResponseSchema,
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                404: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const selectPedido = new SelectOrder();
+        const selectCliente = new SelectClient();
+        const selectSupplier = new SelectSupplier();
+        const updatePedido = new UpdateOrder();
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'É necessário informar o token!' });
+        }
+
+        const cnpj = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${cnpj}\``;
+        const source = request.headers.source as string || 'api_internal';
+        const { codigo } = request.params;
+        const data = request.body;
+
+        try {
+            const existingOrder = await selectPedido.findByCode(dbName, codigo);
+
+            if (existingOrder.length === 0) {
+                return reply.status(404).send({ success: false, message: `Pedido ${codigo} não foi encontrado.` });
+            }
+
+            await updatePedido.updateMainData(dbName, codigo, data as unknown as Partial<OrderReceivedType>);
+            await publishMessage(cnpj, 'pedido.atualizado', { ...data, codigo }, source);
+
+            const updated = await selectPedido.findByCode(dbName, codigo);
+            const pedido = updated[0];
+
+            let cliente: any;
+            let fornecedor: any = null;
+
+            if (pedido.operacao === 'V' && pedido.cliente > 0) {
+                try {
+                    const resultCliente = await selectCliente.findByCode(dbName, pedido.cliente);
+                    if (resultCliente.length > 0) {
+                        const { codigo, id, nome } = resultCliente[0];
+                        cliente = { codigo, nome, id };
+                    }
+                } catch (e) { console.log(`Erro ao buscar o cliente do pedido ${pedido.codigo}`, e); }
+            }
+
+            if (pedido.operacao === 'C' && pedido.fornecedor > 0) {
+                try {
+                    const resultSupplier = await selectSupplier.findByCode(dbName, pedido.fornecedor);
+                    if (resultSupplier.length > 0) {
+                        const { codigo, id, nome } = resultSupplier[0];
+                        fornecedor = { codigo, nome, id };
+                    }
+                } catch (e) { console.log(`Erro ao buscar o fornecedor do pedido ${pedido.codigo}`, e); }
+            }
+
+            return reply.status(200).send({ ...pedido, cliente, fornecedor });
+        } catch (e) {
+            console.error('Erro ao atualizar o pedido:', e);
+            return reply.status(500).send({ success: false, message: 'Erro interno ao atualizar o pedido.' });
+        }
+    });
+
     server.get('/pedidos', {
         schema: {
             tags: ['pedidos'],
@@ -236,7 +370,8 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                 situacao_separacao: z.enum([ 'I' , 'P' , 'N' ]).optional().describe('I =separado integralmente, P = separado parcialmente, N = não foi separado'),
                 orderBy: z.enum(["id_externo", "codigo", "id_interno", "id", "nome" , "data_recadastro"]).default('data_recadastro').describe("Ordena os pedidos atravéz do id_externo, codigo, id_interno, id e pelo nome do cliente ."),
                 operacao:z.enum(['V', 'C']).optional().describe('V= venda, C = compra '),
-                filial: z.coerce.number().optional()
+                filial: z.coerce.number().optional(),
+                usuario_separacao: z.coerce.number().int().nonnegative().optional()
             }),
             response: {
               //  200: z.array(orderResponseSchema),
@@ -265,7 +400,7 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
         const dbName = `\`${empresa}\``;
-        const { filial, data_final, data_inicial ,operacao, search , tipo, vendedor, limit, situacao, situacao_separacao, orderBy} = request.query;
+        const { filial, usuario_separacao, data_final, data_inicial ,operacao, search , tipo, vendedor, limit, situacao, situacao_separacao, orderBy} = request.query;
 
         const {id_externo, id_interno, codigo  , id } = request.query;
 
@@ -302,7 +437,8 @@ const ordersRoute: FastifyPluginAsyncZod = async (server) => {
                         id,
                         id_interno,
                         operation:operacao,
-                        filial 
+                        filial,
+                        usuario_separacao
                         });
 
             if (dados_orcamentos.length === 0) {

@@ -102,11 +102,10 @@ server.setValidatorCompiler(validatorCompiler)
 
 
 
-server.register(healthRoute)
-server.register(loginRoute);
-
+ server.register(healthRoute)
+ server.register(loginRoute);
  server.register(usersRoute);
-  server.register(companyRoute);
+ server.register(companyRoute);
  server.register(categoryRoute);
  server.register(getServiceOrderTypesRoute);
  server.register(getVehicleRoute);
@@ -114,7 +113,6 @@ server.register(loginRoute);
  server.register(servicesRoute);
  server.register(productsRoute);
  server.register(productSectorRoute);
- 
  server.register(getClientsRoute);
  server.register(getSuppliersRoute);
  server.register(locationsRoute);
@@ -127,16 +125,13 @@ server.register(loginRoute);
  server.register(perfilRoute);
  server.register(lotesSeriesRoute);
  server.register(loteSerieSetorRoute);
-
 // ml routes 
 server.register(mlIntegrationRoute);
 server.register(mlAnunciosRoute);
 server.register(mlAppAnunciosRoute);
-
 server.register(mlToolsRoute);
 server.register(mlAccountsRoute);
 server.register(marketplacesRoute);
-
 server.register(GetMlUserTestRoute);
 server.register(mlNotificationsRoute);
 server.register(branchesCompanyRoute);

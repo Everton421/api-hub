@@ -6,6 +6,9 @@ export class SelectOrder {
         const sql = `SELECT p.*,
             DATE_FORMAT(p.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(p.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+            DATE_FORMAT(p.fim_separacao, '%Y-%m-%d %H:%i:%s') AS fim_separacao,
+            DATE_FORMAT(p.inicio_separacao, '%Y-%m-%d %H:%i:%s') AS inicio_separacao,
+
             CONVERT(p.observacoes USING utf8) AS observacoes
         FROM ${dbName}.pedidos p 
         left JOIN ${dbName}.clientes c ON c.codigo = p.cliente 
@@ -20,6 +23,8 @@ export class SelectOrder {
         const sql = `SELECT p.*, c.id as cliente_id, c.nome as cliente_nome,
             DATE_FORMAT(p.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(p.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+              DATE_FORMAT(p.fim_separacao, '%Y-%m-%d %H:%i:%s') AS fim_separacao,
+            DATE_FORMAT(p.inicio_separacao, '%Y-%m-%d %H:%i:%s') AS inicio_separacao,
             CONVERT(p.observacoes USING utf8) AS observacoes
         FROM ${dbName}.pedidos p 
         left JOIN ${dbName}.clientes c ON c.codigo = p.cliente 
@@ -51,6 +56,8 @@ export class SelectOrder {
         const sql = `SELECT co.*, c.id as cliente_id,  c.nome as cliente_nome,
             DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(co.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+              DATE_FORMAT(p.fim_separacao, '%Y-%m-%d %H:%i:%s') AS fim_separacao,
+            DATE_FORMAT(p.inicio_separacao, '%Y-%m-%d %H:%i:%s') AS inicio_separacao,
             CONVERT(co.observacoes USING utf8) AS observacoes
         FROM ${dbName}.pedidos AS co
         JOIN ${dbName}.clientes c ON c.codigo = co.cliente`;
@@ -86,6 +93,8 @@ export class SelectOrder {
         const sql = `SELECT co.*, c.id as cliente_id,  c.nome as cliente_nome,
             DATE_FORMAT(co.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(co.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+              DATE_FORMAT(co.fim_separacao, '%Y-%m-%d %H:%i:%s') AS fim_separacao,
+            DATE_FORMAT(co.inicio_separacao, '%Y-%m-%d %H:%i:%s') AS inicio_separacao,
             CONVERT(co.observacoes USING utf8) AS observacoes
         FROM ${dbName}.pedidos AS co
         JOIN ${dbName}.clientes c ON c.codigo = co.cliente
@@ -121,6 +130,7 @@ export class SelectOrder {
         situacao?: 'EA' | 'FI' | 'RE' | 'AI' | 'FP'| 'BM' | '*',
         situacao_separacao?: 'I' | 'P' | 'N',
         orderBy?: "id_externo" | "codigo" | "id_interno" | "id" | "nome" | "data_recadastro",
+        usuario_separacao?:number,
         filial?:number
     }): Promise<OrderType[]> {
         const {
@@ -138,7 +148,8 @@ export class SelectOrder {
             codigo, id, id_interno, id_externo,
             orderBy,
             supplier,
-            filial
+            filial,
+            usuario_separacao
         } = params;
 
         const sql = `SELECT pe.*, 
@@ -148,6 +159,9 @@ export class SelectOrder {
          -- f.nome as fornecedor_nome,    
         DATE_FORMAT(pe.data_cadastro, '%Y-%m-%d') AS data_cadastro,
             DATE_FORMAT(pe.data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro,
+          DATE_FORMAT(pe.fim_separacao, '%Y-%m-%d %H:%i:%s') AS fim_separacao,
+            DATE_FORMAT(pe.inicio_separacao, '%Y-%m-%d %H:%i:%s') AS inicio_separacao,
+
             CONVERT(pe.observacoes USING utf8) AS observacoes
         FROM ${dbName}.pedidos AS pe
         LEFT JOIN ${dbName}.clientes c ON c.codigo = pe.cliente
@@ -181,6 +195,11 @@ export class SelectOrder {
         if (cnpj) {
             conditions.push("c.cnpj = ?");
             values.push(Number(cnpj));
+        }
+        
+        if(usuario_separacao && usuario_separacao> 0){
+            conditions.push("( pe.usuario_separacao = ? OR pe.usuario_separacao = 0 ) ");
+            values.push(Number(usuario_separacao));
         }
 
         if (situacao_separacao) {
@@ -239,7 +258,6 @@ export class SelectOrder {
             finalSql += ' LIMIT ?';
             values.push(Number(limit));
         }
-
 
         const [result] = await conn.query(finalSql, values);
         return result as OrderType[];

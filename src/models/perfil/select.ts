@@ -3,13 +3,20 @@ import { type PerfilType, type PerfilWithPermissoes, type PermissaoType } from "
 
 export class SelectPerfil {
     async findAll(dbName: string): Promise<PerfilType[]> {
-        const sql = `SELECT * FROM ${dbName}.perfis ORDER BY codigo`;
+        const sql = `SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+        FROM ${dbName}.perfis ORDER BY codigo`;
         const [result] = await conn.query(sql);
         return result as PerfilType[];
     }
 
     async findByCode(dbName: string, codigo: number): Promise<PerfilType[]> {
-        const sql = `SELECT * FROM ${dbName}.perfis WHERE codigo = ?`;
+        const sql = `SELECT 
+            *,
+                DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+            FROM ${dbName}.perfis WHERE codigo = ?`;
         const [result] = await conn.query(sql, [codigo]);
         return result as PerfilType[];
     }
@@ -36,13 +43,20 @@ export class SelectPerfil {
         }
 
         const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
-        const sql = `SELECT * FROM ${dbName}.perfis ${where} ORDER BY codigo`;
+        const sql = `SELECT *, 
+        
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+        FROM ${dbName}.perfis ${where} ORDER BY codigo`;
         const [result] = await conn.query(sql, values);
         return result as PerfilType[];
     }
 
     async findByCodeWithPermissoes(dbName: string, codigo: number): Promise<PerfilWithPermissoes[]> {
-        const perfilSql = `SELECT * FROM ${dbName}.perfis WHERE codigo = ?`;
+        const perfilSql = `SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+        FROM ${dbName}.perfis WHERE codigo = ?`;
         const [perfis] = await conn.query(perfilSql, [codigo]);
 
         if (!perfis || (perfis as any[]).length === 0) {
@@ -63,7 +77,10 @@ export class SelectPerfil {
     }
 
     async findAllWithPermissoes(dbName: string): Promise<PerfilWithPermissoes[]> {
-        const perfisSql = `SELECT * FROM ${dbName}.perfis ORDER BY codigo`;
+        const perfisSql = `SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+        FROM ${dbName}.perfis ORDER BY codigo`;
         const [perfis] = await conn.query(perfisSql);
 
         const permissoesSql = `

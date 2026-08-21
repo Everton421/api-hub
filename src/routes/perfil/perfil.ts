@@ -5,6 +5,7 @@ import { SelectPerfil } from "../../models/perfil/select.ts";
 import { InsertPerfil } from "../../models/perfil/insert.ts";
 import { UpdatePerfil } from "../../models/perfil/update.ts";
 import { SelectPermissao } from "../../models/permissao/select.ts";
+import { derivarSituacoes, temPermissaoVerTodos } from "../../services/SituacaoPermissao.ts";
 import { DateService } from "../../utils/dateService.ts";
 import { publishMessage } from "../../services/broker/publish-message.ts";
 
@@ -52,6 +53,7 @@ const perfilRoute: FastifyPluginAsyncZod = async (server) => {
             const result = withPermissoes
                 ? await select.findAllWithPermissoes(dbName)
                 : await select.findAll(dbName);
+                console.log(result)
             return reply.status(200).send(result);
         } catch (e) {
             console.error("Erro ao buscar perfis:", e);
@@ -70,21 +72,21 @@ const perfilRoute: FastifyPluginAsyncZod = async (server) => {
                 id: z.string().optional(),
                 nome: z.string().optional(),
                 ativo: z.string().optional(),
-                withPermissoes: z.enum(["S", "N"]).optional().default("N")
-            }),
+           }),
             response: {
                 200: z.array(z.object({
-                    codigo: z.number(),
-                    id: z.string(),
-                    nome: z.string(),
-                    data_cadastro: z.string(),
+                    codigo: z.coerce.number(),
+                    id: z.coerce.string(),
+                    nome: z.coerce.string(),
+                    ativo: z.enum(['S', 'N']),
+                          data_cadastro: z.string(),
                     data_recadastro: z.string(),
-                    ativo: z.string(),
                     permissoes: z.array(z.object({
-                        codigo: z.number(),
-                        id: z.string(),
-                        descricao: z.string()
-                    })).optional()
+                        codigo: z.coerce.number(),
+                        id: z.coerce.string(),
+                        descricao: z.coerce.string(),
+                        ativo: z.enum(['S', 'N']),
+                    })) 
                 })),
                 400: z.object({ success: z.boolean(), message: z.string() })
             }
@@ -97,20 +99,19 @@ const perfilRoute: FastifyPluginAsyncZod = async (server) => {
 
         const empresa = decodedToken.payload.cnpj.replace(/\D/g, "");
         const dbName = `\`${empresa}\``;
-        const { withPermissoes, ...params } = request.query;
+        const  params  = request.query;
         const select = new SelectPerfil();
 
         try {
             const result = await select.findByParams(dbName, params);
-            
-            if (withPermissoes === "S" && result.length > 0) {
+         
                 const resultsWithPermissoes = await Promise.all(
                     result.map(p => select.findByCodeWithPermissoes(dbName, p.codigo))
                 );
-                return reply.status(200).send(resultsWithPermissoes.flat());
-            }
-            
-            return reply.status(200).send(result);
+
+                return reply.status(200).send(resultsWithPermissoes.flat() as any);
+ 
+   
         } catch (e) {
             console.error("Erro ao buscar perfis:", e);
             return reply.status(400).send({ success: false, message: "Erro ao buscar perfis" });
@@ -334,10 +335,63 @@ const perfilRoute: FastifyPluginAsyncZod = async (server) => {
             if (request.query.ativo) params.ativo = request.query.ativo;
             
             const result = await select.findByParams(dbName, params);
+            console.log(result)
             return reply.status(200).send(result);
         } catch (e) {
             console.error("Erro ao buscar permissões:", e);
             return reply.status(500).send({ success: false, message: "Erro ao buscar permissões" });
+        }
+    });
+
+    server.get("/permissoes/usuario", {
+        schema: {
+            tags: ["permissoes"],
+            headers: z.object({
+                token: z.string()
+            }),
+            response: {
+                200: z.object({
+                    success: z.boolean(),
+                    ver_todos: z.boolean(),
+                    permissoes: z.array(z.object({
+                        codigo: z.number(),
+                        id: z.string(),
+                        descricao: z.string()
+                    })),
+                    situacoes: z.array(z.object({
+                        situacao: z.string(),
+                        descricao: z.string()
+                    }))
+                }),
+                400: z.object({ success: z.boolean(), message: z.string() }),
+                500: z.object({ success: z.boolean(), message: z.string() })
+            }
+        }
+    }, async (request, reply) => {
+        const decodedToken = DecodedToken(String(request.headers.token));
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: "Token inválido" });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, "");
+        const dbName = `\`${empresa}\``;
+        const select = new SelectPermissao();
+
+        try {
+            const permissoes = await select.findByUser(dbName, decodedToken.payload.codigo);
+            const permissaoIds = permissoes.map(p => p.id);
+            const ver_todos = temPermissaoVerTodos(permissaoIds);
+            const situacoes = derivarSituacoes(permissaoIds);
+
+            return reply.status(200).send({
+                success: true,
+                ver_todos,
+                permissoes: permissoes.map(({ codigo, id, descricao }) => ({ codigo, id, descricao })),
+                situacoes
+            });
+        } catch (e) {
+            console.error("Erro ao buscar permissões do usuário:", e);
+            return reply.status(500).send({ success: false, message: "Erro ao buscar permissões do usuário" });
         }
     });
 

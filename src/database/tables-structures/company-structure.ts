@@ -7,8 +7,46 @@ export class CompanyStructure {
     // O driver (mysql/mysql2) fará isso automaticamente e de forma segura ao usar "??".
 
     const sqlTables = [
-      `CREATE DATABASE IF NOT EXISTS ??;`
-      ,
+      `CREATE DATABASE IF NOT EXISTS ??;`,
+
+      ` CREATE TABLE IF NOT EXISTS ??.pedidos (
+            codigo  bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            id  varchar(255) NOT NULL DEFAULT '0',
+            id_externo  varchar(255) DEFAULT NULL,
+            id_interno  varchar(255) DEFAULT NULL,
+            vendedor  int(11) NOT NULL DEFAULT 0,
+            situacao  char(2) NOT NULL DEFAULT 'EA',
+            situacao_separacao  enum('N','P','I') NOT NULL DEFAULT 'N',
+            contato  varchar(255) DEFAULT NULL,
+            descontos  decimal(10,2) NOT NULL DEFAULT 0.00,
+            frete  decimal(10,2) DEFAULT 0.00,
+            forma_pagamento  int(11) DEFAULT 0,
+            observacoes  blob DEFAULT NULL,
+            quantidade_parcelas  int(11) DEFAULT 0,
+            total_geral  decimal(10,2) DEFAULT 0.00,
+            total_produtos  decimal(10,2) DEFAULT 0.00,
+            total_servicos  decimal(10,2) DEFAULT 0.00,
+            cliente  int(11) NOT NULL DEFAULT 0,
+            veiculo  int(11) NOT NULL DEFAULT 0,
+            data_cadastro  date NOT NULL DEFAULT '2000-01-01',
+            data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+            tipo_os  int(11) DEFAULT 0,
+            enviado  enum('N','S') NOT NULL DEFAULT 'S',
+            tipo  int(11) NOT NULL DEFAULT 1,
+            fornecedor  int(11) DEFAULT 0,
+            setor  int(11) DEFAULT 0,
+            operacao  enum('V','C') DEFAULT 'V' COMMENT 'V =VENDA; C = COMPRA',
+            filial  int(10) DEFAULT 0,
+            usuario  int(11) DEFAULT 0,
+            usuario_separacao  int(11) DEFAULT 0,
+            inicio_separacao  datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+            fim_separacao  datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+            status_separacao  enum('NAO INICIADA','EM ANDAMENTO','PAUSADA','RECUSADA','CONCLUIDA') DEFAULT 'NAO INICIADA',
+            observacoes_separacao  text DEFAULT NULL,
+            PRIMARY KEY ( codigo ),
+            UNIQUE KEY  uk_id_operacao  ( id , operacao ),
+            KEY  id  ( id ) USING BTREE
+          );`,
       `CREATE TABLE  IF NOT EXISTS ??.requerimentos  (
        codigo  int(10) unsigned NOT NULL AUTO_INCREMENT,
        data_requerimento  date NOT NULL DEFAULT '0000-00-00',
@@ -133,38 +171,7 @@ export class CompanyStructure {
                   PRIMARY KEY (codigo)
             );`,
 
-      `CREATE TABLE IF NOT EXISTS ??.pedidos (
-                codigo bigint(20)  unsigned NOT NULL AUTO_INCREMENT,
-                id  varchar(255) NOT NULL DEFAULT '0',
-                id_externo  varchar(255) DEFAULT NULL,
-                id_interno  varchar(255) DEFAULT NULL,
-                vendedor  int(11) NOT NULL DEFAULT 0,
-                situacao  char(2) NOT NULL DEFAULT 'EA',
-                situacao_separacao  enum('N','P','I') NOT NULL DEFAULT 'N', 
-                contato  varchar(255) DEFAULT NULL,
-                descontos decimal(10,2) NOT NULL DEFAULT 0.00,
-                frete decimal(10,2) DEFAULT 0.00,
-                forma_pagamento  int(11) DEFAULT 0,
-                observacoes  blob DEFAULT NULL,
-                quantidade_parcelas  int(11) DEFAULT 0,
-                total_geral  decimal(10,2) DEFAULT 0.00,
-                total_produtos  decimal(10,2) DEFAULT 0.00, 
-                total_servicos  decimal(10,2) DEFAULT 0.00, 
-                cliente  int(11) NOT NULL DEFAULT 0,
-                veiculo  int(11) NOT NULL DEFAULT 0,
-                data_cadastro  date NOT NULL DEFAULT '2000-01-01',
-                data_recadastro  datetime NOT NULL DEFAULT '2000-01-01 00:00:00' , 
-                tipo_os  int(11) DEFAULT 0,
-                enviado  enum('N','S') NOT NULL DEFAULT 'S',
-                tipo  int(11) NOT NULL DEFAULT 1, 
-                fornecedor  int(11) DEFAULT 0,
-                setor  int(11) DEFAULT 0,
-                operacao  enum('V','C') DEFAULT 'V' COMMENT 'V =VENDA; C = COMPRA',
-                filial  int(11) DEFAULT 0,
-                PRIMARY KEY (codigo),
-                UNIQUE KEY uk_id_operacao (id, operacao),
-                KEY id (id) USING BTREE
-            );`,
+      
       `CREATE TABLE IF NOT EXISTS ??.produtos_pedido (
                 pedido bigint(20) unsigned NOT NULL DEFAULT 0,
                 codigo INTEGER NOT NULL,
@@ -464,7 +471,7 @@ export class CompanyStructure {
       await this.seedDefaultData(database_name);
 
     } catch (tableErr) {
-      console.log("[X] Erro ao tentar registrar o banco de dados da empresa.")
+      console.log("[X] Erro ao tentar registrar o banco de dados da empresa.", tableErr)
     }
 
   }
@@ -485,10 +492,12 @@ export class CompanyStructure {
       { id: 'produtos.criar', descricao: 'Criar produtos' },
       { id: 'produtos.editar', descricao: 'Editar produtos' },
       { id: 'produtos.deletar', descricao: 'Excluir produtos' },
+      
       { id: 'pedidos.ler', descricao: 'Visualizar pedidos' },
       { id: 'pedidos.criar', descricao: 'Criar pedidos' },
       { id: 'pedidos.editar', descricao: 'Editar pedidos' },
       { id: 'pedidos.deletar', descricao: 'Excluir pedidos' },
+
       { id: 'clientes.ler', descricao: 'Visualizar clientes' },
       { id: 'clientes.criar', descricao: 'Criar clientes' },
       { id: 'clientes.editar', descricao: 'Editar clientes' },
@@ -515,21 +524,45 @@ export class CompanyStructure {
       { id: 'veiculos.deletar', descricao: 'Excluir veículos' },
       { id: 'relatorios.ler', descricao: 'Visualizar relatórios' },
       { id: 'configuracoes.ler', descricao: 'Visualizar configurações' },
-      { id: 'configuracoes.editar', descricao: 'Editar configurações' }
+      { id: 'configuracoes.editar', descricao: 'Editar configurações' },
+     
+      { id: 'pedidos.ver_todos', descricao: 'Visualizar todos os pedidos' },
+      { id: 'pedidos.ver_em_aberto', descricao: 'Visualizar somente pedidos em aberto/orçamento' },
+      { id: 'pedidos.ver_aprovados', descricao: 'Visualizar somente pedidos aprovados' },
+      { id: 'pedidos.ver_faturados', descricao: 'Visualizar somente pedidos faturados integralmente' },
+      { id: 'pedidos.ver_faturados_parcialmente', descricao: 'Visualizar somente pedidos faturados parcialmente' },
+      { id: 'pedidos.ver_cancelados', descricao: 'Visualizar somente pedidos cancelados/recusados' },
+      { id: 'pedidos.ver_baixados', descricao: 'Visualizar somente pedidos baixados manualmente' },
+      { id: 'pedidos.ver_valores', descricao: 'Visualizar valores dos pedidos' },
+     
+      { id: 'produtos.ver_valores', descricao: 'Visualizar valores dos produtos' },
+
+      { id: 'requerimentos.ler', descricao: 'Visualizar requerimentos' },
+      { id: 'requerimentos.criar', descricao: 'Criar requerimentos' },
+      { id: 'requerimentos.editar', descricao: 'Editar requerimentos' },
+      { id: 'requerimentos.deletar', descricao: 'Excluir requerimentos' },
+
+      { id: 'acertos.ler', descricao: 'Visualizar acertos' },
+      { id: 'acertos.criar', descricao: 'criar acertos' },
+
+      { id: '*', descricao: 'Todas as Permissões' },
+
+      
     ];
 
-    const permAdministrador = permissoes.map(p => p.id);
+    const permAdministrador = ['*'];
 
     const permGerente = [
-      'produtos.ler', 'produtos.criar', 'produtos.editar',
-      'pedidos.ler', 'pedidos.criar', 'pedidos.editar',
-      'clientes.ler', 'clientes.criar', 'clientes.editar',
-      'fornecedores.ler', 'fornecedores.criar', 'fornecedores.editar',
-      'usuarios.ler',
-      'servicos.ler', 'servicos.criar', 'servicos.editar',
-      'setores.ler', 'setores.criar', 'setores.editar',
-      'veiculos.ler', 'veiculos.criar', 'veiculos.editar',
-      'relatorios.ler'
+      //'produtos.ler', 'produtos.criar', 'produtos.editar',
+      //'pedidos.ler', 'pedidos.criar', 'pedidos.editar',
+      //'clientes.ler', 'clientes.criar', 'clientes.editar',
+      //'fornecedores.ler', 'fornecedores.criar', 'fornecedores.editar',
+      //'usuarios.ler',
+      //'servicos.ler', 'servicos.criar', 'servicos.editar',
+      //'setores.ler', 'setores.criar', 'setores.editar',
+      //'veiculos.ler', 'veiculos.criar', 'veiculos.editar',
+      //'relatorios.ler'
+      '*'
     ];
 
     const permVendedor = [
@@ -543,11 +576,12 @@ export class CompanyStructure {
 
     const permEstoque = [
       'produtos.ler', 'produtos.criar', 'produtos.editar',
-      'clientes.ler',
-      'fornecedores.ler',
-
-      'setores.ler', 'setores.criar', 'setores.editar',
-      'veiculos.ler'
+      'pedidos.ver_todos','pedidos.ver_em_aberto','pedidos.ver_aprovados','pedidos.ver_faturados',
+      'pedidos.ver_faturados_parcialmente','pedidos.ver_cancelados','pedidos.ver_baixados','pedidos.ver_valores',
+      'setores.ler',
+      'requerimentos.ler', 'requerimentos.criar', 'requerimentos.editar', 'requerimentos.deletar',
+      'acertos.ler',
+      'acertos.criar',
     ];
 
     const perfilPermissoes: { [key: string]: string[] } = {

@@ -20,7 +20,10 @@ const separacaoItemSchema =  z.object({
             })).optional()
         }) 
     ),
-    setor: z.number()
+    setor: z.number(),
+    status_separacao: z.enum(['NAO INICIADA' , 'EM ANDAMENTO' , 'PAUSADA' , 'RECUSADA', 'CONCLUIDA']),
+    usuario_separacao: z.coerce.number(),
+    observacoes_separacao: z.string().optional()
 })
 
 const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
@@ -42,6 +45,8 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                     data: z.object({
                         pedido: z.number(),
                         situacao_separacao: z.string(),
+                        status_separacao: z.string(),
+                        usuario_separacao: z.number(),
                         itens_processados: z.number(),
                         series_registradas: z.number()
                     }).optional()
@@ -73,7 +78,7 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
         const empresa = `\`${cnpj}\``;
         const source = request.headers.source as string || 'api_internal';
         const { codigo } = request.params;
-        const { itens, setor } = request.body;
+        const { itens, setor, status_separacao, usuario_separacao, observacoes_separacao } = request.body;
 
         try {
             const existingOrder = await selectPedido.findByCode(empresa, codigo);
@@ -101,7 +106,7 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                 }
 
                 if (item.series && item.series.length > 0) {
-                    if (!order.setor || order.setor === 0) {
+                    if (!setor ||  setor === 0) {
                         return reply.status(400).send({ success: false, message: `Pedido ${codigo} não possui setor definido. Defina um setor no pedido antes de separar séries.` });
                     }
 
@@ -179,13 +184,26 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                     situacaoSeparacao = 'N';
                 }
 
-                const sqlUpdateOrder = `UPDATE ${empresa}.pedidos SET situacao_separacao = ? , setor = ? WHERE codigo = ?`;
-                await conn.query(sqlUpdateOrder, [situacaoSeparacao, setor, codigo]);
+                let sqlUpdateOrder = `UPDATE ${empresa}.pedidos SET situacao_separacao = ?, setor = ?, status_separacao = ?, usuario_separacao = ? `;
+                if(status_separacao == 'CONCLUIDA'){
+                    sqlUpdateOrder += `, fim_separacao = now()`
+                }
+                const valuesUpdateOrder: any[] = [situacaoSeparacao, setor, status_separacao, usuario_separacao];
+
+                if (observacoes_separacao !== undefined) {
+                    sqlUpdateOrder += `, observacoes_separacao = ?`;
+                    valuesUpdateOrder.push(observacoes_separacao);
+                }
+
+                sqlUpdateOrder += ` WHERE codigo = ?`;
+                valuesUpdateOrder.push(codigo);
+
+                await conn.query(sqlUpdateOrder, valuesUpdateOrder);
 
                 await connInstance.query('COMMIT');
                 
                             
-                await publishMessage(cnpj, 'pedido.separado', { pedido: codigo, tipo:order.tipo ,situacao_separacao: situacaoSeparacao, itens_processados: itens.length, series_registradas: totalSeriesRegistradas }, source);
+                await publishMessage(cnpj, 'pedido.separado', { pedido: codigo, tipo:order.tipo ,situacao_separacao: situacaoSeparacao, status_separacao, usuario_separacao, itens_processados: itens.length, series_registradas: totalSeriesRegistradas, observacoes_separacao }, source);
                 
                 return reply.status(200).send({
                     success: true,
@@ -193,6 +211,8 @@ const orderSeriesRoute: FastifyPluginAsyncZod = async (server) => {
                     data: {
                         pedido: codigo,
                         situacao_separacao: situacaoSeparacao,
+                        status_separacao,
+                        usuario_separacao,
                         itens_processados: itens.length,
                         series_registradas: totalSeriesRegistradas
                     }

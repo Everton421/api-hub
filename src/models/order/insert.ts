@@ -44,6 +44,12 @@ export class InsertOrder {
             fornecedor,
             operacao,
             setor = 0,
+            usuario,
+            usuario_separacao,
+            inicio_separacao  ,
+            fim_separacao  ,
+            status_separacao  ,
+            observacoes_separacao  ,
             filial
         } = data;
 
@@ -77,9 +83,15 @@ export class InsertOrder {
             observacoes,
             fornecedor,
             setor,
+            usuario,
+            usuario_separacao,
+            inicio_separacao,
+            fim_separacao,
+            status_separacao,
+            observacoes_separacao,
             operacao,
             filial
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         const values = [
             id,
@@ -106,6 +118,12 @@ export class InsertOrder {
             observacoes,
             fornecedor?.codigo || 0,
             setor,
+            usuario, 
+            usuario_separacao, 
+             inicio_separacao,
+            fim_separacao,
+            status_separacao,
+            observacoes_separacao,
             operacao,
             filial
         ];

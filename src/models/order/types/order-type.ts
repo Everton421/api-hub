@@ -27,6 +27,12 @@ export type OrderType = {
     operacao: 'V' | 'C' // venda ou compra
     fornecedor:number,
     setor: number;
+    usuario: number;
+    usuario_separacao: number;
+    inicio_separacao:string
+    fim_separacao:string
+    status_separacao: 'NAO INICIADA' | 'EM ANDAMENTO' | 'PAUSADA' | 'RECUSADA' | 'CONCLUIDA'
+    observacoes_separacao?: string | null
     filial:number
 };
 
@@ -51,6 +57,12 @@ export type OrderReceivedType = {
     totalSemDesconto?: string;
     operacao: 'V' | 'C' // venda ou compra
     setor?: number;
+    usuario: number;
+    usuario_separacao: number;
+    inicio_separacao:string
+    fim_separacao:string
+    status_separacao: 'NAO INICIADA' | 'EM ANDAMENTO' | 'PAUSADA' | 'RECUSADA' | 'CONCLUIDA'
+    observacoes_separacao?: string | null
     fornecedor?: {
          codigo: number;
          nome?: string;

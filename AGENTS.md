@@ -418,6 +418,56 @@ modules/marketplaces/mercadolivre/
 
 ---
 
+## Order Situation Permissions
+
+Permissions that control which order `situacao` values a user can choose when filtering orders on the mobile frontend. The permission is **UI-driven** (not enforced server-side on order routes) — the mobile app fetches the user's permissions, saves them locally, and builds the `situacao` select/filter from them.
+
+### Permissions (seeded in `company-structure.ts` → `seedDefaultData`)
+
+| id | Effect |
+|---|---|
+| `pedidos.ver_todos` | All situations |
+| `pedidos.ver_em_aberto` | EA — Em aberto/orçamento |
+| `pedidos.ver_aprovados` | AI — Aprovado |
+| `pedidos.ver_faturados` | FI — Faturado integralmente |
+| `pedidos.ver_faturados_parcialmente` | FP — Faturado parcialmente |
+| `pedidos.ver_cancelados` | RE — Cancelado/Recusado |
+| `pedidos.ver_baixados` | BM — Baixado manualmente |
+
+These are NOT linked to any seeded perfil by default. Admins assign them via `POST /perfis/:codigo/permissoes`.
+
+### Mapping constants — `src/services/SituacaoPermissao.ts`
+- `PERMISSAO_SITUACAO`: permission id → `Situacao` code
+- `SITUACAO_DESCRICAO`: `Situacao` code → human label
+- `TODAS_SITUACOES`: all 6 codes
+- `temPermissaoVerTodos(permissaoIds): boolean`
+- `derivarSituacoes(permissaoIds): { situacao, descricao }[]` — returns all 6 when `pedidos.ver_todos` is present, otherwise the union of the mapped situation permissions (possibly empty).
+
+### Endpoint — `GET /permissoes/usuario` (in `src/routes/perfil/perfil.ts`)
+Returns the current user's permissions (from the JWT `codigo`) for the mobile app to build the filter:
+
+```json
+{
+  "success": true,
+  "ver_todos": true,
+  "permissoes": [{ "codigo": 1, "id": "pedidos.ver_aprovados", "descricao": "..." }],
+  "situacoes": [{ "situacao": "AI", "descricao": "Aprovado" }, ...]
+}
+```
+
+Backed by `SelectPermissao.findByUser(dbName, codigoUsuario)` (`src/models/permissao/select.ts`), which joins `usuarios → perfil_permissoes → permissoes`.
+
+### Adding the permissions to existing company databases
+The `permissoes` table has no UNIQUE on `id`, so the seed only runs on company creation. For existing databases, run an idempotent `INSERT ... SELECT ... WHERE NOT EXISTS` for each permission (see the SQL provided in the implementation request). Example for one permission:
+
+```sql
+INSERT INTO `SEU_BANCO`.`permissoes` (id, descricao, data_cadastro, data_recadastro, ativo)
+SELECT 'pedidos.ver_todos', 'Visualizar todos os pedidos', CURDATE(), NOW(), 'S'
+WHERE NOT EXISTS (SELECT 1 FROM `SEU_BANCO`.`permissoes` WHERE id = 'pedidos.ver_todos');
+```
+
+---
+
 ## Common Tasks
 
 ### Adding a New Route

@@ -4,6 +4,7 @@ import { DeleteOrderItems } from "./delete.ts";
 import { InsertOrderItems } from "./insert-items.ts";
 import { SelectOrderItems } from "./select-items.ts";
 import { SelectOrder } from "./select.ts";
+import { DateService } from "../../utils/dateService.ts";
 
 export class UpdateOrder {
     async updateOrderTable(dbName: string, data: OrderReceivedType, orderCode: number): Promise<{ affectedRows: number }> {
@@ -29,6 +30,12 @@ export class UpdateOrder {
             id_interno = ?,
             id_externo = ?,
             setor = ?,
+            usuario = ?,
+            usuario_separacao = ?,
+            inicio_separacao = ?,
+            fim_separacao = ?,
+            status_separacao = ?,
+            observacoes_separacao = ?,
             operacao = ?,    
             filial = ?
         WHERE codigo = ?`;
@@ -58,6 +65,12 @@ export class UpdateOrder {
             data.id_interno ?? '',
             data.id_externo ?? 0,
             data.setor ?? 0,
+            data.usuario ?? 0,
+            data.usuario_separacao ?? 0,
+            data.inicio_separacao,
+            data.fim_separacao,
+            data.status_separacao ?? 'NAO INICIADA',
+            data.observacoes_separacao ?? null,
             data.operacao,
             data.filial,
             orderCode
@@ -65,6 +78,65 @@ export class UpdateOrder {
 
         const [result] = await conn.query(sql, values);
         return { affectedRows: (result as any).affectedRows };
+    }
+
+    async updateMainData(dbName: string, orderCode: number, data: Partial<OrderReceivedType>): Promise<number> {
+        const dateService = new DateService();
+        const columns: string[] = [];
+        const values: unknown[] = [];
+
+        const fields: Array<[string, (value: any) => any]> = [
+            ['cliente', (value) => (typeof value === 'object' && value !== null ? value.codigo : value)],
+            ['fornecedor', (value) => (typeof value === 'object' && value !== null ? value.codigo : value)],
+            ['vendedor', (value) => value],
+            ['situacao', (value) => value],
+            ['situacao_separacao', (value) => value],
+            ['contato', (value) => value],
+            ['descontos', (value) => value],
+            ['frete', (value) => value],
+            ['forma_pagamento', (value) => value],
+            ['quantidade_parcelas', (value) => value],
+            ['total_geral', (value) => value],
+            ['total_produtos', (value) => value],
+            ['total_servicos', (value) => value],
+            ['veiculo', (value) => value],
+            ['data_cadastro', (value) => value],
+            ['tipo_os', (value) => value],
+            ['tipo', (value) => value],
+            ['observacoes', (value) => value],
+            ['operacao', (value) => value],
+            ['setor', (value) => value],
+            ['usuario', (value) => value],
+            ['usuario_separacao', (value) => value],
+            ['inicio_separacao', (value) => value],
+            ['fim_separacao', (value) => value],
+            ['status_separacao', (value) => value],
+            ['observacoes_separacao', (value) => value],
+            ['filial', (value) => value],
+            ['id_interno', (value) => value],
+            ['id_externo', (value) => value]
+        ];
+
+        for (const [column, normalize] of fields) {
+            const value = (data as Record<string, unknown>)[column];
+            if (value !== undefined) {
+                columns.push(`${column} = ?`);
+                values.push(normalize(value));
+            }
+        }
+
+        columns.push('enviado = ?');
+        values.push('S');
+
+        const dataRecadastro = (data as Record<string, unknown>).data_recadastro as string | undefined;
+        columns.push('data_recadastro = ?');
+        values.push(dataRecadastro ?? dateService.obterDataHoraAtual());
+
+        values.push(orderCode);
+
+        const sql = `UPDATE ${dbName}.pedidos SET ${columns.join(', ')} WHERE codigo = ?`;
+        const [result] = await conn.query(sql, values);
+        return (result as any).affectedRows;
     }
 
     async updateByExternalId(dbName: string, data: OrderReceivedType, externalId: string, operation: 'V' | 'C'): Promise<number> {
