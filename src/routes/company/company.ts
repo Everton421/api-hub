@@ -211,7 +211,7 @@ server.get('/empresa', {
             const passwordService = new PasswordService();
 
                 cnpj = cnpj.replace(/\D/g, '');  // Remove qualquer caractere que não seja número
-                const codigo_perfil = 0 ;
+                const codigo_perfil = 1 ;
                     const senhaHash = await passwordService.hash(senha);
                     let objUser: newUser = { nome, email, cnpj, senha: senhaHash, responsavel, telefone, ativo , codigo_perfil };
                         
