@@ -4,6 +4,7 @@ import { SelectProductSector } from "../../../../models/product-sector/select.ts
 import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
 import { type typeAnuncios } from "../../../../types/anuncios/type-anuncio.ts";
 import { UpdateMlAnnouncement } from "./update-ml-announcement.ts";
+import { SelectPhoto } from "../../../../models/photo/select.ts";
  
 
 export type SyncAnuncioResult = {
@@ -41,7 +42,7 @@ export class UpdateMlItemsSyncService {
         const selectProduct = new SelectProduct();
         const selectProductSector = new SelectProductSector();
         const selectUsersMl = new SelectUsersMlIntegrations();
-    
+        const selectPhoto = new SelectPhoto();
 
         const result: SyncProductResult = {
             codigo_produto: codigoProduto,
@@ -76,6 +77,8 @@ export class UpdateMlItemsSyncService {
         result.total_anuncios = anuncios.length;
 
         for (const anuncio of anuncios) {
+            const fotosAnnoucement = await selectPhoto.findByProduct( dbName, anuncio.codigo_produto);
+             
             const detail = await this.syncAnuncio(cnpj, anuncio, price, availableQuantity, selectUsersMl  );
             result.details.push(detail);
             if (detail.success) {
@@ -88,14 +91,7 @@ export class UpdateMlItemsSyncService {
         return result;
     }
 
-    private async syncAnuncio(
-        cnpj: string,
-        anuncio: typeAnuncios,
-        price: number,
-        availableQuantity: number,
-        selectUsersMl: SelectUsersMlIntegrations,
-       
-    ): Promise<SyncAnuncioResult> {
+    private async syncAnuncio( cnpj: string, anuncio: typeAnuncios, price: number, availableQuantity: number, selectUsersMl: SelectUsersMlIntegrations,  ): Promise<SyncAnuncioResult> {
         const base: SyncAnuncioResult = {
             id_plataforma: anuncio.id_plataforma,
             success: false,
