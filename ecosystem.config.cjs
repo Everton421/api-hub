@@ -4,7 +4,7 @@
 module.exports = {
   apps: [
     {
-      name: "mobile-api",
+      name: "hub-api",
       script: "src/server.ts", // O arquivo que inicia tudo
       interpreter: "node",      // O binário a ser usado
       node_args: [

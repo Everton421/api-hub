@@ -13,6 +13,6 @@ COPY . .
 RUN npm cache clean --force
 
 
-EXPOSE 3000
+EXPOSE 3031
 
 CMD ["node", "--experimental-strip-types","src/server.ts" ]

@@ -1,12 +1,33 @@
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-hub
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    networks:
+      - rede-geral
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   api:
     build: .
     # O Compose lê o arquivo local e entrega as chaves para o SO do container
     env_file:
-      - .env 
+      - .env
+    # Dentro do container o broker é acessado pelo nome de serviço da rede compartilhada
+    environment:
+      BROKER_URL: amqp://rabbitmq:5672
     ports:
-      - "3000:3000"
+      - "3031:3031"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - rede-geral
 networks:
