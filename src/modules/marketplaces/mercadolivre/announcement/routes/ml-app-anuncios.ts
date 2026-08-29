@@ -1,17 +1,24 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
-import { DeleteAnuncios } from "../../../../models/anuncios/delete.ts";
-import { InsertAnuncios } from "../../../../models/anuncios/insert.ts";
-import { SelectAnuncios } from "../../../../models/anuncios/select.ts";
-import { UpdateAnuncios } from "../../../../models/anuncios/update.ts";
-import { DeleteAtributosAnuncios } from "../../../../models/atributos-anuncios/delete.ts";
-import { InsertAtributosAnuncios } from "../../../../models/atributos-anuncios/insert.ts";
-import { SelectAtributosAnuncios } from "../../../../models/atributos-anuncios/select.ts";
-import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
-import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
-import { type typeAnuncios } from "../../../../types/anuncios/type-anuncio.ts";
-import { type typeAtributosAnuncios } from "../../../../types/atributos-anuncios/type-atributos-anuncios.ts";
-import { type IPublishItem, PostMlItemsService } from "../services/post-itens-ml.ts";
+import { DeleteAnuncios } from "../../../../../models/anuncios/delete.ts";
+import { InsertAnuncios } from "../../../../../models/anuncios/insert.ts";
+import { SelectAnuncios } from "../../../../../models/anuncios/select.ts";
+import { UpdateAnuncios } from "../../../../../models/anuncios/update.ts";
+import { DeleteAtributosAnuncios } from "../../../../../models/atributos-anuncios/delete.ts";
+import { InsertAtributosAnuncios } from "../../../../../models/atributos-anuncios/insert.ts";
+import { SelectAtributosAnuncios } from "../../../../../models/atributos-anuncios/select.ts";
+import { SelectUsersMlIntegrations } from "../../../../../models/users-ml-integration/select-users-ml-integration.ts";
+import { DecodedToken } from "../../../../../services/decoded-token/decodedToken.ts";
+import { type typeAnuncios } from "../../../../../types/anuncios/type-anuncio.ts";
+import { type typeAtributosAnuncios } from "../../../../../types/atributos-anuncios/type-atributos-anuncios.ts";
+import {  CreateMlAnnouncementService } from "../create-ml-announcement-service.ts";
+import { type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
+import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
+import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../../../models/ml-accounts/update-ml-accounts.ts";
+
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
+const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
 type typeFinalAttributes = { id: string, value_name: string }
 
 export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
@@ -49,7 +56,7 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             })
         }
     }, async (request, reply) => {
-        const mlService = new PostMlItemsService();
+        const mlService = new CreateMlAnnouncementService(mlAuthServices);
         const selectUsersMl = new SelectUsersMlIntegrations();
 
         const { title, price, category_id, ml_user_id, codigo_produto, id, available_quantity , sku ,ean, thumbnail } = request.body;
@@ -75,7 +82,7 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const mlUserId = integracoes[0].ml_user_id;
         const integrationId = integracoes[0].id;
 
-                const itemData: IPublishItem = {
+                const itemData: IPayloadCreateAnnouncement = {
                     title: request.body.title,
                     sku:  sku,
                     price: Number(request.body.price),

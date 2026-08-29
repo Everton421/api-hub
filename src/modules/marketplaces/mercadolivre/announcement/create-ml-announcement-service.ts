@@ -1,49 +1,40 @@
-import axios from "axios";
 import { InsertAnuncios } from "../../../../models/anuncios/insert.ts";
 import { InsertAtributosAnuncios } from "../../../../models/atributos-anuncios/insert.ts";
-import { getValidMlAccessToken } from "./ml-auth-service.ts";
+import { type IPayloadCreateAnnouncement  } from "./types/payload-create-announcement.ts";
+import { MlAnnouncementMapping } from "./ml-announcement-mapping.ts";
 import { delay } from "../../../../services/delay-service/delay.ts";
-
-export interface IPublishItem {
-    title: string;
-    price: number;
-    quantity: number;
-    sku?:string
-    category_id: string;
-    listing_type_id: string;
-    condition: string;
-    description?: string;
-    pictures: string[];
-    brand?: string;
-    model?: string;
-    ean?: string;
-    attributes: any
-    thumbnail?: string
-}
+import axios from "axios";
+import { MlAuthServices } from "../services/auth/ml-auth-services.ts";
+ 
 type typeFinalAttributes = { id: string, value_name: string }
 
-const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
+ 
+export class CreateMlAnnouncementService {
+private readonly mlAuthServices: MlAuthServices
+      constructor(
+               mlAuthServices: MlAuthServices  ){
+                this.mlAuthServices = mlAuthServices;
+           }
+     private ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
-export class PostMlItemsService {
 
-
-    async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, codigo_produto: number, integrationId: number, data: IPublishItem) {
+    async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, codigo_produto: number, integrationId: number, data: IPayloadCreateAnnouncement) {
         const insertAnuncios = new InsertAnuncios();
         const insertAtributosAnuncios = new InsertAtributosAnuncios();
+        const mlAnnouncementMapping = new MlAnnouncementMapping();
 
         let accessToken
         try {
 
             try {
-                accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
+                accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
             } catch (e) {
                 if (e instanceof Error) {
                     throw new Error(e.message);
                 }
             }
 
-
-            let finalAttributes: typeFinalAttributes[] = [];
+         /*   let finalAttributes: typeFinalAttributes[] = [];
 
             if (data.attributes && data.attributes.length > 0) {
                 // Se vieram atributos dinâmicos, usamos eles!
@@ -89,9 +80,11 @@ export class PostMlItemsService {
                      store_pick_up : false
                 }
             };
-          
-            console.log(mlPayload)
-            
+          */
+
+
+            let payloadCreateMlAnnouncement = mlAnnouncementMapping.mapToCreateAnnouncement(data)
+           
             const database = `\`${cnpj}\``;
 
            await delay(1);
@@ -99,7 +92,7 @@ export class PostMlItemsService {
 
 
             // 4. Envia para o Mercado Livre
-            const response = await axios.post(`${ML_API_URL}/items`, mlPayload, {
+            const response = await axios.post<{ id: string, permalink: string }>(`${this.ML_API_URL}/items`, payloadCreateMlAnnouncement, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"
@@ -128,8 +121,8 @@ export class PostMlItemsService {
                     }
                 )
                 if (resultInsert.sucess && resultInsert.insertId) {
-                    if (finalAttributes.length > 0) {
-                        for (const atr of finalAttributes) {
+                    if (payloadCreateMlAnnouncement.attributes.length > 0) {
+                        for (const atr of payloadCreateMlAnnouncement.attributes) {
                             await insertAtributosAnuncios.insert(database,
                                 {
                                     id_anuncio: resultInsert.insertId,
@@ -157,7 +150,7 @@ export class PostMlItemsService {
                     
                 try {
                     await axios.put(
-                        `${ML_API_URL}/items/${response.data.id}/description`,
+                        `${this.ML_API_URL}/items/${response.data.id}/description`,
                         { plain_text: data.description },
                         {
                             headers: {
@@ -179,6 +172,7 @@ export class PostMlItemsService {
                 permalink: response.data.permalink,
                 msg: "Anúncio criado com sucesso!"
             };
+            
 
         } catch (error: any) {
             console.log(error)

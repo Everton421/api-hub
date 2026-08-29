@@ -1,10 +1,8 @@
-import axios, { AxiosError, type AxiosResponse } from "axios";
-import { getValidMlAccessToken } from "./ml-auth-service.ts";
+import axios from "axios";
+import { MlAuthServices } from "./auth/ml-auth-services.ts";
 
 const ML_API_URL = 'https://api.mercadolibre.com';
 
-
-     
 
             type resultGetMlItens = {
                 items: itenResponse[],
@@ -20,16 +18,37 @@ const ML_API_URL = 'https://api.mercadolibre.com';
                 thumbnail:string,
              }
 
+            type MlSearchResponse = {
+                results: string[],
+                paging: { total: number }
+            }
+            type MlItemMultigetItem = {
+                body: {
+                    id: string,
+                    title: string,
+                    price: number,
+                    available_quantity: number,
+                    permalink: string,
+                    thumbnail: string
+                }
+            }
+
 export class GetMlItemsService {
+
+    private readonly mlAuthServices: MlAuthServices;
+
+    constructor(mlAuthServices: MlAuthServices) {
+        this.mlAuthServices = mlAuthServices;
+    }
 
     async getItemsFromSeller(cnpj: string, systemUserCode: number, mlUserId: number) :Promise<resultGetMlItens>{
         try {
             // 1. GARANTE O TOKEN (Se estiver vencido, ele renova sozinho aqui)
-            const accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
+            const accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
 
             // 2. Busca os IDs dos itens do vendedor
             // Endpoint: /users/{id}/items/search
-            const searchResponse = await axios.get(`${ML_API_URL}/users/${mlUserId}/items/search`, {
+            const searchResponse = await axios.get<MlSearchResponse>(`${ML_API_URL}/users/${mlUserId}/items/search`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
 
                 params: {
@@ -53,7 +72,7 @@ export class GetMlItemsService {
 
             // 3. (BÔNUS) Busca os detalhes desses itens (Multiget)
             // Endpoint: /items?ids=MLB123,MLB456
-            const itemsResponse = await axios.get(`${ML_API_URL}/items`, {
+            const itemsResponse = await axios.get<MlItemMultigetItem[]>(`${ML_API_URL}/items`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
                 params: {
                     ids: itemIds.join(',') // Transforma array em string separada por virgula
@@ -61,7 +80,7 @@ export class GetMlItemsService {
             });
 
             // Mapeia para devolver um JSON limpo
-           const   itemsDetails = itemsResponse.data.map((i: any) => ({
+           const   itemsDetails = itemsResponse.data.map((i) => ({
                 id: i.body.id,
                 title: i.body.title,
                 price: i.body.price,
@@ -82,10 +101,10 @@ export class GetMlItemsService {
         }
     }
 
-    async getStatusSeller(cnpj: string, systemUserCode: number, mlUserId: number):Promise<AxiosResponse<any, any, {}>>{
+    async getStatusSeller(cnpj: string, systemUserCode: number, mlUserId: number):Promise<any>{
            try {
             // 1. GARANTE O TOKEN (Se estiver vencido, ele renova sozinho aqui)
-            const accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
+            const accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
                const response = await axios.get(`${ML_API_URL}/users/${mlUserId}/?attriibutes=status`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
              

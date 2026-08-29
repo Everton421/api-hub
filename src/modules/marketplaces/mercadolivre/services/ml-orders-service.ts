@@ -5,10 +5,11 @@ import { UpdateOrder } from "../../../../models/order/update.ts";
 import { InsertClient } from "../../../../models/client/insert.ts";
 import { SelectClient } from "../../../../models/client/select.ts";
 import { SelectAnuncios } from "../../../../models/anuncios/select.ts";
-import { getValidMlAccessToken } from "./ml-auth-service.ts";
+ 
 import { publishMessage } from "../../../../services/broker/publish-message.ts";
 import { type MlOrder, type MlBuyer } from "../types/ml-order-types.ts";
 import { type OrderReceivedType, type ProductOrderType, type ParcelOrderType } from "../../../../models/order/types/order-type.ts";
+import { MlAuthServices } from "./auth/ml-auth-services.ts";
 
 const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
@@ -22,16 +23,22 @@ const ML_STATUS_MAP: Record<string, string> = {
 };
 
 export class MlOrdersService {
+ private readonly mlAuthServices: MlAuthServices 
+       
+ constructor (  mlAuthServices: MlAuthServices ){
+            this.mlAuthServices =mlAuthServices;     
+        }
+
     async processOrder(cnpj: string, systemUserCode: number, mlUserId: number, mlOrderId: number) {
         const database = `\`${cnpj}\``;
 
-        const accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
+        const accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
 
         const mlOrder = await this.fetchOrderDetails(accessToken, mlOrderId);
 
         const buyerCode = await this.findOrCreateBuyer(database, mlOrder.buyer, systemUserCode);
 
-        const localOrder = await this.mapToLocalOrder(database, mlOrder, buyerCode);
+        const localOrder = await this.mapToLocalOrder(database, mlOrder, buyerCode, systemUserCode);
 
         const orderExists = await new SelectOrder().existsByExternalId(database, localOrder.id, 'V');
 
@@ -86,7 +93,7 @@ export class MlOrdersService {
         return result.insertId;
     }
 
-    private async mapToLocalOrder(database: string, mlOrder: MlOrder, buyerCode: number): Promise<OrderReceivedType> {
+    private async mapToLocalOrder(database: string, mlOrder: MlOrder, buyerCode: number, systemUserCode: number): Promise<OrderReceivedType> {
         const selectAnuncios = new SelectAnuncios();
 
         const produtos: ProductOrderType[] = [];
@@ -145,7 +152,13 @@ export class MlOrdersService {
             observacoes: `Pedido Mercado Livre #${mlOrder.id} - ${mlOrder.buyer.nickname}`,
             produtos,
             servicos: [],
-            parcelas
+            parcelas,
+            usuario: systemUserCode,
+            usuario_separacao: 0,
+            inicio_separacao: '2000-01-01 00:00:00',
+            fim_separacao: '2000-01-01 00:00:00',
+            status_separacao: 'NAO INICIADA',
+            filial: 0
         };
     }
 }

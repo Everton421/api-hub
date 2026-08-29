@@ -11,6 +11,18 @@ import { SelectPhoto } from '../../models/photo/select.ts';
 import { InsertPhoto } from '../../models/photo/insert.ts';
 import { UpdatePhoto } from '../../models/photo/update.ts';
 import { type PhotoType } from '../../models/photo/types/photo-type.ts';
+import { InsertProductSector } from '../../models/product-sector/insert.ts';
+import { UpdateProductSector } from '../../models/product-sector/update.ts';
+import { SelectProductSector } from '../../models/product-sector/select.ts';
+import { UpdateMlItemsSyncService } from '../../modules/marketplaces/mercadolivre/announcement/update-ml-itens-sync.ts';
+import { UpdateMlAnnouncement } from '../../modules/marketplaces/mercadolivre/announcement/update-ml-announcement.ts';
+import { MlAnnouncementMapping } from '../../modules/marketplaces/mercadolivre/announcement/ml-announcement-mapping.ts';
+import { MlAuthServices } from '../../modules/marketplaces/mercadolivre/services/auth/ml-auth-services.ts';
+import { SelectMLAccountClient } from '../../models/ml-accounts/select-ml-accounts.ts';
+import { UpdateMLAccountClient } from '../../models/ml-accounts/update-ml-accounts.ts';
+
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
+const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
 
 type productTypeAndPhotos  = ProductType & { fotos: PhotoType[]; codigo: number }
 
@@ -470,6 +482,109 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
         } catch (e) {
             console.error('Error updating product:', e);
             return reply.status(400).send({ success: false, message: 'Error updating product' });
+        }
+    });
+
+    server.patch('/produtos', {
+        schema: {
+            tags: ['produtos'],
+            description: "Atualiza o inventário do produto (preço e estoque dos setores) e sincroniza com o Mercado Livre.",
+            headers: z.object({
+                token: z.string()
+            }),
+            body: z.object({
+                produto: z.coerce.number(),
+                preco: z.coerce.number(),
+                produto_setor: z.array(z.object({
+                    setor: z.coerce.number(),
+                    estoque: z.coerce.number()
+                })).min(1)
+            }),
+            response: {
+                200: z.object({
+                    success: z.boolean(),
+                    message: z.string(),
+                    data: z.any()
+                }),
+                400: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                }),
+                500: z.object({
+                    success: z.boolean(),
+                    message: z.string()
+                })
+            }
+        }
+    }, async (request, reply) => {
+        const dateService = new DateService();
+        const select = new SelectProduct();
+        const update = new UpdateProduct();
+        const selectProductSector = new SelectProductSector();
+        const updateProductSector = new UpdateProductSector();
+        const insertProductSector = new InsertProductSector();
+        const decodedToken = DecodedToken(String(request.headers.token));
+
+        if (!decodedToken.payload?.cnpj) {
+            return reply.status(400).send({ success: false, message: 'Company identifier not provided' });
+        }
+
+        const empresa = decodedToken.payload.cnpj.replace(/\D/g, '');
+        const dbName = `\`${empresa}\``;
+        const { produto, preco, produto_setor } = request.body;
+
+        try {
+            const existing = await select.findByCode(dbName, produto);
+            if (existing.length === 0) {
+                return reply.status(400).send({ success: false, message: 'Product not found' });
+            }
+
+            if (!produto_setor || produto_setor.length === 0) {
+                return reply.status(400).send({ success: false, message: 'At least one setor is required' });
+            }
+
+            const data_recadastro = dateService.obterDataHoraAtual();
+
+            await update.updatePrice(dbName, produto, preco, data_recadastro);
+
+            for (const item of produto_setor) {
+                const setorExistente = await selectProductSector.findByProductAndSector(dbName, produto, item.setor);
+                if (setorExistente.length > 0) {
+                    await updateProductSector.updateStock(dbName, {
+                        produto,
+                        setor: item.setor,
+                        estoque: item.estoque,
+                        data_recadastro
+                    });
+                } else {
+                    await insertProductSector.insertOrUpdate(dbName, {
+                        produto,
+                        setor: item.setor,
+                        estoque: item.estoque,
+                        local_produto: '',
+                        local1_produto: '',
+                        local2_produto: '',
+                        local3_produto: '',
+                        local4_produto: '',
+                        data_recadastro
+                    });
+                }
+            }
+
+            await new UpdateMlItemsSyncService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), mlAuthServices)).syncProductByCode(empresa, produto);
+
+            return reply.status(200).send({
+                success: true,
+                message: 'Inventário atualizado com sucesso',
+                data: {
+                    produto,
+                    preco,
+                    produto_setor
+                }
+            });
+        } catch (e) {
+            console.error('Error updating product inventory:', e);
+            return reply.status(500).send({ success: false, message: 'Error updating product inventory' });
         }
     });
 };

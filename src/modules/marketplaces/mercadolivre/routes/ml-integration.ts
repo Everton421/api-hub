@@ -1,21 +1,21 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z  from "zod";
-import { SelectUserApi } from "../../../../models/user-api/select.ts";
 import { SelectUsersMlIntegrations   } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
-import { DecodedMlStateToken, exchangeCodeForMlToken, generateCodeVerifier, generateCodeChallenge  } from "../services/ml-auth-service.ts";
+
 import jwt from 'jsonwebtoken';
 import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
 import { CreateTableMLAccounts } from "../../../../database/tables-structures/create-table-ml-accounts.ts";
 import { UpdateUsersMLIntegrations } from "../../../../models/users-ml-integration/update-users-ml-integration.ts";
 import { DateService } from "../../../../utils/dateService.ts";
 import { InsertUsersMlintegration } from "../../../../models/users-ml-integration/insert-users-ml-integration.ts";
+import { GenerateMlCode } from "../utils/generate-code.ts";
+import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../../models/ml-accounts/update-ml-accounts.ts";
+import { InsertaMLAccountClient } from "../../../../models/ml-accounts/insert-ml-accounts.ts";
+import { ExchangeCodeForMlToken } from "../services/auth/exchange-code-for-ml-token.ts";
+import { DecodedMlStateToken } from "../services/auth/decoded-ml-state-token.ts";
+import { GetMlUserCode } from "../services/auth/get-ml-user-code.ts";
 
-
-type state = {
-    codigo: number,
-    cnpj: string,
-    code_verifier?: string
-}
 
 export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
     server.get('/ml/integration/callback',{
@@ -31,40 +31,53 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
                 })
         }
     } , async ( request, reply )=>{
-        const selectUserApi = new SelectUserApi();
-        const selectUsersCompany = new SelectUsersMlIntegrations();
+        
+        const selectMlAccountClient = new SelectMLAccountClient();
+        const updateMlAccountClient = new UpdateMLAccountClient();
+        const insertaMLAccountClient = new InsertaMLAccountClient();
+        const decodedMlStateToken = new DecodedMlStateToken();
+        
+        const frontEndUrl = process.env.FRONT_END_URL || 'http://localhost:8000';
+        const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
-        const frontEndtUrl = process.env.FRONT_END_URL || 'http://localhost:8000';
+        const mlDecodedStateToken = new ExchangeCodeForMlToken(
+            ML_API_URL,
+            insertaMLAccountClient,
+            selectMlAccountClient,
+            updateMlAccountClient,
+            decodedMlStateToken
+        );
 
             try{
+ 
 
                // console.log(request.query);
                if(!request.query.code) return reply.status(500).send({ success:false, message: "CODE is missing."});
                if(!request.query.state) return reply.status(500).send({success:false, message: "STATE is missing."});
 
 
-                const code  = request.query.code;
-                const state = request.query.state  ;
+const { code, state } = request.query;
 
-                const returnTokens = await exchangeCodeForMlToken(code , state );
+                const returnTokens = await mlDecodedStateToken.exchangeCodeForMlToken(code, state);
 
             if (!returnTokens?.access_token) {
-                return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?status=error&message=Nao+foi+possivel+obter+token`);
+                return reply.redirect(`${frontEndUrl}/marketplaces/integracoes?status=error&message=Nao+foi+possivel+obter+token`);
             }
 
-            const decodedState = DecodedMlStateToken(request.query.state as any);
+            const decodedState = await decodedMlStateToken.decodedToken(state);
+
             if (!decodedState.success || !decodedState.payload) {
                 console.log(`Retorno inesperado da função [ DecodedMlStateToken ] `, decodedState.message);
-                return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?status=error&message=Token+invalido`);
+                return reply.redirect(`${frontEndUrl}/marketplaces/integracoes?status=error&message=Token+invalido`);
             }
 
             const payloadState = decodedState.payload;
-                
-                   const payload = {
-                        ml_user_id: returnTokens.ml_user_id,
-                        system_user_code: payloadState.codigo,
-                        cnpj: payloadState.cnpj
-                    };
+
+            const payload = {
+                    ml_user_id: returnTokens.ml_user_id,
+                    system_user_code: payloadState.codigo,
+                    cnpj: payloadState.cnpj
+                };
 
             if (!process.env.SECRET_ML_ENCODE_STATE) {
                     throw new Error("SECRET_ML_ENCODE_STATE nao foi configurada.")
@@ -73,11 +86,11 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
 
             const tempToken = jwt.sign(payload, secret, { expiresIn: '10m' }); // Vale por 10 min
 
-          return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?data=${tempToken}`);
+            return reply.redirect(`${frontEndUrl}/marketplaces/integracoes?data=${tempToken}`);
 
             }catch(e){
                  console.log(e);
-                   return reply.redirect(`${frontEndtUrl}/marketplaces/integracoes?status=error&message=Erro+interno+na+integracao`);
+                   return reply.redirect(`${frontEndUrl}/marketplaces/integracoes?status=error&message=Erro+interno+na+integracao`);
 
             }
         
@@ -123,13 +136,14 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
         }
     const secret = process.env.SECRET_ML_ENCODE_STATE;
     if (!secret) {
-      console.error("Erro crítico: JWT_SECRET não está definido!");
+      console.error("Erro crítico: SECRET_ML_ENCODE_STATE não está definido!");
       return reply.status(500).send({success: false, message: "Erro interno do servidor [JWT Secret Missing]." });
     }
 
 
-           const codeVerifier = generateCodeVerifier();
-           const codeChallenge = generateCodeChallenge(codeVerifier);
+           const generateMlCode = new GenerateMlCode();
+           const codeVerifier = generateMlCode.generateCodeVerifier();
+           const codeChallenge = generateMlCode.generateCodeChallenge(codeVerifier);
 
            const payload = {
                 cnpj: empresa,
@@ -145,8 +159,8 @@ export const mlIntegrationRoute: FastifyPluginAsyncZod = async ( server ) =>{
          if(!process.env.REDIRECT_URI_ML) return reply.status(500).send({success: false, message: ` REDIRECT_URI_ML não foi configurada.`})
         const redirect_uri = process.env.REDIRECT_URI_ML
         
-        
-        const base_uri = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&state=${token}&code_challenge=${codeChallenge}&code_challenge_method=S256`
+        const getMlUserCode = new GetMlUserCode(client_id, redirect_uri);
+        const base_uri = getMlUserCode.getMlUserCode(token, codeChallenge);
     
         return reply.status(200).send({ uri: base_uri })
 

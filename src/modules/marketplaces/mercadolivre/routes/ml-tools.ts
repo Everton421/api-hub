@@ -3,6 +3,11 @@ import z from "zod";
 import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
 import { MlToolsService } from "../services/ml-tools-service.ts";
 import { GetMlItemsService } from "../services/get-itens-ml-service.ts";
+import { MlAuthServices } from "../services/auth/ml-auth-services.ts";
+import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../../models/ml-accounts/update-ml-accounts.ts";
+
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
  
 export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
 
@@ -63,7 +68,8 @@ export const mlToolsRoute: FastifyPluginAsyncZod = async (server) => {
         const { ml_user_id } = request.headers;
 
       
-        const getMlItemsService = new GetMlItemsService();
+        const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+        const getMlItemsService = new GetMlItemsService(mlAuthServices);
         
         
         const result = await getMlItemsService.getStatusSeller(empresa, codigo,  ml_user_id); 

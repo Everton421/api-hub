@@ -3,30 +3,43 @@ import { SelectAnuncios } from "../../../../models/anuncios/select.ts";
 import { UpdateAnuncios } from "../../../../models/anuncios/update.ts";
 import { DeleteAtributosAnuncios } from "../../../../models/atributos-anuncios/delete.ts";
 import { InsertAtributosAnuncios } from "../../../../models/atributos-anuncios/insert.ts";
-import { getValidMlAccessToken } from "./ml-auth-service.ts";
+import { MlAnnouncementMapping } from "./ml-announcement-mapping.ts";
+import { type IPayloadUpdateAnnouncement } from "./types/update-announcement.ts";
+import { MlAuthServices } from "../services/auth/ml-auth-services.ts";
 
-export interface IUpdateMlItem {
-    title?: string;
-    price?: number;
-    available_quantity?: number;
-    listing_type_id?: string;
-    description?: string;
-    pictures?: string[];
-    attributes?: { id: string; value_name: string }[];
-    category_id?: string;
-    shipping?: any;
-    thumbnail?: string;
-}
 
 const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
-export class UpdateMlItemService {
+/**
+ * 
+ */
+export class UpdateMlAnnouncement {
+        private readonly mlAnnouncementMapping:MlAnnouncementMapping;
+        private readonly mlAuthServices: MlAuthServices  
+    
+    constructor(
+          mlAnnouncementMapping:MlAnnouncementMapping, 
+          mlAuthServices: MlAuthServices
+        ){
+            this.mlAnnouncementMapping =mlAnnouncementMapping; 
+            this.mlAuthServices =mlAuthServices; 
+        }
+ 
+    /**
+     *  atualiza o anuncio no mercadolivre.
+     * @param cnpj cnpj da empresa
+     * @param systemUserCode usuario do sistema 
+     * @param mlUserId id do usuario no mercadoLivre. 
+     * @param mlItemId id do item no Mercadolivre.
+     * @param data dados do anuncio a ser processado.
+     * @returns 
+     */
     async updateItem(
         cnpj: string,
         systemUserCode: number,
         mlUserId: number,
         mlItemId: string,
-        data: IUpdateMlItem
+        data: IPayloadUpdateAnnouncement
     ): Promise<{ success: boolean; ml_id: string; msg: string }> {
         const selectAnuncios = new SelectAnuncios();
         const updateAnuncios = new UpdateAnuncios();
@@ -36,19 +49,9 @@ export class UpdateMlItemService {
         const database = `\`${cnpj}\``;
 
         try {
-            const accessToken = await getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
-
-            const mlPayload: Record<string, any> = {};
-            if (data.title !== undefined) mlPayload.title = data.title;
-            if (data.price !== undefined) mlPayload.price = data.price;
-            if (data.available_quantity !== undefined) mlPayload.available_quantity = data.available_quantity;
-            if (data.listing_type_id !== undefined) mlPayload.listing_type_id = data.listing_type_id;
-            if (data.category_id !== undefined) mlPayload.category_id = data.category_id;
-            if (data.attributes !== undefined) mlPayload.attributes = data.attributes;
-            if (data.shipping !== undefined) mlPayload.shipping = data.shipping;
-            if (data.pictures !== undefined) {
-                mlPayload.pictures = data.pictures.map(url => ({ source: url }));
-            }
+            const accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
+            
+            const { mlPayload, localUpdate, attributes } = this.mlAnnouncementMapping.mapToUpdateAnnouncement(data);
 
             if (Object.keys(mlPayload).length > 0) {
                 await axios.put(`${ML_API_URL}/items/${mlItemId}`, mlPayload, {
@@ -80,22 +83,15 @@ export class UpdateMlItemService {
 
             if (anuncios.length > 0) {
                 const localAnuncio = anuncios[0];
-                const localUpdateData: Record<string, any> = {};
 
-                if (data.title !== undefined) localUpdateData.titulo = data.title;
-                if (data.price !== undefined) localUpdateData.preco = data.price;
-                if (data.available_quantity !== undefined) localUpdateData.estoque = data.available_quantity;
-                if (data.description !== undefined) localUpdateData.descricao = data.description;
-                if (data.thumbnail !== undefined) localUpdateData.thumbnail = data.thumbnail;
-
-                if (Object.keys(localUpdateData).length > 0) {
-                    await updateAnuncios.update(database, localUpdateData, localAnuncio.id);
+                if (Object.keys(localUpdate).length > 0) {
+                    await updateAnuncios.update(database, localUpdate, localAnuncio.id);
                 }
 
-                if (data.attributes !== undefined) {
+                if (attributes !== undefined) {
                     await deleteAtributosAnuncios.delete(database, localAnuncio.id);
-                    if (data.attributes.length > 0) {
-                        for (const atr of data.attributes) {
+                    if (attributes.length > 0) {
+                        for (const atr of attributes) {
                             await insertAtributosAnuncios.insert(database, {
                                 id_anuncio: localAnuncio.id,
                                 id_atributo: atr.id,

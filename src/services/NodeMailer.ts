@@ -38,7 +38,6 @@ export function NodeMailerService() {
     // Enviar o email
 
 
-
     async function main(destinatario: string, codigo: number) {
 
         const info = await transporter.sendMail({

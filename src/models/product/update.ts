@@ -55,4 +55,13 @@ export class UpdateProduct {
         const [result] = await conn.query(sql, values);
         return { affectedRows: (result as any).affectedRows };
     }
+
+    async updatePrice(dbName: string, codigo: number, preco: number, data_recadastro: string): Promise<{ affectedRows: number }> {
+        const sql = `UPDATE ${dbName}.produtos
+            SET preco = ?, data_recadastro = ?
+            WHERE codigo = ?`;
+
+        const [result] = await conn.query(sql, [String(preco), data_recadastro, codigo]);
+        return { affectedRows: (result as any).affectedRows };
+    }
 }

@@ -1,11 +1,18 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
-import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
-import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
-import { GetMlItemsService } from "../services/get-itens-ml-service.ts";
-import { type IPublishItem, PostMlItemsService } from "../services/post-itens-ml.ts";
+import { SelectUsersMlIntegrations } from "../../../../../models/users-ml-integration/select-users-ml-integration.ts";
+import { DecodedToken } from "../../../../../services/decoded-token/decodedToken.ts";
+import { GetMlItemsService } from "../../services/get-itens-ml-service.ts";
+import {  CreateMlAnnouncementService } from "../create-ml-announcement-service.ts";
+ import {type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
+import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
+import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../../../models/ml-accounts/update-ml-accounts.ts";
 
-export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
+const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+
+ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
     server.post('/ml/anuncios/create', {
         schema: {
             tags: ['ml'],
@@ -36,11 +43,10 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             })
         }
     }, async (request, reply) => {
-        const postMlItemsService = new PostMlItemsService();
+        const  createMlAnnouncementService = new CreateMlAnnouncementService(mlAuthServices);
         const selectUsersMl = new SelectUsersMlIntegrations();
 
-        const { title, price, category_id, ml_user_id, codigo_produto } = request.body;
-
+        const {   ml_user_id, codigo_produto } = request.body;
         const decoded = DecodedToken(String(request.headers.token));
         if (!decoded.success || !decoded.payload) {
             return reply.status(401).send({ success: false, message: "Token inválido" });
@@ -57,7 +63,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const mlUserId = integracoes[0].ml_user_id;
         const integrationId = integracoes[0].id;
 
-        let itemData: IPublishItem = {
+        let itemData: IPayloadCreateAnnouncement = {
             title: request.body.title,
             price: Number(request.body.price),
             quantity: Number(request.body.available_quantity),
@@ -76,7 +82,7 @@ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         }
 
         try {
-            const result = await postMlItemsService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
+            const result = await createMlAnnouncementService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
             return reply.status(201).send(result);
         } catch (e) {
             return reply.status(500).send({ success: false, message: `${e}` });
@@ -125,9 +131,9 @@ const decoded = DecodedToken(String(request.headers.token));
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');
         const systemUserCode  = decoded.payload.codigo;
         const dbName = `\`${empresa}\``;
-        const { mlUserId, ml_user_id } = request.headers;
+        const {  ml_user_id } = request.headers;
 
-        const getMlItemsService = new GetMlItemsService();
+        const getMlItemsService = new GetMlItemsService(mlAuthServices);
         console.log(request.headers)
           const result =  await getMlItemsService.getItemsFromSeller(empresa, systemUserCode, Number(ml_user_id) );
           //if(result.items.length > 0 ){

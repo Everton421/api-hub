@@ -2,6 +2,11 @@ import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
 import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
 import { MlOrdersService } from "../services/ml-orders-service.ts";
+import { MlAuthServices } from "../services/auth/ml-auth-services.ts";
+import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../../models/ml-accounts/update-ml-accounts.ts";
+
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
 export const mlNotificationsRoute: FastifyPluginAsyncZod = async (server) => {
     server.post('/ml/notifications', {
@@ -46,7 +51,8 @@ export const mlNotificationsRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(200).send({ success: false, message: `Integracao nao encontrada para ml_user_id ${user_id}.` });
         }
 
-        const service = new MlOrdersService();
+        const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+        const service = new MlOrdersService(mlAuthServices);
 
         for (const integracao of integracoes) {
             const cnpj = integracao.cnpj.replace(/\D/g, '');

@@ -2,8 +2,13 @@ import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
 import { DecodedToken } from "../../../../services/decoded-token/decodedToken.ts";
 import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
+import { UpdateMLAccountClient } from "../../../../models/ml-accounts/update-ml-accounts.ts";
 import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
 import { GetUserTest } from "../services/get-test-user.ts";
+import { MlAuthServices } from "../services/auth/ml-auth-services.ts";
+
+const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
+const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
 
 export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
 
@@ -37,7 +42,7 @@ export const GetMlUserTestRoute: FastifyPluginAsyncZod = async (server) => {
             return reply.status(401).send({ success:false, message: "Token inválido" });
         }
 
-        const getUserTest = new GetUserTest();
+        const getUserTest = new GetUserTest(mlAuthServices);
         const selectUsersMl = new SelectUsersMlIntegrations();
 
         const empresa = decoded.payload.cnpj.replace(/\D/g, '');

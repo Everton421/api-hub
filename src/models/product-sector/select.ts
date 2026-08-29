@@ -41,9 +41,27 @@ export class SelectProductSector {
             p.id as id_produto,
             COALESCE(DATE_FORMAT(ps.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
          FROM ${dbName}.produto_setor ps 
-         
+         join ${dbName}.produtos p on p.codigo = ps.produto
          JOIN ${dbName}.setores s ON s.codigo = ps.setor
          WHERE produto = ? AND s.ativo = 'S'`;
+        
+        const [result] = await conn.query(sql, [productCode]);
+        return result as ProductSectorType[];
+    }
+
+
+        async findStockByProduct(dbName: string, productCode: number ): Promise<ProductSectorType[]> {
+        let sql = ` SELECT 
+            ps.*,
+              s.id as id_setor,
+            p.id as id_produto,
+            COALESCE(DATE_FORMAT(ps.data_recadastro, '%Y-%m-%d %H:%i:%s'), '0000-00-00 00:00:00') AS data_recadastro
+         FROM ${dbName}.produto_setor ps 
+         join ${dbName}.produtos p on p.codigo = ps.produto
+         JOIN ${dbName}.setores s ON s.codigo = ps.setor
+         WHERE produto = ? AND s.ativo = 'S'
+         GROUP BY p.codigo
+         `;
         
         const [result] = await conn.query(sql, [productCode]);
         return result as ProductSectorType[];

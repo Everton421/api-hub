@@ -55,6 +55,14 @@ export async function connectRabbitMQ(): Promise<void> {
     }
 }
 
+export function getChannel(): Channel | null {
+    return channel;
+}
+
+export function getConnection(): ChannelModel | null {
+    return connectionRabbitMQ;
+}
+
 export async function publishExchangeMessage(routingKey: string, data: any): Promise<boolean> {
     if (!channel || !connectionRabbitMQ) {
         console.warn("[RabbitMQ] Sem conexão ativa. Mensagem não enviada.");
