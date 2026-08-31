@@ -12,13 +12,62 @@ export type MlNotification = {
 export type MlBuyer = {
     id: number;
     nickname: string;
-    email: string;
-    phone: {
-        area_code: string;
-        number: string;
+    email?: string;
+    phone?: {
+        area_code?: string;
+        number?: string;
+        extension?: string;
     };
-    first_name: string;
-    last_name: string;
+    first_name?: string;
+    last_name?: string;
+    identification?: {
+        number: string;
+        type: 'CPF' | 'CNPJ';
+    };
+    address?: {
+        city?: string;
+        state?: string;
+        zip_code?: string;
+        address_line?: string;
+        street_name?: string;
+        street_number?: string;
+        comment?: string;
+    };
+    user_type?: string;
+    registration_date?: string;
+};
+
+export type MlUser = {
+    id: number;
+    nickname: string;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    gender?: string;
+    country_id?: string;
+    site_id?: string;
+    user_type?: string;
+    permalink?: string;
+    registration_date?: string;
+    phone?: {
+        area_code?: string;
+        number?: string;
+        extension?: string;
+        verified?: boolean;
+    };
+    address?: {
+        city?: string;
+        state?: string;
+        zip_code?: string;
+        address_line?: string;
+        street_name?: string;
+        street_number?: string;
+        comment?: string;
+    };
+    identification?: {
+        number: string;
+        type: 'CPF' | 'CNPJ';
+    };
 };
 
 export type MlOrderItem = {
@@ -28,7 +77,7 @@ export type MlOrderItem = {
         quantity: number;
         unit_price: number;
     };
-    full_unit_price: number;
+    unit_price: number;
     quantity: number;
     sale_fee: number;
     listing_type_id: string;
@@ -70,6 +119,9 @@ export type MlOrder = {
     payments: MlPayment[];
     order_items: MlOrderItem[];
     status: string;
+    status_detail?: string;
+    tags?: string[];
+    static_tags?: string[];
     total_amount: number;
     paid_amount: number;
     currency_id: string;

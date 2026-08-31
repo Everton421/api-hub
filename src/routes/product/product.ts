@@ -14,9 +14,9 @@ import { type PhotoType } from '../../models/photo/types/photo-type.ts';
 import { InsertProductSector } from '../../models/product-sector/insert.ts';
 import { UpdateProductSector } from '../../models/product-sector/update.ts';
 import { SelectProductSector } from '../../models/product-sector/select.ts';
-import { UpdateMlItemsSyncService } from '../../modules/marketplaces/mercadolivre/announcement/update-ml-itens-sync.ts';
-import { UpdateMlAnnouncement } from '../../modules/marketplaces/mercadolivre/announcement/update-ml-announcement.ts';
-import { MlAnnouncementMapping } from '../../modules/marketplaces/mercadolivre/announcement/ml-announcement-mapping.ts';
+import { UpdateMlAnnouncementService } from '../../modules/marketplaces/mercadolivre/announcement/update-announcement/update-ml-announcement-service.ts';
+import { UpdateMlAnnouncement } from '../../modules/marketplaces/mercadolivre/announcement/update-announcement/update-ml-announcement.ts';
+import { MlAnnouncementMapping } from '../../modules/marketplaces/mercadolivre/announcement/mapping/ml-announcement-mapping.ts';
 import { MlAuthServices } from '../../modules/marketplaces/mercadolivre/services/auth/ml-auth-services.ts';
 import { SelectMLAccountClient } from '../../models/ml-accounts/select-ml-accounts.ts';
 import { UpdateMLAccountClient } from '../../models/ml-accounts/update-ml-accounts.ts';
@@ -571,7 +571,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 }
             }
 
-            await new UpdateMlItemsSyncService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), mlAuthServices)).syncProductByCode(empresa, produto);
+            await new UpdateMlAnnouncementService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), mlAuthServices)).syncProductByCode(empresa, produto);
 
             return reply.status(200).send({
                 success: true,

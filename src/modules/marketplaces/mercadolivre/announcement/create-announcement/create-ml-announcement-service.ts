@@ -1,21 +1,19 @@
-import { InsertAnuncios } from "../../../../models/anuncios/insert.ts";
-import { InsertAtributosAnuncios } from "../../../../models/atributos-anuncios/insert.ts";
-import { type IPayloadCreateAnnouncement  } from "./types/payload-create-announcement.ts";
-import { MlAnnouncementMapping } from "./ml-announcement-mapping.ts";
-import { delay } from "../../../../services/delay-service/delay.ts";
+import { InsertAnuncios } from "../../../../../models/anuncios/insert.ts";
+import { MlAnnouncementMapping } from "../mapping/ml-announcement-mapping.ts";
+import { InsertAtributosAnuncios } from "../../../../../models/atributos-anuncios/insert.ts";
+import { delay } from "../../../../../services/delay-service/delay.ts";
 import axios from "axios";
-import { MlAuthServices } from "../services/auth/ml-auth-services.ts";
- 
-type typeFinalAttributes = { id: string, value_name: string }
+import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
+import { type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
 
- 
+
 export class CreateMlAnnouncementService {
-private readonly mlAuthServices: MlAuthServices
-      constructor(
-               mlAuthServices: MlAuthServices  ){
-                this.mlAuthServices = mlAuthServices;
-           }
-     private ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
+    private readonly mlAuthServices: MlAuthServices
+    constructor(
+        mlAuthServices: MlAuthServices) {
+        this.mlAuthServices = mlAuthServices;
+    }
+    private ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
 
     async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, codigo_produto: number, integrationId: number, data: IPayloadCreateAnnouncement) {
@@ -34,62 +32,12 @@ private readonly mlAuthServices: MlAuthServices
                 }
             }
 
-         /*   let finalAttributes: typeFinalAttributes[] = [];
-
-            if (data.attributes && data.attributes.length > 0) {
-                // Se vieram atributos dinâmicos, usamos eles!
-                finalAttributes = data.attributes;
-            } else {
-                // FALLBACK: Se não veio nada (produtos antigos/simples), criamos o básico
-                finalAttributes = [
-                    { id: "BRAND", value_name: data.brand || "Genérica" },
-                    { id: "MODEL", value_name: data.model || "Padrão" }
-                ];
-                if (data.ean) {
-                    finalAttributes.push({ id: "GTIN", value_name: data.ean });
-                }
-            }
-
-            if (data.sku) {
-                    finalAttributes.push({ id: "SELLER_SKU", value_name: data.sku });
-                }
-
-            let mlPayload  = {
-                title: data.title,
-                category_id: data.category_id,
-                price: data.price,
-                currency_id: "BRL",
-                available_quantity: data.quantity,
-                buying_mode: "buy_it_now",
-                condition: data.condition,
-                listing_type_id: data.listing_type_id,
-                description: {
-                    plain_text: data.description || "Produto enviado via integração MicroERP"
-                },
-                pictures: data.pictures.map(url => ({ source: url })),
-                attributes: finalAttributes,
-                // Garantir envio correios (Mercado Envios)
-                shipping: {
-                    mode: "me2",
-                    local_pick_up: false,
-                    free_shipping: false,
-                      methods : [],
-                     dimensions : null,
-                     tags : [],
-                     logistic_type : "default",
-                     store_pick_up : false
-                }
-            };
-          */
-
-
             let payloadCreateMlAnnouncement = mlAnnouncementMapping.mapToCreateAnnouncement(data)
-           
+
             const database = `\`${cnpj}\``;
 
-           await delay(1);
+            await delay(1);
             const ean = data.ean || ''
-
 
             // 4. Envia para o Mercado Livre
             const response = await axios.post<{ id: string, permalink: string }>(`${this.ML_API_URL}/items`, payloadCreateMlAnnouncement, {
@@ -104,7 +52,7 @@ private readonly mlAuthServices: MlAuthServices
                     {
                         ativo: 'S',
                         codigo_produto: codigo_produto,
-                        sku: data.sku || '' ,
+                        sku: data.sku || '',
                         descricao: data.title,
                         estoque: data.quantity,
                         id_externo: null,
@@ -147,22 +95,22 @@ private readonly mlAuthServices: MlAuthServices
 
 
                 if (data.description) {
-                    
-                try {
-                    await axios.put(
-                        `${this.ML_API_URL}/items/${response.data.id}/description`,
-                        { plain_text: data.description },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                                "Content-Type": "application/json"
+
+                    try {
+                        await axios.put(
+                            `${this.ML_API_URL}/items/${response.data.id}/description`,
+                            { plain_text: data.description },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${accessToken}`,
+                                    "Content-Type": "application/json"
+                                }
                             }
-                        }
-                    );
-                } catch (e) {
-                    console.error("Erro ao atualizar descrição:", e);
+                        );
+                    } catch (e) {
+                        console.error("Erro ao atualizar descrição:", e);
+                    }
                 }
-            }
 
             }
 
@@ -172,7 +120,7 @@ private readonly mlAuthServices: MlAuthServices
                 permalink: response.data.permalink,
                 msg: "Anúncio criado com sucesso!"
             };
-            
+
 
         } catch (error: any) {
             console.log(error)
@@ -183,7 +131,7 @@ private readonly mlAuthServices: MlAuthServices
             if (error.response?.data?.cause) {
                 // Pega o primeiro erro da lista de causas do ML
                 const mlError = error.response.data.cause[0];
-                errorMessage = `ML Recusou: ${mlError &&  mlError.message ? mlError.message : mlError } (Código: ${mlError && mlError.code ? mlError.code : mlError })`;
+                errorMessage = `ML Recusou: ${mlError && mlError.message ? mlError.message : mlError} (Código: ${mlError && mlError.code ? mlError.code : mlError})`;
 
                 // Exemplo comum: Categoria exige atributos específicos
                 if (mlError.code === "validation_error") {

@@ -1,9 +1,9 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
 import { DecodedToken } from "../../../../../services/decoded-token/decodedToken.ts";
-import { UpdateMlItemsSyncService } from "../update-ml-itens-sync.ts";
-import { UpdateMlAnnouncement } from "../update-ml-announcement.ts";
-import { MlAnnouncementMapping } from "../ml-announcement-mapping.ts";
+import { UpdateMlAnnouncementService } from "../update-announcement/update-ml-announcement-service.ts";
+import { UpdateMlAnnouncement } from "../update-announcement/update-ml-announcement.ts";
+import { MlAnnouncementMapping } from "../mapping/ml-announcement-mapping.ts";
 import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
 import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";
 import { UpdateMLAccountClient } from "../../../../../models/ml-accounts/update-ml-accounts.ts";
@@ -51,7 +51,7 @@ export const mlItemUpdateRoute: FastifyPluginAsyncZod = async (server) => {
         const { codigo_produto } = request.body;
 
         try {
-            const service = new UpdateMlItemsSyncService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), mlAuthServices));
+            const service = new UpdateMlAnnouncementService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), mlAuthServices));
             const result = await service.syncProductByCode(empresa, codigo_produto);
 
             if (result.total_anuncios === 0) {

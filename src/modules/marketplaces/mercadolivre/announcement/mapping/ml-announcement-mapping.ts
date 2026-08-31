@@ -1,5 +1,5 @@
-import { type IPayloadCreateAnnouncement } from "./types/payload-create-announcement.ts";
-import {  type IPayloadUpdateAnnouncement, type MlUpdatePayload } from "./types/update-announcement.ts";
+import { type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
+import {  type IPayloadUpdateAnnouncement, type MlUpdatePayload } from "../types/update-announcement.ts";
 
 type typeFinalAttributes = { id: string, value_name: string }
 
@@ -34,7 +34,7 @@ export class MlAnnouncementMapping{
         };
     }
 
-    mapToCreateAnnouncement(data: IPayloadCreateAnnouncement){
+    mapToCreateAnnouncement(data: IPayloadCreateAnnouncement)  {
          let finalAttributes: typeFinalAttributes[] = [];
 
             if (data.attributes && data.attributes.length > 0) {

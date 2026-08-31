@@ -37,7 +37,8 @@ export class UpdateOrder {
             status_separacao = ?,
             observacoes_separacao = ?,
             operacao = ?,    
-            filial = ?
+            filial = ?,
+            marketplace = ?
         WHERE codigo = ?`;
         
         const cliente = data.cliente && data.cliente.codigo ?  data.cliente.codigo : 0;
@@ -73,6 +74,7 @@ export class UpdateOrder {
             data.observacoes_separacao ?? null,
             data.operacao,
             data.filial,
+            data.marketplace ?? '',
             orderCode
         ];
 
@@ -114,7 +116,8 @@ export class UpdateOrder {
             ['observacoes_separacao', (value) => value],
             ['filial', (value) => value],
             ['id_interno', (value) => value],
-            ['id_externo', (value) => value]
+            ['id_externo', (value) => value],
+            ['marketplace', (value) => value]
         ];
 
         for (const [column, normalize] of fields) {
@@ -144,6 +147,16 @@ export class UpdateOrder {
         const existing = await selectOrder.findByExternalId(dbName, externalId, operation);
         if (existing.length === 0) {
             throw new Error(`Pedido com id ${externalId} e operação ${operation} não encontrado`);
+        }
+        const orderCode = existing[0].codigo;
+        return this.update(dbName, data, orderCode);
+    }
+
+    async updateByExternalIdRef(dbName: string, data: OrderReceivedType, externalId: string, operation: 'V' | 'C'): Promise<number> {
+        const selectOrder = new SelectOrder();
+        const existing = await selectOrder.findByExternalIdRef(dbName, externalId, operation);
+        if (existing.length === 0) {
+            throw new Error(`Pedido com id_externo ${externalId} e operação ${operation} não encontrado`);
         }
         const orderCode = existing[0].codigo;
         return this.update(dbName, data, orderCode);

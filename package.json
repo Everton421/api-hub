@@ -14,7 +14,10 @@
     "teste:factory": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/teste-factory.ts",
     "teste:send-message-web-hook": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/services/__test__/send-message-web-hook.test.ts",
     "teste:hash-password": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/test-password.test.ts",
-    "teste:send-email": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/send-email.test.ts"
+    "teste:send-email": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/send-email.test.ts",
+  
+    "test:update-ml-announcement": "node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/modules/marketplaces/mercadolivre/__test__/update-ml-announcement.test.ts",
+    "test:get-ml-order-request.test" : "node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/modules/marketplaces/mercadolivre/__test__/get-ml-order-request.test.ts"
   },
   "keywords": [],
   "author": "",

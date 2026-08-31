@@ -11,7 +11,7 @@ import { SelectUsersMlIntegrations } from "../../../../../models/users-ml-integr
 import { DecodedToken } from "../../../../../services/decoded-token/decodedToken.ts";
 import { type typeAnuncios } from "../../../../../types/anuncios/type-anuncio.ts";
 import { type typeAtributosAnuncios } from "../../../../../types/atributos-anuncios/type-atributos-anuncios.ts";
-import {  CreateMlAnnouncementService } from "../create-ml-announcement-service.ts";
+import {  CreateMlAnnouncementService } from "../create-announcement/create-ml-announcement-service.ts";
 import { type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
 import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
 import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";

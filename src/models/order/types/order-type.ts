@@ -34,8 +34,8 @@ export type OrderType = {
     status_separacao: 'NAO INICIADA' | 'EM ANDAMENTO' | 'PAUSADA' | 'RECUSADA' | 'CONCLUIDA'
     observacoes_separacao?: string | null
     filial:number
+    marketplace?: string
 };
-
 export type OrderReceivedType = {
     codigo?: number;
     id: string;
@@ -87,6 +87,7 @@ export type OrderReceivedType = {
     servicos: ServiceOrderType[];
     parcelas: ParcelOrderType[];
     filial:number
+    marketplace?: string
 }
 ;
 

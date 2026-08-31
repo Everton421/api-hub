@@ -49,4 +49,15 @@ export class SelectUsersMlIntegrations {
            return result as IUsersMlIntegrations[]
 
         }
+
+    async findBySystemUserCodeAndCnpjList(user_id: number, cnpj: string): Promise<IUsersMlIntegrations[]> {
+            let sql = ` SELECT *
+             FROM ${db_api}.users_ml_integrations 
+               WHERE system_user_code = ? AND cnpj = ?
+               `
+            let param = [user_id, cnpj]
+
+            const [result] = await conn.query(sql, param);
+            return result as IUsersMlIntegrations[]
+        }
 }

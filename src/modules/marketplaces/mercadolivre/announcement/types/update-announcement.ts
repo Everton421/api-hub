@@ -1,4 +1,4 @@
-export interface IPayloadUpdateAnnouncement { 
+export interface IPayloadUpdateAnnouncement {
     title?: string;
     price?: number;
     available_quantity?: number;

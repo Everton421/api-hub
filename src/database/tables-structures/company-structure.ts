@@ -43,10 +43,29 @@ export class CompanyStructure {
             fim_separacao  datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
             status_separacao  enum('NAO INICIADA','EM ANDAMENTO','PAUSADA','RECUSADA','CONCLUIDA') DEFAULT 'NAO INICIADA',
             observacoes_separacao  text DEFAULT NULL,
+            marketplace  varchar(10) DEFAULT '' COMMENT 'sigla do marketplace de origem (ML, etc)',
             PRIMARY KEY ( codigo ),
             UNIQUE KEY  uk_id_operacao  ( id , operacao ),
             KEY  id  ( id ) USING BTREE
           );`,
+      `CREATE TABLE  IF NOT EXISTS ??.pedido_status  (
+            id  bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            pedido  bigint(20) unsigned NOT NULL COMMENT 'codigo do pedido (pedidos.codigo)',
+            marketplace  varchar(10) NOT NULL DEFAULT '' COMMENT 'sigla do marketplace',
+            categoria  varchar(20) NOT NULL DEFAULT 'pedido' COMMENT 'pedido | pagamento | frete',
+            status_origem  varchar(50) DEFAULT NULL COMMENT 'status bruto da plataforma',
+            status_detail  varchar(100) DEFAULT NULL COMMENT 'status_detail da plataforma (ex: accredited)',
+            tags  text DEFAULT NULL COMMENT 'JSON array (ex: no_shipping, test_order)',
+            situacao  char(2) DEFAULT NULL COMMENT 'situacao local derivada (EA/AI/FI/FP/RE/BM)',
+            data_evento  datetime DEFAULT NULL,
+            payload_raw  BLOB DEFAULT NULL COMMENT 'pedaco bruto do status da plataforma',
+            data_cadastro  timestamp NOT NULL DEFAULT current_timestamp(),
+            data_recadastro  timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            PRIMARY KEY ( id ),
+            UNIQUE KEY  uk_pedido_marketplace_categoria  ( pedido , marketplace , categoria ),
+            KEY  idx_marketplace  ( marketplace )
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`,
+
       `CREATE TABLE  IF NOT EXISTS ??.requerimentos  (
        codigo  int(10) unsigned NOT NULL AUTO_INCREMENT,
        data_requerimento  date NOT NULL DEFAULT '0000-00-00',
@@ -456,7 +475,28 @@ export class CompanyStructure {
             KEY produto (produto, lote_serie),
             KEY setor (setor, produto, lote_serie),
             KEY idx_produto_setor (produto, setor)
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;`
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;`,
+
+        `CREATE TABLE IF NOT EXISTS ??.nf (
+            codigo bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            chave_acesso varchar(44) NOT NULL,
+            xml longtext NOT NULL COMMENT 'XML da NF-e em base64',
+            pedido_id_externo varchar(50) NOT NULL COMMENT 'id externo do pedido na plataforma',
+            shipment_id varchar(50) NOT NULL COMMENT 'id do envio no marketplace',
+            marketplace varchar(10) NOT NULL DEFAULT '' COMMENT 'sigla do marketplace (ML, SH, etc)',
+            system_user_code int(11) NOT NULL DEFAULT 0,
+            ml_user_id bigint(20) DEFAULT NULL,
+            status_envio enum('PENDENTE','ENVIADO','ERRO') NOT NULL DEFAULT 'PENDENTE',
+            tentativas int(11) NOT NULL DEFAULT 0,
+            erro text DEFAULT NULL,
+            data_envio datetime DEFAULT NULL,
+            data_cadastro timestamp NOT NULL DEFAULT current_timestamp(),
+            data_recadastro timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            PRIMARY KEY (codigo),
+            UNIQUE KEY uk_chave_marketplace (chave_acesso, marketplace),
+            KEY idx_status (status_envio),
+            KEY idx_pedido (pedido_id_externo)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`
     ];
 
 

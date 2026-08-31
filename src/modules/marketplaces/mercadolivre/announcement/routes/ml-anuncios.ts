@@ -3,7 +3,7 @@ import z from "zod";
 import { SelectUsersMlIntegrations } from "../../../../../models/users-ml-integration/select-users-ml-integration.ts";
 import { DecodedToken } from "../../../../../services/decoded-token/decodedToken.ts";
 import { GetMlItemsService } from "../../services/get-itens-ml-service.ts";
-import {  CreateMlAnnouncementService } from "../create-ml-announcement-service.ts";
+import {  CreateMlAnnouncementService } from "../create-announcement/create-ml-announcement-service.ts";
  import {type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
 import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
 import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";
@@ -97,29 +97,6 @@ const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new Updat
                 token: z.string(),
                 ml_user_id: z.string(),
             }),
-            /*response: {
-                200: z.object({
-                  seller_id: z.number() ,
-                 total_found : z.number(),
-                 items : z.array( 
-                    z.object({
-                     id: z.string(),
-                     title: z.string(),
-                     price: z.number(),
-                     quantity: z.number(),
-                     permalink: z.string(),
-                     thumbnail: z.string(),
-                     }) ) 
-                }),
-                401 : z.object({
-                    success: z.boolean(),
-                    message: z.string() 
-                })
-                    
-                    
-                 
-            }
-            */
         }
     }, async (request, reply) => {
 

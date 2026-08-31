@@ -58,6 +58,17 @@ export class SelectClient {
         return result as ClientType[];
     }
 
+    async findByCnpjNormalized(dbName: string, cnpj: string): Promise<ClientType[]> {
+        const sql = `SELECT *,
+            DATE_FORMAT(data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT(data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro
+        FROM ${dbName}.clientes
+        WHERE REPLACE(REPLACE(REPLACE(cnpj, '.', ''), '/', ''), '-', '') = ?`;
+
+        const [result] = await conn.query(sql, [cnpj]);
+        return result as ClientType[];
+    }
+
     async findLastInsertedCode(dbName: string): Promise<{ codigo: number }> {
         const sql = `SELECT MAX(codigo) as codigo FROM ${dbName}.clientes`;
         const [result] = await conn.query(sql);

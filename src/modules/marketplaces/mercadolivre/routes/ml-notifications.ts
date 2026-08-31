@@ -1,7 +1,7 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
 import { SelectUsersMlIntegrations } from "../../../../models/users-ml-integration/select-users-ml-integration.ts";
-import { MlOrdersService } from "../services/ml-orders-service.ts";
+import { MlOrdersService } from "../orders/ml-orders-service.ts";
 import { MlAuthServices } from "../services/auth/ml-auth-services.ts";
 import { SelectMLAccountClient } from "../../../../models/ml-accounts/select-ml-accounts.ts";
 import { UpdateMLAccountClient } from "../../../../models/ml-accounts/update-ml-accounts.ts";

@@ -36,12 +36,16 @@ import { mlToolsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-tool
 import { marketplacesRoute } from "./routes/marketplaces/marketplace.ts";
 import { mlAppAnunciosRoute } from "./modules/marketplaces/mercadolivre/announcement/routes/ml-app-anuncios.ts";
 import { mlNotificationsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-notifications.ts";
+import { mlOrdersSyncRoute } from "./modules/marketplaces/mercadolivre/routes/ml-orders-sync.ts";
 import { mlItemUpdateRoute } from "./modules/marketplaces/mercadolivre/announcement/routes/ml-item-update.ts";
+import { mlInvoiceWebhookRoute } from "./modules/marketplaces/mercadolivre/invoice/routes/ml-invoice-webhook.ts";
+import { mlInvoiceReprocessRoute } from "./modules/marketplaces/mercadolivre/invoice/routes/ml-invoice-reprocess.ts";
 import { lotesSeriesRoute } from "./routes/lotes-series/lotes-series.ts";
 import { loteSerieSetorRoute } from "./routes/lote-serie-setor/lote-serie-setor.ts";
 import { branchesCompanyRoute } from "./routes/branches-company/branches-company.ts";
 import requirementsRoute from "./routes/requirements/requirements.ts";
 import webhookRoute from "./routes/webhook/webhook.ts";
+import pedidoStatusRoute from "./routes/pedido-status/pedido-status.ts";
 let certPathEnv;
 if(process.env.PATH_CERT_CERT) certPathEnv = String(process.env.PATH_CERT_CERT)
 
@@ -121,8 +125,9 @@ server.setValidatorCompiler(validatorCompiler)
  server.register(paymentMethodsRoute);
  server.register(productMovementsRoute); 
  server.register(photosRoute);
- server.register(ordersRoute);
- server.register(orderSeriesRoute);
+server.register(ordersRoute);
+server.register(orderSeriesRoute);
+server.register(pedidoStatusRoute);
  server.register(perfilRoute);
  server.register(lotesSeriesRoute);
  server.register(loteSerieSetorRoute);
@@ -136,6 +141,9 @@ server.register(mlItemUpdateRoute);
 server.register(marketplacesRoute);
 server.register(GetMlUserTestRoute);
 server.register(mlNotificationsRoute);
+server.register(mlOrdersSyncRoute);
+server.register(mlInvoiceWebhookRoute);
+server.register(mlInvoiceReprocessRoute);
 server.register(branchesCompanyRoute);
 server.register(requirementsRoute);
 server.register(webhookRoute);
