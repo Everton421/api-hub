@@ -20,6 +20,8 @@ services:
     # O Compose lê o arquivo local e entrega as chaves para o SO do container
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # Dentro do container o broker é acessado pelo nome de serviço da rede compartilhada
     environment:
       BROKER_URL: amqp://rabbitmq:5672
