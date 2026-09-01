@@ -61,10 +61,10 @@ export class MlOrdersRequest {
                 limit
             };
 
-            if (filters.dateCreatedFrom) params['order.date_created.from'] = filters.dateCreatedFrom;
-            if (filters.dateCreatedTo) params['order.date_created.to'] = filters.dateCreatedTo;
-            if (filters.dateUpdatedFrom) params['order.date_last_updated.from'] = filters.dateUpdatedFrom;
-            if (filters.dateUpdatedTo) params['order.date_last_updated.to'] = filters.dateUpdatedTo;
+            if (filters.dateCreatedFrom) params['order.date_created.from'] = new Date(filters.dateCreatedFrom).toISOString();
+            if (filters.dateCreatedTo) params['order.date_created.to'] = new Date(filters.dateCreatedTo).toISOString();
+            if (filters.dateUpdatedFrom) params['order.date_last_updated.from'] = new Date(filters.dateUpdatedFrom).toISOString();
+            if (filters.dateUpdatedTo) params['order.date_last_updated.to'] = new Date(filters.dateUpdatedTo).toISOString();
 
             const response = await axios.get<{ results: { id: number }[]; paging: { total: number; offset: number; limit: number } }>(`${ML_API_URL}/orders/search`, {
                 headers: { Authorization: `Bearer ${accessToken}` },

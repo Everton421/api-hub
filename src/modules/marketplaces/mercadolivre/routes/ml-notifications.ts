@@ -32,7 +32,7 @@ export const mlNotificationsRoute: FastifyPluginAsyncZod = async (server) => {
         }
     }, async (request, reply) => {
         const { topic, resource, user_id } = request.body;
-
+            console.log(request.body);
         if (topic !== 'orders_v2') {
             return reply.status(200).send({ success: true, message: `Topic ${topic} ignorado.` });
         }
