@@ -26,7 +26,6 @@ export class MlInvoiceService implements MarketplaceInvoicePublisher {
 
         try {
             const accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
-
             const body = this.mlInvoiceMapping.mapToMlBody(payload);
 
             await this.mlInvoiceRequest.sendInvoiceData(ML_API_URL, payload.shipmentId, body, accessToken);

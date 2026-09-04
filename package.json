@@ -13,11 +13,14 @@
     "teste:seed": " node --disable-warning=ExperimentalWarning --env-file .env.test  --experimental-strip-types --warnings src/database/seed.ts",
     "teste:factory": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/teste-factory.ts",
     "teste:send-message-web-hook": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/services/__test__/send-message-web-hook.test.ts",
+    "teste:sleep": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/services/__test__/sleep.test.ts",
     "teste:hash-password": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/test-password.test.ts",
     "teste:send-email": " node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/__test__/send-email.test.ts",
-  
     "test:update-ml-announcement": "node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/modules/marketplaces/mercadolivre/__test__/update-ml-announcement.test.ts",
-    "test:get-ml-order-request.test" : "node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/modules/marketplaces/mercadolivre/__test__/get-ml-order-request.test.ts"
+    "test:is-base64-xml": "node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/modules/marketplaces/mercadolivre/__test__/is-base64-xml.test.ts",
+    
+    
+    "test:get-ml-order-request.test": "node --disable-warning=ExperimentalWarning --env-file .env  --experimental-strip-types --warnings src/modules/marketplaces/mercadolivre/__test__/get-ml-order-request.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -34,6 +37,7 @@
     "dayjs": "^1.11.20",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
+    "fast-xml-parser": "^5.11.1",
     "fastify": "^5.6.1",
     "fastify-raw-body": "^5.0.0",
     "fastify-type-provider-zod": "^6.0.0",

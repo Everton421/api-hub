@@ -1,15 +1,9 @@
 import { connectRabbitMQ, getChannel, getConnection } from "./broker.ts";
-import { UpdateMlAnnouncementService } from "../modules/marketplaces/mercadolivre/announcement/update-announcement/update-ml-announcement-service.ts";
-import { UpdateMlAnnouncement } from "../modules/marketplaces/mercadolivre/announcement/update-announcement/update-ml-announcement.ts";
-import { MlAnnouncementMapping } from "../modules/marketplaces/mercadolivre/announcement/mapping/ml-announcement-mapping.ts";
-import { MlAuthServices } from "../modules/marketplaces/mercadolivre/services/auth/ml-auth-services.ts";
-import { SelectMLAccountClient } from "../models/ml-accounts/select-ml-accounts.ts";
-import { UpdateMLAccountClient } from "../models/ml-accounts/update-ml-accounts.ts";
+import { buildSyncMlAnnouncementService } from "../modules/marketplaces/mercadolivre/announcement/update-announcement/announcement-composer.ts";
 
 const QUEUE_NAME = 'q.integracao.mercadolivre';
 const EXCHANGE = process.env.EXCHANGE_NAME;
-const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
-const service = new UpdateMlAnnouncementService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL)));
+
 // Routing keys de estoque/preço de produto que disparam a sincronização com o ML
 const BINDING_KEYS = [
     'tenant.*.produtosetor.atualizado',
@@ -71,9 +65,12 @@ export async function startMlConsumer(): Promise<void> {
                     return;
                 }
 
+                const service = buildSyncMlAnnouncementService();
+
+
                 const result = await service.syncProductByCode(cnpj, codigoProduto);
 
-                if (result.failed > 0) {
+                if (result.falhas > 0) {
                     console.warn("[ Consumer ML ] Sincronização parcial/falha:", JSON.stringify(result, null, 2));
                 } else {
                     console.log("[ Consumer ML ] Sincronizado:", JSON.stringify(result));

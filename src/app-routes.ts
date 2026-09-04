@@ -37,7 +37,7 @@ import { marketplacesRoute } from "./routes/marketplaces/marketplace.ts";
 import { mlAppAnunciosRoute } from "./modules/marketplaces/mercadolivre/announcement/routes/ml-app-anuncios.ts";
 import { mlNotificationsRoute } from "./modules/marketplaces/mercadolivre/routes/ml-notifications.ts";
 import { mlOrdersSyncRoute } from "./modules/marketplaces/mercadolivre/routes/ml-orders-sync.ts";
-import { mlItemUpdateRoute } from "./modules/marketplaces/mercadolivre/announcement/routes/ml-item-update.ts";
+import { mlItemUpdatePriceStockRoute    } from "./modules/marketplaces/mercadolivre/announcement/routes/ml-item-update-price-stock.ts";
 import { mlInvoiceWebhookRoute } from "./modules/marketplaces/mercadolivre/invoice/routes/ml-invoice-webhook.ts";
 import { mlInvoiceReprocessRoute } from "./modules/marketplaces/mercadolivre/invoice/routes/ml-invoice-reprocess.ts";
 import { lotesSeriesRoute } from "./routes/lotes-series/lotes-series.ts";
@@ -85,8 +85,10 @@ server.register(fastifySwagger, {
     info: {
       title: "API Mobile",
       version: "1.0.0"
-    }
+    },
   },
+
+  
   transform: jsonSchemaTransform,
 })
 
@@ -137,7 +139,7 @@ server.register(mlAnunciosRoute);
 server.register(mlAppAnunciosRoute);
 server.register(mlToolsRoute);
 server.register(mlAccountsRoute);
-server.register(mlItemUpdateRoute);
+server.register(mlItemUpdatePriceStockRoute);
 server.register(marketplacesRoute);
 server.register(GetMlUserTestRoute);
 server.register(mlNotificationsRoute);

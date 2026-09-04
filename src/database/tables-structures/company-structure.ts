@@ -44,6 +44,7 @@ export class CompanyStructure {
             status_separacao  enum('NAO INICIADA','EM ANDAMENTO','PAUSADA','RECUSADA','CONCLUIDA') DEFAULT 'NAO INICIADA',
             observacoes_separacao  text DEFAULT NULL,
             marketplace  varchar(10) DEFAULT '' COMMENT 'sigla do marketplace de origem (ML, etc)',
+            shipping_id varchar(255) DEFAULT NULL,
             PRIMARY KEY ( codigo ),
             UNIQUE KEY  uk_id_operacao  ( id , operacao ),
             KEY  id  ( id ) USING BTREE

@@ -1,36 +1,28 @@
 import { InsertAnuncios } from "../../../../../models/anuncios/insert.ts";
-import { MlAnnouncementMapping } from "../mapping/ml-announcement-mapping.ts";
 import { InsertAtributosAnuncios } from "../../../../../models/atributos-anuncios/insert.ts";
 import { delay } from "../../../../../services/delay-service/delay.ts";
-import axios from "axios";
-import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
+import { ApiClient } from "../../../../../services/lib/api-client.ts";
+import { MlAnnouncementMapping } from "../mapping/ml-announcement-mapping.ts";
 import { type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
+import { parseMlErrorMessage } from "../../utils/MlError.ts";
+
+type MlCreateResponse = { id: string; permalink: string };
 
 
 export class CreateMlAnnouncementService {
-    private readonly mlAuthServices: MlAuthServices
+
+    private mercadolivreApi:ApiClient;
+    
     constructor(
-        mlAuthServices: MlAuthServices) {
-        this.mlAuthServices = mlAuthServices;
+         mercadolivreApi:ApiClient   ) {   this.mercadolivreApi = mercadolivreApi;
     }
-    private ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
 
-
-    async publishItem(cnpj: string, systemUserCode: number, mlUserId: number, codigo_produto: number, integrationId: number, data: IPayloadCreateAnnouncement) {
+    async publishItem(cnpj: string,  codigo_produto: number, integrationId: number, data: IPayloadCreateAnnouncement) {
         const insertAnuncios = new InsertAnuncios();
         const insertAtributosAnuncios = new InsertAtributosAnuncios();
         const mlAnnouncementMapping = new MlAnnouncementMapping();
 
-        let accessToken
         try {
-
-            try {
-                accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
-            } catch (e) {
-                if (e instanceof Error) {
-                    throw new Error(e.message);
-                }
-            }
 
             let payloadCreateMlAnnouncement = mlAnnouncementMapping.mapToCreateAnnouncement(data)
 
@@ -39,13 +31,7 @@ export class CreateMlAnnouncementService {
             await delay(1);
             const ean = data.ean || ''
 
-            // 4. Envia para o Mercado Livre
-            const response = await axios.post<{ id: string, permalink: string }>(`${this.ML_API_URL}/items`, payloadCreateMlAnnouncement, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json"
-                }
-            });
+            const response = await this.mercadolivreApi.post<MlCreateResponse>('/items', payloadCreateMlAnnouncement );
 
             if (response.data.id) {
                 const resultInsert = await insertAnuncios.insert(database,
@@ -95,23 +81,12 @@ export class CreateMlAnnouncementService {
 
 
                 if (data.description) {
-
                     try {
-                        await axios.put(
-                            `${this.ML_API_URL}/items/${response.data.id}/description`,
-                            { plain_text: data.description },
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${accessToken}`,
-                                    "Content-Type": "application/json"
-                                }
-                            }
-                        );
+                         await this.mercadolivreApi.put<any>(`/items/${response.data.id}/description`,  { plain_text: data.description } );
                     } catch (e) {
                         console.error("Erro ao atualizar descrição:", e);
                     }
                 }
-
             }
 
             return {
@@ -126,17 +101,11 @@ export class CreateMlAnnouncementService {
             console.log(error)
             console.error("Erro ao publicar:", JSON.stringify(error.response?.data, null, 2));
 
-            let errorMessage = "Erro ao publicar no Mercado Livre.";
+            let errorMessage = parseMlErrorMessage(error, "Erro ao publicar no Mercado Livre.");
 
-            if (error.response?.data?.cause) {
-                // Pega o primeiro erro da lista de causas do ML
-                const mlError = error.response.data.cause[0];
-                errorMessage = `ML Recusou: ${mlError && mlError.message ? mlError.message : mlError} (Código: ${mlError && mlError.code ? mlError.code : mlError})`;
-
-                // Exemplo comum: Categoria exige atributos específicos
-                if (mlError.code === "validation_error") {
-                    errorMessage += ". Verifique se a categoria exige atributos obrigatórios.";
-                }
+            // Exemplo comum: Categoria exige atributos específicos
+            if (error.response?.data?.cause?.[0]?.code === "validation_error") {
+                errorMessage += ". Verifique se a categoria exige atributos obrigatórios.";
             }
 
             throw new Error(errorMessage);

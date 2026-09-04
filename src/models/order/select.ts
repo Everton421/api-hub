@@ -2,6 +2,9 @@ import { conn } from "../../database/databaseConfig.ts";
 import { type OrderType } from "./types/order-type.ts";
 
 export class SelectOrder {
+
+
+
     async findByCode(dbName: string, code: number): Promise<OrderType[]> {
         const sql = `SELECT p.*,
             DATE_FORMAT(p.data_cadastro, '%Y-%m-%d') AS data_cadastro,
@@ -49,6 +52,23 @@ export class SelectOrder {
         return result as OrderType[];
     }
 
+
+         /**
+          * Retorna o codigo do ultimo pedido inserido.
+          * @param dbName 
+          * @param code 
+          * @returns 
+          */
+      async findLastCodeOrder(dbName: string ) {
+        const sql = `SELECT MAX(codigo) as codigo
+        FROM ${dbName}.pedidos
+       `;
+
+        const [result] = await conn.query(sql );
+        const resultQuery = result as [{codigo:number}]
+        return resultQuery[0]
+    }
+
     async exists(dbName: string, code: number): Promise<boolean> {
         const sql = `SELECT COUNT(*) as count
         FROM ${dbName}.pedidos
@@ -66,6 +86,18 @@ export class SelectOrder {
         const [result] = await conn.query(sql, [externalId, operation]);
         return (result as any)[0].count > 0;
     }
+
+     async findexistsByExternalId(dbName: string, externalId: string, operation: 'V' | 'C'): Promise<[ {data_cadastro: string,data_recadastro: string }]> {
+        const sql = `SELECT 
+              DATE_FORMAT( data_cadastro, '%Y-%m-%d') AS data_cadastro,
+            DATE_FORMAT( data_recadastro, '%Y-%m-%d %H:%i:%s') AS data_recadastro 
+        FROM ${dbName}.pedidos
+        WHERE id = ? AND operacao = ?`;
+
+        const  [result]  = await conn.query(sql, [externalId, operation]);
+        return result as [{data_cadastro: string,data_recadastro: string }];
+    }
+
 
     async existsByExternalIdRef(dbName: string, externalId: string, operation: 'V' | 'C'): Promise<boolean> {
         const sql = `SELECT COUNT(*) as count

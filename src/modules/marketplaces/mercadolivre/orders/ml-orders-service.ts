@@ -59,14 +59,22 @@ export class MlOrdersService {
         const localOrder = await this.mlOrdersMapper.mapToLocalOrder(database, mlOrder, buyerCode, systemUserCode);
 
         const orderExists = await new SelectOrder().existsByExternalIdRef(database, localOrder.id_externo || '', 'V');
+        
+        const orderExists2 = await new SelectOrder().findexistsByExternalId(database, localOrder.id_externo || '', 'V');
 
-        let codigoPedido: number;
+        let codigoPedido: number=0;
 
-        if (orderExists) {
-            await new UpdateOrder().updateByExternalIdRef(database, localOrder, localOrder.id_externo || '', 'V');
-            const existing = await new SelectOrder().findByExternalIdRef(database, localOrder.id_externo || '', 'V');
-            codigoPedido = existing.length > 0 ? (existing[0].codigo as number) : 0;
-            await publishMessage(cnpj, 'pedido.atualizado', localOrder, 'ml_integration');
+        if (orderExists2.length > 0 ) {
+            const {data_cadastro, data_recadastro  } = orderExists2[0];
+                    const existing = await new SelectOrder().findByExternalIdRef(database, localOrder.id_externo || '', 'V');
+
+                if(new Date(mlOrder.last_updated) > new Date(data_recadastro) ) {
+                    await new UpdateOrder().updateByExternalIdRef(database, localOrder, localOrder.id_externo || '', 'V');
+
+                    codigoPedido = existing.length > 0 ? (existing[0].codigo as number) : 0;
+                    await publishMessage(cnpj, 'pedido.atualizado', localOrder, 'ml_integration');
+                }
+
         } else {
             const result = await new InsertOrder().create(database, localOrder);
             codigoPedido = result.insertId;

@@ -88,6 +88,7 @@ export type OrderReceivedType = {
     parcelas: ParcelOrderType[];
     filial:number
     marketplace?: string
+    shipping_id: string | null
 }
 ;
 

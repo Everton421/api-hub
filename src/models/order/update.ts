@@ -39,6 +39,7 @@ export class UpdateOrder {
             operacao = ?,    
             filial = ?,
             marketplace = ?
+            shipping_id = ?
         WHERE codigo = ?`;
         
         const cliente = data.cliente && data.cliente.codigo ?  data.cliente.codigo : 0;
@@ -75,6 +76,7 @@ export class UpdateOrder {
             data.operacao,
             data.filial,
             data.marketplace ?? '',
+            data.shipping_id ?? null,
             orderCode
         ];
 

@@ -1,23 +1,30 @@
 import { type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
-import {  type IPayloadUpdateAnnouncement, type MlUpdatePayload } from "../types/update-announcement.ts";
+import { type IPayloadToMappingAnnouncement, type IPayloadToUpdateMLAnnouncement, type MlUpdateAttribute } from "../types/payload-update-announcement.ts";
 
 type typeFinalAttributes = { id: string, value_name: string }
 
-export class MlAnnouncementMapping{
+  type PayloadMappedAnnoucement = {
+    payloadToUpdate:Partial<IPayloadToUpdateMLAnnouncement>;
+    localUpdate: Record<string, any>;
+    attributes?: MlUpdateAttribute[];
+};
+
+
+export class MlAnnouncementMapping  {
  
+      mapToUpdateAnnouncement(data: IPayloadToMappingAnnouncement): PayloadMappedAnnoucement {
+        const payloadToUpdate: Record<string, any> = {};
 
-    mapToUpdateAnnouncement(data: IPayloadUpdateAnnouncement): MlUpdatePayload {
-        const mlPayload: Record<string, any> = {};
-
-        if (data.title !== undefined) mlPayload.title = data.title;
-        if (data.price !== undefined) mlPayload.price = data.price;
-        if (data.available_quantity !== undefined) mlPayload.available_quantity = data.available_quantity;
-        if (data.listing_type_id !== undefined) mlPayload.listing_type_id = data.listing_type_id;
-        if (data.category_id !== undefined) mlPayload.category_id = data.category_id;
-        if (data.attributes !== undefined) mlPayload.attributes = data.attributes;
-        if (data.shipping !== undefined) mlPayload.shipping = data.shipping;
+        if (data.title !== undefined) payloadToUpdate.title = data.title;
+        if (data.price !== undefined) payloadToUpdate.price = data.price;
+        if (data.available_quantity !== undefined) payloadToUpdate.available_quantity = data.available_quantity;
+        if (data.listing_type_id !== undefined) payloadToUpdate.listing_type_id = data.listing_type_id;
+        if (data.category_id !== undefined) payloadToUpdate.category_id = data.category_id;
+        if (data.attributes !== undefined) payloadToUpdate.attributes = data.attributes;
+        if (data.shipping !== undefined) payloadToUpdate.shipping = data.shipping;
+        if(data.description !== undefined ) payloadToUpdate.description = data.description;  
         if (data.pictures !== undefined) {
-            mlPayload.pictures = data.pictures.map(url => ({ source: url }));
+            payloadToUpdate.pictures = data.pictures.map(url => ({ source: url }));
         }
 
         const localUpdate: Record<string, any> = {};
@@ -28,13 +35,13 @@ export class MlAnnouncementMapping{
         if (data.thumbnail !== undefined) localUpdate.thumbnail = data.thumbnail;
 
         return {
-            mlPayload,
+            payloadToUpdate,
             localUpdate,
             attributes: data.attributes
         };
     }
 
-    mapToCreateAnnouncement(data: IPayloadCreateAnnouncement)  {
+     mapToCreateAnnouncement(data: IPayloadCreateAnnouncement)  {
          let finalAttributes: typeFinalAttributes[] = [];
 
             if (data.attributes && data.attributes.length > 0) {
@@ -84,4 +91,6 @@ export class MlAnnouncementMapping{
           
             return mlPayload
     }
+     
+    
 }

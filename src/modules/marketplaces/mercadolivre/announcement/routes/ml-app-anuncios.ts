@@ -11,19 +11,13 @@ import { SelectUsersMlIntegrations } from "../../../../../models/users-ml-integr
 import { DecodedToken } from "../../../../../services/decoded-token/decodedToken.ts";
 import { type typeAnuncios } from "../../../../../types/anuncios/type-anuncio.ts";
 import { type typeAtributosAnuncios } from "../../../../../types/atributos-anuncios/type-atributos-anuncios.ts";
-import {  CreateMlAnnouncementService } from "../create-announcement/create-ml-announcement-service.ts";
 import { type IPayloadCreateAnnouncement } from "../types/payload-create-announcement.ts";
-import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
-import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";
-import { UpdateMLAccountClient } from "../../../../../models/ml-accounts/update-ml-accounts.ts";
 
-const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
-const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
 type typeFinalAttributes = { id: string, value_name: string }
 
 export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
- 
+
     server.post('/ml/app/anuncios/register', {
         schema: {
             tags: ['ml'],
@@ -56,15 +50,17 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             })
         }
     }, async (request, reply) => {
-        const mlService = new CreateMlAnnouncementService(mlAuthServices);
+        //        const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+
+        //  const mlService = new CreateMlAnnouncementService(mlAuthServices);
         const selectUsersMl = new SelectUsersMlIntegrations();
 
-        const { title, price, category_id, ml_user_id, codigo_produto, id, available_quantity , sku ,ean, thumbnail } = request.body;
+        const { title, price, category_id, ml_user_id, codigo_produto, id, available_quantity, sku, ean, thumbnail } = request.body;
         const insertAnuncios = new InsertAnuncios();
         const insertAtributosAnuncios = new InsertAtributosAnuncios();
 
         const decoded = DecodedToken(String(request.headers.token));
-        if ( !decoded.payload) {
+        if (!decoded.payload) {
             return reply.status(401).send({ msg: "Token inválido" });
         }
 
@@ -82,97 +78,88 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
         const mlUserId = integracoes[0].ml_user_id;
         const integrationId = integracoes[0].id;
 
-                const itemData: IPayloadCreateAnnouncement = {
-                    title: request.body.title,
-                    sku:  sku,
-                    price: Number(request.body.price),
-                    quantity: Number(request.body.available_quantity),
-                    category_id: request.body.category_id,
-                    listing_type_id: request.body.listing_type_id || "gold_special",
-                    condition: request.body.condition || "new",
-                    description: request.body.description,
-                    pictures: request.body.pictures || [],
-                    brand: request.body.brand,
-                    model: request.body.model,
-                    attributes: request.body.attributes || [],
-                    thumbnail: request.body.thumbnail
+        const itemData: IPayloadCreateAnnouncement = {
+            title: request.body.title,
+            sku: sku,
+            price: Number(request.body.price),
+            quantity: Number(request.body.available_quantity),
+            category_id: request.body.category_id,
+            listing_type_id: request.body.listing_type_id || "gold_special",
+            condition: request.body.condition || "new",
+            description: request.body.description,
+            pictures: request.body.pictures || [],
+            brand: request.body.brand,
+            model: request.body.model,
+            attributes: request.body.attributes || [],
+            thumbnail: request.body.thumbnail
 
-                };
+        };
 
-             let finalAttributes: typeFinalAttributes[] = [];
+        let finalAttributes: typeFinalAttributes[] = [];
 
-                    if (itemData.attributes && itemData.attributes.length > 0) {
-                        // Se vieram atributos dinâmicos, usamos eles!
-                        finalAttributes = itemData.attributes;
-                    } else {
-                        // FALLBACK: Se não veio nada (produtos antigos/simples), criamos o básico
-                        finalAttributes = [
-                            { id: "BRAND", value_name: request.body.brand || "Genérica" },
-                            { id: "MODEL", value_name: request.body.model || "Padrão" }
-                        ];
-                        if (ean) {
-                            finalAttributes.push({ id: "GTIN", value_name:  ean });
-                        }
-                    }
+        if (itemData.attributes && itemData.attributes.length > 0) {
+            // Se vieram atributos dinâmicos, usamos eles!
+            finalAttributes = itemData.attributes;
+        } else {
+            // FALLBACK: Se não veio nada (produtos antigos/simples), criamos o básico
+            finalAttributes = [
+                { id: "BRAND", value_name: request.body.brand || "Genérica" },
+                { id: "MODEL", value_name: request.body.model || "Padrão" }
+            ];
+            if (ean) {
+                finalAttributes.push({ id: "GTIN", value_name: ean });
+            }
+        }
 
 
-                const resultInsert = await insertAnuncios.insert(dbName,
-                    {
-                        ativo: 'S',
-                        codigo_produto: codigo_produto,
-                        sku: sku,                    
-                        descricao:   title,
-                        estoque:  available_quantity,
-                        id_externo: '1',
-                        integration_id: integrationId,
-                        link: request.body.permalink || '',
-                        num_fabricante: ean || '',
-                        titulo:  title,
-                        preco:  price,
-                        plataforma: 'ML',
-                        sku_externo: null,
-                        unidade_medida: '',
-                        thumbnail:  thumbnail || '',
-                        id_plataforma: id
-                    }
-                )
-                if (resultInsert.sucess && resultInsert.insertId) {
-                    if (finalAttributes.length > 0) {
-                        for (const atr of finalAttributes) {
-                            await insertAtributosAnuncios.insert(dbName,
-                                {
-                                    id_anuncio: resultInsert.insertId,
-                                    id_atributo: atr.id,
-                                    id_valor_atributo: null,
-                                    nome_atributo: atr.id,
-                                    valor_atributo: atr.value_name
-                                })
-                        }
-                      //  for (const img of data.pictures) {
-                      //      await insertAtributosAnuncios.insert(database,
-                      //          {
-                      //              id_anuncio: resultInsert.insertId,
-                      //              id_atributo: 'IMAGEM_ANUNCIO',
-                      //              id_valor_atributo: null,
-                      //              nome_atributo: 'IMAGEM_ANUNCIO',
-                      //              valor_atributo: img
-                      //          })
-                      //  }
-                    }
+        const resultInsert = await insertAnuncios.insert(dbName,
+            {
+                ativo: 'S',
+                codigo_produto: codigo_produto,
+                sku: sku,
+                descricao: title,
+                estoque: available_quantity,
+                id_externo: '1',
+                integration_id: integrationId,
+                link: request.body.permalink || '',
+                num_fabricante: ean || '',
+                titulo: title,
+                preco: price,
+                plataforma: 'ML',
+                sku_externo: null,
+                unidade_medida: '',
+                thumbnail: thumbnail || '',
+                id_plataforma: id
+            }
+        )
+        if (resultInsert.sucess && resultInsert.insertId) {
+            if (finalAttributes.length > 0) {
+                for (const atr of finalAttributes) {
+                    await insertAtributosAnuncios.insert(dbName,
+                        {
+                            id_anuncio: resultInsert.insertId,
+                            id_atributo: atr.id,
+                            id_valor_atributo: null,
+                            nome_atributo: atr.id,
+                            valor_atributo: atr.value_name
+                        })
                 }
 
-         try {
-             const result = await mlService.publishItem(empresa, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
-             return reply.status(201).send(result);
-         } catch (e) {
-             return reply.status(500).send({ success: false, message: `${e}` });
-         }
+            }
+        }
+
+        //  try {
+        //      const result = await mlService.publishItem(empresa, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
+        //      return reply.status(201).send(result);
+        //  } catch (e) {
+        //      return reply.status(500).send({ success: false, message: `${e}` });
+        //  }
     });
 
     server.get('/ml/app/anuncios', {
         schema: {
             tags: ['ml'],
-            description:"Consulta os anuncios cadastrados.",
+            description: "Consulta os anuncios cadastrados.",
             headers: z.object({
                 token: z.string()
             }),
@@ -202,15 +189,15 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
 
         const query = request.query;
         const queryParams: any = { ativo: query.ativo || 'S' };
-        
+
         if (query.limit) queryParams.limit = query.limit;
         if (query.data_recadastro) queryParams.data_recadastro = query.data_recadastro;
         if (query.plataforma) queryParams.plataforma = query.plataforma;
         if (query.id_externo) queryParams.id_externo = query.id_externo;
         if (query.sku_externo) queryParams.sku_externo = query.sku_externo;
-        if(query.id_plataforma) queryParams.id_plataforma = query.id_plataforma;
-        if(query.descricao) queryParams.descricao = query.descricao;
-        if(query.titulo) queryParams.titulo = query.titulo;
+        if (query.id_plataforma) queryParams.id_plataforma = query.id_plataforma;
+        if (query.descricao) queryParams.descricao = query.descricao;
+        if (query.titulo) queryParams.titulo = query.titulo;
 
 
         try {
@@ -240,7 +227,7 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
     server.get('/ml/app/anuncios/:id', {
         schema: {
             tags: ['ml'],
-            description:"Consulta anuncio cadastrado pelo ID.",
+            description: "Consulta anuncio cadastrado pelo ID.",
             headers: z.object({
                 token: z.string()
             }),
@@ -322,13 +309,13 @@ export const mlAppAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
             }
             return reply.status(400).send({ success: false, message: "Anúncio não encontrado ou erro ao atualizar" });
 
-            }catch(e){
-                console.log(e);
+        } catch (e) {
+            console.log(e);
             return reply.status(500).send({ success: false, message: "erro interno no servidor." });
-            }
-
         }
-     );
+
+    }
+    );
 
     server.delete('/ml/app/anuncios/delete/:id', {
         schema: {

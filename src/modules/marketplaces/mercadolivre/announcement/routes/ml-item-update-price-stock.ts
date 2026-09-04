@@ -1,17 +1,9 @@
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
 import { DecodedToken } from "../../../../../services/decoded-token/decodedToken.ts";
-import { UpdateMlAnnouncementService } from "../update-announcement/update-ml-announcement-service.ts";
-import { UpdateMlAnnouncement } from "../update-announcement/update-ml-announcement.ts";
-import { MlAnnouncementMapping } from "../mapping/ml-announcement-mapping.ts";
-import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
-import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";
-import { UpdateMLAccountClient } from "../../../../../models/ml-accounts/update-ml-accounts.ts";
+import { buildSyncMlAnnouncementService } from "../update-announcement/announcement-composer.ts";
 
-const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
-const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
-
-export const mlItemUpdateRoute: FastifyPluginAsyncZod = async (server) => {
+export const mlItemUpdatePriceStockRoute: FastifyPluginAsyncZod = async (server) => {
     server.put('/ml/anuncios/update/price-stock', {
         schema: {
             tags: ['ml'],
@@ -51,17 +43,17 @@ export const mlItemUpdateRoute: FastifyPluginAsyncZod = async (server) => {
         const { codigo_produto } = request.body;
 
         try {
-            const service = new UpdateMlAnnouncementService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), mlAuthServices));
+            const service = buildSyncMlAnnouncementService();
             const result = await service.syncProductByCode(empresa, codigo_produto);
 
-            if (result.total_anuncios === 0) {
+            if (result.totalAnuncios === 0) {
                 return reply.status(400).send({
                     success: false,
                     message: `Nenhum anúncio ML ativo encontrado para o produto ${codigo_produto}.`
                 });
             }
 
-            return reply.status(200).send({ success: result.failed === 0, data: result });
+            return reply.status(200).send({ success: result.falhas === 0, data: result });
         } catch (e: any) {
             console.error("Erro ao atualizar preço/estoque do anúncio:", e);
             return reply.status(500).send({ success: false, message: `${e instanceof Error ? e.message : e}` });

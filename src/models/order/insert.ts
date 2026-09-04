@@ -51,7 +51,8 @@ export class InsertOrder {
             status_separacao  ,
             observacoes_separacao  ,
             filial,
-            marketplace
+            marketplace,
+            shipping_id
         } = data;
         const servicos = data.servicos || [];        const parcelas = data.parcelas || [];
         const produtos = data.produtos || [];
@@ -90,8 +91,9 @@ export class InsertOrder {
             observacoes_separacao,
             operacao,
             filial,
-            marketplace
-        ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            marketplace,
+            shipping_id
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )`;
 
         const values = [
             id,
@@ -126,7 +128,8 @@ export class InsertOrder {
             observacoes_separacao,
             operacao,
             filial,
-            marketplace ?? ''
+            marketplace ?? '',
+            shipping_id ?? null 
         ];
 
         const [result] = await conn.query(sql, values);

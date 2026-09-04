@@ -3,6 +3,7 @@ import { DateService } from "../../../../utils/dateService.ts";
 import { derivarSituacao } from "../../../../services/StatusMarketplace.ts";
 import { type MlOrder } from "./types/ml-order-types.ts";
 import { type OrderReceivedType, type ProductOrderType, type ParcelOrderType } from "../../../../models/order/types/order-type.ts";
+import { SelectOrder } from "../../../../models/order/select.ts";
 
 export class MlOrdersMapper {
     /**
@@ -13,8 +14,10 @@ export class MlOrdersMapper {
      * @param systemUserCode - Código do usuário do sistema responsável.
      * @returns Pedido no formato local (OrderReceivedType).
      */
-    async mapToLocalOrder(database: string, mlOrder: MlOrder, buyerCode: number, systemUserCode: number): Promise<OrderReceivedType> {
+    async mapToLocalOrder(database: string,  mlOrder: MlOrder, buyerCode: number, systemUserCode: number): Promise<OrderReceivedType> {
         const selectAnuncios = new SelectAnuncios();
+        const selectOrder = new SelectOrder();
+
 
         const produtos: ProductOrderType[] = [];
         for (const item of mlOrder.order_items) {
@@ -45,8 +48,11 @@ export class MlOrdersMapper {
         const dataCadastro = mlOrder.date_created?.split('T')[0] || new Date().toISOString().split('T')[0];
         const dataRecadastro = mlOrder.last_updated?.replace('T', ' ').split('.')[0] || new Date().toISOString().replace('T', ' ').split('.')[0];
 
+            const lastCodeOrderInserted = await selectOrder.findLastCodeOrder(database)
+            const newOrderId = lastCodeOrderInserted.codigo + 1
+            const shippingId= mlOrder.shipping?.id || null; 
         return {
-            id: '0',
+            id: String(newOrderId),
             id_externo: String(mlOrder.id),
             id_interno: String(mlOrder.id),
             operacao: 'V',
@@ -81,7 +87,8 @@ export class MlOrdersMapper {
             fim_separacao: '2000-01-01 00:00:00',
             status_separacao: 'NAO INICIADA',
             filial: 0,
-            marketplace: 'ML'
+            marketplace: 'ML',
+            shipping_id: String(shippingId)
         };
     }
 }

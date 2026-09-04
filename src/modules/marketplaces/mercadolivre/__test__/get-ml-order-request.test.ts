@@ -1,8 +1,10 @@
 import test from "node:test"
 import { MlOrdersRequest } from "../orders/ml-orders-request.ts";
 
-const ML_TOKEN = 'APP_USR-4933537661574703-083107-8c11985e97b113638040b2461cc550fc-3467095410';
+const ML_TOKEN = 'APP_USR-4933537661574703-090415-3c4fc9449556a7be5732ff26b7c9b5ba-3467095410';
 const ML_SELLER_ID = 3467095410;
+
+
 
 test("TESTE", async (t) => {
     //await t.test("GET ML ORDERS", async () => {
@@ -23,7 +25,7 @@ test("TESTE", async (t) => {
         const request = new MlOrdersRequest();
 
         try {
-            const order = await request.getOrderById(ML_TOKEN, 2000018204893220);
+            const order = await request.getOrderById(ML_TOKEN, 2000018262033352);
             console.log(order);
 
             //const buyerId = order.buyer.id;

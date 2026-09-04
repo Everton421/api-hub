@@ -14,15 +14,7 @@ import { type PhotoType } from '../../models/photo/types/photo-type.ts';
 import { InsertProductSector } from '../../models/product-sector/insert.ts';
 import { UpdateProductSector } from '../../models/product-sector/update.ts';
 import { SelectProductSector } from '../../models/product-sector/select.ts';
-import { UpdateMlAnnouncementService } from '../../modules/marketplaces/mercadolivre/announcement/update-announcement/update-ml-announcement-service.ts';
-import { UpdateMlAnnouncement } from '../../modules/marketplaces/mercadolivre/announcement/update-announcement/update-ml-announcement.ts';
-import { MlAnnouncementMapping } from '../../modules/marketplaces/mercadolivre/announcement/mapping/ml-announcement-mapping.ts';
-import { MlAuthServices } from '../../modules/marketplaces/mercadolivre/services/auth/ml-auth-services.ts';
-import { SelectMLAccountClient } from '../../models/ml-accounts/select-ml-accounts.ts';
-import { UpdateMLAccountClient } from '../../models/ml-accounts/update-ml-accounts.ts';
-
-const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
-const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+import { buildSyncMlAnnouncementService } from '../../modules/marketplaces/mercadolivre/announcement/update-announcement/announcement-composer.ts';
 
 type productTypeAndPhotos  = ProductType & { fotos: PhotoType[]; codigo: number }
 
@@ -571,7 +563,7 @@ const productsRoute: FastifyPluginAsyncZod = async (server) => {
                 }
             }
 
-            await new UpdateMlAnnouncementService(new UpdateMlAnnouncement(new MlAnnouncementMapping(), mlAuthServices)).syncProductByCode(empresa, produto);
+            await buildSyncMlAnnouncementService().syncProductByCode(empresa, produto);
 
             return reply.status(200).send({
                 success: true,

@@ -13,7 +13,7 @@ export const mlInvoiceWebhookRoute: FastifyPluginAsyncZod = async (server) => {
             }),
             body: z.object({
                 pedido_id_externo: z.string(),
-                shipment_id: z.string(),
+                shipment_id: z.string().describe("Id do envio no Mercado Livre"),
                 chave_acesso: z.string().length(44),
                 xml_base64: z.string(),
                 marketplace: z.string().default('ML')

@@ -8,11 +8,14 @@ import {  CreateMlAnnouncementService } from "../create-announcement/create-ml-a
 import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
 import { SelectMLAccountClient } from "../../../../../models/ml-accounts/select-ml-accounts.ts";
 import { UpdateMLAccountClient } from "../../../../../models/ml-accounts/update-ml-accounts.ts";
+import { ApiClient } from "../../../../../services/lib/api-client.ts";
+import { MlAnnouncementMapping } from "../mapping/ml-announcement-mapping.ts";
+import {type IPayloadToMappingAnnouncement } from "../types/payload-update-announcement.ts";
 
 const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
-const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
 
- export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {
+
+ export const mlAnunciosRoute: FastifyPluginAsyncZod = async (server) => {  
     server.post('/ml/anuncios/create', {
         schema: {
             tags: ['ml'],
@@ -43,8 +46,10 @@ const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new Updat
             })
         }
     }, async (request, reply) => {
-        const  createMlAnnouncementService = new CreateMlAnnouncementService(mlAuthServices);
-        const selectUsersMl = new SelectUsersMlIntegrations();
+
+        const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+
+       const selectUsersMl = new SelectUsersMlIntegrations();
 
         const {   ml_user_id, codigo_produto } = request.body;
         const decoded = DecodedToken(String(request.headers.token));
@@ -60,7 +65,12 @@ const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new Updat
             return reply.status(400).send({ success: false, message: "Usuário não possui conta ML vinculada." });
         }
 
-        const mlUserId = integracoes[0].ml_user_id;
+      const  accessToken = await  mlAuthServices.getValidMlAccessToken(userCnpj, systemUserCode, ml_user_id);
+      const apiClient = new   ApiClient(ML_API_URL, accessToken);
+
+      const  createMlAnnouncementService = new CreateMlAnnouncementService(apiClient);
+      
+
         const integrationId = integracoes[0].id;
 
         let itemData: IPayloadCreateAnnouncement = {
@@ -82,12 +92,78 @@ const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new Updat
         }
 
         try {
-            const result = await createMlAnnouncementService.publishItem(userCnpj, systemUserCode, mlUserId, codigo_produto, integrationId, itemData);
+            const result = await createMlAnnouncementService.publishItem(userCnpj,codigo_produto, integrationId, itemData);
             return reply.status(201).send(result);
         } catch (e) {
             return reply.status(500).send({ success: false, message: `${e}` });
         }
     });
+     /* server.put('/ml/anuncios/update/:id', {
+        schema: {
+            tags: ['ml'],
+            description: "Atualiza anúncio no mercadolivre (id: Id do anuncio do banco de dados)",
+            headers: z.object({
+                token: z.string()
+            }),
+              body: z.object({
+                ml_user_id: z.coerce.number().describe('Id do usuario no mercadoLivre.'),
+                ml_id:z.string().describe('Id do anuncio no mercadoLivre.'),
+                title: z.string().optional().describe('Titulo do anúncio.'),
+                price: z.number().optional().describe('Preço do anúncio.'),
+                description: z.string().optional().describe('Descrição do anúncio.'),
+                available_quantity: z.number().optional().describe("Quantidade em estoque do anúncio."),
+                listing_type_id: z.string().optional().describe("Tipo do anuncio [ gold_special, gold_pro, free ]."),
+                category_id: z.string().optional().describe('Id da categoria.'),
+                pictures: z.array(z.string()).optional().describe('Imagens do anuncio.'),
+                attributes: z.array(z.object({
+                    id: z.string(),
+                    value_name: z.string()
+                })).optional(),
+                thumbnail: z.string().optional().describe("Foto da capa.")
+            })
+        }
+    }, async (request, reply) => {
+  
+        const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+  
+        const decoded = DecodedToken(String(request.headers.token));
+        if (!decoded.success || !decoded.payload) {
+            return reply.status(401).send({ success: false, message: "Token inválido" });
+        }
+        const {   ml_user_id   } = request.body;
+        
+       const selectUsersMl = new SelectUsersMlIntegrations();
+
+        const userCnpj = decoded.payload.cnpj;
+        const systemUserCode = decoded.payload.codigo;
+
+        const integracoes = await selectUsersMl.findBySystemUserCodeAndCnpj(systemUserCode, ml_user_id, userCnpj);
+        if (!integracoes || integracoes.length === 0) {
+            return reply.status(400).send({ success: false, message: "Usuário não possui conta ML vinculada." });
+        }
+
+
+        const  accessToken = await  mlAuthServices.getValidMlAccessToken(userCnpj, systemUserCode, ml_user_id);
+         const apiClient = new   ApiClient(ML_API_URL, accessToken);
+
+            const mlAnnouncementMapping = new MlAnnouncementMapping();
+            let payloadTomapping :IPayloadToMappingAnnouncement={ };
+
+            if(request.body.title) payloadTomapping.title =request.body.title; 
+            if(request.body.price) payloadTomapping.price =request.body.price; 
+            if(request.body.available_quantity) payloadTomapping.available_quantity =request.body.available_quantity; 
+            if(request.body.listing_type_id) payloadTomapping.listing_type_id =request.body.listing_type_id; 
+            if(request.body.description) payloadTomapping.description =request.body.description; 
+            if(request.body.pictures)    payloadTomapping.pictures =request.body.pictures; 
+            if(request.body.attributes) payloadTomapping.attributes =request.body.attributes; 
+            if(request.body.category_id) payloadTomapping.category_id =request.body.category_id; 
+            if(request.body.thumbnail) payloadTomapping.thumbnail =request.body.thumbnail; 
+
+          const dataMapped=  mlAnnouncementMapping.mapToUpdateAnnouncement(payloadTomapping);
+            console.log(dataMapped);
+            return reply.status(200).send(dataMapped);
+
+    });*/
   
     server.get('/ml/get/anuncios', {
         schema: {
@@ -100,7 +176,9 @@ const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new Updat
         }
     }, async (request, reply) => {
 
-const decoded = DecodedToken(String(request.headers.token));
+        const mlAuthServices = new MlAuthServices(new SelectMLAccountClient(), new UpdateMLAccountClient(), ML_API_URL);
+
+        const decoded = DecodedToken(String(request.headers.token));
         if (!decoded.success || !decoded.payload) {
             return reply.status(401).send({ success: false, message: "Token inválido" });
         }
@@ -113,42 +191,8 @@ const decoded = DecodedToken(String(request.headers.token));
         const getMlItemsService = new GetMlItemsService(mlAuthServices);
         console.log(request.headers)
           const result =  await getMlItemsService.getItemsFromSeller(empresa, systemUserCode, Number(ml_user_id) );
-          //if(result.items.length > 0 ){
             return reply.status(200).send(result);
-          //}
-        //console.log(result);
-
-      /*  const query = request.query;
-        const queryParams: any = { ativo: query.ativo || 'S' };
-        
-        if (query.limit) queryParams.limit = query.limit;
-        if (query.data_recadastro) queryParams.data_recadastro = query.data_recadastro;
-        if (query.plataforma) queryParams.plataforma = query.plataforma;
-        if (query.id_externo) queryParams.id_externo = query.id_externo;
-        if (query.sku_externo) queryParams.sku_externo = query.sku_externo;
-
-        try {
-            let anuncios: typeAnuncios[] = [];
-
-            if (Object.keys(queryParams).length > 1) {
-                anuncios = await selectAnuncios.findByParams(dbName, queryParams);
-            } else {
-                anuncios = await selectAnuncios.findAll(dbName, queryParams.data_recadastro);
-            }
-
-            const anunciosCompleto = await Promise.all(anuncios.map(async (i) => {
-                let atributos: typeAtributosAnuncios[] = [];
-                try {
-                    atributos = await selectAtributosAnuncios.findByAnuncioId(dbName, i.id);
-                } catch (e) { }
-                return { ...i, atributos };
-            }));
-
-            return reply.status(200).send(anunciosCompleto);
-        } catch (e) {
-            return reply.status(500).send({ success: false, message: 'erro ao tentar consultar os anuncios' });
-        }
-        */
+         
     });
 
   

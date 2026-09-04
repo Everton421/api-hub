@@ -1,123 +1,67 @@
-import { SelectAnuncios } from "../../../../../models/anuncios/select.ts";
-import { UpdateAnuncios } from "../../../../../models/anuncios/update.ts";
-import { DeleteAtributosAnuncios } from "../../../../../models/atributos-anuncios/delete.ts";
-import { InsertAtributosAnuncios } from "../../../../../models/atributos-anuncios/insert.ts";
-import { MlAnnouncementMapping } from "../mapping/ml-announcement-mapping.ts";
-import { type IPayloadUpdateAnnouncement, type MlUpdateAttribute } from "../types/update-announcement.ts";
-import { MlAuthServices } from "../../services/auth/ml-auth-services.ts";
-import { UpdateDescriptionMlAnnouncementRequest } from "./update-description-ml-announcement-request.ts";
-import { UpdateMlAnnouncementRequest } from "./update-ml-announcement-request.ts";
+import { ApiClient } from "../../../../../services/lib/api-client.ts";
+import { parseMlErrorMessage } from "../../utils/MlError.ts";
+import { type IPayloadResultFunction } from "../types/payload-results-function-ml.ts";
+import { type IPayloadToUpdateMLAnnouncement } from "../types/payload-update-announcement.ts";
+import { UpdateMlAnnouncementDriver } from "../driver/update-ml-announcement-driver.ts";
 
-
-const ML_API_URL = process.env.ML_API_URL || 'https://api.mercadolibre.com';
-
-export class UpdateMlAnnouncement {
-    private readonly mlAnnouncementMapping: MlAnnouncementMapping;
-    private readonly mlAuthServices: MlAuthServices;
-    private readonly updateDescriptionMlAnnouncement: UpdateDescriptionMlAnnouncementRequest;
-    private readonly updateMlAnnouncementRequest: UpdateMlAnnouncementRequest;
-
-    constructor(
-        mlAnnouncementMapping: MlAnnouncementMapping,
-        mlAuthServices: MlAuthServices,
-        updateDescriptionMlAnnouncement: UpdateDescriptionMlAnnouncementRequest = new UpdateDescriptionMlAnnouncementRequest(),
-        updateMlAnnouncementRequest: UpdateMlAnnouncementRequest = new UpdateMlAnnouncementRequest()
-    ) {
-        this.mlAnnouncementMapping = mlAnnouncementMapping;
-        this.mlAuthServices = mlAuthServices;
-        this.updateDescriptionMlAnnouncement = updateDescriptionMlAnnouncement;
-        this.updateMlAnnouncementRequest = updateMlAnnouncementRequest;
-    }
-
+/**
+ * Atualiza o anúncio no Mercado Livre.
+ */
+export class UpdateMlAnnouncement extends UpdateMlAnnouncementDriver {
     /**
-     *  atualiza o anuncio no mercadolivre.
-     * @param cnpj cnpj da empresa
-     * @param systemUserCode usuario do sistema
-     * @param mlUserId id do usuario no mercadoLivre.
-     * @param mlItemId id do item no Mercadolivre.
-     * @param data dados do anuncio a ser processado.
-     * @returns
+     * Atualiza o anúncio no Mercado Livre.
+     * Os campos de contexto local (localId, systemUserCode, mlUserId, id_plataforma)
+     * não são enviados à API, apenas os campos de domínio do ML.
+     * @param mlItemId Id do anúncio no Mercado Livre
+     * @param payload dados do anúncio para atualizar no Mercado Livre
+     * @returns resultado da operação
      */
-    async updateItem(
-        cnpj: string,
-        systemUserCode: number,
-        mlUserId: number,
-        mlItemId: string,
-        data: IPayloadUpdateAnnouncement
-    ): Promise<{ success: boolean; ml_id: string; msg: string }> {
-        const selectAnuncios = new SelectAnuncios();
-
-        const database = `\`${cnpj}\``;
+    async updateItem(mlItemId: string, payload: Partial<IPayloadToUpdateMLAnnouncement>): Promise<IPayloadResultFunction> {
+        const fieldsToUpdate = this.buildMlPayload(payload);
 
         try {
-            const accessToken = await this.mlAuthServices.getValidMlAccessToken(cnpj, systemUserCode, mlUserId);
-
-            const { mlPayload, localUpdate, attributes } = this.mlAnnouncementMapping.mapToUpdateAnnouncement(data);
-
-            if (Object.keys(mlPayload).length > 0) {
-                await this.updateMlAnnouncementRequest.update(ML_API_URL, mlItemId, mlPayload, accessToken);
+            if (Object.keys(fieldsToUpdate).length > 0) {
+                await this.mercadolivreApi.put(`/items/${mlItemId}`, fieldsToUpdate);
             }
 
-            if (data.description !== undefined) {
+            if (payload.description !== undefined) {
                 try {
-                    await this.updateDescriptionMlAnnouncement.update(ML_API_URL, mlItemId, data.description, accessToken);
+                    await this.mercadolivreApi.put<any>(`/items/${mlItemId}/description`, {
+                        plain_text: payload.description
+                    });
                 } catch (e) {
                     console.error("Erro ao atualizar descrição no ML:", e);
                 }
             }
 
-            const anuncios = await selectAnuncios.findByParams(database, { id_plataforma: mlItemId });
-
-            if (anuncios.length > 0) {
-                const localAnuncio = anuncios[0];
-                await this.updateLocalAnuncio(database, localAnuncio.id, localUpdate);
-                await this.updateLocalAttributes(database, localAnuncio.id, attributes);
-            } else {
-                console.warn(`Anúncio com id_plataforma ${mlItemId} não encontrado no banco local.`);
-            }
-
             return {
                 success: true,
-                ml_id: mlItemId,
-                msg: "Anúncio atualizado com sucesso!"
+                affectedFields: Object.keys(fieldsToUpdate).length,
+                mlItemId,
+                message: "Anúncio atualizado com sucesso!",
             };
-
-        } catch (error: any) {
-            console.error("Erro ao atualizar anúncio:", JSON.stringify(error.response?.data, null, 2));
-
-            let errorMessage = "Erro ao atualizar anúncio no Mercado Livre.";
-
-            if (error.response?.data?.cause) {
-                const mlError = error.response.data.cause[0];
-                errorMessage = `ML Recusou: ${mlError?.message || mlError} (Código: ${mlError?.code || mlError})`;
-            }
-
-            throw new Error(errorMessage);
+        } catch (error) {
+            console.error("Erro ao atualizar anúncio:", JSON.stringify((error as any)?.response?.data, null, 2));
+            throw new Error(parseMlErrorMessage(error, "Erro ao atualizar anúncio no Mercado Livre."));
         }
     }
 
-    private async updateLocalAnuncio(database: string, id: number, localUpdate: Record<string, any>): Promise<void> {
-        if (Object.keys(localUpdate).length === 0) return;
-        const updateAnuncios = new UpdateAnuncios();
-        await updateAnuncios.update(database, localUpdate, id);
-    }
+    /**
+     * Filtra apenas os campos de domínio aceitos pela API do ML,
+     * removendo os campos de contexto local.
+     */
+    private buildMlPayload(payload: Partial<IPayloadToUpdateMLAnnouncement>): Record<string, unknown> {
+        const mlPayload: Record<string, unknown> = {};
 
-    private async updateLocalAttributes(database: string, anuncioId: number, attributes?: MlUpdateAttribute[]): Promise<void> {
-        if (attributes === undefined) return;
+        if (payload.title !== undefined) mlPayload.title = payload.title;
+        if (payload.price !== undefined) mlPayload.price = payload.price;
+        if (payload.available_quantity !== undefined) mlPayload.available_quantity = payload.available_quantity;
+        if (payload.listing_type_id !== undefined) mlPayload.listing_type_id = payload.listing_type_id;
+        if (payload.category_id !== undefined) mlPayload.category_id = payload.category_id;
+        if (payload.attributes !== undefined) mlPayload.attributes = payload.attributes;
+        if (payload.shipping !== undefined) mlPayload.shipping = payload.shipping;
+        if (payload.pictures !== undefined) mlPayload.pictures = payload.pictures;
 
-        const deleteAtributosAnuncios = new DeleteAtributosAnuncios();
-        const insertAtributosAnuncios = new InsertAtributosAnuncios();
-
-        await deleteAtributosAnuncios.delete(database, anuncioId);
-
-        for (const atr of attributes) {
-            await insertAtributosAnuncios.insert(database, {
-                id_anuncio: anuncioId,
-                id_atributo: atr.id,
-                id_valor_atributo: null,
-                nome_atributo: atr.id,
-                valor_atributo: atr.value_name
-            });
-        }
+        return mlPayload;
     }
 }
